@@ -55,7 +55,7 @@ mypy:
 # Lint targets
 #
 format:
-	isort --recursive src tests
+	isort src tests
 	black src/ tests/
 
 lint: flake8 isort mypy
@@ -63,7 +63,7 @@ lint: flake8 isort mypy
 
 isort:
 	pip install -U isort==4.3.21
-	isort --recursive --check-only src tests
+	isort --check-only src tests
 
 flake8:
 	flake8 src/ tests/
