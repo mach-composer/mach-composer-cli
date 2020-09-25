@@ -5,14 +5,11 @@ import typing
 import urllib.parse
 
 import requests
+from mach import exceptions
 from mach.types import ComponentConfig, MachConfig
 
 NAME_RE = re.compile(r".*name: [\"']?(.*)[\"']?")
 VERSION_RE = re.compile(r"(\s*version: )([\"']?.*[\"']?)")
-
-
-class UpdateError(Exception):
-    pass
 
 
 Updates = typing.List[typing.Tuple[ComponentConfig, str]]
@@ -24,7 +21,7 @@ def update_config_components(  # noqa: C901
     # TODO: It now only checks/outputs the available updates
     gitlab_access_key = os.environ.get("GITLAB_ACCESS_KEY")
     if not gitlab_access_key:
-        raise UpdateError(
+        raise exceptions.UpdateError(
             "Must set GITLAB_ACCESS_KEY environment variable to use this option"
         )
 
