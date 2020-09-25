@@ -1,6 +1,6 @@
 # Base
 click==7.1.2
-dataclasses-json==0.4.1
+dataclasses-json==0.5.2
 Jinja2==2.11.1
 PyYAML==5.3
 requests==2.23.0
