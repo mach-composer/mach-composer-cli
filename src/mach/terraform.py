@@ -4,31 +4,13 @@ import sys
 from pathlib import Path
 from typing import List, Union
 
-from jinja2 import Environment, FileSystemLoader
-from jinja2.filters import do_mark_safe
+from mach.templates import setup_jinja
 from mach.types import MachConfig
-
-
-def setup_jinja() -> Environment:
-    root = os.path.dirname(os.path.abspath(__file__))
-    templates_dir = os.path.join(root, "templates")
-    return Environment(
-        loader=FileSystemLoader(templates_dir), trim_blocks=True, lstrip_blocks=True
-    )
-
-
-def render_value(value):
-    if isinstance(value, bool):
-        return "true" if value else "false"
-    if isinstance(value, (int, float)):
-        return value
-    return do_mark_safe(f'"{value}"')
 
 
 def generate_terraform(config: MachConfig):
     """Generate Terraform file from template and reformat it."""
     env = setup_jinja()
-    env.filters["component_value"] = render_value
     template = env.get_template("terraform_config.html")
     for site in config.sites:
         site_dir = config.deployment_path / Path(site.identifier)

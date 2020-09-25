@@ -63,10 +63,14 @@ class AlertGroup:
 @dataclass
 class AzureConfig:
     front_door: Optional[FrontDoorSettings] = None
-    resources_prefix: Optional[str] = None
+    resources_prefix: Optional[str] = ""
+    tenant_id: Optional[str] = ""
+    subscription_id: Optional[str] = ""
+    region: Optional[str] = ""
 
 
 class Environment(Enum):
+    DEV = "development"
     TEST = "test"
     PROD = "production"
 
@@ -79,8 +83,8 @@ class Environment(Enum):
 class GeneralConfig:
     """Config this is shared across sites."""
 
-    terraform_config: TerraformConfig
     environment: Environment
+    terraform_config: TerraformConfig
     sentry: Optional[SentryConfig] = None
     azure: Optional[AzureConfig] = None
 
@@ -167,22 +171,37 @@ class Component:
 
 @dataclass_json
 @dataclass
-class AzureSettings:
-    service_object_ids: Dict[str, str]
-    tenant_id: str
-    subscription_id: str
-    region: str
+class SiteAzureSettings:
+    service_object_ids: Dict[str, str] = field(default_factory=dict)
     front_door: Optional[FrontDoorSettings] = None
     alert_group: Optional[AlertGroup] = None
+    tenant_id: Optional[str] = ""  # Can overwrite values from AzureConfig
+    subscription_id: Optional[str] = ""  # Can overwrite values from AzureConfig
+    region: Optional[str] = ""  # Can overwrite values from AzureConfig
+
+    @classmethod
+    def from_config(cls, config: AzureConfig):
+        return cls(
+            front_door=config.front_door,
+            tenant_id=config.tenant_id,
+            subscription_id=config.subscription_id,
+            region=config.region,
+        )
+
+    def merge(self, config: AzureConfig):
+        self.front_door = self.front_door or config.front_door
+        self.tenant_id = self.tenant_id or config.tenant_id
+        self.subscription_id = self.subscription_id or config.subscription_id
+        self.region = self.region or config.region
 
 
 @dataclass_json
 @dataclass
 class Site:
     identifier: str
-    commercetools: CommercetoolsSettings
     base_url: str = ""
-    azure: Optional[AzureSettings] = None
+    commercetools: Optional[CommercetoolsSettings] = None
+    azure: Optional[SiteAzureSettings] = None
     create_frontend_credentials: bool = True
     provider: Optional[AzureProvider] = None
     stores: List[Store] = field(default_factory=list)
