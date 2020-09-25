@@ -92,12 +92,12 @@ general_config:
             storage_account_name: mysharedsaterra
             container_name: tfstate
             state_folder: test
+    azure:
+        tenant_id: e180345a-b3e1-421f-b448-672ab50d8502
+        subscription_id: 086bd7e7-0755-44ab-a730-7a0b8ad4883f
+        region: westeurope
 sites:
     - identifier: my-site
-      azure:
-          tenant_id: e180345a-b3e1-421f-b448-672ab50d8502
-          subscription_id: 086bd7e7-0755-44ab-a730-7a0b8ad4883f
-          region: westeurope
       commercetools:
           project_key: my-site-tst
           client_id: ...
