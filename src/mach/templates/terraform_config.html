@@ -20,6 +20,7 @@ provider "azurerm" {
   tenant_id       = "{{ site.azure.tenant_id }}"
   skip_provider_registration = true
   {% endif %}
+  features {}
 }
 
 {% include 'partials/commercetools.html' %}
