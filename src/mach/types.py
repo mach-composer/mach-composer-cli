@@ -67,6 +67,7 @@ class AzureConfig:
     tenant_id: Optional[str] = ""
     subscription_id: Optional[str] = ""
     region: Optional[str] = ""
+    service_object_ids: Dict[str, str] = field(default_factory=dict)
 
 
 class Environment(Enum):
@@ -148,8 +149,8 @@ class CommercetoolsSettings:
     languages: List[str] = field(default_factory=list)
     countries: List[str] = field(default_factory=list)
     messages_enabled: Optional[bool] = True
-    channels: Optional[List[CommercetoolsChannel]] = None
-    taxes: Optional[List[CommercetoolsTax]] = None
+    channels: Optional[List[CommercetoolsChannel]] = field(default_factory=list)
+    taxes: Optional[List[CommercetoolsTax]] = field(default_factory=list)
 
 
 @dataclass_json
@@ -199,11 +200,9 @@ class SiteAzureSettings:
 @dataclass
 class Site:
     identifier: str
-    base_url: str = ""
     commercetools: Optional[CommercetoolsSettings] = None
     azure: Optional[SiteAzureSettings] = None
     create_frontend_credentials: bool = True
-    provider: Optional[AzureProvider] = None
     stores: List[Store] = field(default_factory=list)
     components: List[Component] = field(default_factory=list)
 
