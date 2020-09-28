@@ -14,7 +14,7 @@ terraform {
 }
 
 provider "azurerm" {
-  version = "=2.19.0"
+  version = "=2.29.0"
   {% if site.azure %}
   subscription_id = "{{ site.azure.subscription_id }}"
   tenant_id       = "{{ site.azure.tenant_id }}"
