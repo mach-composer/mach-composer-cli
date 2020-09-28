@@ -1,9 +1,9 @@
 FROM python:3.8.5-alpine
 
 ENV AZURE_CLI_VERSION=2.5.1
-ENV TERRAFORM_VERSION=0.12.28
+ENV TERRAFORM_VERSION=0.13.3
 ENV TERRAFORM_EXTERNAL_VERSION=1.2.0
-ENV TERRAFORM_AZURE_VERSION=2.19.0
+ENV TERRAFORM_AZURE_VERSION=2.29.0
 ENV TERRAFORM_NULL_VERSION=2.1.2
 ENV TERRAFORM_COMMERCETOOLS_VERSION=0.23.0
 ENV TERRAFORM_PLUGINS_PATH=/root/.terraform.d/plugins/linux_amd64
@@ -37,8 +37,8 @@ RUN cd /tmp && \
 
 # Install commercetools provider
 RUN cd /tmp && \
-    wget https://github.com/labd/terraform-provider-commercetools/releases/download/${TERRAFORM_COMMERCETOOLS_VERSION}/terraform-provider-commercetools-${TERRAFORM_COMMERCETOOLS_VERSION}-linux-amd64.tar.gz && \
-    tar -C ${TERRAFORM_PLUGINS_PATH} -xzf terraform-provider-commercetools-${TERRAFORM_COMMERCETOOLS_VERSION}-linux-amd64.tar.gz
+    wget https://github.com/labd/terraform-provider-commercetools/releases/download/${TERRAFORM_COMMERCETOOLS_VERSION}/terraform-provider-commercetools-${TERRAFORM_COMMERCETOOLS_VERSION}-linux-amd64.zip && \
+    unzip -C ${TERRAFORM_PLUGINS_PATH} -xzf terraform-provider-commercetools-${TERRAFORM_COMMERCETOOLS_VERSION}-linux-amd64.zip
 
 RUN rm -rf /tmp/* && \
     rm -rf /var/cache/apk/* && \
