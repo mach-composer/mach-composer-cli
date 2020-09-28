@@ -1,5 +1,8 @@
+{% set definition = component.definition %}
+
 module "{{ component.name }}" {
-  source            = "{{ component.source }}?ref={{ component.version }}"
+  source            = "{{ definition.source }}?ref={{ definition.version }}"
+
   {% if component.is_software_component %}
   # keep the same order as the module's variables!
 
@@ -16,7 +19,7 @@ module "{{ component.name }}" {
   tags                    = local.tags
 
   ### functionality related
-  component_version       = "{{ component.version }}"
+  component_version       = "{{ definition.version }}"
   environment             = "{{ general_config.environment }}"
   site                    = "{{ site.identifier }}"
   {% if general_config.sentry %}

@@ -76,10 +76,9 @@ def resolve_components(config: MachConfig) -> MachConfig:
     for site in config.sites:
         if site.components:
             for component in site.components:
-                if not component.version:
-                    component.version = component_info[component.name].version
-                if not component.source:
-                    component.source = component_info[component.name].source
+                info = component_info[component.name]
+                component.definition = info
+
                 if not component.short_name:
-                    component.short_name = component_info[component.name].short_name
+                    component.short_name = info.short_name
     return config
