@@ -25,10 +25,7 @@ module "{{ component.name }}" {
   {% if site.azure.alert_group %}
   monitor_action_group_id = azurerm_monitor_action_group.alert_action_group.id
   {% endif %}
-  {% if site.stores %}
-  stores                  = [{% for store in site.stores %}"{{ store.key }}"{% if not loop.last %},{% endif %}{% endfor %}]
-  {% endif %}
-
+  
   # todo make simple jinja filter
   variables = {
     CT_API_URL = "{{ site.commercetools.api_url }}"
@@ -47,14 +44,6 @@ module "{{ component.name }}" {
   {% for key, value in component.secrets.items() %}
       {{ key }} = {{ value|component_value }}
   {% endfor %}
-
-  {% if site.stores %}
-      {% for store_name, store_secret_variables in component.store_secrets.items() %}
-          {% for sv_name, sv_value in store_secret_variables.items() %}
-              {{ store_name| upper }}_{{ sv_name }} = {{ sv_value|component_value }}
-          {% endfor %}
-      {% endfor %}
-  {% endif %}
   }
 
   environment_variables = {
@@ -69,12 +58,6 @@ module "{{ component.name }}" {
             DEFAULT_STORE = "{{ site.stores[0].key }}"
             STORE         = "{{ site.stores[0].key }}"
         {% endif %}
-
-        {% for store_name, store_variables in component.store_variables.items() %}
-           {% for sv_name, sv_value in store_variables.items() %}
-               {{ store_name| upper }}_{{ sv_name }} = {{ sv_value|component_value }}
-           {% endfor %}
-        {% endfor %}
     {% endif %}
     {% endfilter %}
   }

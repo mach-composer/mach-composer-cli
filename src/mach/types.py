@@ -159,8 +159,6 @@ class Component:
     name: str
     variables: TerraformVariables = field(default_factory=dict)
     secrets: TerraformVariables = field(default_factory=dict)
-    store_variables: StoreVariables = field(default_factory=dict)
-    store_secrets: StoreVariables = field(default_factory=dict)
     generate_api_client: Optional[bool] = True
     is_software_component: Optional[bool] = True
     has_public_api: Optional[bool] = False
