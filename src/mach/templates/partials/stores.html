@@ -1,5 +1,5 @@
-{% if site.stores %}
-{% set stores = site.stores %}
+{% if commercetools.stores %}
+{% set stores = commercetools.stores %}
 
 {% for store in stores %}
 resource "commercetools_store" "{{ store.key }}" {
@@ -20,19 +20,19 @@ resource "commercetools_store" "{{ store.key }}" {
   {% endif %}
 }
 
-{% if site.create_frontend_credentials %}
+{% if commercetools.create_frontend_credentials %}
 resource "commercetools_api_client" "frontend_credentials_{{ store.key }}" {
   name = "frontend_credentials_terraform_{{ store.key }}"
   scope = [
-    "manage_my_profile:{{ site.commercetools.project_key }}",
-    "manage_my_orders:{{ site.commercetools.project_key }}",
-    "manage_my_orders:{{ site.commercetools.project_key}}:{{ store.key }}",
-    "view_states:{{ site.commercetools.project_key }}",
-    "manage_my_shopping_lists:{{ site.commercetools.project_key }}",
-    "view_products:{{ site.commercetools.project_key }}",
-    "manage_my_payments:{{ site.commercetools.project_key}}",
-    "create_anonymous_token:{{ site.commercetools.project_key }}",
-    "view_project_settings:{{ site.commercetools.project_key }}"
+    "manage_my_profile:{{ commercetools.project_key }}",
+    "manage_my_orders:{{ commercetools.project_key }}",
+    "manage_my_orders:{{ commercetools.project_key}}:{{ store.key }}",
+    "view_states:{{ commercetools.project_key }}",
+    "manage_my_shopping_lists:{{ commercetools.project_key }}",
+    "view_products:{{ commercetools.project_key }}",
+    "manage_my_payments:{{ commercetools.project_key}}",
+    "create_anonymous_token:{{ commercetools.project_key }}",
+    "view_project_settings:{{ commercetools.project_key }}"
   ]
 
   depends_on = [commercetools_store.{{ store.key }}]
@@ -52,21 +52,21 @@ output "frontend_client_secret_{{ store.key }}" {
 {% endif %}
 {% endfor %}
 
-{% elif site.create_frontend_credentials %}
+{% elif commercetools.create_frontend_credentials %}
 {# note: No stores definied, create 1 set of credentials #}
 
 resource "commercetools_api_client" "frontend_credentials" {
   name = "frontend_credentials_terraform"
   scope = [
-    "manage_my_profile:{{ site.commercetools.project_key }}",
-    "manage_my_orders:{{ site.commercetools.project_key }}",
-    "manage_my_orders:{{ site.commercetools.project_key}}",
-    "view_states:{{ site.commercetools.project_key }}",
-    "manage_my_shopping_lists:{{ site.commercetools.project_key }}",
-    "view_products:{{ site.commercetools.project_key }}",
-    "manage_my_payments:{{ site.commercetools.project_key}}",
-    "create_anonymous_token:{{ site.commercetools.project_key }}",
-    "view_project_settings:{{ site.commercetools.project_key }}"
+    "manage_my_profile:{{ commercetools.project_key }}",
+    "manage_my_orders:{{ commercetools.project_key }}",
+    "manage_my_orders:{{ commercetools.project_key}}",
+    "view_states:{{ commercetools.project_key }}",
+    "manage_my_shopping_lists:{{ commercetools.project_key }}",
+    "view_products:{{ commercetools.project_key }}",
+    "manage_my_payments:{{ commercetools.project_key}}",
+    "create_anonymous_token:{{ commercetools.project_key }}",
+    "view_project_settings:{{ commercetools.project_key }}"
   ]
 }
 

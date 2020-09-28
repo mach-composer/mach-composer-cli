@@ -1,6 +1,6 @@
 from typing import List
 
-from mach.types import MachConfig, Site
+from mach.types import CommercetoolsSettings, MachConfig, Site
 
 
 def validate_config(config: MachConfig):
@@ -9,7 +9,7 @@ def validate_config(config: MachConfig):
     component_names = [component.name for component in config.components]
 
     for site in config.sites:
-        validate_store_keys(site)
+        validate_commercetools(site)
         validate_site_components(component_names, site)
 
 
@@ -31,10 +31,15 @@ def validate_site_components(component_names: List[str], site: Site):
                 )
 
 
-def validate_store_keys(site: Site):
+def validate_commercetools(site: Site):
+    if site.commercetools:
+        validate_store_keys(site.commercetools)
+
+
+def validate_store_keys(ct_settings: CommercetoolsSettings):
     """Sanity checks on store values."""
-    if site.stores:
-        store_keys = [store.key for store in site.stores]
+    if ct_settings.stores:
+        store_keys = [store.key for store in ct_settings.stores]
         for key in store_keys:
             if len(key) < 2:
                 raise ValueError(f"Store key {key} should be minimum two characters.")

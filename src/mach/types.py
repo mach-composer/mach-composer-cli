@@ -151,6 +151,8 @@ class CommercetoolsSettings:
     messages_enabled: Optional[bool] = True
     channels: Optional[List[CommercetoolsChannel]] = field(default_factory=list)
     taxes: Optional[List[CommercetoolsTax]] = field(default_factory=list)
+    stores: List[Store] = field(default_factory=list)
+    create_frontend_credentials: bool = True
 
 
 @dataclass_json
@@ -200,8 +202,6 @@ class Site:
     identifier: str
     commercetools: Optional[CommercetoolsSettings] = None
     azure: Optional[SiteAzureSettings] = None
-    create_frontend_credentials: bool = True
-    stores: List[Store] = field(default_factory=list)
     components: List[Component] = field(default_factory=list)
 
     @property
