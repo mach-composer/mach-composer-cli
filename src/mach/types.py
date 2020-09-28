@@ -161,13 +161,18 @@ class Component:
     name: str
     variables: TerraformVariables = field(default_factory=dict)
     secrets: TerraformVariables = field(default_factory=dict)
-    generate_api_client: Optional[bool] = True
     is_software_component: Optional[bool] = True
     has_public_api: Optional[bool] = False
     health_check_path: Optional[str] = ""
-    version: Optional[str] = ""
-    source: Optional[str] = ""
     short_name: Optional[str] = ""
+
+    @property
+    def definition(self) -> ComponentConfig:
+        return self._definition
+
+    @definition.setter
+    def definition(self, definition: ComponentConfig):
+        self._definition = definition
 
 
 @dataclass_json
