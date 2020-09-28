@@ -24,10 +24,8 @@ order created or order status changes).
 
 ## Installation
 
-- Make sure you have Terraform installed  
+- Make sure you have Terraform 0.13 installed 
 tip: Use [tfenv](https://github.com/tfutils/tfenv) to support multiple versions of Terraform)
-- Install https://github.com/labd/terraform-provider-commercetools  
-note: you have to specify the version in the file name (f.e. terraform-provider-commercetools_v0.21.1 in the Terraform plugin directory)
 - Create a new virtualenv with Python 3.8
 - Run the following commands:
 
@@ -135,9 +133,3 @@ The Azure Active Directory principal ID which can access the necessary resources
 #### tenant_id
 The Azure Active Directory tenant ID that should be used for authenticating requests to the key vault.  
 [More info](https://docs.microsoft.com/en-us/azure/active-directory/develop/authentication-scenarios#tenants)
-
-## TODO
-
-- Revisit discussion about secrets filled in on the main.yml or fill in on Azure Portal.
-- Add optional encryption (f.e. using sops https://github.com/mozilla/sops/ like Danone and integrate it with Azure Key Vault in shared rg)
-- Switch to Ubuntu, alpine is always difficult to install extra dependencies.

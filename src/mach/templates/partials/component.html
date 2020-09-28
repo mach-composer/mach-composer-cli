@@ -25,9 +25,6 @@ module "{{ component.name }}" {
   {% if site.azure.alert_group %}
   monitor_action_group_id = azurerm_monitor_action_group.alert_action_group.id
   {% endif %}
-  {% if site.base_url %}
-  base_url                = "{{ site.base_url }}"
-  {% endif %}
   {% if site.stores %}
   stores                  = [{% for store in site.stores %}"{{ store.key }}"{% if not loop.last %},{% endif %}{% endfor %}]
   {% endif %}
