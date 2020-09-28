@@ -97,6 +97,9 @@ class ComponentConfig:
     source: str
     version: str
     short_name: str = ""
+    is_software_component: Optional[bool] = True
+    has_public_api: Optional[bool] = False
+    health_check_path: Optional[str] = ""
 
     def __post_init__(self):
         """Ensure short_name is set."""
@@ -161,10 +164,8 @@ class Component:
     name: str
     variables: TerraformVariables = field(default_factory=dict)
     secrets: TerraformVariables = field(default_factory=dict)
-    is_software_component: Optional[bool] = True
-    has_public_api: Optional[bool] = False
-    health_check_path: Optional[str] = ""
     short_name: Optional[str] = ""
+    health_check_path: Optional[str] = ""
 
     @property
     def definition(self) -> ComponentConfig:
@@ -173,6 +174,15 @@ class Component:
     @definition.setter
     def definition(self, definition: ComponentConfig):
         self._definition = definition
+        self.health_check_path = self.health_check_path or definition.health_check_path
+
+    @property
+    def is_software_component(self):
+        return self.definition.is_software_component
+
+    @property
+    def has_public_api(self):
+        return self.definition.has_public_api
 
 
 @dataclass_json
