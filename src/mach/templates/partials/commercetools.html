@@ -1,7 +1,15 @@
 {% if site.commercetools %}
 {% set commercetools = site.commercetools %}
+terraform {
+  required_providers {
+    commercetools = {
+      source = "labd/commercetools"
+    }
+  }
+}
+
 provider "commercetools" {
-    version       = "=0.22.1"
+    version       = "=0.23.0"
     client_id     = "{{ commercetools.client_id }}"
     client_secret = "{{ commercetools.client_secret }}"
     project_key   = "{{ commercetools.project_key }}"
