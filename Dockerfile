@@ -37,8 +37,8 @@ RUN cd /tmp && \
 
 # Install commercetools provider
 RUN cd /tmp && \
-    wget https://github.com/labd/terraform-provider-commercetools/releases/download/${TERRAFORM_COMMERCETOOLS_VERSION}/terraform-provider-commercetools-${TERRAFORM_COMMERCETOOLS_VERSION}-linux-amd64.zip && \
-    unzip -C ${TERRAFORM_PLUGINS_PATH} -xzf terraform-provider-commercetools-${TERRAFORM_COMMERCETOOLS_VERSION}-linux-amd64.zip
+    wget https://github.com/labd/terraform-provider-commercetools/releases/download/v${TERRAFORM_COMMERCETOOLS_VERSION}/terraform-provider-commercetools_${TERRAFORM_COMMERCETOOLS_VERSION}_linux_amd64.zip && \
+    unzip terraform-provider-commercetools_${TERRAFORM_COMMERCETOOLS_VERSION}_linux_amd64.zip -d ${TERRAFORM_PLUGINS_PATH}
 
 RUN rm -rf /tmp/* && \
     rm -rf /var/cache/apk/* && \
