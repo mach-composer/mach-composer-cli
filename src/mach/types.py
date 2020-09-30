@@ -138,6 +138,17 @@ class ComponentConfig:
         """Ensure short_name is set."""
         self.short_name = self.short_name or self.name
 
+    @property
+    def use_version_reference(self):
+        """Indicate if the module should be referenced with the version.
+
+        This will be mainly used for development purposes when referring
+        to a local directory; versioning is not possible, but we should
+        still be able to define a version in our component for the actual
+        function deployment itself.
+        """
+        return self.source.startswith("git")
+
 
 @dataclass_json
 @dataclass
