@@ -67,9 +67,20 @@ module "{{ component.name }}" {
     {% endfilter %}
   }
   {% endif %}
+
+  providers = {
+    {% if site.commercetools %}commercetools = commercetools{% endif %}
+
+    {% if site.azure %}azurerm = azurerm{% endif %}
+    {% if site.aws %}aws = aws
+    {% for provider in site.aws.extra_providers %}
+    aws.{{ provider.name }} = aws.{{ provider.name }}
+    {% endfor %}
+    {% endif %}
+  }
 }
 
-{% if component.is_software_component %}
+{% if site.azure and component.is_software_component %}
 # see https://docs.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies#trigger-syncing
 # this updates the functionapp in case of any changes.
 data "external" "sync_triggers_{{ component.name }}" {
