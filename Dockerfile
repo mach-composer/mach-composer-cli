@@ -4,6 +4,7 @@ ENV AZURE_CLI_VERSION=2.5.1
 ENV TERRAFORM_VERSION=0.13.3
 ENV TERRAFORM_EXTERNAL_VERSION=1.2.0
 ENV TERRAFORM_AZURE_VERSION=2.29.0
+ENV TERRAFORM_AWS_VERSION=3.8.0
 ENV TERRAFORM_NULL_VERSION=2.1.2
 ENV TERRAFORM_COMMERCETOOLS_VERSION=0.23.0
 ENV TERRAFORM_PLUGINS_PATH=/root/.terraform.d/plugins/linux_amd64
@@ -28,6 +29,11 @@ RUN cd /tmp && \
 RUN cd /tmp && \
     wget https://releases.hashicorp.com/terraform-provider-external/${TERRAFORM_EXTERNAL_VERSION}/terraform-provider-external_${TERRAFORM_EXTERNAL_VERSION}_linux_amd64.zip && \
     unzip terraform-provider-external_${TERRAFORM_EXTERNAL_VERSION}_linux_amd64.zip -d ${TERRAFORM_PLUGINS_PATH}
+
+# Install aws provider
+RUN cd /tmp && \
+    wget https://releases.hashicorp.com/terraform-provider-aws/${TERRAFORM_AWS_VERSION}/terraform-provider-aws_${TERRAFORM_AWS_VERSION}_linux_amd64.zip && \
+    unzip terraform-provider-aws_${TERRAFORM_AWS_VERSION}_linux_amd64.zip -d ${TERRAFORM_PLUGINS_PATH}
 
 # Install azure provider
 RUN cd /tmp && \
