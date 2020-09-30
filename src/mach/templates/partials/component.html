@@ -22,6 +22,8 @@ module "{{ component.name }}" {
   component_version       = "{{ definition.version }}"
   environment             = "{{ general_config.environment }}"
   site                    = "{{ site.identifier }}"
+  ct_project_key          = "{{ site.commercetools.project_key }}"
+  
   {% if general_config.sentry %}
   sentry_dsn              = "{{ general_config.sentry.dsn }}"
   {% endif %}
