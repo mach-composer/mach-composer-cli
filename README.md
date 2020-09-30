@@ -84,6 +84,7 @@ flake8.
 ---
 general_config:
     environment: test
+    cloud: azure
     terraform_config:
         azure_remote_state:
             resource_group_name: my-shared-rg
