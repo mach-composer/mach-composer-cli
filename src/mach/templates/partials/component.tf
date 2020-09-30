@@ -22,35 +22,39 @@ module "{{ component.name }}" {
   component_version       = "{{ definition.version }}"
   environment             = "{{ general_config.environment }}"
   site                    = "{{ site.identifier }}"
-  ct_project_key          = "{{ site.commercetools.project_key }}"
   
+  {% if site.commercetools %}
+  ct_project_key          = "{{ site.commercetools.project_key }}"
+  {% endif %}
+
   {% if general_config.sentry %}
   sentry_dsn              = "{{ general_config.sentry.dsn }}"
   {% endif %}
+
+  {% if site.aws.api_gateway %}
+  api_gateway = aws_api_gateway_rest_api.main_gateway.arn
+  {% endif %}
+  
   {% if site.azure.alert_group %}
   monitor_action_group_id = azurerm_monitor_action_group.alert_action_group.id
   {% endif %}
   
-  # todo make simple jinja filter
   variables = {
+    {% for key, value in component.variables.items() %}
+    {{ key }} = {{ value|component_value }}
+    {% endfor %}
+
     CT_API_URL = "{{ site.commercetools.api_url }}"
-    # TODO: make token url / auth url consistent
+    {# TODO: make token url / auth url consistent #}
     CT_AUTH_URL = "{{ site.commercetools.token_url }}"
     CT_PROJECT_KEY = "{{ site.commercetools.project_key }}"
+    
     {% if site.azure.front_door and component.has_public_api %}
     FRONTDOOR_ID = azurerm_frontdoor.app-service.header_frontdoor_id
     {% endif %}
-  {% for key, value in component.variables.items() %}
-      {{ key }} = {{ value|component_value }}
-  {% endfor %}
   }
 
-  secrets = {
-  {% for key, value in component.secrets.items() %}
-      {{ key }} = {{ value|component_value }}
-  {% endfor %}
-  }
-
+  {# TODO: See if we can merge variables and environment_variables #}
   environment_variables = {
     {% filter indent(width=4) %}
     {% for key, value in component.variables.items() %}
@@ -67,6 +71,12 @@ module "{{ component.name }}" {
     {% endfilter %}
   }
   {% endif %}
+
+  secrets = {
+  {% for key, value in component.secrets.items() %}
+      {{ key }} = {{ value|component_value }}
+  {% endfor %}
+  }
 
   providers = {
     {% if site.commercetools %}commercetools = commercetools{% endif %}
