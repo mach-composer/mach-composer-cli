@@ -96,7 +96,7 @@ class ComponentConfig:
     name: str
     source: str
     version: str
-    short_name: str = ""
+    short_name: Optional[str] = ""
     is_software_component: Optional[bool] = True
     has_public_api: Optional[bool] = False
     health_check_path: Optional[str] = ""
