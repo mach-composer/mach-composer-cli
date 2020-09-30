@@ -31,11 +31,17 @@ def terraform_command(f):
         "(ARM_CLIENT_ID, ARM_CLIENT_SECRET, ARM_TENANT_ID) should be done.",
     )
     @click.option(
+        "--auto-approve",
+        is_flag=True,
+        default=False,
+        help="",
+    )
+    @click.option(
         "--output-path",
         default="deployments",
         help="Output path, defaults to `cwd`/deployments.",
     )
-    def new_func(file, with_sp_login: bool, output_path: str):
+    def new_func(file, with_sp_login: bool, auto_approve: bool, output_path: str):
         files = get_input_files(file)
 
         try:
@@ -44,7 +50,12 @@ def terraform_command(f):
             raise click.ClickException(str(e)) from e
 
         try:
-            result = f(file=file, with_sp_login=with_sp_login, configs=configs)
+            result = f(
+                file=file,
+                with_sp_login=with_sp_login,
+                auto_approve=auto_approve,
+                configs=configs,
+            )
         except subprocess.CalledProcessError as e:
             click.echo("Failed to run")
             sys.exit(e.returncode)
@@ -72,10 +83,14 @@ def plan(file, configs, *args, **kwargs):
 
 @mach.command()
 @terraform_command
-def apply(file, configs, with_sp_login, *args, **kwargs):
+def apply(file, configs, with_sp_login, auto_approve, *args, **kwargs):
     for config in configs:
         generate_terraform(config)
-        apply_terraform(config.deployment_path, with_sp_login)
+        apply_terraform(
+            config.deployment_path,
+            with_sp_login=with_sp_login,
+            auto_approve=auto_approve,
+        )
 
 
 @mach.command()

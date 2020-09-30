@@ -36,7 +36,9 @@ def plan_terraform(output_dir: Path):
             run_terraform("plan", site_dir)
 
 
-def apply_terraform(output_dir: Path, with_sp_login: bool):
+def apply_terraform(
+    output_dir: Path, *, with_sp_login: bool = False, auto_approve: bool = False
+):
     """Terraform apply for all generated sites."""
     for site_dir in output_dir.iterdir():
         if site_dir.is_dir():
@@ -44,7 +46,10 @@ def apply_terraform(output_dir: Path, with_sp_login: bool):
             run_terraform("init", site_dir)
             if with_sp_login:
                 azure_sp_login()
-            run_terraform(["apply", "-auto-approve"], site_dir)
+            cmd = ["apply"]
+            if auto_approve:
+                cmd += ["-auto-approve"]
+            run_terraform(["apply"], site_dir)
 
 
 def azure_sp_login():
