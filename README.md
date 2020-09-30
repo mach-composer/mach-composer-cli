@@ -1,4 +1,4 @@
-# MACH Framework
+# MACH composer
 
 The idea is to define a configuration file in yml with one or more Commercetools
 sites with all the required configuration for that site, what components to use
