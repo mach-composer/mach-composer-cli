@@ -15,6 +15,6 @@ resource "azurerm_app_service_plan" "functionapps" {
 }
 
 {% for component in site.components %}
-{% include 'partials/component.html' %}
+{% include 'partials/component.tf' %}
 {% endfor %}
 {% endif %}
