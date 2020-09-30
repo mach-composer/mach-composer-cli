@@ -1,0 +1,3 @@
+include:
+  - project: "internal/gitlab-ci-templates"
+    file: "/python-lint.yml"

@@ -1,0 +1,27 @@
+# Generated content
+/src/mach.egg-info
+deployments
+build/
+dist/
+
+
+# Test output
+/.coverage
+/reports/
+/.pytest_cache/
+/.mypy_cache/
+/.docker_tag
+
+
+# Editor files
+/.idea
+/.vscode
+
+
+# File extensions
+.DS_Store
+*.pyc
+__pycache__
+.cache
+.version
+/.python-version
