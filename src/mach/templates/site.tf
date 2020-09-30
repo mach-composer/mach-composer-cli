@@ -23,8 +23,8 @@ provider "azurerm" {
   features {}
 }
 
-{% include 'partials/commercetools.html' %}
+{% include 'partials/commercetools.tf' %}
 
-{% include 'partials/azure.html' %}
+{% include 'partials/azure.tf' %}
 
-{% include 'partials/components.html' %}
+{% include 'partials/components.tf' %}

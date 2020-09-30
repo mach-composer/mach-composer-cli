@@ -11,7 +11,7 @@ from mach.types import MachConfig
 def generate_terraform(config: MachConfig):
     """Generate Terraform file from template and reformat it."""
     env = setup_jinja()
-    template = env.get_template("terraform_config.html")
+    template = env.get_template("site.tf")
     for site in config.sites:
         site_dir = config.deployment_path / Path(site.identifier)
         site_dir.mkdir(exist_ok=True)

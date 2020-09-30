@@ -68,5 +68,5 @@ resource "azurerm_monitor_action_group" "alert_action_group" {
 }
 {% endif %}
 
-{% include 'partials/azure_frontdoor.html' %}
+{% include 'partials/azure_frontdoor.tf' %}
 {% endif %}

@@ -76,5 +76,5 @@ output "frontend_channels" {
     ]
 }
 
-{% include 'partials/stores.html' %}
+{% include 'partials/stores.tf' %}
 {% endif %}
