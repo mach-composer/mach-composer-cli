@@ -13,6 +13,7 @@ def test_short_name_is_set():
                     "state_folder": "dev",
                 }
             },
+            "cloud": "azure",
             "sentry": {"dsn": "some sentry url"},
         },
         "sites": [],

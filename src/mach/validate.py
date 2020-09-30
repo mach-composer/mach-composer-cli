@@ -1,53 +1,85 @@
 from typing import List
 
-from mach.types import CommercetoolsSettings, MachConfig, Site
+from mach import types
+from mach.exceptions import ValidationError
 
 
-def validate_config(config: MachConfig):
+def validate_config(config: types.MachConfig):
     """Check the config for invalid configuration."""
+    validate_general_config(config.general_config)
     validate_components(config)
-    component_names = [component.name for component in config.components]
 
     for site in config.sites:
-        validate_commercetools(site)
-        validate_site_components(component_names, site)
+        validate_site(site, config=config)
 
 
-def validate_site_components(component_names: List[str], site: Site):
-    """Sanity checks on component configuration per site."""
+def validate_general_config(config: types.GeneralConfig):
+    if config.cloud == types.CloudOption.AZURE:
+        if not config.azure:
+            raise ValidationError(f"Missing azure configuration")
+        if not config.terraform_config.azure_remote_state:
+            raise ValidationError(f"Missing azure_remote_state configuration")
+        if config.terraform_config.aws_remote_state:
+            raise ValidationError(
+                f"Found aws_remote_state configuration, while cloud is set to 'azure'"
+            )
+    elif config.cloud == types.CloudOption.AWS:
+        if not config.terraform_config.aws_remote_state:
+            raise ValidationError(f"Missing aws_remote_state configuration")
+        if config.terraform_config.azure_remote_state:
+            raise ValidationError(
+                f"Found azure_remote_state configuration, while cloud is set to 'aws'"
+            )
+
+
+def validate_site(site: types.Site, *, config: types.MachConfig):
+    if config.general_config.cloud == types.CloudOption.AWS and not site.aws:
+        raise ValidationError(f"Site {site.identifier} is missing an aws configuration")
+
+    validate_commercetools(site)
+
     if site.components:
-        for component in site.components:
-            if component.name not in component_names:
-                raise ValueError(
-                    f"Component {component.name} does not exist in global components."
-                )
-            if (
-                component.health_check_path
-                and not component.health_check_path.startswith("/")
-            ):
-                raise ValueError(
-                    f"Component health check {component.health_check_path} does "
-                    f"not start with '/'."
-                )
+        component_names = [component.name for component in config.components]
+        validate_site_components(site.components, component_names)
 
 
-def validate_commercetools(site: Site):
+def validate_site_components(
+    components: List[types.ComponentConfig], component_names: List[str]
+):
+    """Sanity checks on component configuration per site."""
+    for component in components:
+        if component.name not in component_names:
+            raise ValidationError(
+                f"Component {component.name} does not exist in global components."
+            )
+        if component.health_check_path and not component.health_check_path.startswith(
+            "/"
+        ):
+            raise ValidationError(
+                f"Component health check {component.health_check_path} does "
+                f"not start with '/'."
+            )
+
+
+def validate_commercetools(site: types.Site):
     if site.commercetools:
         validate_store_keys(site.commercetools)
 
 
-def validate_store_keys(ct_settings: CommercetoolsSettings):
+def validate_store_keys(ct_settings: types.CommercetoolsSettings):
     """Sanity checks on store values."""
     if ct_settings.stores:
         store_keys = [store.key for store in ct_settings.stores]
         for key in store_keys:
             if len(key) < 2:
-                raise ValueError(f"Store key {key} should be minimum two characters.")
+                raise ValidationError(
+                    f"Store key {key} should be minimum two characters."
+                )
             if store_keys.count(key) != 1:
-                raise ValueError(f"Store key {key} must be unique.")
+                raise ValidationError(f"Store key {key} must be unique.")
 
 
-def validate_components(config: MachConfig):
+def validate_components(config: types.MachConfig):
     """Validate global component data is valid."""
     for comp in config.components:
         # ignore product type modules
@@ -57,7 +89,7 @@ def validate_components(config: MachConfig):
 
         # azure naming length is limited, so verify it doesn't get too long.
         if len(comp.short_name) > 10:
-            raise ValueError(
+            raise ValidationError(
                 f"Component ({comp.name}) short name '{comp.short_name}' "
                 f"cannot be more than 10 characters."
             )

@@ -22,8 +22,19 @@ class AzureTFState:
 
 @dataclass_json
 @dataclass
+class AWSTFState:
+    bucket: str
+    key_prefix: str
+    role_arn: str
+    region: str = "eu-west-1"
+    lock_table: Optional[str] = None
+
+
+@dataclass_json
+@dataclass
 class TerraformConfig:
-    azure_remote_state: AzureTFState
+    azure_remote_state: Optional[AzureTFState] = None
+    aws_remote_state: Optional[AWSTFState] = None
 
 
 @dataclass_json
@@ -70,6 +81,22 @@ class AzureConfig:
     service_object_ids: Dict[str, str] = field(default_factory=dict)
 
 
+@dataclass_json
+@dataclass
+class AWSProvider:
+    name: str
+    region: str
+
+
+@dataclass_json
+@dataclass
+class SiteAWSSettings:
+    account_id: int
+    region: str
+    deploy_role: str
+    extra_providers: Optional[List[AWSProvider]] = field(default_factory=list)
+
+
 class Environment(Enum):
     DEV = "development"
     TEST = "test"
@@ -79,6 +106,11 @@ class Environment(Enum):
         return self.value
 
 
+class CloudOption(Enum):
+    AWS = "aws"
+    AZURE = "azure"
+
+
 @dataclass_json
 @dataclass
 class GeneralConfig:
@@ -86,6 +118,7 @@ class GeneralConfig:
 
     environment: Environment
     terraform_config: TerraformConfig
+    cloud: CloudOption
     sentry: Optional[SentryConfig] = None
     azure: Optional[AzureConfig] = None
 
@@ -217,6 +250,7 @@ class Site:
     identifier: str
     commercetools: Optional[CommercetoolsSettings] = None
     azure: Optional[SiteAzureSettings] = None
+    aws: Optional[SiteAWSSettings] = None
     components: List[Component] = field(default_factory=list)
 
     @property
