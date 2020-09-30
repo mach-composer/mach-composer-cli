@@ -1,7 +1,7 @@
 {% set definition = component.definition %}
 
 module "{{ component.name }}" {
-  source            = "{{ definition.source }}?ref={{ definition.version }}"
+  source            = "{{ definition.source }}{% if definition.use_version_reference %}?ref={{ definition.version }}{% endif %}"
   
   {% if component.is_software_component %}
   # keep the same order as the module's variables!
