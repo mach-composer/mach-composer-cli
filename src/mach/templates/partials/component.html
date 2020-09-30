@@ -35,7 +35,7 @@ module "{{ component.name }}" {
     # TODO: make token url / auth url consistent
     CT_AUTH_URL = "{{ site.commercetools.token_url }}"
     CT_PROJECT_KEY = "{{ site.commercetools.project_key }}"
-    {% if component.has_public_api %}
+    {% if site.azure.front_door and component.has_public_api %}
     FRONTDOOR_ID = azurerm_frontdoor.app-service.header_frontdoor_id
     {% endif %}
   {% for key, value in component.variables.items() %}
