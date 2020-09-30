@@ -36,6 +36,9 @@ def validate_site(site: types.Site, *, config: types.MachConfig):
     if config.general_config.cloud == types.CloudOption.AWS and not site.aws:
         raise ValidationError(f"Site {site.identifier} is missing an aws configuration")
 
+    if site.aws and site.aws.api_gateway and not site.base_url:
+        raise ValidationError(f"base_url is required when api_gateway is configured")
+
     validate_commercetools(site)
 
     if site.components:

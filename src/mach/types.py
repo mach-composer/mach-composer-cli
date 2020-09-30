@@ -1,9 +1,12 @@
+import re
 from dataclasses import dataclass, field
 from enum import Enum
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 from dataclasses_json import dataclass_json
+
+PROTOCOL_RE = re.compile(r"^(http(s)?://)")
 
 TerraformVariables = Dict[str, Any]
 StoreVariables = Dict[str, TerraformVariables]
@@ -94,6 +97,7 @@ class SiteAWSSettings:
     account_id: int
     region: str
     deploy_role: str
+    api_gateway: Optional[str] = ""
     extra_providers: Optional[List[AWSProvider]] = field(default_factory=list)
 
 
@@ -259,14 +263,28 @@ class SiteAzureSettings:
 @dataclass
 class Site:
     identifier: str
+    base_url: Optional[str] = ""
     commercetools: Optional[CommercetoolsSettings] = None
     azure: Optional[SiteAzureSettings] = None
     aws: Optional[SiteAWSSettings] = None
     components: List[Component] = field(default_factory=list)
 
     @property
-    def public_api_components(self):
+    def public_api_components(self) -> List[Component]:
         return [c for c in self.components if c.has_public_api]
+
+    @property
+    def api_gateway_changed_components(self) -> List[Component]:
+        """Return components that need a gateway change.
+
+        At the moment returns an empty list; so non-functional.
+        See if we can implement a better solution for this.
+        """
+        return []
+
+    def __post_init__(self):
+        """Ensure short_name is set."""
+        self.base_url = PROTOCOL_RE.sub("", self.base_url)
 
 
 @dataclass_json
