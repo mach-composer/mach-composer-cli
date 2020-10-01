@@ -16,19 +16,19 @@ def validate_config(config: types.MachConfig):
 def validate_general_config(config: types.GeneralConfig):
     if config.cloud == types.CloudOption.AZURE:
         if not config.azure:
-            raise ValidationError(f"Missing azure configuration")
+            raise ValidationError("Missing azure configuration")
         if not config.terraform_config.azure_remote_state:
-            raise ValidationError(f"Missing azure_remote_state configuration")
+            raise ValidationError("Missing azure_remote_state configuration")
         if config.terraform_config.aws_remote_state:
             raise ValidationError(
-                f"Found aws_remote_state configuration, while cloud is set to 'azure'"
+                "Found aws_remote_state configuration, while cloud is set to 'azure'"
             )
     elif config.cloud == types.CloudOption.AWS:
         if not config.terraform_config.aws_remote_state:
-            raise ValidationError(f"Missing aws_remote_state configuration")
+            raise ValidationError("Missing aws_remote_state configuration")
         if config.terraform_config.azure_remote_state:
             raise ValidationError(
-                f"Found azure_remote_state configuration, while cloud is set to 'aws'"
+                "Found azure_remote_state configuration, while cloud is set to 'aws'"
             )
 
 
@@ -37,7 +37,7 @@ def validate_site(site: types.Site, *, config: types.MachConfig):
         raise ValidationError(f"Site {site.identifier} is missing an aws configuration")
 
     if site.aws and site.aws.api_gateway and not site.base_url:
-        raise ValidationError(f"base_url is required when api_gateway is configured")
+        raise ValidationError("base_url is required when api_gateway is configured")
 
     validate_commercetools(site)
 
@@ -60,7 +60,7 @@ def validate_site_components(
         ):
             raise ValidationError(
                 f"Component health check {component.health_check_path} does "
-                f"not start with '/'."
+                "not start with '/'."
             )
 
 
@@ -94,5 +94,5 @@ def validate_components(config: types.MachConfig):
         if len(comp.short_name) > 10:
             raise ValidationError(
                 f"Component ({comp.name}) short name '{comp.short_name}' "
-                f"cannot be more than 10 characters."
+                "cannot be more than 10 characters."
             )
