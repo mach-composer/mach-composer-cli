@@ -2,6 +2,7 @@
 exclude *
 recursive-exclude * *
 
+include setup.py
 include requirements.txt
 include MANIFEST.in
 
