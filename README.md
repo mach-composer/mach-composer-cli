@@ -114,7 +114,6 @@ sites:
       components:
           - name: api-extensions
             variables:
-                CT_CLIENT_SCOPES: manage_products:my-site-tst manage_orders:my-site-tst
                 ORDER_PREFIX: mysitetst
 components:
     - name: api-extensions
