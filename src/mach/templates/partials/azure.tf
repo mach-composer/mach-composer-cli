@@ -1,17 +1,27 @@
-{% if site.azure %}
+{% set azure = site.azure %}
+
+provider "azurerm" {
+  version = "=2.29.0"
+  subscription_id = "{{ azure.subscription_id }}"
+  tenant_id       = "{{ azure.tenant_id }}"
+  skip_provider_registration = true
+  features {}
+}
+
+
 locals {
-  tenant_id                    = "{{ site.azure.tenant_id }}"
-  region                       = "{{ site.azure.region }}"
-  subscription_id              = "{{ site.azure.subscription_id }}"
+  tenant_id                    = "{{ azure.tenant_id }}"
+  region                       = "{{ azure.region }}"
+  subscription_id              = "{{ azure.subscription_id }}"
   project_key                  = "{{ site.commercetools.project_key }}"
 
-  region_short                 = "{{ site.azure.region|azure_region_short }}"
+  region_short                 = "{{ azure.region|azure_region_short }}"
   name_prefix                  = format("{{ general_config.azure.resources_prefix }}{{ site.identifier| replace("dev", "d") | replace("tst", "t") | replace("prd", "p") }}-%s", local.region_short)
   front_door_domain            = format("%s-fd.azurefd.net", local.name_prefix)
   front_door_domain_identifier = replace(local.front_door_domain, ".", "-")
 
   service_object_ids           = {
-      {% for key, value in site.azure.service_object_ids.items() %}
+      {% for key, value in azure.service_object_ids.items() %}
           {{ key }} = "{{ value }}"
       {% endfor %}
   }
@@ -23,33 +33,33 @@ locals {
 
 resource "azurerm_resource_group" "main" {
   name     = format("%s-rg", local.name_prefix)
-  location = "{{ site.azure.region|azure_region_long }}"
+  location = "{{ azure.region|azure_region_long }}"
   tags = local.tags
 }
 
 
 
-{% if site.azure.alert_group %}
-{% if site.azure.alert_group.logic_app %}
+{% if azure.alert_group %}
+{% if azure.alert_group.logic_app %}
 data "azurerm_logic_app_workflow" "alert_logic_app" {
-  name                = "{{ site.azure.alert_group.logic_app_name }}"
-  resource_group_name = "{{ site.azure.alert_group.logic_app_resource_group }}"
+  name                = "{{ azure.alert_group.logic_app_name }}"
+  resource_group_name = "{{ azure.alert_group.logic_app_resource_group }}"
 }
 {% endif %}
 
 resource "azurerm_monitor_action_group" "alert_action_group" {
-  name                = "{{ site.identifier }}-{{ site.azure.alert_group.name }}"
+  name                = "{{ site.identifier }}-{{ azure.alert_group.name }}"
   resource_group_name = azurerm_resource_group.main.name
-  short_name          = "{{ site.azure.alert_group.name|replace(" ", "")|replace("-", "")|lower }}"
+  short_name          = "{{ azure.alert_group.name|replace(" ", "")|replace("-", "")|lower }}"
 
-  {% for email in site.azure.alert_group.alert_emails %}
+  {% for email in azure.alert_group.alert_emails %}
   email_receiver {
     name          = "{{ email }}"
     email_address = "{{ email }}"
   }
   {% endfor %}
 
-  {% if site.azure.alert_group.logic_app %}
+  {% if azure.alert_group.logic_app %}
   logic_app_receiver {
       name                    = "Logic app receiver"
       resource_id             = data.azurerm_logic_app_workflow.alert_logic_app.id
@@ -58,10 +68,10 @@ resource "azurerm_monitor_action_group" "alert_action_group" {
   }
   {% endif %}
 
-  {% if site.azure.alert_group.webhook_url %}
+  {% if azure.alert_group.webhook_url %}
   webhook_receiver {
     name                    = "alert_webhook"
-    service_uri             = "{{ site.azure.alert_group.webhook_url }}"
+    service_uri             = "{{ azure.alert_group.webhook_url }}"
     use_common_alert_schema = true
   }
   {% endif %}
@@ -69,4 +79,3 @@ resource "azurerm_monitor_action_group" "alert_action_group" {
 {% endif %}
 
 {% include 'partials/azure_frontdoor.tf' %}
-{% endif %}
