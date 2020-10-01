@@ -29,13 +29,13 @@ resource "null_resource" "lambda_changes" {
 }
 
 {% if site.aws.api_gateway %}
-data "aws_api_gateway_rest_api" "main_gateway" {
+data "aws_apigatewayv2_api" "main_gateway" {
   name = "{{ site.aws.api_gateway }}"
 }
 
-resource "aws_api_gateway_deployment" "latest" {
-  rest_api_id       = data.aws_api_gateway_rest_api.main_gateway.id
-  stage_name        = "latest"
+{# WIP:
+resource "aws_apigatewayv2_deployment" "latest" {
+  api_id            = data.aws_apigatewayv2_api.main_gateway.id
   description       = "Stage for latest release ${null_resource.lambda_changes.triggers.dependency_ids}"
   stage_description = "Stage for latest release ${null_resource.lambda_changes.triggers.dependency_ids}"
 
@@ -45,18 +45,17 @@ resource "aws_api_gateway_deployment" "latest" {
   }
 }
 
-resource "aws_api_gateway_stage" "latest" {
-  stage_name           = "latest"
-  rest_api_id          = data.aws_api_gateway_rest_api.main_gateway.id
-  deployment_id        = aws_api_gateway_deployment.latest.id
-  xray_tracing_enabled = true
+resource "aws_apigatewayv2_stage" "latest" {
+  name                 = "latest"
+  api_id               = data.aws_apigatewayv2_api.main_gateway.id
+  deployment_id        = aws_apigatewayv2_deployment.latest.id
 
-  depends_on = [aws_api_gateway_deployment.latest]
+
+  depends_on = [aws_apigatewayv2_deployment.latest]
 }
 
-resource "aws_api_gateway_deployment" "primary" {
-  rest_api_id       = data.aws_api_gateway_rest_api.main_gateway.id
-  stage_name        = "primary"
+resource "aws_apigatewayv2_deployment" "primary" {
+  api_id            = data.aws_apigatewayv2_api.main_gateway.id
   description       = "Stage for latest release ${null_resource.lambda_changes.triggers.dependency_ids}"
   stage_description = "Stage for latest release ${null_resource.lambda_changes.triggers.dependency_ids}"
 
@@ -65,7 +64,21 @@ resource "aws_api_gateway_deployment" "primary" {
     create_before_destroy = true
   }
 
-  depends_on = [aws_api_gateway_deployment.latest]
+  depends_on = [aws_apigatewayv2_deployment.latest]
+}
+
+resource "aws_apigatewayv2_stage" "primary" {
+  name                  = "primary"
+  api_id                = data.aws_apigatewayv2_api.main_gateway.id
+  deployment_id         = aws_apigatewayv2_deployment.primary.id
+  
+  access_log_settings {
+    destination_arn = aws_cloudwatch_log_group.api_gw_primary.arn
+    # needs to be one line...
+    format          = "{\"requestId\":\"$context.requestId\", \"ip\": \"$context.identity.sourceIp\", \"caller\":\"$context.identity.caller\", \"user\":\"$context.identity.user\", \"requestTime\":\"$context.requestTime\", \"httpMethod\":\"$context.httpMethod\", \"resourcePath\":\"$context.resourcePath\", \"status\":\"$context.status\", \"protocol\":\"$context.protocol\", \"responseLength\":\"$context.responseLength\"}"
+  }
+
+  depends_on = [aws_apigatewayv2_deployment.primary]
 }
 
 resource "aws_cloudwatch_log_group" "api_gw_primary" {
@@ -73,30 +86,15 @@ resource "aws_cloudwatch_log_group" "api_gw_primary" {
   retention_in_days = 30
 }
 
-resource "aws_api_gateway_stage" "primary" {
-  stage_name            = "primary"
-  rest_api_id           = data.aws_api_gateway_rest_api.main_gateway.id
-  deployment_id         = aws_api_gateway_deployment.primary.id
-  cache_cluster_enabled = false
-  xray_tracing_enabled  = true
-  access_log_settings {
-    destination_arn = aws_cloudwatch_log_group.api_gw_primary.arn
-    # needs to be one line...
-    format          = "{\"requestId\":\"$context.requestId\", \"ip\": \"$context.identity.sourceIp\", \"caller\":\"$context.identity.caller\", \"user\":\"$context.identity.user\", \"requestTime\":\"$context.requestTime\", \"httpMethod\":\"$context.httpMethod\", \"resourcePath\":\"$context.resourcePath\", \"status\":\"$context.status\", \"protocol\":\"$context.protocol\", \"responseLength\":\"$context.responseLength\"}"
-  }
-
-  depends_on = [aws_api_gateway_deployment.primary]
-}
-
-resource "aws_api_gateway_base_path_mapping" "custom_domain_mapping" {
-  api_id      = data.aws_api_gateway_rest_api.main_gateway.id
+resource "aws_apigatewayv2_base_path_mapping" "custom_domain_mapping" {
+  api_id      = data.aws_apigatewayv2_api.main_gateway.id
   stage_name  = "primary"
   domain_name = "{{ site.base_url }}"
 }
 
-resource "aws_api_gateway_method_settings" "primary" {
-  rest_api_id = data.aws_api_gateway_rest_api.main_gateway.id
-  stage_name  = aws_api_gateway_stage.primary.stage_name
+resource "aws_apigatewayv2_method_settings" "primary" {
+  api_id      = data.aws_apigatewayv2_api.main_gateway.id
+  stage_name  = aws_apigatewayv2_stage.primary.stage_name
   method_path = "*/*"
 
   settings {
@@ -105,6 +103,7 @@ resource "aws_api_gateway_method_settings" "primary" {
     metrics_enabled    = true
   }
 
-  depends_on = [aws_api_gateway_deployment.primary]
+  depends_on = [aws_apigatewayv2_deployment.primary]
 }
+#}
 {% endif %}
