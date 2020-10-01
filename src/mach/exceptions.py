@@ -36,3 +36,7 @@ class ParseError(MachError):
                 for k, v in data.items()
             ]
         )
+
+
+class ValidationError(MachError):
+    pass

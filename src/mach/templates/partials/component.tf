@@ -1,56 +1,44 @@
 {% set definition = component.definition %}
 
 module "{{ component.name }}" {
-  source            = "{{ definition.source }}?ref={{ definition.version }}"
+  source            = "{{ definition.source }}{% if definition.use_version_reference %}?ref={{ definition.version }}{% endif %}"
   
   {% if component.is_software_component %}
-  # keep the same order as the module's variables!
+  
+  {% if site.azure %}
+  {% include 'partials/component_azure_variables.tf' %}
+  {% elif site.aws %}
+  {% include 'partials/component_aws_variables.tf' %}
+  {% endif %}
 
-  ### azure related
-  short_name              = "{{ component.short_name }}"
-  name_prefix             = local.name_prefix
-  subscription_id         = local.subscription_id
-  tenant_id               = local.tenant_id
-  service_object_ids      = local.service_object_ids
-  region                  = local.region
-  resource_group_name     = azurerm_resource_group.main.name
-  resource_group_location = azurerm_resource_group.main.location
-  app_service_plan_id     = azurerm_app_service_plan.functionapps.id
-  tags                    = local.tags
-
-  ### functionality related
   component_version       = "{{ definition.version }}"
   environment             = "{{ general_config.environment }}"
   site                    = "{{ site.identifier }}"
-  ct_project_key          = "{{ site.commercetools.project_key }}"
   
+  {% if site.commercetools %}
+  ct_project_key          = "{{ site.commercetools.project_key }}"
+  {% endif %}
+
   {% if general_config.sentry %}
   sentry_dsn              = "{{ general_config.sentry.dsn }}"
   {% endif %}
-  {% if site.azure.alert_group %}
-  monitor_action_group_id = azurerm_monitor_action_group.alert_action_group.id
-  {% endif %}
-  
-  # todo make simple jinja filter
+
   variables = {
+    {% for key, value in component.variables.items() %}
+    {{ key }} = {{ value|component_value }}
+    {% endfor %}
+
     CT_API_URL = "{{ site.commercetools.api_url }}"
-    # TODO: make token url / auth url consistent
+    {# TODO: make token url / auth url consistent #}
     CT_AUTH_URL = "{{ site.commercetools.token_url }}"
     CT_PROJECT_KEY = "{{ site.commercetools.project_key }}"
+    
     {% if site.azure.front_door and component.has_public_api %}
     FRONTDOOR_ID = azurerm_frontdoor.app-service.header_frontdoor_id
     {% endif %}
-  {% for key, value in component.variables.items() %}
-      {{ key }} = {{ value|component_value }}
-  {% endfor %}
   }
 
-  secrets = {
-  {% for key, value in component.secrets.items() %}
-      {{ key }} = {{ value|component_value }}
-  {% endfor %}
-  }
-
+  {# TODO: See if we can merge variables and environment_variables #}
   environment_variables = {
     {% filter indent(width=4) %}
     {% for key, value in component.variables.items() %}
@@ -67,9 +55,26 @@ module "{{ component.name }}" {
     {% endfilter %}
   }
   {% endif %}
+
+  secrets = {
+  {% for key, value in component.secrets.items() %}
+      {{ key }} = {{ value|component_value }}
+  {% endfor %}
+  }
+
+  providers = {
+    {% if site.commercetools %}commercetools = commercetools{% endif %}
+
+    {% if site.azure %}azurerm = azurerm{% endif %}
+    {% if site.aws %}aws = aws
+    {% for provider in site.aws.extra_providers %}
+    aws.{{ provider.name }} = aws.{{ provider.name }}
+    {% endfor %}
+    {% endif %}
+  }
 }
 
-{% if component.is_software_component %}
+{% if site.azure and component.is_software_component %}
 # see https://docs.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies#trigger-syncing
 # this updates the functionapp in case of any changes.
 data "external" "sync_triggers_{{ component.name }}" {

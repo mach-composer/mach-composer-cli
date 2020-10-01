@@ -10,21 +10,23 @@ terraform {
     container_name       = "{{ azure_config.container_name }}"
     key                  = "{{ azure_config.state_folder}}/{{ site.identifier }}"
   }
+  {% elif general_config.terraform_config.aws_remote_state %}
+  {% set aws_config = general_config.terraform_config.aws_remote_state %}
+  backend "s3" {
+    bucket         = "{{ aws_config.bucket}}"
+    key            = "{{ aws_config.key_prefix}}/{{ site.identifier }}"
+    region         = "{{ aws_config.region }}"
+    role_arn       = "{{ aws_config.role_arn }}"
+    {% if aws_config.lock_table %}
+    dynamodb_table = "{{ aws_config.lock_table }}"
+    {% endif %}
+  }
   {% endif %}
-}
-
-provider "azurerm" {
-  version = "=2.29.0"
-  {% if site.azure %}
-  subscription_id = "{{ site.azure.subscription_id }}"
-  tenant_id       = "{{ site.azure.tenant_id }}"
-  skip_provider_registration = true
-  {% endif %}
-  features {}
 }
 
 {% include 'partials/commercetools.tf' %}
 
-{% include 'partials/azure.tf' %}
+{% if site.aws %}{% include 'partials/aws.tf' %}{% endif %}
+{% if site.azure %}{% include 'partials/azure.tf' %}{% endif %}
 
 {% include 'partials/components.tf' %}
