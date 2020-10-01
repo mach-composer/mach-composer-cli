@@ -6,11 +6,12 @@ dist/
 
 
 # Test output
-/.coverage
+/.coverage*
 /reports/
 /.pytest_cache/
 /.mypy_cache/
 /.docker_tag
+/.tox
 
 
 # Editor files

@@ -62,7 +62,6 @@ lint: flake8 isort mypy
 
 
 isort:
-	pip install -U isort==4.3.21
 	isort --check-only src tests
 
 flake8:
