@@ -61,7 +61,7 @@ def resolve_general_config(config: MachConfig) -> MachConfig:
 
     for site in config.sites:
         if site.azure:
-            site.merge(config.general_config.azure)
+            site.azure.merge(config.general_config.azure)
         else:
             site.azure = SiteAzureSettings.from_config(config.general_config.azure)
 
