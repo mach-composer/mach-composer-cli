@@ -5,8 +5,8 @@ on:
     types: [published]
 
 jobs:
-  push_to_registry:
-    name: Push Docker image to GitHub Packages
+  build_and_deploy:
+    name: Build and deploy Docker image to GitHub Packages
     runs-on: ubuntu-latest
     steps:
       - name: Set up Docker Buildx
