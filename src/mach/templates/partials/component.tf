@@ -54,13 +54,13 @@ module "{{ component.name }}" {
     {% endif %}
     {% endfilter %}
   }
-  {% endif %}
 
   secrets = {
   {% for key, value in component.secrets.items() %}
       {{ key }} = {{ value|component_value }}
   {% endfor %}
   }
+  {% endif %}
 
   providers = {
     {% if site.commercetools %}commercetools = commercetools{% endif %}
