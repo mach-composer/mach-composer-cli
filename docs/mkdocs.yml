@@ -12,7 +12,10 @@ nav:
   - AWS: prerequisites/aws.md
 - gettingstarted.md
 - syntax.md
-- components.md
+- Components:
+  - components/index.md
+  - components/azure.md
+  - components/aws.md
 - Deployment:
   - deployment/index.md
   - Azure: deployment/azure.md
