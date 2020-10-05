@@ -86,19 +86,15 @@ class AzureConfig:
 
 @dataclass_json
 @dataclass
-class AWSProvider:
-    name: str
-    region: str
+class AWSConfig:
+    code_repository: str
 
 
 @dataclass_json
 @dataclass
-class SiteAWSSettings:
-    account_id: int
+class AWSProvider:
+    name: str
     region: str
-    deploy_role: str
-    api_gateway: Optional[str] = ""
-    extra_providers: Optional[List[AWSProvider]] = field(default_factory=list)
 
 
 class Environment(Enum):
@@ -125,6 +121,7 @@ class GeneralConfig:
     cloud: CloudOption
     sentry: Optional[SentryConfig] = None
     azure: Optional[AzureConfig] = None
+    aws: Optional[AWSConfig] = None
 
 
 @dataclass_json
@@ -235,6 +232,20 @@ class Component:
 
 @dataclass_json
 @dataclass
+class SiteAWSSettings:
+    account_id: int
+    region: str
+    deploy_role: str
+    api_gateway: Optional[str] = ""
+    extra_providers: Optional[List[AWSProvider]] = field(default_factory=list)
+    code_repository: Optional[str] = ""  # Can overwrite values from AWSConfig
+
+    def merge(self, config: AWSConfig):
+        self.code_repository = config.code_repository
+
+
+@dataclass_json
+@dataclass
 class SiteAzureSettings:
     service_object_ids: Dict[str, str] = field(default_factory=dict)
     front_door: Optional[FrontDoorSettings] = None
@@ -272,15 +283,6 @@ class Site:
     @property
     def public_api_components(self) -> List[Component]:
         return [c for c in self.components if c.has_public_api]
-
-    @property
-    def api_gateway_changed_components(self) -> List[Component]:
-        """Return components that need a gateway change.
-
-        At the moment returns an empty list; so non-functional.
-        See if we can implement a better solution for this.
-        """
-        return []
 
     def __post_init__(self):
         """Ensure short_name is set."""

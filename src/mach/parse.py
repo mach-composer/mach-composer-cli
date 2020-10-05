@@ -5,7 +5,7 @@ from typing import Dict, List
 import click
 import yaml
 from mach import exceptions
-from mach.types import ComponentConfig, MachConfig, SiteAzureSettings
+from mach.types import CloudOption, ComponentConfig, MachConfig, SiteAzureSettings
 from mach.validate import validate_config
 from marshmallow.exceptions import ValidationError
 
@@ -56,14 +56,16 @@ def parse_config_from_file(file: str) -> MachConfig:
 
 def resolve_general_config(config: MachConfig) -> MachConfig:
     """If no general config is specified, use global config settings."""
-    if not config.general_config.azure:
-        return config
-
-    for site in config.sites:
-        if site.azure:
-            site.azure.merge(config.general_config.azure)
-        else:
-            site.azure = SiteAzureSettings.from_config(config.general_config.azure)
+    if config.general_config.cloud == CloudOption.AZURE:
+        for site in config.sites:
+            if site.azure:
+                site.azure.merge(config.general_config.azure)
+            else:
+                site.azure = SiteAzureSettings.from_config(config.general_config.azure)
+    elif config.general_config.cloud == CloudOption.AWS and config.general_config.aws:
+        for site in config.sites:
+            if site.aws:
+                site.aws.merge(config.general_config.aws)
 
     return config
 
