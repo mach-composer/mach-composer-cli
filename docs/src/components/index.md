@@ -1,4 +1,4 @@
-# Components
+# Component structure
 
 A MACH component is in it's bare minimum a [*Terraform module*](https://www.terraform.io/docs/configuration/modules.html).
 
@@ -7,7 +7,7 @@ Other then the [Terraform configuration](#terraform-component), a component migh
 - [serverless function](#serverless-function)
 - [Azure dashboard configuration](#azure-dashboard-configuration)
 
-#### Deployment process
+## Deployment process
 
 The deployment of a full-fledged component typically flows through the following steps:
 
@@ -34,39 +34,11 @@ What kind of language/runtime is used for that is irrelevant to MACH. Two things
 - Build/deploy script to build, package and upload the serverless function to a repository
 - A Terraform configuration for the serverless function
 
-### Azure Functions
+## Cloud provider specifics
 
-For Azure functions, this means uploading a packaged ZIP file to a storage account from where fuction apps can download the function app code.
+A component is always tailored for a specific cloud provider.
 
-!!! tip ""
-    An example build and deploy script is provided in the [component cookiecutter](https://git.labdigital.nl/mach/component-cookiecutter)
+Continue for details about the specifics:
 
-#### HTTP routing
-
-MACH will provide the correct HTTP routing for you.  
-To do so, the following has to be configured:
-
-- [Frontdoor](./syntax.md#frontdoor) settings in the Azure configuration
-- The component has to be marked as [`has_public_api`](./syntax.md#components)
-
-More information in the [deployment section](./deployment/azure.md#http-routing).
-
-### AWS Lambda
-
-AWS Lambda functions need to be uploaded to a S3 bucket. From there AWS Lambda will run the functions for you once instructed by the Terraform deployment.
-
-#### HTTP routing
-
-MACH will provide the correct HTTP routing for you.  
-To do so, the following has to be configured:
-
-- [Frontdoor](./syntax.md#frontdoor) settings in the Azure configuration
-- The component has to be marked as [`has_public_api`](./syntax.md#components)
-
-More information in the [deployment section](./deployment/azure.md#http-routing).
-
-
-## Azure dashboard configuration
-
-!!! Todo
-    Future implementation
+- [Azure components](./azure.md)
+- [AWS components](./aws.md)
