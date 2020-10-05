@@ -13,8 +13,8 @@ resource "azurerm_app_service_plan" "functionapps" {
 
   tags = local.tags
 }
+{% endif %}
 
 {% for component in site.components %}
 {% include 'partials/component.tf' %}
 {% endfor %}
-{% endif %}
