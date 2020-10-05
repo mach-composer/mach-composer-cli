@@ -11,12 +11,13 @@ The configuration file has the following structure:
     - **[terraform_config](#terraform_config)**
     - **[cloud](#general_config)**
     - [azure](#azure)
+    - [azure](#aws)
     - [sentry](#sentry)
 - **[sites](#sites)**
     - **[identifier](#sites)**
     - [commercetools](#commercetools)
     - [azure](#azure_1)
-    - [aws](#aws)
+    - [aws](#aws_1)
     - [stores](#stores)
     - [components](#component-configurations)
 - [components](#components)
@@ -107,6 +108,7 @@ azure:
 - `front_door` - [Front-door](#frontdoor) settings
 - `service_object_ids` - Map of service objects IDs that should have access to the components KeyVault.
 
+
 #### front_door
 
 Example:
@@ -125,6 +127,18 @@ front_door:
 - **`ssl_key_vault_secret_name`** - (Required)
 - **`ssl_key_vault_secret_version`** - (Required)
 
+### aws
+
+General AWS settings. Values can be overwritten [per site](#aws_1).
+
+Example:
+```
+aws:
+  code_repository: mach-lambda-repository
+```
+
+- **`code_repository`** - (Required) The S3 bucket name of the code repository. Used as input variable for components that need to deploy a lambda function
+
 
 ## sites
 All site definitions.
@@ -133,9 +147,10 @@ All site definitions.
 - **`identifier`** - (Required)  
   Unique identifier for this site.  
   Will be used for the Terraform state and naming all cloud resources.
+- `base_url` - Used for setting up the API Gateway, routing and SSL certificates
 - `commercetools` - [commercetools configuration](#commercetools) block
 - `azure` - [Azure](#azure_1) settings
-- `aws` - [AWS](#aws) settings
+- `aws` - [AWS](#aws_1) settings
 - `components` - [Component configurations](#component-configurations)
 
 ### commercetools
