@@ -72,6 +72,12 @@ module "{{ component.name }}" {
     {% endfor %}
     {% endif %}
   }
+
+  {% if component.has_public_api %}
+  depends_on = [
+    aws_apigatewayv2_api.main_gateway,
+  ]
+  {% endif %}
 }
 
 {% if site.azure and component.is_software_component %}
