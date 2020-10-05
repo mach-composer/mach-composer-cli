@@ -1,0 +1,26 @@
+name: Build documentation
+
+on:
+  push:
+    paths:
+    - 'docs/*'
+
+defaults:
+  run:
+    working-directory: docs
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install dependencies
+          run: python -m pip install -r docs/requirements.txt
+      - name: Build
+        run: sh build.sh
+      - name: Upload
+          env: 
+            FOLGE_URL: https://app.folge.io
+          run: |
+            pip install folge-cli
+            folge-cli upload-docs --organization=lab-digital --docs-key=${{ secrets.FOLGE_DOCS_KEY }} build

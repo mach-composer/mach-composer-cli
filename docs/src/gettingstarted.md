@@ -1,0 +1,62 @@
+# Getting started
+
+## Setup configuration file
+
+To setup a MACH configuration, create a YAML file with the following structure
+
+``` yaml
+---
+general_config:
+    environment: test
+    terraform_config:
+        azure_remote_state:
+            resource_group_name: my-shared-rg
+            storage_account_name: mysharedsaterra
+            container_name: tfstate
+            state_folder: test
+    azure:
+        tenant_id: e180345a-b3e1-421f-b448-672ab50d8502
+        subscription_id: 086bd7e7-0755-44ab-a730-7a0b8ad4883f
+        region: westeurope
+sites:
+    - identifier: my-site
+      commercetools:
+          project_key: my-site-tst
+          client_id: ...
+          client_secret: ...
+          scopes: manage_project:my-site-tst manage_api_clients:my-site-tst view_api_clients:my-site-tst
+          languages:
+              - en-GB
+              - nl-NL
+          currencies:
+              - GBP
+              - EUR
+          countries:
+              - GB
+              - NL
+      components:
+          - name: api-extensions
+            variables:
+                CT_CLIENT_SCOPES: manage_products:my-site-tst manage_orders:my-site-tst
+                ORDER_PREFIX: mysitetst
+components:
+    - name: api-extensions
+      short_name: apiexts
+      source: git::ssh://git@github.com/your-project/components/api-extensions-component.git//terraform
+      version: e638e57
+```
+
+See [Syntax](./syntax.md) for all configuration options.
+
+## Deploy using MACH configuration
+
+You can deploy your current configuration by running
+
+    $ docker run --rm --volume $(pwd):/code mach generate
+
+If you wish to review the changes before applying them, run
+
+    $ docker run --rm --volume $(pwd):/code mach plan
+
+## Additional options
+See the [Deployment section](./#deployment/index.md) for more deployment options.
