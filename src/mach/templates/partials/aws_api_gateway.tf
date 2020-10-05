@@ -7,6 +7,11 @@ resource "aws_apigatewayv2_api" "main_gateway" {
   protocol_type              = "HTTP"
 }
 
+resource "aws_apigatewayv2_route" "application" {
+  api_id    = aws_apigatewayv2_api.main_gateway.id
+  route_key = "$default"
+}
+
 resource "aws_apigatewayv2_deployment" "latest" {
   api_id      = aws_apigatewayv2_api.main_gateway.id
   description = "Stage for latest release"
@@ -21,6 +26,10 @@ resource "aws_apigatewayv2_deployment" "latest" {
   lifecycle {
     create_before_destroy = true
   }
+
+  depends_on = [
+    aws_apigatewayv2_route.application,
+  ]
 }
 
 resource "aws_apigatewayv2_stage" "latest" {
@@ -58,7 +67,7 @@ resource "aws_apigatewayv2_stage" "primary" {
   access_log_settings {
     destination_arn = aws_cloudwatch_log_group.api_gw_primary.arn
     # needs to be one line...
-    format          = "{\"requestId\":\"$context.requestId\", \"ip\": \"$context.identity.sourceIp\", \"caller\":\"$context.identity.caller\", \"user\":\"$context.identity.user\", \"requestTime\":\"$context.requestTime\", \"httpMethod\":\"$context.httpMethod\", \"resourcePath\":\"$context.resourcePath\", \"status\":\"$context.status\", \"protocol\":\"$context.protocol\", \"responseLength\":\"$context.responseLength\"}"
+    format          = "{\"requestId\":\"$context.requestId\", \"ip\": \"$context.identity.sourceIp\", \"caller\":\"$context.identity.caller\", \"user\":\"$context.identity.user\", \"requestTime\":\"$context.requestTime\", \"httpMethod\":\"$context.httpMethod\", \"path\":\"$context.path\", \"status\":\"$context.status\", \"protocol\":\"$context.protocol\", \"responseLength\":\"$context.responseLength\"}"
   }
 
   depends_on = [aws_apigatewayv2_deployment.primary]
@@ -72,27 +81,6 @@ resource "aws_cloudwatch_log_group" "api_gw_primary" {
 resource "aws_apigatewayv2_api_mapping" "custom_domain_mapping" {
   api_id      = aws_apigatewayv2_api.main_gateway.id
   stage       = aws_apigatewayv2_stage.primary.id
-  domain_name = "{{ site.base_url }}" # aws_apigatewayv2_domain_name.main.id
+  domain_name = "{{ site.base_url }}"
 }
-
-resource "aws_apigatewayv2_route" "application" {
-  api_id    = aws_apigatewayv2_api.main_gateway.id
-  route_key = "$default"
-}
-
-{#
-resource "aws_apigatewayv2_method_settings" "primary" {
-  api_id      = aws_apigatewayv2_api.main_gateway.id
-  stage_name  = aws_apigatewayv2_stage.primary.stage_name
-  method_path = "*/*"
-
-  settings {
-    logging_level      = "ERROR"
-    data_trace_enabled = true
-    metrics_enabled    = true
-  }
-
-  depends_on = [aws_apigatewayv2_deployment.primary]
-}
-#} 
 {% endif %}
