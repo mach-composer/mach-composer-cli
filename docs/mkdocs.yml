@@ -1,0 +1,65 @@
+site_name: MACH composer
+
+copyright: 'Copyright &copy; 2020 - Lab Digital B.V.'
+docs_dir: src
+
+nav:
+- Overview: index.md
+- concepts.md
+- Prequisites:
+  - prerequisites/index.md
+  - Azure: prerequisites/azure.md
+  - AWS: prerequisites/aws.md
+- gettingstarted.md
+- syntax.md
+- components.md
+- Deployment:
+  - deployment/index.md
+  - Azure: deployment/azure.md
+  - AWS: deployment/aws.md
+- roadmap.md
+- development.md
+
+extra_javascript:
+  - _js/mermaid.min.js
+  - _js/mermaid-init.js
+
+extra_css:
+  - _css/tasklist.css
+  - _css/mermaid.css
+  - _css/font-awesome.min.css
+
+use_directory_urls: false
+
+theme:
+  name: 'material'
+  language: 'en'
+  logo: '_img/logo.svg'
+  palette:
+    primary: 'indigo'
+    accent: 'indigo'
+  font:
+    text: 'Roboto'
+    code: 'Roboto Mono'
+
+extra:
+  social:
+    - type: 'link'
+      link: 'https://labdigital.nl/'
+
+markdown_extensions:
+  - attr_list
+  - admonition
+  - codehilite:
+      guess_lang: false
+  - footnotes
+  - pymdownx.tasklist:
+      clickable_checkbox: true
+      custom_checkbox: true
+  - toc:
+      permalink: true
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_div_format
