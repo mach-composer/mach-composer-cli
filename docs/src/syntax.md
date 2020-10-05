@@ -282,7 +282,7 @@ aws:
 
 - **`account_id`** - (Required) AWS account ID for this site
 - **`region`** - AWS region to deploy site in
-- **`deploy_role`** - (Required) The [IAM role](./prerequisites.md#deploy-iam-role) needed for deployment
+- **`deploy_role`** - (Required) The [IAM role](./prerequisites/aws#iam-deploy-role) needed for deployment
 - `api_gateway` - Name of the main API gateway
 - `extra_providers`
 
