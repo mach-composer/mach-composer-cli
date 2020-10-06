@@ -4,7 +4,8 @@ on:
   release:
     types: [published]
   push:
-    - tags
+    tags:
+      - 0.*
 
 jobs:
   build_and_deploy:
