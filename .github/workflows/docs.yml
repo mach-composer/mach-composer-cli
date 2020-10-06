@@ -24,6 +24,7 @@ jobs:
       - name: Upload
         env: 
           FOLGE_URL: https://app.folge.io
+          FOLGE_TOKEN: ${{ secrets.FOLGE_TOKEN }}
         run: |
           pip install folge-cli
           folge-cli upload-docs --organization=lab-digital --docs-key=${{ secrets.FOLGE_DOCS_KEY }} build
