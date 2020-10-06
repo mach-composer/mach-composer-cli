@@ -53,11 +53,11 @@ See [Syntax](./syntax.md) for all configuration options.
 
 You can deploy your current configuration by running
 
-    $ docker run --rm --volume $(pwd):/code mach generate
+    $ docker run --rm --volume $(pwd):/code docker.pkg.github.com/labd/mach-composer/mach generate
 
 If you wish to review the changes before applying them, run
 
-    $ docker run --rm --volume $(pwd):/code mach plan
+    $ docker run --rm --volume $(pwd):/code docker.pkg.github.com/labd/mach-composer/mach plan
 
 ## Additional options
 See the [Deployment section](./#deployment/index.md) for more deployment options.
