@@ -52,6 +52,7 @@ jobs:
           registry: docker.pkg.github.com
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
+          logout: false
       - name: Push to GitHub Packages
         uses: docker/build-push-action@v2
         with:
