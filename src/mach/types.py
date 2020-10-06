@@ -261,6 +261,7 @@ class SiteAzureSettings:
             tenant_id=config.tenant_id,
             subscription_id=config.subscription_id,
             region=config.region,
+            service_object_ids=config.service_object_ids,
         )
 
     def merge(self, config: AzureConfig):
@@ -268,6 +269,7 @@ class SiteAzureSettings:
         self.tenant_id = self.tenant_id or config.tenant_id
         self.subscription_id = self.subscription_id or config.subscription_id
         self.region = self.region or config.region
+        self.service_object_ids = self.service_object_ids or config.service_object_ids
 
 
 @dataclass_json
