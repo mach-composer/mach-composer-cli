@@ -12,7 +12,7 @@ jobs:
       - name: Prepare
         id: prep
         run: |
-          DOCKER_IMAGE=mach
+          DOCKER_IMAGE=labd/mach-composer/mach
           VERSION=noop
           if [[ $GITHUB_REF == refs/tags/* ]]; then
           VERSION=${GITHUB_REF#refs/tags/}
