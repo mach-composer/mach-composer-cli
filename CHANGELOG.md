@@ -1,4 +1,4 @@
-0.2.1 (unreleased)
+0.2.1 (06-10-2020)
 ==================
 - Fixed rendering of STORE environment variables in components
   
