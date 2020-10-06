@@ -73,7 +73,7 @@ module "{{ component.name }}" {
     {% endif %}
   }
 
-  {% if component.has_public_api %}
+  {% if site.aws and component.has_public_api %}
   depends_on = [
     aws_apigatewayv2_api.main_gateway,
   ]
