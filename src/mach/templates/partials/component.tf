@@ -45,11 +45,11 @@ module "{{ component.name }}" {
       {{ key }} = {{ value|component_value }}
     {% endfor %}
 
-    {% if site.stores %}
-        STORES = "{% for store in site.stores %}{{ store.key }}{% if not loop.last %},{% endif %}{% endfor %}"
-        {% if site.stores|length == 1 %}
-            DEFAULT_STORE = "{{ site.stores[0].key }}"
-            STORE         = "{{ site.stores[0].key }}"
+    {% if site.commercetools and site.commercetools.stores %}
+        STORES = "{% for store in site.commercetools.stores %}{{ store.key }}{% if not loop.last %},{% endif %}{% endfor %}"
+        {% if site.commercetools.stores|length == 1 %}
+            DEFAULT_STORE = "{{ site.commercetools.stores[0].key }}"
+            STORE         = "{{ site.commercetools.stores[0].key }}"
         {% endif %}
     {% endif %}
     {% endfilter %}

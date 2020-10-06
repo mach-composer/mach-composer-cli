@@ -1,3 +1,8 @@
+0.2.1 (unreleased)
+==================
+- Fixed rendering of STORE environment variables in components
+  
+
 0.2.0 (06-10-2020)
 =================
 - Add AWS support
