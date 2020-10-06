@@ -8,6 +8,7 @@ To setup a MACH configuration, create a YAML file with the following structure
 ---
 general_config:
     environment: test
+    cloud: azure
     terraform_config:
         azure_remote_state:
             resource_group_name: my-shared-rg
