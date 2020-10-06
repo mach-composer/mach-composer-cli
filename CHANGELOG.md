@@ -2,7 +2,8 @@
 ==================
 - Fixed rendering of STORE environment variables in components
 - Updated Terraform version to 0.13.4
-  
+- Fix `--auto-approve` option on `mach apply` command
+
 
 0.2.0 (06-10-2020)
 =================

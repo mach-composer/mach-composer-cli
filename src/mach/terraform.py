@@ -49,7 +49,7 @@ def apply_terraform(
             cmd = ["apply"]
             if auto_approve:
                 cmd += ["-auto-approve"]
-            run_terraform(["apply"], site_dir)
+            run_terraform(cmd, site_dir)
 
 
 def azure_sp_login():
