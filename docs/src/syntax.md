@@ -104,9 +104,9 @@ azure:
 - **`tenant_id`** - (Required)
 - **`subscription_id`** - (Required)
 - **`region`** - (Required)
-- `resources_prefix` - 
+- `resources_prefix` - Prefix to be used for all Azure resources, for example `my-`
 - `front_door` - [Front-door](#frontdoor) settings
-- `service_object_ids` - Map of service objects IDs that should have access to the components KeyVault.
+- `service_object_ids` - Map of service objects IDs that should have access to the components KeyVault
 
 
 #### front_door
