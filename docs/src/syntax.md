@@ -106,7 +106,11 @@ azure:
 - **`region`** - (Required)
 - `resources_prefix` - Prefix to be used for all Azure resources, for example `my-`
 - `front_door` - [Front-door](#frontdoor) settings
-- `service_object_ids` - Map of service objects IDs that should have access to the components KeyVault
+- `service_object_ids` - Map of objects IDs that should have access to things like KeyVaults created for components
+
+
+!!! tip "Don't lock yourself out"
+    Make sure that, as a minimum, you set the `service_object_ids` to the objects IDs of the users or groups that perform the `mach apply`
 
 
 #### front_door
