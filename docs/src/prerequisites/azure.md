@@ -19,7 +19,30 @@ Create a storage account which will be used as Terraform state backend.
 Create a container in the storage account. Name it for example `tfstate`.
 
 ## Create function app storage
+All packaged function app code should be stored on the shared environment from where all other envirnoment can access those assets.
 
 ### Storage account
 
+Create a new `BlockBlobStorage` with a Premium account tier for improved performace.
+
+!!! tip
+    Again, like the Terraform state, place this in a 'shared' resource group
+    For example:  
+    **Resource group**: `my-shared-we-rg`  
+    **Storage account** `mysharedwesacomponents`  
+    Where 'my' is replaced by a prefix of your choosing.
+
 ### Create container
+
+Create a blob container called `code`. Make this private.
+
+## Register providers
+
+Make sure the following providers are registered on the subscription:
+
+- `Microsoft.Web`
+- `Microsoft.KeyVault`
+- `Microsoft.Storage`
+
+More info:  
+[https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/error-register-resource-provider](https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/error-register-resource-provider)
