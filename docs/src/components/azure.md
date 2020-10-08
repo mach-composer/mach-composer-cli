@@ -1,8 +1,26 @@
 # Azure components
 
-# Azure Functions
+## Packaging and deploying
 
-For Azure functions, this means uploading a packaged ZIP file to a storage account from where fuction apps can download the function app code.
+For Azure functions, the deployment process constist of two steps:
+
+- Packaging the function
+- Deploying it to the [function app storage](../prerequisites/azure.md#create-function-app-storage)
+
+### Package
+```bash
+VERSION=$(shell git rev-parse --short HEAD 2>/dev/null || echo "dev" )
+NAME=yourcomponent-$VERSION
+ARTIFACT_NAME=$NAME.zip
+
+func pack --build-native-deps --python
+mv $BASENAME.zip $ARTIFACT_NAME
+```
+
+### Upload
+```bash
+az storage blob upload --account-name mysharedwesacomponents --account-key $STORAGE_ACCOUNT_KEY -c code -f yourcomponent-0.1.0.zip -n yourcomponent-0.1.0.zip
+```
 
 !!! tip ""
     An example build and deploy script is provided in the [component cookiecutter](https://git.labdigital.nl/mach/component-cookiecutter)

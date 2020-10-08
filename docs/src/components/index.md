@@ -4,7 +4,7 @@ A MACH component is in it's bare minimum a [*Terraform module*](https://www.terr
 
 Other then the [Terraform configuration](#terraform-component), a component might include a:
 
-- [serverless function](#serverless-function)
+- [Serverless function](#serverless-function)
 - [Azure dashboard configuration](#azure-dashboard-configuration)
 
 ## Deployment process
@@ -17,6 +17,13 @@ The deployment of a full-fledged component typically flows through the following
    For example: create the function app instance, necessary routing, etc.
 3. MACH composer will use the packages function (from step 1) to deploy the function itself
 
+!!! info "Simple components"
+      Not all components need to be a serverless function. A component might be just a set of Terraform instructions to, for example, create a custom product type in commercetools.  
+      In that case, step 1 and 3 will be skipped.
+
+Zooming in on the [main diagram](../index.md#how-does-it-work), you'll see the steps illustrated.
+
+![Component diagram](../_img/component-diagram.png){: style="max-width:600px"}
 
 ## Terraform module
 
@@ -31,8 +38,8 @@ The component might contain code for a serverless function to run on the cloud p
 
 What kind of language/runtime is used for that is irrelevant to MACH. Two things the component needs to contain:
 
-- Build/deploy script to build, package and upload the serverless function to a repository
-- A Terraform configuration for the serverless function
+- **Build/deploy script** to build, package and upload the serverless function to a repository
+- A **Terraform configuration** for the serverless function
 
 ## Cloud provider specifics
 
