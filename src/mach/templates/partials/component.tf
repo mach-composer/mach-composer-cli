@@ -63,8 +63,6 @@ module "{{ component.name }}" {
   {% endif %}
 
   providers = {
-    {% if site.commercetools %}commercetools = commercetools{% endif %}
-
     {% if site.azure %}azurerm = azurerm{% endif %}
     {% if site.aws %}aws = aws
     {% for provider in site.aws.extra_providers %}
