@@ -84,6 +84,24 @@ def validate_store_keys(ct_settings: types.CommercetoolsSettings):
 
 def validate_components(config: types.MachConfig):
     """Validate global component data is valid."""
+    if config.general_config.cloud == types.CloudOption.AWS:
+        validate_aws_components(config)
+    elif config.general_config.cloud == types.CloudOption.AZURE:
+        validate_azure_components(config)
+
+
+def validate_aws_components(config: types.MachConfig):
+    """Validate components specifically for AWS usage."""
+    pass
+
+
+def validate_azure_components(config: types.MachConfig):
+    """Validate components specifically for Azure usage.
+
+    Only requirements for now is that a correct short_name should be set.
+    Otherwise problems will arise when creating the Azure resources since
+    for example Storage Accounts names have a limited length.
+    """
     for comp in config.components:
         # ignore product type modules
         # TODO: Make this somehow more generic / configurable
