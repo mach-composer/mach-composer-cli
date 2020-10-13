@@ -23,7 +23,7 @@ resource "azurerm_dns_cname_record" "{{ site.commercetools.project_key }}" {
 }
 {% endif %}
 
-{% if site.azure.front_door and site.public_api_components %}
+{% if site.public_api_components %}
 resource "azurerm_frontdoor" "app-service" {
   name                                          = format("%s-fd", local.name_prefix)
   resource_group_name                           = azurerm_resource_group.main.name
@@ -40,6 +40,7 @@ resource "azurerm_frontdoor" "app-service" {
     custom_https_provisioning_enabled = false
   }
 
+  {% if site.azure.front_door %}
   frontend_endpoint {
     name                              = local.front_door_external_domain_identifier
     host_name                         = local.front_door_external_domain
@@ -53,8 +54,10 @@ resource "azurerm_frontdoor" "app-service" {
       azure_key_vault_certificate_secret_version = "{{ site.azure.front_door.ssl_key_vault_secret_version }}"
     }
   }
-
+  
   depends_on = [azurerm_dns_cname_record.{{ site.commercetools.project_key }}]
+  {% endif %}
+
 
   {% for component in site.public_api_components %}
   backend_pool_health_probe {
@@ -69,7 +72,7 @@ resource "azurerm_frontdoor" "app-service" {
     name               = "http-https-redirect"
     accepted_protocols = ["Http"]
     patterns_to_match  = ["/*"]
-    frontend_endpoints = [local.front_door_domain_identifier, local.front_door_external_domain_identifier]
+    frontend_endpoints = [local.front_door_domain_identifier{% if site.azure.front_door %}, local.front_door_external_domain_identifier{% endif %}]
     redirect_configuration {
       redirect_type     = "PermanentRedirect"
       redirect_protocol = "HttpsOnly"
