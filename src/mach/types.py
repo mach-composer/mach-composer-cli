@@ -1,6 +1,7 @@
 import re
 from dataclasses import dataclass, field
 from enum import Enum
+from hashlib import sha1
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
@@ -285,6 +286,18 @@ class Site:
     @property
     def public_api_components(self) -> List[Component]:
         return [c for c in self.components if c.has_public_api]
+
+    @property
+    def public_api_components_hash(self) -> str:
+        """Generate a unique hash for the current public api components.
+
+        This is used to determine if a redeployment should be performed on the API gateway or not
+        """
+        return sha1(
+            ",".join(
+                [c.definition.version for c in self.public_api_components]
+            ).encode()
+        ).hexdigest()
 
     def __post_init__(self):
         """Ensure short_name is set."""
