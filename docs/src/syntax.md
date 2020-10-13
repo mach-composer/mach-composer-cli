@@ -26,7 +26,7 @@ The configuration file has the following structure:
 All 'shared' configuration that applies to all sites.
 
 - **`environment`** - (Required) [environment](#environment) Identifier for the environment. Must be one of `development`, `test` or `production`.  
-Is used to set the `environment` variable of any [Terraform component](./components.md#terraform-component)
+Is used to set the `environment` variable of any [Terraform component](./components/index.md#terraform-component)
 - **`terraform_config`** - (Required) [terraform_config](#terraform_config) block
 - `cloud` - Either `azure` or `aws`
 - `azure` - [Azure](#azure) block
@@ -83,7 +83,7 @@ sentry:
 When defined, a `sentry_dsn` variable is passed on to all Terraform components.
 
 !!! tip ""
-    For more information about data exposed to Terraform modules, see the [Terraform component](./components.md#terraform-component) docs
+    For more information about data exposed to Terraform modules, see the [Terraform component](./components/index.md#terraform-component) docs
 
 ### azure
 
