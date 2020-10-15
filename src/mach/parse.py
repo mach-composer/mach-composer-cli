@@ -66,14 +66,20 @@ def resolve_general_config(config: MachConfig) -> MachConfig:
             if site.azure.resource_group_name:
                 click.echo(
                     click.style(
-                        f"WARNING: resource_group_name on {site.identifier} is used ({site.azure.resource_group_name}). ",
+                        (
+                            f"WARNING: resource_group_name on {site.identifier} "
+                            f"is used ({site.azure.resource_group_name}). "
+                        ),
                         fg="red",
                         bold=True,
                     )
                 )
                 click.echo(
                     click.style(
-                        "   Make sure it wasn't managed by MACH before otherwise the resource group will get deleted.",
+                        (
+                            "   Make sure it wasn't managed by MACH before otherwise "
+                            "the resource group will get deleted.",
+                        ),
                         fg="red",
                     )
                 )
