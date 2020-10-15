@@ -26,7 +26,7 @@ resource "azurerm_dns_cname_record" "{{ site.commercetools.project_key }}" {
 {% if site.public_api_components %}
 resource "azurerm_frontdoor" "app-service" {
   name                                          = format("%s-fd", local.name_prefix)
-  resource_group_name                           = azurerm_resource_group.main.name
+  resource_group_name                           = local.resource_group_name
   enforce_backend_pools_certificate_name_check  = false
   tags = local.tags
 
