@@ -1,3 +1,8 @@
+0.3.0 (unreleased)
+==================
+- Add option to specify custom resource group per site
+
+
 0.2.2 (2020-10-15)
 ==================
 - Fixed Azure config merge: not all generic settings where merged with site-specific ones

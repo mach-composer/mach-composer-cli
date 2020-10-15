@@ -264,6 +264,12 @@ Can overwrite any value from the generic [Azure settings](#azure):
 And adds the following exta attributes:
 
 - `alert_group` - List of [Alert groups](#alert_group)
+- `resource_group_name` - Name of an already existing resource group.
+
+!!! warning
+    Use `resource_group_name` with care.  
+    By default, MACH will manage the site resource groups for you. If you add this option later, the managed resource group will get **deleted**.  
+    So only use for new site definitions
 
 #### alert_group
 Example:

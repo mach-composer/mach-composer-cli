@@ -251,6 +251,7 @@ class SiteAzureSettings:
     service_object_ids: Dict[str, str] = field(default_factory=dict)
     front_door: Optional[FrontDoorSettings] = None
     alert_group: Optional[AlertGroup] = None
+    resource_group_name: Optional[str] = ""
     tenant_id: Optional[str] = ""  # Can overwrite values from AzureConfig
     subscription_id: Optional[str] = ""  # Can overwrite values from AzureConfig
     region: Optional[str] = ""  # Can overwrite values from AzureConfig
