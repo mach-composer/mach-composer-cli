@@ -1,4 +1,4 @@
-# MACH composer
+# ![MACH composer](./_img/logo.png)
 
 This documentation describes the workings of the MACH composer. Intended to setup and manage a **M**icroservices based, **A**PI-first, **C**loud-native SaaS and **H**eadless platform.
 
