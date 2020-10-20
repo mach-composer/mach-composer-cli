@@ -25,7 +25,7 @@ jobs:
       - name: Build
         run: sh build.sh
       - name: Upload
-      - uses: jakejarvis/s3-sync-action@master
+        uses: jakejarvis/s3-sync-action@master
         with:
           args: --acl public-read --follow-symlinks --delete
         env:
