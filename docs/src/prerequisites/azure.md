@@ -108,6 +108,7 @@ Make sure the following providers are registered on the subscription:
 - `Microsoft.Web`
 - `Microsoft.KeyVault`
 - `Microsoft.Storage`
+- `Microsoft.Insights`
 
 More info:  
 [https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/error-register-resource-provider](https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/error-register-resource-provider)
