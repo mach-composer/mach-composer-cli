@@ -17,7 +17,9 @@ resource "aws_apigatewayv2_deployment" "latest" {
   description = "Stage for latest release"
 
   triggers = {
-    redeployment = "{{ site.public_api_components_hash }}"
+    redeployment = sha1(join(",", list({% for component in site.public_api_components %}
+      module.{{ component.name }}.component_version,
+    {% endfor %})))
   }
 
   lifecycle {
@@ -43,7 +45,9 @@ resource "aws_apigatewayv2_deployment" "primary" {
   description = "Stage for primary release"
 
   triggers = {
-    redeployment = "{{ site.public_api_components_hash }}"
+    redeployment = sha1(join(",", list({% for component in site.public_api_components %}
+      module.{{ component.name }}.component_version,
+    {% endfor %})))
   }
 
   lifecycle {
