@@ -5,8 +5,8 @@ terraform {
   {% if general_config.terraform_config.azure_remote_state %}
   {% set azure_config = general_config.terraform_config.azure_remote_state %}
   backend "azurerm" {
-    resource_group_name  = "{{ azure_config.resource_group_name }}"
-    storage_account_name = "{{ azure_config.storage_account_name }}"
+    resource_group_name  = "{{ azure_config.resource_group }}"
+    storage_account_name = "{{ azure_config.storage_account }}"
     container_name       = "{{ azure_config.container_name }}"
     key                  = "{{ azure_config.state_folder}}/{{ site.identifier }}"
   }

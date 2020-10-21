@@ -63,12 +63,12 @@ def resolve_general_config(config: MachConfig) -> MachConfig:
             else:
                 site.azure = SiteAzureSettings.from_config(config.general_config.azure)
 
-            if site.azure.resource_group_name:
+            if site.azure.resource_group:
                 click.echo(
                     click.style(
                         (
-                            f"WARNING: resource_group_name on {site.identifier} "
-                            f"is used ({site.azure.resource_group_name}). "
+                            f"WARNING: resource_group on {site.identifier} "
+                            f"is used ({site.azure.resource_group}). "
                         ),
                         fg="red",
                         bold=True,

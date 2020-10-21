@@ -31,9 +31,9 @@ locals {
   }
 }
 
-{% if azure.resource_group_name %}
+{% if azure.resource_group %}
 data "azurerm_resource_group" "main" {
-  name = "{{ azure.resource_group_name }}"
+  name = "{{ azure.resource_group }}"
 }  
 {% else %}
 resource "azurerm_resource_group" "main" {
@@ -44,7 +44,7 @@ resource "azurerm_resource_group" "main" {
 {% endif %}
 
 locals {
-  {% if azure.resource_group_name %}
+  {% if azure.resource_group %}
     resource_group_name = data.azurerm_resource_group.main.name
     resource_group_location = data.azurerm_resource_group.main.location
   {% else %}

@@ -18,8 +18,8 @@ LocalizedString = Dict[str, str]
 @dataclass_json
 @dataclass
 class AzureTFState:
-    resource_group_name: str
-    storage_account_name: str
+    resource_group: str
+    storage_account: str
     container_name: str
     state_folder: str
 
@@ -50,7 +50,7 @@ class SentryConfig:
 @dataclass_json
 @dataclass
 class FrontDoorSettings:
-    resource_group_name: str
+    resource_group: str
     dns_zone: str
     ssl_key_vault_name: str
     ssl_key_vault_secret_name: str
@@ -251,7 +251,7 @@ class SiteAzureSettings:
     service_object_ids: Dict[str, str] = field(default_factory=dict)
     front_door: Optional[FrontDoorSettings] = None
     alert_group: Optional[AlertGroup] = None
-    resource_group_name: Optional[str] = ""
+    resource_group: Optional[str] = ""
     tenant_id: Optional[str] = ""  # Can overwrite values from AzureConfig
     subscription_id: Optional[str] = ""  # Can overwrite values from AzureConfig
     region: Optional[str] = ""  # Can overwrite values from AzureConfig
