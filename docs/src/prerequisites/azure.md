@@ -27,7 +27,7 @@ terraform {
 In modules.tf:
 ```
 module "shared_infra" {
-  source         = "git@github.com:mach/terraform/terraform-azure-shared-infra.git"
+  source         = "git@github.com:labd/terraform-azure-mach-shared.git"
   name_prefix    = "mach-shared-we"  # replace 'mach' with your desired prefix
   region         = "westeurope"
   dns_zone_name  = "example.com"
@@ -36,7 +36,7 @@ module "shared_infra" {
   ]
 }
 ```
-[More info](https://github.com/mach/terraform/terraform-azure-shared-infra) about the shared infra module.
+[More info](https://github.com/labd/terraform-azure-mach-shared) about the shared infra module.
 
 3. Run the following commands:
 ```bash
