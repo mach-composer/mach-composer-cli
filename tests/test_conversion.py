@@ -7,8 +7,8 @@ def test_short_name_is_set():
             "environment": "test",
             "terraform_config": {
                 "azure_remote_state": {
-                    "resource_group_name": "my-shared-rg",
-                    "storage_account_name": "mysharedsaterra",
+                    "resource_group": "my-shared-rg",
+                    "storage_account": "mysharedsaterra",
                     "container_name": "tfstate",
                     "state_folder": "dev",
                 }

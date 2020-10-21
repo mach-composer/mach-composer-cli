@@ -31,12 +31,27 @@ locals {
   }
 }
 
+{% if azure.resource_group %}
+data "azurerm_resource_group" "main" {
+  name = "{{ azure.resource_group }}"
+}  
+{% else %}
 resource "azurerm_resource_group" "main" {
   name     = format("%s-rg", local.name_prefix)
   location = "{{ azure.region|azure_region_long }}"
   tags = local.tags
 }
+{% endif %}
 
+locals {
+  {% if azure.resource_group %}
+    resource_group_name = data.azurerm_resource_group.main.name
+    resource_group_location = data.azurerm_resource_group.main.location
+  {% else %}
+    resource_group_name = azurerm_resource_group.main.name
+    resource_group_location = azurerm_resource_group.main.location
+  {% endif %}
+}
 
 
 {% if azure.alert_group %}

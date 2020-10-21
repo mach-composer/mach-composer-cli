@@ -82,7 +82,7 @@ module "{{ component.name }}" {
 # see https://docs.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies#trigger-syncing
 # this updates the functionapp in case of any changes.
 data "external" "sync_triggers_{{ component.name }}" {
-  program = ["bash", "-c", "az rest --method post --uri 'https://management.azure.com/subscriptions/${local.subscription_id}/resourceGroups/${azurerm_resource_group.main.name}/providers/Microsoft.Web/sites/${module.{{ component.name }}.app_service_name}/syncfunctiontriggers?api-version=2016-08-01'"]
+  program = ["bash", "-c", "az rest --method post --uri 'https://management.azure.com/subscriptions/${local.subscription_id}/resourceGroups/${local.resource_group_name}/providers/Microsoft.Web/sites/${module.{{ component.name }}.app_service_name}/syncfunctiontriggers?api-version=2016-08-01'"]
 
   # need to make sure this runs after the module
   depends_on = [

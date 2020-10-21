@@ -46,8 +46,8 @@ An Azure state backend can be defined as:
 ```
 terraform_config:
   azure_remote_state:
-    resource_group_name: <your resource group>
-    storage_account_name: <storage account name>
+    resource_group: <your resource group>
+    storage_account: <storage account name>
     container_name: <container name>
     state_folder: <state folder>
 ```
@@ -118,14 +118,14 @@ azure:
 Example:
 ```
 front_door:
-  resource_group_name: my-shared-rg
+  resource_group: my-shared-rg
   dns_zone: my-services-domain.net
   ssl_key_vault_name: mysharedwekvcdn
   ssl_key_vault_secret_name: wildcard-my-services-domain-net
   ssl_key_vault_secret_version: IOlB8XmYLH1keYcpkcji23sp
 ```
 
-- **`resource_group_name`** - (Required)
+- **`resource_group`** - (Required)
 - **`dns_zone`** - (Required)
 - **`ssl_key_vault_name`** - (Required)
 - **`ssl_key_vault_secret_name`** - (Required)
@@ -264,6 +264,12 @@ Can overwrite any value from the generic [Azure settings](#azure):
 And adds the following exta attributes:
 
 - `alert_group` - List of [Alert groups](#alert_group)
+- `resource_group` - Name of an already existing resource group.
+
+!!! warning
+    Use `resource_group` with care.  
+    By default, MACH will manage the site resource groups for you. If you add this option later, the managed resource group will get **deleted**.  
+    So only use for new site definitions
 
 #### alert_group
 Example:
@@ -281,7 +287,7 @@ alert_group:
 - `alert_emails` - Hook alert group to these email addresses
 - `webhook_url` - Hooks alert group to a webhook
 - `logic_app` - Reference to a Logic App the alert group needs to be connected to.  
-  Format is `<resource_group_name>.<logic_app_name>`
+  Format is `<resource_group>.<logic_app_name>`
 
 ### aws
 Site-specific AWS settings.
