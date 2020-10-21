@@ -1,12 +1,12 @@
 {% if site.azure.front_door  %}
 data "azurerm_dns_zone" "domain" {
     name                = "{{ site.azure.front_door.dns_zone }}"
-    resource_group_name = "{{ site.azure.front_door.resource_group_name }}"
+    resource_group_name = "{{ site.azure.front_door.resource_group }}"
 }
 
 data "azurerm_key_vault" "ssl" {
   name                = "{{ site.azure.front_door.ssl_key_vault_name }}"
-  resource_group_name = "{{ site.azure.front_door.resource_group_name }}"
+  resource_group_name = "{{ site.azure.front_door.resource_group }}"
 }
 
 locals {
@@ -17,7 +17,7 @@ locals {
 resource "azurerm_dns_cname_record" "{{ site.commercetools.project_key }}" {
   name                = "{{ site.commercetools.project_key }}"
   zone_name           = data.azurerm_dns_zone.domain.name
-  resource_group_name = "{{ site.azure.front_door.resource_group_name }}"
+  resource_group_name = "{{ site.azure.front_door.resource_group }}"
   ttl                 = 600
   record              = local.front_door_domain
 }
