@@ -1,15 +1,11 @@
 [![MACH composer](https://github.com/labd/mach-composer/blob/master/docs/src/_img/logo.png?raw=true)](https://docs.machcomposer.io)
 
+MACH composer let's you define your MACH system using infrastructure-as-code 
+principles, and augments this with a serverless micro services architecture.
+
 The idea is to define a configuration file in yml with one or more Commercetools
 sites with all the required configuration for that site, what components to use
-and which version of components. 
-
-I suggest keeping component versions global to avoid version hell between
-different sites, and a git commit for versions (preferably just the latest
-master git commit). Eventually you're gonna end up with 15 sites, each with 6
-components. By always releasing the latest version maintenance and releasing
-becomes a lot easier compared to the alternative.
-
+and which version of components.
 
 ### Site
 A site is one Commercetools instance (with one or more Commercetools stores) and
@@ -21,6 +17,13 @@ Commercetools product types (so you can use different product types per site).
 Typically the other use case for a component is a serverless function that
 either adds an API to the site or listens to Commercetools subscriptions (f.e.
 order created or order status changes).
+
+#### component versioning
+We suggest to keep component versions global to avoid version conflicts between
+different sites, and a git commit for versions (preferably just the latest
+master git commit). Eventually you're gonna end up with 15 sites, each with 6
+components. By always releasing the latest version maintenance and releasing
+becomes a lot easier compared to the alternative.
 
 ## Installation
 
