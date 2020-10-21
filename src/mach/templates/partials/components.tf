@@ -1,8 +1,8 @@
 {% if site.azure and site.components %}
 resource "azurerm_app_service_plan" "functionapps" {
   name                = format("%s-plan", local.name_prefix)
-  resource_group_name = azurerm_resource_group.main.name
-  location            = azurerm_resource_group.main.location
+  resource_group_name = local.resource_group_name
+  location            = local.resource_group_location
   kind                = "FunctionApp"
   reserved            = true
 

@@ -1,3 +1,13 @@
+0.3.0 (unreleased)
+==================
+- Add option to specify custom resource group per site
+  
+Breaking changes
+----------------
+- All `resource_group_name` attributes is renamed to `resource_group`
+- The `storage_account_name` attribute is renamed to `storage_account`
+
+
 0.2.2 (2020-10-15)
 ==================
 - Fixed Azure config merge: not all generic settings where merged with site-specific ones

@@ -62,6 +62,28 @@ def resolve_general_config(config: MachConfig) -> MachConfig:
                 site.azure.merge(config.general_config.azure)
             else:
                 site.azure = SiteAzureSettings.from_config(config.general_config.azure)
+
+            if site.azure.resource_group:
+                click.echo(
+                    click.style(
+                        (
+                            f"WARNING: resource_group on {site.identifier} "
+                            f"is used ({site.azure.resource_group}). "
+                        ),
+                        fg="red",
+                        bold=True,
+                    )
+                )
+                click.echo(
+                    click.style(
+                        (
+                            "   Make sure it wasn't managed by MACH before otherwise "
+                            "the resource group will get deleted.",
+                        ),
+                        fg="red",
+                    )
+                )
+
     elif config.general_config.cloud == CloudOption.AWS and config.general_config.aws:
         for site in config.sites:
             if site.aws:
