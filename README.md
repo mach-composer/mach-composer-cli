@@ -1,4 +1,4 @@
-# MACH composer
+[![MACH composer](https://github.com/labd/mach-composer/blob/master/docs/src/_img/logo.png?raw=true)](https://docs.machcomposer.io)
 
 The idea is to define a configuration file in yml with one or more Commercetools
 sites with all the required configuration for that site, what components to use
