@@ -13,9 +13,11 @@ The configuration file has the following structure:
     - [azure](#azure)
     - [azure](#aws)
     - [sentry](#sentry)
+    - [contentful](#contentful)
 - **[sites](#sites)**
     - **[identifier](#sites)**
     - [commercetools](#commercetools)
+    - [contentful](#contentful)
     - [azure](#azure_1)
     - [aws](#aws_1)
     - [stores](#stores)
@@ -31,6 +33,7 @@ Is used to set the `environment` variable of any [Terraform component](./compone
 - `cloud` - Either `azure` or `aws`
 - `azure` - [Azure](#azure) block
 - `sentry` - [Sentry](#sentry) block
+- `contentful` - [Contentful](#contentful) block
 
 
 ### terraform_config
@@ -143,6 +146,12 @@ aws:
 
 - **`code_repository`** - (Required) The S3 bucket name of the code repository. Used as input variable for components that need to deploy a lambda function
 
+### contentful
+Defines global Contentful credentials to manage the spaces
+
+- **cma_token** - (Required)
+- **organization_id** - (Required)
+
 
 ## sites
 All site definitions.
@@ -153,6 +162,7 @@ All site definitions.
   Will be used for the Terraform state and naming all cloud resources.
 - `base_url` - Used for setting up the API Gateway, routing and SSL certificates
 - `commercetools` - [commercetools configuration](#commercetools) block
+- `contentful` - [Contentful configuration](#contentful_1) block
 - `azure` - [Azure](#azure_1) settings
 - `aws` - [AWS](#aws_1) settings
 - `components` - [Component configurations](#component-configurations)
@@ -196,6 +206,22 @@ commercetools:
 - `stores` - List of [store definitions](#store) if multiple (store) contexts are going to be used.
 - `create_frontend_credentials` - Defines if frontend API credentials must be created
   Defaults to `true`
+
+### contentful
+
+Contentful configuration.
+
+Example:
+
+```
+contentful:
+  space: "MySpace"
+```
+
+- **`space`** - (Required) Name of the space to be created
+- `default_locale` - Set default locale. Defaults to "en-US"
+- `cma_token` - Override default `cma_token` setting (site-specific)
+- `organization_id` - Override default `organization_id` setting (site-specific)
 
 #### channels
 

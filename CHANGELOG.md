@@ -1,3 +1,8 @@
+0.4.0 (unreleased)
+==================
+- Add official Contentful support
+  
+
 0.3.0 (2020-10-21)
 ==================
 - Add option to specify custom resource group per site
