@@ -27,8 +27,84 @@ Zooming in on the [main diagram](../index.md#how-does-it-work), you'll see the s
 ## Terraform module
 
 The component must be able to instruct MACH wat resources to create in the cloud infrastructure.
+This is done by providing the necessary Terraform module files in the component.
 
-This is done by providing the necessary Terraform module files in the `terraform/` directory.
+
+!!! tip ""
+      A good practise usually is to place all Terraform files in a single `terraform/` directory and reference that in your MACH configuration.
+
+### Required variables
+
+MACH expects each component to have a certain set of variables defined.
+
+!!! note "Non-'software'-components"
+      Only components that are marked as `is_software_component: false` don't receive any variable.
+      See [syntax](../syntax.md#components) for more info
+
+
+This set of variables differs per cloud provider, but all of them should have these at a minimum:
+
+```terraform
+variable "component_version" {
+  type        = string
+  description = "Version to deploy"
+}
+
+variable "environment" {
+  type        = string
+  description = "Specify what environment it's in (e.g. `test` or `production`)"
+}
+
+variable "site" {
+  type        = string
+  description = "Identifier of the site"
+}
+
+variable "variables" {
+  type        = map(string)
+  description = "Generic way to pass variables to components."
+}
+
+variable "secrets" {
+  type        = map(string)
+  description = "Map of secret values. Can be placed in a key vault."
+}
+
+variable "environment_variables" {
+  type        = map(string)
+  description = "Explicit map of variables that should be put in this function's environment variables."
+}
+```
+
+### Extra variables
+
+The following variables are passed (and required by a component) under certain conditions:
+
+**When commercetools is configured**
+
+```terraform
+variable "ct_project_key" {
+  type        = string
+  description = "commercetools project key"
+}
+```
+
+**When Sentry is configured**
+
+```terraform
+variable "sentry_dsn" {
+  type        = string
+  description = "Sentry DSN"
+}
+```
+
+!!! tip "Always define extra variables"
+      Always define the extra variables. Even if – for a certain site – these things are not configured.  
+      One site might have Sentry configured for example, the other might not.  The component needs to support both
+
+### Cloud-specific
+
+See [AWS variables](./aws.md#terraform-variables) and [Azure variables](./azure.md#terraform-variables) for cloud-specific variables that a component needs in addition to the base set.
 
 
 ## Serverless function

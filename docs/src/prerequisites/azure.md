@@ -19,7 +19,7 @@ Make sure the subscription you want to work in is set to default. If it is not, 
 `az account set --subscription <name or id>`
 2. Setup your Terraform configuration.
 In main.tf:
-```hcl
+```terraform
 terraform {
   required_version = ">= 0.13.0"
 }
@@ -46,7 +46,7 @@ $ terraform apply
 4. For a new Terraform setup, initially it will store the Terraform state locally and should be named `terraform.tfstate`.  
    We'll move this state to the Storage Account that has been created by the shared infra module.  
    To do this, add a backend setting to project like below
-```hcl
+```terraform
 terraform {
  required_version = ">= 0.13.0"
  backend "s3" {
