@@ -34,8 +34,3 @@ To do so, the following has to be configured:
 - The component has to be marked as [`has_public_api`](../syntax.md#components)
 
 More information in the [deployment section](../deployment/azure.md#http-routing).
-
-# Azure dashboard configuration
-
-!!! Todo
-    Future implementation
