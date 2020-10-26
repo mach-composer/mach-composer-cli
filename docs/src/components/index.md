@@ -5,7 +5,6 @@ A MACH component is in it's bare minimum a [*Terraform module*](https://www.terr
 Other then the [Terraform configuration](#terraform-component), a component might include a:
 
 - [Serverless function](#serverless-function)
-- [Azure dashboard configuration](#azure-dashboard-configuration)
 
 ## Deployment process
 
