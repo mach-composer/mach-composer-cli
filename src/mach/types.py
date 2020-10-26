@@ -92,6 +92,13 @@ class AWSConfig:
 
 @dataclass_json
 @dataclass
+class ContentfulConfig:
+    cma_token: str
+    organization_id: str
+
+
+@dataclass_json
+@dataclass
 class AWSProvider:
     name: str
     region: str
@@ -122,6 +129,7 @@ class GeneralConfig:
     sentry: Optional[SentryConfig] = None
     azure: Optional[AzureConfig] = None
     aws: Optional[AWSConfig] = None
+    contentful: Optional[ContentfulConfig] = None
 
 
 @dataclass_json
@@ -205,6 +213,19 @@ class CommercetoolsSettings:
 
 @dataclass_json
 @dataclass
+class ContentfulSettings:
+    space: str
+    default_locale: str = "en-US"
+    cma_token: str = ""
+    organization_id: str = ""
+
+    def merge(self, config: ContentfulConfig):
+        self.cma_token = self.cma_token or config.cma_token
+        self.organization_id = self.organization_id or config.organization_id
+
+
+@dataclass_json
+@dataclass
 class Component:
     name: str
     variables: TerraformVariables = field(default_factory=dict)
@@ -279,6 +300,7 @@ class Site:
     identifier: str
     base_url: Optional[str] = ""
     commercetools: Optional[CommercetoolsSettings] = None
+    contentful: Optional[ContentfulSettings] = None
     azure: Optional[SiteAzureSettings] = None
     aws: Optional[SiteAWSSettings] = None
     components: List[Component] = field(default_factory=list)

@@ -1,13 +1,4 @@
-{% if site.commercetools %}
 {% set commercetools = site.commercetools %}
-
-terraform {
-  required_providers {
-    commercetools = {
-      source = "labd/commercetools"
-    }
-  }
-}
 
 provider "commercetools" {
     version       = "=0.23.0"
@@ -77,4 +68,3 @@ output "frontend_channels" {
 }
 
 {% include 'partials/stores.tf' %}
-{% endif %}

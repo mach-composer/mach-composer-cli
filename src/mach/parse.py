@@ -89,6 +89,12 @@ def resolve_general_config(config: MachConfig) -> MachConfig:
             if site.aws:
                 site.aws.merge(config.general_config.aws)
 
+    # Merge Contentful settings
+    if config.general_config.contentful:
+        for site in config.sites:
+            if site.contentful:
+                site.contentful.merge(config.general_config.contentful)
+
     return config
 
 
