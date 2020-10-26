@@ -139,7 +139,7 @@ class ComponentConfig:
     source: str
     version: str
     short_name: Optional[str] = ""
-    is_software_component: Optional[bool] = True
+    integrations: List[str] = field(default_factory=list)
     has_public_api: Optional[bool] = False
     health_check_path: Optional[str] = ""
 
@@ -243,8 +243,12 @@ class Component:
         self.health_check_path = self.health_check_path or definition.health_check_path
 
     @property
-    def is_software_component(self):
-        return self.definition.is_software_component
+    def integrations(self) -> List[str]:
+        return self.definition.integrations
+
+    @property
+    def is_software_component(self) -> bool:
+        return "aws" in self.integrations or "azure" in self.integrations
 
     @property
     def has_public_api(self):
