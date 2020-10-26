@@ -86,7 +86,7 @@ locals {
   package_name = format("yourcomponent-%s.zip", var.component_version)
 }
 
-resource "azurerm_function_app" "order_mailer_component" {
+resource "azurerm_function_app" "your_component" {
     app_settings = {
         WEBSITE_RUN_FROM_ZIP = "https://${data.azurerm_storage_account.shared.name}.blob.core.windows.net/code/${local.package_name}${data.azurerm_storage_account_blob_container_sas.code_access.sas}"
         ...
