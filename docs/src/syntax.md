@@ -363,15 +363,20 @@ components:
   - name: ct-products-types
     source: git::ssh://git@git.labdigital.nl/mach-components/ct-product-types.git//terraform
     version: 1.4.0
-    is_software_component: false
+    integrations: ["commercetools"]
 ```
 
 - `version` - A Git commit hash or tag
 - `source` - Source definition of the terraform module
 - `short_name` - Short name to be used in cloud resources. Should be at most 10 characters to avoid running into Resource naming limits.  
   Defaults to the given components `name`
-- `is_software_component` - Defines if this is a 'software component' meaing; contains any serverless function.  
-  Defaults to `true`
+- `integrations` - Defines a list of integrations for the given component. It controls what Terraform variables are passed on to the components [Terraform module](./components/index.md#terraform-module).  
+  Defaults to `["azure"]` or `["aws"]`, depending on your cloud provider.  
+  Could be any of:
+    - `azure`
+    - `aws`
+    - `commercetools`
+    - `contentful`  
 - `has_public_api` - Defines if the serverless function should be exposed publically.  
   Will create proper Frontdoor routing when `true`.
 - `health_check_path` - Defines a custom healthcheck path.  

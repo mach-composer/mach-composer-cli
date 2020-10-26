@@ -1,7 +1,29 @@
 0.4.0 (unreleased)
 ==================
 - Add official Contentful support
-  
+
+Breaking changes
+----------------
+- `is_software_component` has been replaced by the `integrations` settings
+
+```
+components:
+  - name: my-product-types
+    source: git::ssh://git@github.com/example/product-types/my-product-types.git
+    version: 81cd828
+    is_software_component: false
+```
+
+becomes
+
+```
+components:
+  - name: my-product-types
+    source: git::ssh://git@github.com/example/product-types/my-product-types.git
+    version: 81cd828
+    integrations: ["commercetools"]
+```
+
 
 0.3.0 (2020-10-21)
 ==================

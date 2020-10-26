@@ -103,9 +103,7 @@ def validate_azure_components(config: types.MachConfig):
     for example Storage Accounts names have a limited length.
     """
     for comp in config.components:
-        # ignore product type modules
-        # TODO: Make this somehow more generic / configurable
-        if comp.short_name.startswith("product-types-"):
+        if "azure" not in comp.integrations:
             continue
 
         # azure naming length is limited, so verify it doesn't get too long.

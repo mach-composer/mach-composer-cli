@@ -20,6 +20,7 @@ def parse_configs(files: List[str], output_path: str = None) -> List[MachConfig]
 
         validate_config(config)
 
+        config = resolve_component_definitions(config)
         config = resolve_general_config(config)
         config = resolve_components(config)
 
@@ -52,7 +53,6 @@ def parse_config_from_file(file: str) -> MachConfig:
             "Configuration file could not be validated", details=e.normalized_messages()
         ) from e
     return config
-
 
 def resolve_general_config(config: MachConfig) -> MachConfig:
     """If no general config is specified, use global config settings."""
@@ -98,6 +98,20 @@ def resolve_general_config(config: MachConfig) -> MachConfig:
     return config
 
 
+def resolve_component_definitions(config: MachConfig) -> MachConfig:
+    for comp in config.components:
+        if comp.integrations:
+            continue
+
+        # If no integrations are given, set the Cloud integrations as default
+        if config.general_config.cloud == CloudOption.AWS:
+            comp.integrations = ["aws"]
+        elif config.general_config.cloud == CloudOption.AZURE:
+            comp.integrations = ["azure"]
+
+    return config
+
+
 def resolve_components(config: MachConfig) -> MachConfig:
     """If no component info is specified, use global component settings."""
     component_info: Dict[str, ComponentConfig] = {
@@ -111,4 +125,5 @@ def resolve_components(config: MachConfig) -> MachConfig:
 
                 if not component.short_name:
                     component.short_name = info.short_name
+
     return config
