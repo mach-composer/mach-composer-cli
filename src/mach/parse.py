@@ -54,7 +54,8 @@ def parse_config_from_file(file: str) -> MachConfig:
         ) from e
     return config
 
-def resolve_general_config(config: MachConfig) -> MachConfig:
+
+def resolve_general_config(config: MachConfig) -> MachConfig:  # noqa: C901
     """If no general config is specified, use global config settings."""
     if config.general_config.cloud == CloudOption.AZURE:
         for site in config.sites:
