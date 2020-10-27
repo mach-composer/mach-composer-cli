@@ -79,7 +79,7 @@ def resolve_general_config(config: MachConfig) -> MachConfig:  # noqa: C901
                     click.style(
                         (
                             "   Make sure it wasn't managed by MACH before otherwise "
-                            "the resource group will get deleted.",
+                            "the resource group will get deleted."
                         ),
                         fg="red",
                     )
