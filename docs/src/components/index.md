@@ -33,16 +33,34 @@ This is done by providing the necessary Terraform module files in the component.
 !!! tip ""
       A good practise usually is to place all Terraform files in a single `terraform/` directory and reference that in your MACH configuration.
 
+### Integrations
+
+By defining a set of `integrations` in the [component definitions](../syntax.md#components), MACH knows what variables need to be passed on to the components.
+
+This way the components don't need to define **all possible variables** a component might have.
+
+Available integrations are:
+
+- `aws`
+- `azure`
+- `commercetools`
+- `contentful`
+
+By default, integrations are set on the given cloud provider. So when no `integrations` defintion is given, it defaults to `['aws']` in case of an AWS deployment.
+
+!!! tip "Non-cloud components"
+    As an example; you might have a component defining some custom commercetools product types. No further cloud infrastructure is needed.  
+    In this case, that component will have `integrations: ['commeretools']` and MACH won't pass any of the cloud-specific variables.
+
 ### Required variables
 
 MACH expects each component to have a certain set of variables defined.
 
-!!! note "Non-'software'-components"
-      Only components that are marked as `is_software_component: false` don't receive any variable.
-      See [syntax](../syntax.md#components) for more info
+Which variables it needs to define (and MACH expects it to accept) depends on the defined [integrations](../syntax.md#components).
 
+#### cloud integration
 
-This set of variables differs per cloud provider, but all of them should have these at a minimum:
+The following variables are expected in case of either `aws` or `azure`.
 
 ```terraform
 variable "component_version" {
@@ -74,13 +92,21 @@ variable "environment_variables" {
   type        = map(string)
   description = "Explicit map of variables that should be put in this function's environment variables."
 }
+
+variable "sentry_dsn" {
+  type        = string
+  default     = ""
+  description = "Sentry DSN - only when Sentry is configured"
+}
 ```
 
-### Extra variables
+!!! info "Cloud specific variables"
+      See [AWS variables](./aws.md#terraform-variables) and [Azure variables](./azure.md#terraform-variables) for cloud-specific variables that a component needs in addition to the base set.
 
-The following variables are passed (and required by a component) under certain conditions:
 
-**When commercetools is configured**
+#### commercetools
+
+The following variable is given when `commercetools` integration is defined.
 
 ```terraform
 variable "ct_project_key" {
@@ -89,23 +115,16 @@ variable "ct_project_key" {
 }
 ```
 
-**When Sentry is configured**
+#### contentful
+
+The following variable is given when `contentful` integration is defined.
 
 ```terraform
-variable "sentry_dsn" {
+variable "contentful_space_id" {
   type        = string
-  description = "Sentry DSN"
+  description = "Contentful Space ID"
 }
 ```
-
-!!! tip "Always define extra variables"
-      Always define the extra variables. Even if – for a certain site – these things are not configured.  
-      One site might have Sentry configured for example, the other might not.  The component needs to support both
-
-### Cloud-specific
-
-See [AWS variables](./aws.md#terraform-variables) and [Azure variables](./azure.md#terraform-variables) for cloud-specific variables that a component needs in addition to the base set.
-
 
 ## Serverless function
 

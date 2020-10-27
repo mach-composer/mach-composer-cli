@@ -25,7 +25,7 @@ terraform {
 }
 ```
 In modules.tf:
-```
+```terraform
 module "shared_infra" {
   source         = "git@github.com:labd/terraform-azure-mach-shared.git"
   name_prefix    = "mach-shared-we"  # replace 'mach' with your desired prefix
