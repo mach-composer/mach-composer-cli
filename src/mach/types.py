@@ -92,6 +92,13 @@ class AWSConfig:
 
 @dataclass_json
 @dataclass
+class ContentfulConfig:
+    cma_token: str
+    organization_id: str
+
+
+@dataclass_json
+@dataclass
 class AWSProvider:
     name: str
     region: str
@@ -122,6 +129,7 @@ class GeneralConfig:
     sentry: Optional[SentryConfig] = None
     azure: Optional[AzureConfig] = None
     aws: Optional[AWSConfig] = None
+    contentful: Optional[ContentfulConfig] = None
 
 
 @dataclass_json
@@ -131,7 +139,7 @@ class ComponentConfig:
     source: str
     version: str
     short_name: Optional[str] = ""
-    is_software_component: Optional[bool] = True
+    integrations: List[str] = field(default_factory=list)
     has_public_api: Optional[bool] = False
     health_check_path: Optional[str] = ""
 
@@ -205,6 +213,19 @@ class CommercetoolsSettings:
 
 @dataclass_json
 @dataclass
+class ContentfulSettings:
+    space: str
+    default_locale: str = "en-US"
+    cma_token: str = ""
+    organization_id: str = ""
+
+    def merge(self, config: ContentfulConfig):
+        self.cma_token = self.cma_token or config.cma_token
+        self.organization_id = self.organization_id or config.organization_id
+
+
+@dataclass_json
+@dataclass
 class Component:
     name: str
     variables: TerraformVariables = field(default_factory=dict)
@@ -222,8 +243,12 @@ class Component:
         self.health_check_path = self.health_check_path or definition.health_check_path
 
     @property
-    def is_software_component(self):
-        return self.definition.is_software_component
+    def integrations(self) -> List[str]:
+        return self.definition.integrations
+
+    @property
+    def is_software_component(self) -> bool:
+        return "aws" in self.integrations or "azure" in self.integrations
 
     @property
     def has_public_api(self):
@@ -279,6 +304,7 @@ class Site:
     identifier: str
     base_url: Optional[str] = ""
     commercetools: Optional[CommercetoolsSettings] = None
+    contentful: Optional[ContentfulSettings] = None
     azure: Optional[SiteAzureSettings] = None
     aws: Optional[SiteAWSSettings] = None
     components: List[Component] = field(default_factory=list)
