@@ -20,6 +20,7 @@ def parse_configs(files: List[str], output_path: str = None) -> List[MachConfig]
 
         validate_config(config)
 
+        config = resolve_component_definitions(config)
         config = resolve_general_config(config)
         config = resolve_components(config)
 
@@ -54,7 +55,7 @@ def parse_config_from_file(file: str) -> MachConfig:
     return config
 
 
-def resolve_general_config(config: MachConfig) -> MachConfig:
+def resolve_general_config(config: MachConfig) -> MachConfig:  # noqa: C901
     """If no general config is specified, use global config settings."""
     if config.general_config.cloud == CloudOption.AZURE:
         for site in config.sites:
@@ -89,6 +90,26 @@ def resolve_general_config(config: MachConfig) -> MachConfig:
             if site.aws:
                 site.aws.merge(config.general_config.aws)
 
+    # Merge Contentful settings
+    if config.general_config.contentful:
+        for site in config.sites:
+            if site.contentful:
+                site.contentful.merge(config.general_config.contentful)
+
+    return config
+
+
+def resolve_component_definitions(config: MachConfig) -> MachConfig:
+    for comp in config.components:
+        if comp.integrations:
+            continue
+
+        # If no integrations are given, set the Cloud integrations as default
+        if config.general_config.cloud == CloudOption.AWS:
+            comp.integrations = ["aws"]
+        elif config.general_config.cloud == CloudOption.AZURE:
+            comp.integrations = ["azure"]
+
     return config
 
 
@@ -105,4 +126,5 @@ def resolve_components(config: MachConfig) -> MachConfig:
 
                 if not component.short_name:
                     component.short_name = info.short_name
+
     return config

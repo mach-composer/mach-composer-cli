@@ -24,7 +24,24 @@ terraform {
   {% endif %}
 }
 
-{% include 'partials/commercetools.tf' %}
+terraform {
+  required_providers {
+    {% if site.commercetools %}
+    commercetools = {
+      source = "labd/commercetools"
+    }
+    {% endif %}
+    {% if site.contentful %}
+    contentful = {
+      source = "labd/contentful"
+    }
+    {% endif %}
+  }
+}
+
+
+{% if site.commercetools %}{% include 'partials/commercetools.tf' %}{% endif %}
+{% if site.contentful %}{% include 'partials/contentful.tf' %}{% endif %}
 
 {% if site.aws %}{% include 'partials/aws.tf' %}{% endif %}
 {% if site.azure %}{% include 'partials/azure.tf' %}{% endif %}
