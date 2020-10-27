@@ -1,6 +1,6 @@
 0.4.0 (unreleased)
 ==================
-- Add official Contentful support
+- Add Contentful support
 
 Breaking changes
 ----------------
