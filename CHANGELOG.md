@@ -1,4 +1,4 @@
-0.4.0 (unreleased)
+0.4.0 (2020-10-27)
 ==================
 - Add Contentful support
 
@@ -23,6 +23,8 @@ components:
     version: 81cd828
     integrations: ["commercetools"]
 ```
+
+or `integrations: []` if no integrations are needed at all.
 
 
 0.3.0 (2020-10-21)
