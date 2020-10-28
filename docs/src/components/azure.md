@@ -53,25 +53,7 @@ For Azure functions, the deployment process constist of two steps:
 - Packaging the function
 - Deploying it to the [function app storage](../prerequisites/azure.md#create-function-app-storage)
 
-### Package
-```bash
-VERSION=$(shell git rev-parse --short HEAD 2>/dev/null || echo "dev" )
-NAME=yourcomponent-$VERSION
-ARTIFACT_NAME=$NAME.zip
-
-func pack --build-native-deps --python
-mv $BASENAME.zip $ARTIFACT_NAME
-```
-
-### Upload
-```bash
-STORAGE_ACCOUNT_KEY=`az storage account keys list -g my-shared-we-rg -n mysharedwesacomponents --query [0].value -o tsv`
-az storage blob upload --account-name mysharedwesacomponents --account-key $STORAGE_ACCOUNT_KEY -c code -f yourcomponent-0.1.0.zip -n yourcomponent-0.1.0.zip
-```
-
-!!! tip ""
-    An example build and deploy script is provided in the [component cookiecutter](https://git.labdigital.nl/mach/component-cookiecutter)
-
+[Read more](../deployment/components.md#on-azure) about Azure component deployments.
 
 ### Configure runtime
 When defining your Azure function app resource, you can reference back to the asset that is deployed:

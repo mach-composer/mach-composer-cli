@@ -17,9 +17,12 @@ nav:
   - components/azure.md
   - components/aws.md
 - Deployment:
-  - deployment/index.md
-  - Azure: deployment/azure.md
-  - AWS: deployment/aws.md
+  - Components: deployment/components.md
+  - MACH stack: deployment/config.md
+  - CI/CD: 
+    - GitLab: deployment/ci/gitlab.md
+    - Jenkins: deployment/ci/jenkins.md
+    - Azure DevOps: deployment/ci/devops.md
 - roadmap.md
 - development.md
 
@@ -30,6 +33,7 @@ extra_javascript:
 extra_css:
   - _css/tasklist.css
   - _css/mermaid.css
+  - _css/tabbed.css
   - _css/font-awesome.min.css
 
 use_directory_urls: false
@@ -56,6 +60,7 @@ markdown_extensions:
   - codehilite:
       guess_lang: false
   - footnotes
+  - pymdownx.tabbed
   - pymdownx.tasklist:
       clickable_checkbox: true
       custom_checkbox: true
