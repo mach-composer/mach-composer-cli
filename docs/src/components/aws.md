@@ -26,23 +26,7 @@ variable "code_repository" {
 
 AWS Lambda functions need to be uploaded to a S3 bucket. From there AWS Lambda will run the functions for you once instructed by the Terraform deployment.
 
-### Package
-
-Python example:
-```bash
-VERSION=$(shell git rev-parse --short HEAD 2>/dev/null || echo "dev" )
-NAME=yourcomponent-$VERSION
-ARTIFACT_NAME=$NAME.zip
-
-python -m pip install dist/*.whl -t ./build
-cp handler.py ./build
-cd build && zip -9 -r $ARTIFACT_NAME .
-```
-
-### Upload
-```bash
-aws s3 cp build/$ARTIFACT_NAME s3://your-lambda-repo/
-```
+[Read more](../deployment/components.md#on-aws) about AWS component deployments.
 
 ### Configure runtime
 When defining your AWS Lambda function resource, you can reference back to the asset that is deployed:
