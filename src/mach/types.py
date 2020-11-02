@@ -31,6 +31,7 @@ class AWSTFState:
     role_arn: str
     region: str = "eu-west-1"
     lock_table: Optional[str] = None
+    encrypt = True
 
 
 @dataclass_json
