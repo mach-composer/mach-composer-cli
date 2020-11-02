@@ -67,9 +67,6 @@ AZURE_REGION_DISPLAY_MAP_LONG = {
 }
 
 AZURE_REGION_DISPLAY_MAP_SHORT = {
-    "westeurope": "we",
-    "northeurope": "ne",
-
     "eastasia": "ea",
     "southeastasia": "sea",
     "centralus": "cus",
@@ -103,6 +100,7 @@ AZURE_REGION_DISPLAY_MAP_SHORT = {
     "southafricanorth": "san",
     "southafricawest": "saw",
 }
+
 
 def azure_region_long(value):
     try:
