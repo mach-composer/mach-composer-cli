@@ -80,11 +80,10 @@ module "{{ component.name }}" {
     {% endif %}
   }
 
-  {% if site.aws and component.has_public_api %}
   depends_on = [
-    aws_apigatewayv2_api.main_gateway,
+    {% if site.aws and component.has_public_api %}aws_apigatewayv2_api.main_gateway,{% endif %}
+    {% if "commercetools" in component.integrations %}commercetools_project_settings.project,{% endif %}
   ]
-  {% endif %}
 }
 
 {% if site.azure and component.is_software_component %}
