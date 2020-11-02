@@ -1,6 +1,8 @@
 0.4.2 (unreleased)
 ==================
 - Add 'encrypt' option to AWS state backend
+- Correctly depend component modules to the commercetools project settings resource
+- Extend Azure regions mapping
   
 
 0.4.1 (2020-10-27)
