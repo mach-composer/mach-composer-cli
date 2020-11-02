@@ -20,6 +20,8 @@ terraform {
     {% if aws_config.lock_table %}
     dynamodb_table = "{{ aws_config.lock_table }}"
     {% endif %}
+    encrypt        = {% if aws_config.encrypt %}true{% else %}false{% endif %}
+
   }
   {% endif %}
 }

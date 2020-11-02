@@ -1,3 +1,8 @@
+0.4.2 (unreleased)
+==================
+- Add 'encrypt' option to AWS state backend
+  
+
 0.4.1 (2020-10-27)
 ==================
 - Fixed TypeError when using `resource_group` on site Azure configuration
