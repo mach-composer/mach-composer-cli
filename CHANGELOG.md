@@ -1,4 +1,4 @@
-0.4.2 (unreleased)
+0.4.2 (2020-11-02)
 ==================
 - Add 'encrypt' option to AWS state backend
 - Correctly depend component modules to the commercetools project settings resource
