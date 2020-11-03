@@ -16,7 +16,9 @@ terraform {
     bucket         = "{{ aws_config.bucket}}"
     key            = "{{ aws_config.key_prefix}}/{{ site.identifier }}"
     region         = "{{ aws_config.region }}"
+    {% if aws_config.role_arn %}
     role_arn       = "{{ aws_config.role_arn }}"
+    {% endif %}
     {% if aws_config.lock_table %}
     dynamodb_table = "{{ aws_config.lock_table }}"
     {% endif %}
