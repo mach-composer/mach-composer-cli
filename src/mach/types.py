@@ -28,7 +28,7 @@ class AzureTFState:
 class AWSTFState:
     bucket: str
     key_prefix: str
-    role_arn: str
+    role_arn: Optional[str] = None
     region: str = "eu-west-1"
     lock_table: Optional[str] = None
     encrypt = True
