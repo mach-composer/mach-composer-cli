@@ -53,7 +53,7 @@ For Azure functions, the deployment process constist of two steps:
 - Packaging the function
 - Deploying it to the [function app storage](../prerequisites/azure.md#create-function-app-storage)
 
-[Read more](../deployment/components.md#on-azure) about Azure component deployments.
+[Read more](../deployment/components.md) about Azure component deployments.
 
 ### Configure runtime
 When defining your Azure function app resource, you can reference back to the asset that is deployed:
