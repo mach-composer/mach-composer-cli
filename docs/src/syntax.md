@@ -71,7 +71,7 @@ terraform_config:
 
 - **`bucket`** - (Required) S3 bucket name
 - **`key_prefix`** - (Required) Key prefix for each individual Terraform state
-- **`role_arn`** - (Required) Role ARN to access S3 bucket with
+- `role_arn` - Role ARN to access S3 bucket with
 - `lock_table` - DynamoDB lock table
 - `encrypt` - Enable server side encryption of the state file. Defaults to `True`
 
@@ -334,7 +334,7 @@ aws:
 
 - **`account_id`** - (Required) AWS account ID for this site
 - **`region`** - AWS region to deploy site in
-- **`deploy_role`** - (Required) The [IAM role](./prerequisites/aws#iam-deploy-role) needed for deployment
+- `deploy_role` - The [IAM role](./prerequisites/aws#iam-deploy-role) needed for deployment
 - `api_gateway` - Name of the main API gateway
 - `extra_providers`
 
