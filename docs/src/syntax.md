@@ -11,7 +11,7 @@ The configuration file has the following structure:
     - **[terraform_config](#terraform_config)**
     - **[cloud](#general_config)**
     - [azure](#azure)
-    - [azure](#aws)
+    - [aws](#aws)
     - [sentry](#sentry)
     - [contentful](#contentful)
 - **[sites](#sites)**
