@@ -1,3 +1,9 @@
+
+0.4.3 (2020-11-04)
+==================
+- Make AWS role definitions optional so MACH can run without an 'assume role' context
+
+
 0.4.2 (2020-11-02)
 ==================
 - Add 'encrypt' option to AWS state backend
