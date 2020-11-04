@@ -1,4 +1,9 @@
 
+0.4.4 (unreleased)
+==================
+- Remove restriction from `environment` value; can now be any. Fixes #9
+
+
 0.4.3 (2020-11-04)
 ==================
 - Make AWS role definitions optional so MACH can run without an 'assume role' context

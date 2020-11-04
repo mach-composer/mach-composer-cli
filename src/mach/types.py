@@ -105,15 +105,6 @@ class AWSProvider:
     region: str
 
 
-class Environment(Enum):
-    DEV = "development"
-    TEST = "test"
-    PROD = "production"
-
-    def __str__(self):
-        return self.value
-
-
 class CloudOption(Enum):
     AWS = "aws"
     AZURE = "azure"
@@ -124,7 +115,7 @@ class CloudOption(Enum):
 class GeneralConfig:
     """Config this is shared across sites."""
 
-    environment: Environment
+    environment: str
     terraform_config: TerraformConfig
     cloud: CloudOption
     sentry: Optional[SentryConfig] = None
