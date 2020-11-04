@@ -1,4 +1,5 @@
-FROM python:3.8.5-alpine
+ARG PYTHON_VERSION="3.8.5"
+FROM python:${PYTHON_VERSION}-alpine
 
 ENV AZURE_CLI_VERSION=2.5.1
 ENV TERRAFORM_VERSION=0.13.4
@@ -7,13 +8,16 @@ ENV TERRAFORM_AZURE_VERSION=2.29.0
 ENV TERRAFORM_AWS_VERSION=3.8.0
 ENV TERRAFORM_NULL_VERSION=2.1.2
 ENV TERRAFORM_COMMERCETOOLS_VERSION=0.23.0
+
+RUN apk add --no-cache --virtual .build-deps g++ libffi-dev openssl-dev wget unzip jq make curl \
+    && apk add bash ca-certificates git libc6-compat openssl openssh-client
+    
+# Install Azure CLI
+RUN pip --no-cache-dir install azure-cli==${AZURE_CLI_VERSION}
+
+# Pre-install Terreform plugins
 ENV TERRAFORM_PLUGINS_PATH=/root/.terraform.d/plugins/linux_amd64
 RUN mkdir -p ${TERRAFORM_PLUGINS_PATH}
-
-RUN apk update && \
-    apk add --no-cache --virtual .build-deps g++ python3-dev libffi-dev openssl-dev && \
-    apk add --no-cache --update python3 && \
-    apk add bash curl tar ca-certificates git libc6-compat openssl jq unzip wget openssh-client make
 
 # Install terraform
 RUN cd /tmp && \
@@ -40,7 +44,6 @@ RUN cd /tmp && \
     wget https://releases.hashicorp.com/terraform-provider-azurerm/${TERRAFORM_AZURE_VERSION}/terraform-provider-azurerm_${TERRAFORM_AZURE_VERSION}_linux_amd64.zip && \
     unzip terraform-provider-azurerm_${TERRAFORM_AZURE_VERSION}_linux_amd64.zip -d ${TERRAFORM_PLUGINS_PATH}
 
-
 # Install commercetools provider
 RUN cd /tmp && \
     wget https://github.com/labd/terraform-provider-commercetools/releases/download/v${TERRAFORM_COMMERCETOOLS_VERSION}/terraform-provider-commercetools_${TERRAFORM_COMMERCETOOLS_VERSION}_linux_amd64.zip && \
@@ -50,9 +53,6 @@ RUN rm -rf /tmp/* && \
     rm -rf /var/cache/apk/* && \
     rm -rf /var/tmp/*
 
-RUN pip --no-cache-dir install azure-cli==${AZURE_CLI_VERSION}
-
-# TODO: use build containers to optimize this, for now this works ;^)
 RUN mkdir /code
 RUN mkdir /deployments
 WORKDIR /code
@@ -65,5 +65,6 @@ ADD setup.cfg .
 ADD setup.py . 
 RUN python setup.py bdist_wheel && pip install dist/mach-0.0.0-py3-none-any.whl
 
+RUN apk del .build-deps
 
 ENTRYPOINT ["mach"]
