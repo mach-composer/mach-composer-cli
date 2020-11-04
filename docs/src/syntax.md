@@ -27,7 +27,7 @@ The configuration file has the following structure:
 ## general_config
 All 'shared' configuration that applies to all sites.
 
-- **`environment`** - (Required) [environment](#environment) Identifier for the environment. Must be one of `development`, `test` or `production`.  
+- **`environment`** - (Required) [environment](#environment) Identifier for the environment. For example `development`, `test` or `production`.  
 Is used to set the `environment` variable of any [Terraform component](./components/index.md#terraform-component)
 - **`terraform_config`** - (Required) [terraform_config](#terraform_config) block
 - `cloud` - Either `azure` or `aws`
