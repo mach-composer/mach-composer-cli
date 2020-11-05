@@ -10,6 +10,25 @@
   - Add `--commit` argument to automatically create a git commit message
 - Remove restriction from `environment` value; can now be any. Fixes #9
 
+Breaking changes
+----------------
+- Require `ct_api_url` and `ct_auth_url` for components with `commercetools` integration
+
+Deprecations
+------------
+In a component, the use of the following variables have been deprecated;
+
+```
+var.variables["CT_API_URL"]
+var.variables["CT_AUTH_URL"]
+```
+
+Instead you should use:
+
+```
+var.ct_api_url
+var.ct_auth_url
+```
 
 0.4.3 (2020-11-04)
 ==================
