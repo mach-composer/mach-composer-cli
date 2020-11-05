@@ -5,10 +5,9 @@ from functools import update_wrapper
 from typing import List, Optional
 
 import click
-from mach import parse
+from mach import parse, updater
 from mach.exceptions import MachError
 from mach.terraform import apply_terraform, generate_terraform, plan_terraform
-from mach.update import update_config_components
 
 
 @click.group()
@@ -69,6 +68,7 @@ def terraform_command(f):
 @mach.command()
 @terraform_command
 def generate(file, configs, *args, **kwargs):
+    """Generate the Terraform files."""
     for config in configs:
         generate_terraform(config)
 
@@ -76,6 +76,7 @@ def generate(file, configs, *args, **kwargs):
 @mach.command()
 @terraform_command
 def plan(file, configs, *args, **kwargs):
+    """Outputs the deploy plan."""
     for config in configs:
         generate_terraform(config)
         plan_terraform(config.deployment_path)
@@ -84,6 +85,7 @@ def plan(file, configs, *args, **kwargs):
 @mach.command()
 @terraform_command
 def apply(file, configs, with_sp_login, auto_approve, *args, **kwargs):
+    """Applies the configuration."""
     for config in configs:
         generate_terraform(config)
         apply_terraform(
@@ -107,20 +109,90 @@ def apply(file, configs, with_sp_login, auto_approve, *args, **kwargs):
     is_flag=True,
     help="Only checks for updates, doesnt change files.",
 )
-def update(file: str, check: bool, verbose: bool):
-    if not check:
-        # TODO: Simply ignore the check option for now; won't update the config (yet)
-        click.echo(
-            "WARNING: Only supports checking/output of the available component updates"
+# @click.option(
+#     "-c",
+#     "--commit",
+#     default=False,
+#     is_flag=True,
+#     help="Automatically commits the change.",
+# )
+@click.argument("component", required=False)
+@click.argument("version", required=False)
+def update(
+    file: str,
+    check: bool,
+    verbose: bool,
+    component: str,
+    version: str,
+    commit: bool = False,
+):
+    """Update all (or a given) component.
+
+    When no component and version is given, it will check the git repositories for any updates.
+    This command can also be used to manually update a single component by specifying a component
+    and version.
+    """
+    if component and not version:
+        raise click.ClickException(
+            f"When specifying a component ({component}) you should specify a version as well"
         )
 
     files = get_input_files(file)
     configs = parse.parse_configs(files)
     try:
         for config in configs:
-            update_config_components(config, verbose=verbose, check_only=check)
+            if component and version:
+                updater.update_config_component(
+                    config, component, version, create_commit=commit
+                )
+            else:
+                updater.update_config_components(
+                    config, verbose=verbose, check_only=check, create_commit=commit
+                )
     except MachError as e:
         raise click.ClickException(str(e)) from e
+
+
+@mach.command()
+@click.option(
+    "-f",
+    "--file",
+    default=None,
+    help="YAML file to read. If not set read all *.yml files.",
+)
+def components(file: str):
+    """List all components."""
+    files = get_input_files(file)
+    configs = parse.parse_configs(files)
+    for config in configs:
+        click.echo(f"{config.file}:")
+        for component in config.components:
+            click.echo(f" - {component.name}")
+            click.echo(f"   version: {component.version}")
+
+        click.echo("")
+
+
+@mach.command()
+@click.option(
+    "-f",
+    "--file",
+    default=None,
+    help="YAML file to read. If not set read all *.yml files.",
+)
+def sites(file: str):
+    """List all sites."""
+    files = get_input_files(file)
+    configs = parse.parse_configs(files)
+    for config in configs:
+        click.echo(f"{config.file}:")
+        for site in config.sites:
+            click.echo(f" - {site.identifier}")
+            click.echo("   components:")
+            for component in site.components:
+                click.echo(f"     {component.name}")
+
+        click.echo("")
 
 
 def get_input_files(file: Optional[str]) -> List[str]:

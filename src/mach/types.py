@@ -322,3 +322,9 @@ class MachConfig:
     @property
     def deployment_path(self) -> Path:
         return Path(self.output_path)
+
+    def get_component(self, name: str) -> Optional[ComponentConfig]:
+        for comp in self.components:
+            if comp.name == name:
+                return comp
+        return None
