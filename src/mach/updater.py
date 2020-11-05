@@ -1,38 +1,64 @@
-import datetime
-import os
 import re
 import typing
-import urllib.parse
 
-import requests
+import click
 from mach import exceptions
 from mach.types import ComponentConfig, MachConfig
 
-NAME_RE = re.compile(r".*name: [\"']?(.*)[\"']?")
+NAME_RE = re.compile(r".* name: [\"']?(.*)[\"']?")
 VERSION_RE = re.compile(r"(\s*version: )([\"']?.*[\"']?)")
 
 
 Updates = typing.List[typing.Tuple[ComponentConfig, str]]
 
 
-def update_config_components(  # noqa: C901
-    config: MachConfig, check_only=False, verbose=False
+def update_config_component(  # noqa: C901
+    config: MachConfig,
+    component_name: str,
+    new_version: str,
+    *,
+    create_commit=False,
 ):
-    # TODO: It now only checks/outputs the available updates
-    gitlab_access_key = os.environ.get("GITLAB_ACCESS_KEY")
-    if not gitlab_access_key:
-        raise exceptions.UpdateError(
-            "Must set GITLAB_ACCESS_KEY environment variable to use this option"
-        )
+    component = config.get_component(component_name)
+    if not component:
+        raise exceptions.MachError(f"Could not find component {component_name}")
 
+    if component.version == new_version:
+        click.echo(f"Component {component_name} is already on version {new_version}.")
+
+    click.echo(f"Updating {component_name} to version {new_version}...")
+
+    FileUpdater.apply_updates(config.file, [(component, new_version)])
+
+
+def update_config_components(  # noqa: C901
+    config: MachConfig,
+    *,
+    check_only=False,
+    verbose=False,
+    create_commit=False,
+):
+    """Updates a given MACH configuration file.
+
+    :param config: The MACH configuration to update components for
+    :param check_only: Only check for updates; don't update the file
+    :param verbose: Enable verbose output
+    :param create_commit: Automatically create commit message
+    """
+
+    if check_only and create_commit:
+        raise ValueError("check_only is not possible when create_commit is enabled.")
     intro_msg = f"Checking updates for components in {config.file}"
     print(intro_msg)
     print("-" * len(intro_msg))
 
     updates: Updates = []
+    if not check_only:
+        FileUpdater.apply_updates(config.file, updates)
 
-    session = requests.Session()
-    session.headers["Authorization"] = f"Bearer {gitlab_access_key}"
+
+def _fetch_component_changes(config: MachConfig) -> Updates:
+    updates: Updates = []
 
     for component in config.components:
         if not component.source.startswith("git::"):
@@ -41,54 +67,37 @@ def update_config_components(  # noqa: C901
             )
             continue
 
-        match = re.match(r".*git.labdigital.nl/(.*)\.git.*", component.source)
-        if not match:
-            print(
-                f"Cannot check {component.name} component: only supports git.labdigital.nl sources"
-            )
-            continue
+        # match = re.match(r".*git.labdigital.nl/(.*)\.git.*", component.source)
+        # if not match:
+        #     print(
+        #         f"Cannot check {component.name} component: only supports git.labdigital.nl sources"
+        #     )
+        #     continue
 
-        repo = match.group(1)
-        repo_encoded = urllib.parse.quote(repo, safe="")
-
-        try:
-            resp = session.get(
-                f"https://git.labdigital.nl/api/v4/projects/{repo_encoded}/repository/commits/",
-                params={"ref_name": f"{component.version}..master"},
-            )
-            resp.raise_for_status()
-        except EnvironmentError as e:
-            print(f"Error checking {repo}: {e}")
-            continue
+        # repo = match.group(1)
 
         print(f"{component.name}:")
 
-        resp_data = resp.json()
-        if not resp_data:
-            print("   no updates\n")
-            continue
+        # for commit in resp_data:
+        #     commit["commit_id"] = commit_id(commit)
 
-        for commit in resp_data:
-            commit["commit_id"] = commit_id(commit)
+        #     if verbose:
+        #         commit["committed_date"] = datetime.datetime.fromisoformat(
+        #             commit["committed_date"]
+        #         )
+        #         print(
+        #             " * {commit_id}: {title} ({committed_date:%Y-%m-%d %H:%M} - {author_name})".format(  # noqa
+        #                 **commit
+        #             )
+        #         )
+        #     else:
+        #         print(" * {commit_id}: {title}".format(**commit))
 
-            if verbose:
-                commit["committed_date"] = datetime.datetime.fromisoformat(
-                    commit["committed_date"]
-                )
-                print(
-                    " * {commit_id}: {title} ({committed_date:%Y-%m-%d %H:%M} - {author_name})".format(  # noqa
-                        **commit
-                    )
-                )
-            else:
-                print(" * {commit_id}: {title}".format(**commit))
+        # print("")
 
-        print("")
+        # updates.append((component, resp_data[0]["commit_id"]))
 
-        updates.append((component, resp_data[0]["commit_id"]))
-
-    if not check_only:
-        FileUpdater.apply_updates(config.file, updates)
+    return updates
 
 
 def commit_id(data: dict) -> str:
@@ -122,13 +131,16 @@ class FileUpdater:
         with open(file) as f:
             lines = f.readlines()
 
-        with open(file, mode="w") as f:
-            for line in lines:
-                if line.startswith("components:"):
-                    self.in_components = True
-                elif self.in_components:
-                    line = self.process_component_line(line)
+        newlines = []
+        for line in lines:
+            if line.startswith("components:"):
+                self.in_components = True
+            elif self.in_components:
+                line = self.process_component_line(line)
+            newlines.append(line)
 
+        with open(file, mode="w") as f:
+            for line in newlines:
                 f.write(line)
 
     def process_component_line(self, line: str):
@@ -136,6 +148,7 @@ class FileUpdater:
 
         if name_match:
             component_name = name_match.group(1)
+
             try:
                 self.current_component = self.component_map[component_name]
             except KeyError:

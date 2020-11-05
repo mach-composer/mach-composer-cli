@@ -1,6 +1,11 @@
 
-0.4.4 (unreleased)
+0.5.0 (unreleased)
 ==================
+- Add new CLI options;
+  - `mach components` to list all components
+  - `mach sites` to list all sites
+- Improved `update` command.  
+  This can now also be used to manually update a single component; `mach update my-component v1.0.4`
 - Remove restriction from `environment` value; can now be any. Fixes #9
 
 
