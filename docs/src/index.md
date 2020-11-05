@@ -13,7 +13,7 @@ It includes:
 - A microservices architecture based on modern serverless technology (AWS Lambda and Azure Functions), including (alpha) support for building your microservices with the Serverless Framework
 - Multi-tenancy support for managing many instances of your platform, that share the same library of micro services
 - CI/CD tools for automating the delivery of your MACH ecosystem
-- Tight integratoin with AWS an Azure, including an (opinionated) setup of these cloud environments
+- Tight integration with AWS an Azure, including an (opinionated) setup of these cloud environments
 
 The framework is intended as the 'center piece' of your MACH architecture and incorporates industry best practises such as the 12 Factor Methodology, Infrastrucure-as-code, DevOps, immutable deployments, FAAS, etc.
 
