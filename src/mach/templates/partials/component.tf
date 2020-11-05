@@ -29,7 +29,7 @@ module "{{ component.name }}" {
       {% endif %}
 
       {% if site.commercetools %}
-        {# BACKWARDS COMPATABILITY #}
+        {# BACKWARDS COMPATABILITY - DEPRECATED #}
         CT_API_URL = "{{ site.commercetools.api_url }}"
         CT_AUTH_URL = "{{ site.commercetools.token_url }}"
         CT_PROJECT_KEY = "{{ site.commercetools.project_key }}"
@@ -61,8 +61,8 @@ module "{{ component.name }}" {
 
     {% if "commercetools" in component.integrations %}
       ct_project_key    = "{{ site.commercetools.project_key }}"
-      # ct_api_url        = "{{ site.commercetools.api_url }}"
-      # ct_auth_url       = "{{ site.commercetools.token_url }}"
+      ct_api_url        = "{{ site.commercetools.api_url }}"
+      ct_auth_url       = "{{ site.commercetools.token_url }}"
     {% endif %}
   {% endif %}
 
