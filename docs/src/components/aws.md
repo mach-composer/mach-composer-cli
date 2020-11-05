@@ -46,6 +46,6 @@ To do so, the following has to be configured:
 - [base_url](../syntax.md#sites) settings in the Site configuration
 - The component has to be marked as [`has_public_api`](../syntax.md#components)
 
-More information in the [deployment section](../deployment/aws.md).
+More information in the [deployment section](../deployment/config.md#aws-deployments).
 
 
