@@ -76,7 +76,7 @@ def generate(file, configs, *args, **kwargs):
 @mach.command()
 @terraform_command
 def plan(file, configs, *args, **kwargs):
-    """Outputs the deploy plan."""
+    """Output the deploy plan."""
     for config in configs:
         generate_terraform(config)
         plan_terraform(config.deployment_path)
@@ -85,7 +85,7 @@ def plan(file, configs, *args, **kwargs):
 @mach.command()
 @terraform_command
 def apply(file, configs, with_sp_login, auto_approve, *args, **kwargs):
-    """Applies the configuration."""
+    """Apply the configuration."""
     for config in configs:
         generate_terraform(config)
         apply_terraform(
