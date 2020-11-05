@@ -1,8 +1,9 @@
+import os
 import re
 import typing
 
 import click
-from mach import exceptions
+from mach import cache, exceptions, git
 from mach.types import ComponentConfig, MachConfig
 
 NAME_RE = re.compile(r".* name: [\"']?(.*)[\"']?")
@@ -45,61 +46,46 @@ def update_config_components(  # noqa: C901
     print(intro_msg)
     print("-" * len(intro_msg))
 
-    updates: Updates = []
+    updates: Updates = _fetch_changes(config)
+
     if not check_only:
         FileUpdater.apply_updates(config.file, updates)
 
 
-def _fetch_component_changes(config: MachConfig) -> Updates:
+def _fetch_changes(config: MachConfig) -> Updates:
+    cache_dir = cache.cache_dir_for(config)
     updates: Updates = []
 
     for component in config.components:
-        if not component.source.startswith("git::"):
-            print(
-                f"Cannot check {component.name} component since it doesn't have a Git source defined"  # noqa
+        click.echo(f"Updates for {component.name}...")
+
+        match = re.match(r"^git::(.*)", component.source)
+        if not match:
+            click.echo(
+                f"  Cannot check {component.name} component since it doesn't have a Git source defined"  # noqa
             )
             continue
 
-        # match = re.match(r".*git.labdigital.nl/(.*)\.git.*", component.source)
-        # if not match:
-        #     print(
-        #         f"Cannot check {component.name} component: only supports git.labdigital.nl sources"
-        #     )
-        #     continue
+        component_dir = os.path.join(cache_dir, component.name)
+        repo = match.group(1)
+        parts = repo.split("//")
+        repo = "//".join(parts[0:2])
 
-        # repo = match.group(1)
+        git.ensure_local(repo, component_dir)
 
-        print(f"{component.name}:")
+        commits = git.history(component_dir, component.version)
+        if not commits:
+            click.echo("  No updates\n")
+            continue
 
-        # for commit in resp_data:
-        #     commit["commit_id"] = commit_id(commit)
+        for commit in commits:
+            print(f"  {commit.id}: {commit.msg}")
 
-        #     if verbose:
-        #         commit["committed_date"] = datetime.datetime.fromisoformat(
-        #             commit["committed_date"]
-        #         )
-        #         print(
-        #             " * {commit_id}: {title} ({committed_date:%Y-%m-%d %H:%M} - {author_name})".format(  # noqa
-        #                 **commit
-        #             )
-        #         )
-        #     else:
-        #         print(" * {commit_id}: {title}".format(**commit))
+        click.echo("")
 
-        # print("")
-
-        # updates.append((component, resp_data[0]["commit_id"]))
+        updates.append((component, commits[0].id))
 
     return updates
-
-
-def commit_id(data: dict) -> str:
-    """Get the correct commit ID for this commit.
-
-    It will trim the short_id since mach and the components are using a
-    different commit id format (7 chars long).
-    """
-    return data["short_id"][:7]
 
 
 class FileUpdater:
