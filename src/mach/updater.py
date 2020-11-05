@@ -16,8 +16,6 @@ def update_config_component(  # noqa: C901
     config: MachConfig,
     component_name: str,
     new_version: str,
-    *,
-    create_commit=False,
 ):
     component = config.get_component(component_name)
     if not component:
@@ -36,18 +34,13 @@ def update_config_components(  # noqa: C901
     *,
     check_only=False,
     verbose=False,
-    create_commit=False,
 ):
     """Updates a given MACH configuration file.
 
     :param config: The MACH configuration to update components for
     :param check_only: Only check for updates; don't update the file
     :param verbose: Enable verbose output
-    :param create_commit: Automatically create commit message
     """
-
-    if check_only and create_commit:
-        raise ValueError("check_only is not possible when create_commit is enabled.")
     intro_msg = f"Checking updates for components in {config.file}"
     print(intro_msg)
     print("-" * len(intro_msg))
