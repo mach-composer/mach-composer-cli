@@ -36,7 +36,8 @@ def update_config_components(  # noqa: C901
     check_only=False,
     verbose=False,
 ):
-    """Updates a given MACH configuration file.
+    """
+    Update a given MACH configuration file.
 
     :param config: The MACH configuration to update components for
     :param check_only: Only check for updates; don't update the file
