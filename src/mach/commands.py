@@ -5,7 +5,7 @@ from functools import update_wrapper
 from typing import List, Optional
 
 import click
-from mach import parse, updater
+from mach import git, parse, updater
 from mach.exceptions import MachError
 from mach.terraform import apply_terraform, generate_terraform, plan_terraform
 
@@ -109,13 +109,13 @@ def apply(file, configs, with_sp_login, auto_approve, *args, **kwargs):
     is_flag=True,
     help="Only checks for updates, doesnt change files.",
 )
-# @click.option(
-#     "-c",
-#     "--commit",
-#     default=False,
-#     is_flag=True,
-#     help="Automatically commits the change.",
-# )
+@click.option(
+    "-c",
+    "--commit",
+    default=False,
+    is_flag=True,
+    help="Automatically commits the change.",
+)
 @click.argument("component", required=False)
 @click.argument("version", required=False)
 def update(
@@ -124,7 +124,7 @@ def update(
     verbose: bool,
     component: str,
     version: str,
-    commit: bool = False,
+    commit: bool,
 ):
     """Update all (or a given) component.
 
@@ -132,6 +132,11 @@ def update(
     This command can also be used to manually update a single component by specifying a component
     and version.
     """
+    if check and commit:
+        raise click.ClickException(
+            "check_only is not possible when create_commit is enabled."
+        )
+
     if component and not version:
         raise click.ClickException(
             f"When specifying a component ({component}) you should specify a version as well"
@@ -142,13 +147,22 @@ def update(
     try:
         for config in configs:
             if component and version:
-                updater.update_config_component(
-                    config, component, version, create_commit=commit
-                )
+                updater.update_config_component(config, component, version)
             else:
                 updater.update_config_components(
-                    config, verbose=verbose, check_only=check, create_commit=commit
+                    config, verbose=verbose, check_only=check
                 )
+            if commit:
+                git.add(config.file)
+
+        if commit:
+            if component:
+                commit_msg = f"Updated {component} component"
+            else:
+                commit_msg = "Updated components"
+
+            git.commit(commit_msg)
+
     except MachError as e:
         raise click.ClickException(str(e)) from e
 
