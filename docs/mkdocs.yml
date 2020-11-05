@@ -21,7 +21,7 @@ nav:
   - MACH stack: deployment/config.md
   - CI/CD: 
     - GitLab: deployment/ci/gitlab.md
-    - Jenkins: deployment/ci/jenkins.md
+    - GitHub actions: deployment/ci/github.md
     - Azure DevOps: deployment/ci/devops.md
 - roadmap.md
 - development.md

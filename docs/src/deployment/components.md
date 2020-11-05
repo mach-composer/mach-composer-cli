@@ -151,5 +151,5 @@ $ ./build.sh upload
 Refer to the CI/CD section for instructions on how to setup your Continuous Integration pipeline for component deployments:
 
 - [GitLab](./ci/gitlab.md#components)
+- [GitHub actions](./ci/github.md#components)
 - [Azure DevOps](./ci/devops.md#components)
-- [Jenkins](./ci/jenkins.md#components)

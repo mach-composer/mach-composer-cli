@@ -30,7 +30,7 @@ The pipeline needs this to be able to access the KeyVault to pull in other crede
 1. Go to your *Project settings*
 2. Choose **Pipelines** > **Service connections**
 3. Choose 'Azure Resource Manager'  
-   ![Azure connection](../../../_img/deployment/devops/choose_azure_connection.png){: style="max-width:350px; padding-right: 20px"}![Azure connection step 2](../../../_img/deployment/devops/choose_azure_connection2.png){: style="max-width:350px"}  
+   ![Azure connection](../../_img/deployment/devops/choose_azure_connection.png){: style="max-width:350px; padding-right: 20px"}![Azure connection step 2](../../_img/deployment/devops/choose_azure_connection2.png){: style="max-width:350px"}  
    And then 'Service principle (automatic)' or 'manual' depending on your situation and permissions.
 4. Enter the credentials needed.  
    The name given in **Service connection name** will be used later in the pipeline.
@@ -44,10 +44,10 @@ We do this by creating a service connection, and using that service connection l
 1. Go to your *Project settings*
 2. Choose **Pipelines** > **Service connections**
 3. Choose 'Docker Registry'  
-   ![Docker Registry](../../../_img/deployment/devops/new_connection.png){: style="max-width:400px"}
+   ![Docker Registry](../../_img/deployment/devops/new_connection.png){: style="max-width:400px"}
 4. Enter `https://docker.pkg.github.com` as Docker registry and fill in your GitHub username and personal access token.  
    The name given in '**Service connection name**' will be used later in the pipeline
-   ![New connection](../../../_img/deployment/devops/docker_connection.png)
+   ![New connection](../../_img/deployment/devops/docker_connection.png)
 
 #### 4. Component repositories
 1. Generate a SSH key pair.  [Instructions](https://docs.microsoft.com/en-us/azure/devops/repos/git/use-ssh-keys-to-authenticate?view=azure-devops#step-1-create-your-ssh-keys).

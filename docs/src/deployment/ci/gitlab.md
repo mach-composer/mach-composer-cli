@@ -8,18 +8,17 @@ How to set up the deployment process for your MACH configuration.
 
 ### Providing credentials
 
-!!! note ""
-    We use an Azure deployment as an example here.  
-    For AWS deployments, you can ignore the `AZURE_` variables.
+For an deployment we have to make sure the following variables set in the GitLab CI/CD settings;
 
-In short, for an Azure deployment we have to make sure the following variables set in the GitLab CI/CD settings.
+- Personal access token for the MACH docker image
+- Azure or AWS credentials
 
 These will be explained further:
 
 - [Access to MACH docker image](#mach-docker-image)
 - [Access to component repositories](#component-repositories)
   
-![CI/CD variables](../../../_img/deployment/gitlab/variables.png)
+![CI/CD variables](../../_img/deployment/gitlab/variables.png)
 
 #### MACH docker image
 
