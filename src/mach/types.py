@@ -256,6 +256,7 @@ class SiteAWSSettings:
     api_gateway: Optional[str] = ""
     extra_providers: Optional[List[AWSProvider]] = field(default_factory=list)
     code_repository: Optional[str] = ""  # Can overwrite values from AWSConfig
+    route53_zone_name: Optional[str] = ""
 
     def merge(self, config: AWSConfig):
         self.code_repository = config.code_repository
