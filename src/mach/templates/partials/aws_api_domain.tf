@@ -1,5 +1,5 @@
 data "aws_route53_zone" "main" {
-  name = "{{ site.base_url }}"
+  name = "{{ site.aws.route53_zone_name|default(site.base_url)  }}"
 }
 
 
