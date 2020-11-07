@@ -10,7 +10,7 @@ resource "aws_acm_certificate" "main" {
 
 
 resource "aws_apigatewayv2_domain_name" "main" {
-  domain_name     = "{{ site.base_url }}"
+  domain_name = "{{ site.base_url }}"
 
   domain_name_configuration {
     certificate_arn = aws_acm_certificate.main.arn
