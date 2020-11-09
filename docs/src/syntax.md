@@ -326,7 +326,6 @@ aws:
   account_id: 1234567890
   region: eu-west-1
   deploy_role: deploy
-  api_gateway: main_gateway
   extra_providers:
     - name: email
       region: eu-west-1
@@ -335,7 +334,8 @@ aws:
 - **`account_id`** - (Required) AWS account ID for this site
 - **`region`** - AWS region to deploy site in
 - `deploy_role` - The [IAM role](./prerequisites/aws#iam-deploy-role) needed for deployment
-- `api_gateway` - Name of the main API gateway
+- `route53_zone_name` - Define the Route53 zone name that should be created in case of public API components. Defaults the the specified `base_url`
+- `code_repository` - Overwrites generic S3 bucket name of the code repository
 - `extra_providers`
 
 
