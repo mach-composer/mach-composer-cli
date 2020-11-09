@@ -4,11 +4,13 @@
 - Add new CLI options:
   - `mach components` to list all components
   - `mach sites` to list all sites
+- Add new AWS configuration option `route53_zone_name`
 - Improved `update` command:
   - Supports updating (or checking for updates) on all components based on their git history
   - This can now also be used to manually update a single component; `mach update my-component v1.0.4`
   - Add `--commit` argument to automatically create a git commit message
 - Remove restriction from `environment` value; can now be any. Fixes #9
+- Remove unused `api_gateway` attribute on AWS config
 
 Breaking changes
 ----------------

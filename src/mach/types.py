@@ -253,7 +253,6 @@ class SiteAWSSettings:
     account_id: int
     region: str
     deploy_role: Optional[str] = None
-    api_gateway: Optional[str] = ""
     extra_providers: Optional[List[AWSProvider]] = field(default_factory=list)
     code_repository: Optional[str] = ""  # Can overwrite values from AWSConfig
     route53_zone_name: Optional[str] = ""
