@@ -19,6 +19,7 @@
 In a component, the use of the following variables have been deprecated;
 
 ```
+var.variables["CT_PROJECT_KEY"]
 var.variables["CT_API_URL"]
 var.variables["CT_AUTH_URL"]
 ```
@@ -26,6 +27,7 @@ var.variables["CT_AUTH_URL"]
 Instead you should use:
 
 ```
+var.ct_project_key
 var.ct_api_url
 var.ct_auth_url
 ```
