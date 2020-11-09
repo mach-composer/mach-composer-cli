@@ -1,5 +1,5 @@
 data "aws_route53_zone" "main" {
-  name = "{{ site.base_url }}"
+  name = "{{ site.aws.route53_zone_name|default(site.base_url)  }}"
 }
 
 
@@ -10,7 +10,7 @@ resource "aws_acm_certificate" "main" {
 
 
 resource "aws_apigatewayv2_domain_name" "main" {
-  domain_name     = "{{ site.base_url }}"
+  domain_name = "{{ site.base_url }}"
 
   domain_name_configuration {
     certificate_arn = aws_acm_certificate.main.arn
