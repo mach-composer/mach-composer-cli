@@ -69,9 +69,9 @@ def _fetch_changes(config: MachConfig) -> Updates:
 
         component_dir = os.path.join(cache_dir, component.name)
         repo = match.group(1)
-        parts = repo.split("//")
-        repo = "//".join(parts[0:2])
-
+        match = re.match(r"(.*\/.*)(\/\/.*)$", repo)
+        if match:
+            repo = match.group(1)
         git.ensure_local(repo, component_dir)
 
         commits = git.history(component_dir, component.version)
