@@ -1,16 +1,16 @@
 # Changelog
 
-## 0.5.0 (unreleased)
+## 0.5.0 (2020-11-09)
 - Add new CLI options:
     - `mach components` to list all components
     - `mach sites` to list all sites
-- Add new AWS configuration option `route53_zone_name`
 - Improved `update` command:
     - Supports updating (or checking for updates) on all components based on their git history
     - This can now also be used to manually update a single component; `mach update my-component v1.0.4`
     - Add `--commit` argument to automatically create a git commit message
-- Remove restriction from `environment` value; can now be any. Fixes #9
+- Add new AWS configuration option `route53_zone_name`
 - Remove unused `api_gateway` attribute on AWS config
+- Remove restriction from `environment` value; can now be any. Fixes #9
 
 ### Breaking changes
 - Require `ct_api_url` and `ct_auth_url` for components with `commercetools` integration
