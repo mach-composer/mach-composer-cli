@@ -1,6 +1,6 @@
+# Changelog
 
-0.5.0 (unreleased)
-==================
+## 0.5.0 (unreleased)
 - Add new CLI options:
     - `mach components` to list all components
     - `mach sites` to list all sites
@@ -12,12 +12,10 @@
 - Remove restriction from `environment` value; can now be any. Fixes #9
 - Remove unused `api_gateway` attribute on AWS config
 
-Breaking changes
-----------------
+### Breaking changes
 - Require `ct_api_url` and `ct_auth_url` for components with `commercetools` integration
 
-Deprecations
-------------
+### Deprecations
 In a component, the use of the following variables have been deprecated;
 
 ```
@@ -32,29 +30,24 @@ var.ct_api_url
 var.ct_auth_url
 ```
 
-0.4.3 (2020-11-04)
-==================
+## 0.4.3 (2020-11-04)
 - Make AWS role definitions optional so MACH can run without an 'assume role' context
 
 
-0.4.2 (2020-11-02)
-==================
+## 0.4.2 (2020-11-02)
 - Add 'encrypt' option to AWS state backend
 - Correctly depend component modules to the commercetools project settings resource
 - Extend Azure regions mapping
   
 
-0.4.1 (2020-10-27)
-==================
+## 0.4.1 (2020-10-27)
 - Fixed TypeError when using `resource_group` on site Azure configuration
 
 
-0.4.0 (2020-10-27)
-==================
+## 0.4.0 (2020-10-27)
 - Add Contentful support
 
-Breaking changes
-----------------
+### Breaking changes
 - `is_software_component` has been replaced by the `integrations` settings
 
 ```
@@ -78,25 +71,21 @@ components:
 or `integrations: []` if no integrations are needed at all.
 
 
-0.3.0 (2020-10-21)
-==================
+## 0.3.0 (2020-10-21)
 - Add option to specify custom resource group per site
   
-Breaking changes
-----------------
+### Breaking changes
 - All `resource_group_name` attributes is renamed to `resource_group`
 - The `storage_account_name` attribute is renamed to `storage_account`
 
 
-0.2.2 (2020-10-15)
-==================
+## 0.2.2 (2020-10-15)
 - Fixed Azure config merge: not all generic settings where merged with site-specific ones
 - Only validate short_name length check for Azure implementations
 - Setup Frontdoor per 'public api' component regardless of global Frontdoor settings
 
 
-0.2.1 (2020-10-06)
-==================
+## 0.2.1 (2020-10-06)
 - Fixed rendering of STORE environment variables in components
 - Updated Terraform version to 0.13.4
 - Fix `--auto-approve` option on `mach apply` command
@@ -108,6 +97,5 @@ Breaking changes
 - Add new required attribute `cloud` in general config
   
 
-0.1.0 (2020-10-01)
-==================
+## 0.1.0 (2020-10-01)
 - Initial release
