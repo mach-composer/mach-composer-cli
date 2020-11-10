@@ -11,7 +11,6 @@ The configuration file has the following structure:
     - **[terraform_config](#terraform_config)**
     - **[cloud](#general_config)**
     - [azure](#azure)
-    - [aws](#aws)
     - [sentry](#sentry)
     - [contentful](#contentful)
 - **[sites](#sites)**
@@ -19,7 +18,7 @@ The configuration file has the following structure:
     - [commercetools](#commercetools)
     - [contentful](#contentful)
     - [azure](#azure_1)
-    - [aws](#aws_1)
+    - [aws](#aws)
     - [stores](#stores)
     - [components](#component-configurations)
 - [components](#components)
@@ -135,17 +134,6 @@ front_door:
 - **`ssl_key_vault_secret_name`** - (Required)
 - **`ssl_key_vault_secret_version`** - (Required)
 
-### aws
-
-General AWS settings. Values can be overwritten [per site](#aws_1).
-
-Example:
-```
-aws:
-  code_repository: mach-lambda-repository
-```
-
-- **`code_repository`** - (Required) The S3 bucket name of the code repository. Used as input variable for components that need to deploy a lambda function
 
 ### contentful
 Defines global Contentful credentials to manage the spaces
@@ -335,7 +323,6 @@ aws:
 - **`region`** - AWS region to deploy site in
 - `deploy_role` - The [IAM role](./prerequisites/aws#iam-deploy-role) needed for deployment
 - `route53_zone_name` - Define the Route53 zone name that should be created in case of public API components. Defaults the the specified `base_url`
-- `code_repository` - Overwrites generic S3 bucket name of the code repository
 - `extra_providers`
 
 
