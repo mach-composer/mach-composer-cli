@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.5.1 (unreleased)
+## 0.5.1 (2020-11-10)
 - Removed `aws` block in general_config
 - Add `branch` option to component definitions to be able to perform a `mach update` and stay within a certain branch (during development)
   
