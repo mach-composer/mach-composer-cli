@@ -85,11 +85,6 @@ def resolve_general_config(config: MachConfig) -> MachConfig:  # noqa: C901
                     )
                 )
 
-    elif config.general_config.cloud == CloudOption.AWS and config.general_config.aws:
-        for site in config.sites:
-            if site.aws:
-                site.aws.merge(config.general_config.aws)
-
     # Merge Contentful settings
     if config.general_config.contentful:
         for site in config.sites:
