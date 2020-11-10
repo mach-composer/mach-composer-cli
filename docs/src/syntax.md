@@ -354,6 +354,7 @@ components:
     integrations: ["commercetools"]
 ```
 
+- `name` - Name of the component. To be used as reference in the site definitions.
 - `version` - A Git commit hash or tag
 - `source` - Source definition of the terraform module
 - `short_name` - Short name to be used in cloud resources. Should be at most 10 characters to avoid running into Resource naming limits.  
@@ -369,6 +370,8 @@ components:
   Will create proper Frontdoor routing when `true`.
 - `health_check_path` - Defines a custom healthcheck path.  
   Defaults to `/<name>/healthchecks`
+- `branch` - Configure the git branch of the component. Only used to facilitate the `mach update` CLI command.
+
 
 [^1]: commercetools uses [Localized strings](https://docs.commercetools.com/http-api-types#localizedstring) to be able to define strings in mulitple languages.  
 Whenever a localized string needs to be defined, this can be done in the following format:
