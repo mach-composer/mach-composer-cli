@@ -10,16 +10,13 @@ In addition to this, the component itself is responsible for [packaging and depl
 
 In addition to the [base variables](./index.md#required-variables), an AWS component expects the following:
 
-- `api_gateway` - API Gateway ID (only if component is marked as `has_public_api`)
-- `code_repository` - Name of the Lambda code repository (only if component is marked as `is_software_component`)
+- `api_gateway` - API Gateway ID to publish in (only if component is marked as `has_public_api`)
+- `api_gateway_execution_arn` API Gateway API Execution ARN (only if component is marked as `has_public_api`)
+
 
 ```terraform
-variable "api_gateway" {
-    default = ""
-}
-variable "code_repository" {
-    default = ""
-}
+variable "api_gateway" {}
+variable "api_gateway_execution_arn" {}
 ```
 
 ## Packaging and deploying
