@@ -87,12 +87,6 @@ class AzureConfig:
 
 @dataclass_json
 @dataclass
-class AWSConfig:
-    code_repository: str
-
-
-@dataclass_json
-@dataclass
 class ContentfulConfig:
     cma_token: str
     organization_id: str
@@ -120,7 +114,6 @@ class GeneralConfig:
     cloud: CloudOption
     sentry: Optional[SentryConfig] = None
     azure: Optional[AzureConfig] = None
-    aws: Optional[AWSConfig] = None
     contentful: Optional[ContentfulConfig] = None
 
 
@@ -254,11 +247,7 @@ class SiteAWSSettings:
     region: str
     deploy_role: Optional[str] = None
     extra_providers: Optional[List[AWSProvider]] = field(default_factory=list)
-    code_repository: Optional[str] = ""  # Can overwrite values from AWSConfig
     route53_zone_name: Optional[str] = ""
-
-    def merge(self, config: AWSConfig):
-        self.code_repository = config.code_repository
 
 
 @dataclass_json

@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.5.1 (unreleased)
+- Removed `aws` block in general_config
+  
+
 ## 0.5.0 (2020-11-09)
 - Add new CLI options:
     - `mach components` to list all components
