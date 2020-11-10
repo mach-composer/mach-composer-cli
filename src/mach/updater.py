@@ -74,7 +74,7 @@ def _fetch_changes(config: MachConfig) -> Updates:
             repo = match.group(1)
         git.ensure_local(repo, component_dir)
 
-        commits = git.history(component_dir, component.version)
+        commits = git.history(component_dir, component.version, branch=component.branch)
         if not commits:
             click.echo("  No updates\n")
             continue

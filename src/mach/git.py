@@ -44,10 +44,13 @@ def clone(repo: str, dest: str):
     _run(["git", "clone", repo, dest])
 
 
-def history(dir: str, from_ref: str) -> List[Commit]:
+def history(dir: str, from_ref: str, *, branch: str = "") -> List[Commit]:
+    if branch:
+        _run(["git", "checkout", branch], cwd=dir)
+
     cmd = ["git", "log", f"--pretty={PRETTY_FMT}"]
     if from_ref:
-        cmd.append(f"{from_ref}..")
+        cmd.append(f"{from_ref}..{branch or ''}")
 
     result = _run(cmd, cwd=dir).decode("utf-8").rstrip(",")
     result = f"[{result}]"

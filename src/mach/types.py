@@ -127,6 +127,7 @@ class ComponentConfig:
     integrations: List[str] = field(default_factory=list)
     has_public_api: Optional[bool] = False
     health_check_path: Optional[str] = ""
+    branch: Optional[str] = ""
 
     def __post_init__(self):
         """Ensure short_name is set."""
