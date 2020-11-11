@@ -1,5 +1,7 @@
+import tempfile
+
 import pytest
-from mach import types
+from mach import parse, types
 
 
 @pytest.fixture
@@ -33,4 +35,10 @@ def config():
                 version="1.0",
             )
         ],
+        output_path=tempfile.gettempdir(),
     )
+
+
+@pytest.fixture
+def parsed_config(config):
+    return parse.parse_config(config)
