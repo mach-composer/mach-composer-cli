@@ -7,7 +7,14 @@ from typing import List
 import click
 from mach import exceptions
 
-PRETTY_FMT = """format:{%n  "commit": "%H",%n  "author": "%aN <%aE>",%n  "date": "%ad",%n  "message": "%s"%n},"""  # noqa
+PRETTY_FMT = {
+    "commit": "%H",
+    "author": "%aN <%aE>",
+    "date": "%ad",
+    "message": "%s",
+}
+
+PRETTY_FMT_STR = "format:" + "|".join([fmt for fmt in PRETTY_FMT.values()])
 
 
 @dataclass
@@ -48,19 +55,19 @@ def history(dir: str, from_ref: str, *, branch: str = "") -> List[Commit]:
     if branch:
         _run(["git", "checkout", branch], cwd=dir)
 
-    cmd = ["git", "log", f"--pretty={PRETTY_FMT}"]
+    cmd = ["git", "log", f"--pretty={PRETTY_FMT_STR}"]
     if from_ref:
         cmd.append(f"{from_ref}..{branch or ''}")
 
-    result = _run(cmd, cwd=dir).decode("utf-8").rstrip(",")
-    result = f"[{result}]"
-    data = json.loads(result)
-    return [
-        Commit(
-            id=_clean_commit_id(line["commit"]), msg=_clean_commit_msg(line["message"])
+    lines = _run(cmd, cwd=dir).decode("utf-8").splitlines()
+    commits = []
+    for line in lines:
+        commit_id, author, date, message = line.split("|")
+        commits.append(
+            Commit(id=_clean_commit_id(commit_id), msg=_clean_commit_msg(message))
         )
-        for line in data
-    ]
+
+    return commits
 
 
 def _clean_commit_msg(msg: str) -> str:
