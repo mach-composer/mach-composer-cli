@@ -1,5 +1,14 @@
 {% set definition = component.definition %}
 
+
+{% if "sentry" in component.integrations and general_config.sentry.managed %}
+resource "sentry_key" "{{ component.name }}" {
+  organization = "{{ general_config.sentry.organization }}"
+  project = "{{ general_config.sentry.project }}"
+  name = "{{ site.identifier }}_{{ component_name }}"
+}
+{% endif %}
+
 module "{{ component.name }}" {
   source            = "{{ definition.source }}{% if definition.use_version_reference %}?ref={{ definition.version }}{% endif %}"
   
@@ -11,14 +20,15 @@ module "{{ component.name }}" {
     {% include 'partials/component_aws_variables.tf' %}
   {% endif %}
 
+  {% if "sentry" in component.integrations %}
+    sentry_dsn              = {% if general_config.sentry.managed %}sentry_key.{{ component.name }}.dsn_secret{% else %}"{{ component.sentry.dsn }}"{% endif %}
+  {% endif %}
+
   {% if component.is_software_component %}
     component_version       = "{{ definition.version }}"
     environment             = "{{ general_config.environment }}"
     site                    = "{{ site.identifier }}"
-    {% if general_config.sentry %}
-    sentry_dsn              = "{{ general_config.sentry.dsn }}"
-    {% endif %}
-
+    
     variables = {
       {% for key, value in component.variables.items() %}
       {{ key }} = {{ value|component_value }}

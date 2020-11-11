@@ -44,7 +44,17 @@ class TerraformConfig:
 @dataclass_json
 @dataclass
 class SentryConfig:
-    dsn: str
+    dsn: Optional[str] = None
+
+    auth_token: Optional[str] = None
+    base_url: Optional[str] = None
+    project: Optional[str] = None
+    organization: Optional[str] = None
+
+    @property
+    def managed(self):
+        """Indicate if the Sentry DSN should be managed by MACH."""
+        return bool(self.auth_token)
 
 
 @dataclass_json
@@ -218,6 +228,7 @@ class Component:
     secrets: TerraformVariables = field(default_factory=dict)
     short_name: Optional[str] = ""
     health_check_path: Optional[str] = ""
+    sentry_dsn: Optional[str] = None
 
     @property
     def definition(self) -> ComponentConfig:
@@ -290,6 +301,7 @@ class Site:
     azure: Optional[SiteAzureSettings] = None
     aws: Optional[SiteAWSSettings] = None
     components: List[Component] = field(default_factory=list)
+    sentry_dsn: Optional[str] = None
 
     @property
     def public_api_components(self) -> List[Component]:

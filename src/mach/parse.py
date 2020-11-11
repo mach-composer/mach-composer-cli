@@ -21,8 +21,7 @@ def parse_configs(files: List[str], output_path: str = None) -> List[MachConfig]
         validate_config(config)
 
         config = resolve_component_definitions(config)
-        config = resolve_general_config(config)
-        config = resolve_components(config)
+        config = resolve_site_configs(config)
 
         if output_path:
             full_output_path = Path(f"{output_path}/{splitext(file)[0]}")
@@ -55,10 +54,10 @@ def parse_config_from_file(file: str) -> MachConfig:
     return config
 
 
-def resolve_general_config(config: MachConfig) -> MachConfig:  # noqa: C901
-    """If no general config is specified, use global config settings."""
-    if config.general_config.cloud == CloudOption.AZURE:
-        for site in config.sites:
+def resolve_site_configs(config: MachConfig) -> MachConfig:
+    """Use and merge site-specific configurations with general config"""
+    for site in config.sites:
+        if config.general_config.cloud == CloudOption.AZURE:
             if site.azure:
                 site.azure.merge(config.general_config.azure)
             else:
@@ -85,11 +84,38 @@ def resolve_general_config(config: MachConfig) -> MachConfig:  # noqa: C901
                     )
                 )
 
-    # Merge Contentful settings
-    if config.general_config.contentful:
-        for site in config.sites:
-            if site.contentful:
-                site.contentful.merge(config.general_config.contentful)
+        # Merge Contentful settings
+        if config.general_config.contentful:
+            for site in config.sites:
+                if site.contentful:
+                    site.contentful.merge(config.general_config.contentful)
+
+        if config.general_config.sentry and config.general_config.sentry.dsn:
+            if not site.sentry_dsn:
+                site.sentry_dsn = config.general_config.sentry.dsn
+
+    config = resolve_site_components(config)
+    return config
+
+
+def resolve_site_components(config: MachConfig) -> MachConfig:
+    """If no component info is specified, use global component settings."""
+    component_info: Dict[str, ComponentConfig] = {
+        component.name: component for component in config.components
+    }
+    for site in config.sites:
+        if not site.components:
+            continue
+
+        for component in site.components:
+            info = component_info[component.name]
+            component.definition = info
+
+            if not component.short_name:
+                component.short_name = info.short_name
+
+            if site.sentry_dsn and not component.sentry_dsn:
+                component.sentry_dsn = site.sentry_dsn
 
     return config
 
@@ -104,22 +130,5 @@ def resolve_component_definitions(config: MachConfig) -> MachConfig:
             comp.integrations = ["aws"]
         elif config.general_config.cloud == CloudOption.AZURE:
             comp.integrations = ["azure"]
-
-    return config
-
-
-def resolve_components(config: MachConfig) -> MachConfig:
-    """If no component info is specified, use global component settings."""
-    component_info: Dict[str, ComponentConfig] = {
-        component.name: component for component in config.components
-    }
-    for site in config.sites:
-        if site.components:
-            for component in site.components:
-                info = component_info[component.name]
-                component.definition = info
-
-                if not component.short_name:
-                    component.short_name = info.short_name
 
     return config
