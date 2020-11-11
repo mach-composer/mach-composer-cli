@@ -2,7 +2,7 @@ import re
 from dataclasses import dataclass, field
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Union
 
 from dataclasses_json import dataclass_json
 
@@ -44,7 +44,11 @@ class TerraformConfig:
 @dataclass_json
 @dataclass
 class SentryConfig:
+    """Global Sentry configuration."""
+
     dsn: Optional[str] = None
+    rate_limit_window: Optional[int] = None
+    rate_limit_count: Optional[int] = None
 
     auth_token: Optional[str] = None
     base_url: Optional[str] = None
@@ -222,13 +226,35 @@ class ContentfulSettings:
 
 @dataclass_json
 @dataclass
+class SentryDsn:
+    """Specific sentry DSN settings."""
+
+    dsn: Optional[str] = None
+    rate_limit_window: Optional[int] = None
+    rate_limit_count: Optional[int] = None
+
+    @classmethod
+    def from_config(cls, config: SentryConfig) -> "SentryDsn":
+        return cls(dsn=config.dsn)
+
+    def merge(self, config: Union[SentryConfig, "SentryDsn"]):
+        if not self.dsn:
+            self.dsn = config.dsn
+        if not self.rate_limit_window:
+            self.rate_limit_window = config.rate_limit_window
+        if not self.rate_limit_count:
+            self.rate_limit_count = config.rate_limit_count
+
+
+@dataclass_json
+@dataclass
 class Component:
     name: str
     variables: TerraformVariables = field(default_factory=dict)
     secrets: TerraformVariables = field(default_factory=dict)
     short_name: Optional[str] = ""
     health_check_path: Optional[str] = ""
-    sentry_dsn: Optional[str] = None
+    sentry: Optional[SentryDsn] = None
 
     @property
     def definition(self) -> ComponentConfig:
@@ -301,7 +327,7 @@ class Site:
     azure: Optional[SiteAzureSettings] = None
     aws: Optional[SiteAWSSettings] = None
     components: List[Component] = field(default_factory=list)
-    sentry_dsn: Optional[str] = None
+    sentry: Optional[SentryDsn] = None
 
     @property
     def public_api_components(self) -> List[Component]:

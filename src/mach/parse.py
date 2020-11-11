@@ -5,7 +5,13 @@ from typing import Dict, List
 import click
 import yaml
 from mach import exceptions
-from mach.types import CloudOption, ComponentConfig, MachConfig, SiteAzureSettings
+from mach.types import (
+    CloudOption,
+    ComponentConfig,
+    MachConfig,
+    SentryDsn,
+    SiteAzureSettings,
+)
 from mach.validate import validate_config
 from marshmallow.exceptions import ValidationError
 
@@ -19,9 +25,7 @@ def parse_configs(files: List[str], output_path: str = None) -> List[MachConfig]
         click.echo(f"Parsed {file} into config")
 
         validate_config(config)
-
-        config = resolve_component_definitions(config)
-        config = resolve_site_configs(config)
+        config = parse_config(config)
 
         if output_path:
             full_output_path = Path(f"{output_path}/{splitext(file)[0]}")
@@ -30,6 +34,12 @@ def parse_configs(files: List[str], output_path: str = None) -> List[MachConfig]
 
         valid_configs.append(config)
     return valid_configs
+
+
+def parse_config(config: MachConfig) -> MachConfig:
+    config = resolve_component_definitions(config)
+    config = resolve_site_configs(config)
+    return config
 
 
 def parse_config_from_file(file: str) -> MachConfig:
@@ -55,7 +65,7 @@ def parse_config_from_file(file: str) -> MachConfig:
 
 
 def resolve_site_configs(config: MachConfig) -> MachConfig:
-    """Use and merge site-specific configurations with general config"""
+    """Use and merge site-specific configurations with general config."""
     for site in config.sites:
         if config.general_config.cloud == CloudOption.AZURE:
             if site.azure:
@@ -90,9 +100,11 @@ def resolve_site_configs(config: MachConfig) -> MachConfig:
                 if site.contentful:
                     site.contentful.merge(config.general_config.contentful)
 
-        if config.general_config.sentry and config.general_config.sentry.dsn:
-            if not site.sentry_dsn:
-                site.sentry_dsn = config.general_config.sentry.dsn
+        if config.general_config.sentry:
+            if not site.sentry:
+                site.sentry = SentryDsn.from_config(config.general_config.sentry)
+            else:
+                site.sentry.merge(config.general_config.sentry)
 
     config = resolve_site_components(config)
     return config
@@ -114,8 +126,11 @@ def resolve_site_components(config: MachConfig) -> MachConfig:
             if not component.short_name:
                 component.short_name = info.short_name
 
-            if site.sentry_dsn and not component.sentry_dsn:
-                component.sentry_dsn = site.sentry_dsn
+            if site.sentry:
+                if not component.sentry:
+                    component.sentry = site.sentry
+                else:
+                    component.sentry.merge(site.sentry)
 
     return config
 
