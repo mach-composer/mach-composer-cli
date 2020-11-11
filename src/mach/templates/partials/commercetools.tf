@@ -67,4 +67,19 @@ output "frontend_channels" {
     ]
 }
 
+resource "null_resource" "commercetools" {
+  depends_on = [
+    commercetools_project_settings.project,
+    {% for channel in commercetools.channels %}
+    commercetools_channel.{{ channel.key }},
+    {% endfor %}
+    {% if commercetools.taxes %}
+    commercetools_tax_category.standard,
+    {% endif %}
+    {% for store in stores %}
+    commercetools_store.{{ store.key }},
+    {% endfor %}
+  ]
+}
+
 {% include 'partials/stores.tf' %}

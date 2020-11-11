@@ -82,7 +82,7 @@ module "{{ component.name }}" {
 
   depends_on = [
     {% if site.aws and component.has_public_api %}aws_apigatewayv2_api.main_gateway,{% endif %}
-    {% if "commercetools" in component.integrations %}commercetools_project_settings.project,{% endif %}
+    {% if site.commercetools %}null_resource.commercetools,{% endif %}
   ]
 }
 
