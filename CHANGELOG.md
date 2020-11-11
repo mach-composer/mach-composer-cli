@@ -2,6 +2,7 @@
 
 ## 0.5.2 (unreleased)
 - Improved dependencies between components and MACH-managed commercetools configurations
+- Improved git log parsing
   
 
 ## 0.5.1 (2020-11-10)
