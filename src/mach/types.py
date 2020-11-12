@@ -378,7 +378,7 @@ class Site(JsonSchemaMixin):
         return [c for c in self.components if c.has_public_api]
 
     def __post_init__(self):
-        """Ensure base_url has protocol stripped"""
+        """Ensure base_url has protocol stripped."""
         if self.base_url:
             self.base_url = PROTOCOL_RE.sub("", self.base_url)
 
