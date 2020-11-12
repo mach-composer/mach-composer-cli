@@ -51,7 +51,7 @@ terraform {
 {% if general_config.sentry.managed %}
 provider "sentry" {
   token = "{{ general_config.sentry.auth_token }}"
-  base_url = "{{ general_config.sentry.base_url|default('https://sentry.io/api/')}}"
+  base_url = "{% if general_config.sentry.base_url %}{{ general_config.sentry.base_url }}{% else %}https://sentry.io/api/{% endif %}"
   version = "~> 0.6.0"
 }
 {% endif %}
