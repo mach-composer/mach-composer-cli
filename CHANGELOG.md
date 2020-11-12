@@ -4,6 +4,7 @@
 - Add Sentry DSN management options
 - Improved dependencies between components and MACH-managed commercetools configurations
 - Improved git log parsing
+- Add `mach bootstrap config` command
   
 
 ## 0.5.1 (2020-11-10)
