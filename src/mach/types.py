@@ -258,7 +258,11 @@ class SentryDsn(JsonSchemaMixin):
 
     @classmethod
     def from_config(cls, config: SentryConfig) -> "SentryDsn":
-        return cls(dsn=config.dsn)
+        return cls(
+            dsn=config.dsn,
+            rate_limit_window=config.rate_limit_window,
+            rate_limit_count=config.rate_limit_count,
+        )
 
     def merge(self, config: Union[SentryConfig, "SentryDsn"]):
         if not self.dsn:
