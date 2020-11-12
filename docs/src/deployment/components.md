@@ -14,11 +14,12 @@ In this section a couple of methods – for various cloud providers – will be 
 === "Python"
     ```bash
     VERSION=$(shell git rev-parse --short HEAD 2>/dev/null || echo "dev" )
-    NAME=yourcomponent-$VERSION
+    NAME=$BASENAME-$VERSION
     ARTIFACT_NAME=$NAME.zip
 
-    func pack --build-native-deps --python
-    mv $BASENAME.zip $ARTIFACT_NAME
+    python -m pip install dist/*.whl -t ./build
+    cp handler.py ./build
+    cd build && zip -9 -r $ARTIFACT_NAME .
     ```
 
 === "Node"
@@ -36,12 +37,11 @@ In this section a couple of methods – for various cloud providers – will be 
 === "Python"
     ```bash
     VERSION=$(shell git rev-parse --short HEAD 2>/dev/null || echo "dev" )
-    NAME=$BASENAME-$VERSION
+    NAME=yourcomponent-$VERSION
     ARTIFACT_NAME=$NAME.zip
 
-    python -m pip install dist/*.whl -t ./build
-    cp handler.py ./build
-    cd build && zip -9 -r $ARTIFACT_NAME .
+    func pack --build-native-deps --python
+    mv $BASENAME.zip $ARTIFACT_NAME
     ```
 === "Node"
     ```bash
