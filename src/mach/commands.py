@@ -217,9 +217,13 @@ def sites(file: str):
     default="main.yml",
     help="Output file.",
 )
-def bootstrap(output: str):
+@click.argument("type_", required=True, type=click.Choice(["config", "component"]))
+def bootstrap(output: str, type_: str):
     """Bootstraps a configuration or component."""
-    _bootstrap.create_configuration(output)
+    if type_ == "config":
+        _bootstrap.create_configuration(output)
+    if type_ == "component":
+        click.echo("component bootstrap will be supported in a next release.")
 
 
 def get_input_files(file: Optional[str]) -> List[str]:

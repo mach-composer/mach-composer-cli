@@ -96,7 +96,11 @@ def _create_config() -> types.MachConfig:
             project_key=ct_project,
             client_id="<client-id>",
             client_secret="<client-secret>",
-            scopes=f"manage_api_clients:{ct_project} manage_project:{ct_project} view_api_clients:{ct_project}",
+            scopes=(
+                f"manage_api_clients:{ct_project} "
+                f"manage_project:{ct_project} "
+                f"view_api_clients:{ct_project}"
+            ),
         )
 
     return types.MachConfig(
