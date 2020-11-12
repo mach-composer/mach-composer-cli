@@ -1,0 +1,658 @@
+{
+  "type": "object",
+  "required": [
+    "general_config",
+    "sites"
+  ],
+  "properties": {
+    "general_config": {
+      "$ref": "#/definitions/GeneralConfig"
+    },
+    "sites": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/Site"
+      }
+    },
+    "components": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/ComponentConfig"
+      },
+      "default": []
+    },
+    "output_path": {
+      "type": "string",
+      "default": "deployments"
+    },
+    "file": {
+      "type": "string",
+      "default": ""
+    }
+  },
+  "description": "Main MACH configuration object.",
+  "$schema": "http://json-schema.org/draft-06/schema#",
+  "definitions": {
+    "GeneralConfig": {
+      "type": "object",
+      "required": [
+        "environment",
+        "terraform_config",
+        "cloud"
+      ],
+      "properties": {
+        "environment": {
+          "type": "string"
+        },
+        "terraform_config": {
+          "$ref": "#/definitions/TerraformConfig"
+        },
+        "cloud": {
+          "type": "string",
+          "enum": [
+            "aws",
+            "azure"
+          ]
+        },
+        "sentry": {
+          "$ref": "#/definitions/SentryConfig"
+        },
+        "azure": {
+          "$ref": "#/definitions/AzureConfig"
+        },
+        "contentful": {
+          "$ref": "#/definitions/ContentfulConfig"
+        }
+      },
+      "description": "Config this is shared across sites."
+    },
+    "TerraformConfig": {
+      "type": "object",
+      "properties": {
+        "azure_remote_state": {
+          "$ref": "#/definitions/AzureTFState"
+        },
+        "aws_remote_state": {
+          "$ref": "#/definitions/AWSTFState"
+        }
+      },
+      "description": "Terraform configuration."
+    },
+    "AzureTFState": {
+      "type": "object",
+      "required": [
+        "resource_group",
+        "storage_account",
+        "container_name",
+        "state_folder"
+      ],
+      "properties": {
+        "resource_group": {
+          "type": "string"
+        },
+        "storage_account": {
+          "type": "string"
+        },
+        "container_name": {
+          "type": "string"
+        },
+        "state_folder": {
+          "type": "string"
+        }
+      },
+      "description": "Azure storage account state backend configuration."
+    },
+    "AWSTFState": {
+      "type": "object",
+      "required": [
+        "bucket",
+        "key_prefix"
+      ],
+      "properties": {
+        "bucket": {
+          "type": "string"
+        },
+        "key_prefix": {
+          "type": "string"
+        },
+        "role_arn": {
+          "type": "string"
+        },
+        "region": {
+          "type": "string",
+          "default": "eu-west-1"
+        },
+        "lock_table": {
+          "type": "string"
+        }
+      },
+      "description": "AWS S3 bucket state backend configuration."
+    },
+    "SentryConfig": {
+      "type": "object",
+      "properties": {
+        "dsn": {
+          "type": "string"
+        },
+        "rate_limit_window": {
+          "type": "integer"
+        },
+        "rate_limit_count": {
+          "type": "integer"
+        },
+        "auth_token": {
+          "type": "string"
+        },
+        "base_url": {
+          "type": "string"
+        },
+        "project": {
+          "type": "string"
+        },
+        "organization": {
+          "type": "string"
+        }
+      },
+      "description": "Global Sentry configuration."
+    },
+    "AzureConfig": {
+      "type": "object",
+      "properties": {
+        "front_door": {
+          "$ref": "#/definitions/FrontDoorSettings"
+        },
+        "resources_prefix": {
+          "type": "string",
+          "default": ""
+        },
+        "tenant_id": {
+          "type": "string",
+          "default": ""
+        },
+        "subscription_id": {
+          "type": "string",
+          "default": ""
+        },
+        "region": {
+          "type": "string",
+          "default": ""
+        },
+        "service_object_ids": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "default": {}
+        }
+      },
+      "description": "Azure configuration."
+    },
+    "FrontDoorSettings": {
+      "type": "object",
+      "required": [
+        "resource_group",
+        "dns_zone",
+        "ssl_key_vault_name",
+        "ssl_key_vault_secret_name",
+        "ssl_key_vault_secret_version"
+      ],
+      "properties": {
+        "resource_group": {
+          "type": "string"
+        },
+        "dns_zone": {
+          "type": "string"
+        },
+        "ssl_key_vault_name": {
+          "type": "string"
+        },
+        "ssl_key_vault_secret_name": {
+          "type": "string"
+        },
+        "ssl_key_vault_secret_version": {
+          "type": "string"
+        }
+      },
+      "description": "Frontdoor settings."
+    },
+    "ContentfulConfig": {
+      "type": "object",
+      "required": [
+        "cma_token",
+        "organization_id"
+      ],
+      "properties": {
+        "cma_token": {
+          "type": "string"
+        },
+        "organization_id": {
+          "type": "string"
+        }
+      },
+      "description": "Generic Contenful configuration."
+    },
+    "Site": {
+      "type": "object",
+      "required": [
+        "identifier"
+      ],
+      "properties": {
+        "identifier": {
+          "type": "string"
+        },
+        "base_url": {
+          "type": "string",
+          "default": ""
+        },
+        "commercetools": {
+          "$ref": "#/definitions/CommercetoolsSettings"
+        },
+        "contentful": {
+          "$ref": "#/definitions/ContentfulSettings"
+        },
+        "azure": {
+          "$ref": "#/definitions/SiteAzureSettings"
+        },
+        "aws": {
+          "$ref": "#/definitions/SiteAWSSettings"
+        },
+        "components": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Component"
+          },
+          "default": []
+        },
+        "sentry": {
+          "$ref": "#/definitions/SentryDsn"
+        }
+      },
+      "description": "Site definition."
+    },
+    "CommercetoolsSettings": {
+      "type": "object",
+      "required": [
+        "project_key",
+        "client_id",
+        "client_secret",
+        "scopes"
+      ],
+      "properties": {
+        "project_key": {
+          "type": "string"
+        },
+        "client_id": {
+          "type": "string"
+        },
+        "client_secret": {
+          "type": "string"
+        },
+        "scopes": {
+          "type": "string"
+        },
+        "token_url": {
+          "type": "string",
+          "default": "https://auth.europe-west1.gcp.commercetools.com"
+        },
+        "api_url": {
+          "type": "string",
+          "default": "https://api.europe-west1.gcp.commercetools.com"
+        },
+        "currencies": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        },
+        "languages": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        },
+        "countries": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        },
+        "messages_enabled": {
+          "type": "boolean",
+          "default": true
+        },
+        "channels": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/CommercetoolsChannel"
+          },
+          "default": []
+        },
+        "taxes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/CommercetoolsTax"
+          },
+          "default": []
+        },
+        "stores": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Store"
+          },
+          "default": []
+        },
+        "create_frontend_credentials": {
+          "type": "boolean",
+          "default": true
+        }
+      },
+      "description": "commercetools configuration."
+    },
+    "CommercetoolsChannel": {
+      "type": "object",
+      "required": [
+        "key",
+        "roles"
+      ],
+      "properties": {
+        "key": {
+          "type": "string"
+        },
+        "roles": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "name": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "description": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "commercetools channel definition."
+    },
+    "CommercetoolsTax": {
+      "type": "object",
+      "required": [
+        "country",
+        "amount",
+        "name"
+      ],
+      "properties": {
+        "country": {
+          "type": "string"
+        },
+        "amount": {
+          "type": "number"
+        },
+        "name": {
+          "type": "string"
+        }
+      },
+      "description": "commercetools tax definition."
+    },
+    "Store": {
+      "type": "object",
+      "required": [
+        "name",
+        "key"
+      ],
+      "properties": {
+        "name": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "key": {
+          "type": "string"
+        },
+        "languages": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        },
+        "distribution_channels": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        }
+      },
+      "description": "commercetools store definition."
+    },
+    "ContentfulSettings": {
+      "type": "object",
+      "required": [
+        "space"
+      ],
+      "properties": {
+        "space": {
+          "type": "string"
+        },
+        "default_locale": {
+          "type": "string",
+          "default": "en-US"
+        },
+        "cma_token": {
+          "type": "string",
+          "default": ""
+        },
+        "organization_id": {
+          "type": "string",
+          "default": ""
+        }
+      },
+      "description": "Contentful settings."
+    },
+    "SiteAzureSettings": {
+      "type": "object",
+      "properties": {
+        "service_object_ids": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "default": {}
+        },
+        "front_door": {
+          "$ref": "#/definitions/FrontDoorSettings"
+        },
+        "alert_group": {
+          "$ref": "#/definitions/AlertGroup"
+        },
+        "resource_group": {
+          "type": "string",
+          "default": ""
+        },
+        "tenant_id": {
+          "type": "string",
+          "default": ""
+        },
+        "subscription_id": {
+          "type": "string",
+          "default": ""
+        },
+        "region": {
+          "type": "string",
+          "default": ""
+        }
+      },
+      "description": "Site-specific Azure settings."
+    },
+    "AlertGroup": {
+      "type": "object",
+      "required": [
+        "name"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "alert_emails": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        },
+        "webhook_url": {
+          "type": "string"
+        },
+        "logic_app": {
+          "type": "string"
+        }
+      },
+      "description": "Alert group configuration."
+    },
+    "SiteAWSSettings": {
+      "type": "object",
+      "required": [
+        "account_id",
+        "region"
+      ],
+      "properties": {
+        "account_id": {
+          "type": "integer"
+        },
+        "region": {
+          "type": "string"
+        },
+        "deploy_role": {
+          "type": "string"
+        },
+        "extra_providers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/AWSProvider"
+          },
+          "default": []
+        },
+        "route53_zone_name": {
+          "type": "string",
+          "default": ""
+        }
+      },
+      "description": "Site-specific AWS settings."
+    },
+    "AWSProvider": {
+      "type": "object",
+      "required": [
+        "name",
+        "region"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "region": {
+          "type": "string"
+        }
+      },
+      "description": "AWS provider configuration."
+    },
+    "Component": {
+      "type": "object",
+      "required": [
+        "name"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "variables": {
+          "type": "object",
+          "default": {}
+        },
+        "secrets": {
+          "type": "object",
+          "default": {}
+        },
+        "short_name": {
+          "type": "string",
+          "default": ""
+        },
+        "health_check_path": {
+          "type": "string",
+          "default": ""
+        },
+        "sentry": {
+          "$ref": "#/definitions/SentryDsn"
+        }
+      },
+      "description": "Component configuration."
+    },
+    "SentryDsn": {
+      "type": "object",
+      "properties": {
+        "dsn": {
+          "type": "string"
+        },
+        "rate_limit_window": {
+          "type": "integer"
+        },
+        "rate_limit_count": {
+          "type": "integer"
+        }
+      },
+      "description": "Specific sentry DSN settings."
+    },
+    "ComponentConfig": {
+      "type": "object",
+      "required": [
+        "name",
+        "source",
+        "version"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "source": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        },
+        "short_name": {
+          "type": "string",
+          "default": ""
+        },
+        "integrations": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        },
+        "has_public_api": {
+          "type": "boolean",
+          "default": false
+        },
+        "health_check_path": {
+          "type": "string",
+          "default": ""
+        },
+        "branch": {
+          "type": "string",
+          "default": ""
+        }
+      },
+      "description": "Component definition."
+    }
+  }
+}
