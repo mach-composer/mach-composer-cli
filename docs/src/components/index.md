@@ -44,6 +44,7 @@ Available integrations are:
 - `aws`
 - `azure`
 - `commercetools`
+- `sentry`
 - `contentful`
 
 By default, integrations are set on the given cloud provider. So when no `integrations` defintion is given, it defaults to `['aws']` in case of an AWS deployment.
@@ -92,12 +93,6 @@ variable "environment_variables" {
   type        = map(string)
   description = "Explicit map of variables that should be put in this function's environment variables."
 }
-
-variable "sentry_dsn" {
-  type        = string
-  default     = ""
-  description = "Sentry DSN - only when Sentry is configured"
-}
 ```
 
 !!! info "Cloud specific variables"
@@ -122,6 +117,18 @@ variable "ct_api_url" {
 variable "ct_auth_url" {
   type        = string
   description = "commercetools Auth URL"
+}
+```
+
+#### sentry
+
+The following variable is given when `sentry` integration is defined.
+
+```terraform
+variable "sentry_dsn" {
+  type        = string
+  default     = ""
+  description = "Sentry DSN - only when Sentry is configured"
 }
 ```
 

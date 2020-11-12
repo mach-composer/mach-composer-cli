@@ -45,7 +45,7 @@ This can be any of:
 #### Azure storage
 An Azure state backend can be defined as:
 
-```
+```yaml
 terraform_config:
   azure_remote_state:
     resource_group: <your resource group>
@@ -60,7 +60,7 @@ terraform_config:
 #### AWS S3
 An AWS S3 state backend can be defined as:
 
-```
+```yaml
 terraform_config:
   aws_remote_state:
     bucket: mach-statefiles
@@ -77,23 +77,42 @@ terraform_config:
 ### sentry
 Defines a Sentry configuration.
 
-Example:
-```
-sentry:
-  dsn: https://LhNrqROZRIl2c5ciidkN82DObJfgtiLd@sentry.io/123456
-```
+This could be a predefined DSN to be used in the components, or MACH can manage the keys for you and pass the correct DSN to the components to be used.
 
-When defined, a `sentry_dsn` variable is passed on to all Terraform components.
+=== "Example (managed)"
+    ```yaml
+    sentry:
+      auth_token: <your-sentry-auth-token>
+      organization: <organization-name>
+      project: <project-name>
+    ```
+=== "predefined DSN"
+    ```yaml
+    sentry:
+      dsn: https://LhNrqROZRIl2c5ciidkN82DObJfgtiLd@sentry.io/123456
+    ```
+
+- **`dsn`** - DSN to use in the components
+
+or 
+
+- **`auth_token`** - Auth token to manage keys with
+- **`organization`** - Organization name
+- **`project`** - Project to create the key for
+- `rate_limit_window` - The rate limit window that applies to a generated key
+- `rate_limit_count` - The rate limit count that applies to a generated key
+  
+When defined, a `sentry` integration can be used in the components to expose a Sentry DSN value.
 
 !!! tip ""
-    For more information about data exposed to Terraform modules, see the [Terraform component](./components/index.md#terraform-component) docs
+    The Sentry settings can be overwritten on [site](#sentry_1) and [component](#sentry_2) level
 
 ### azure
 
 General Azure settings. Values can be overwritten [per site](#azure_1).
 
 Example:
-```
+```yaml
 azure:
   tenant_id: f2e03b8b-fe10-4fbc-9f5c-76dad9ac52e2
   subscription_id: a5b51c09-a2da-45b8-918a-67cf42456ab3
@@ -119,7 +138,7 @@ azure:
 #### front_door
 
 Example:
-```
+```yaml
 front_door:
   resource_group: my-shared-rg
   dns_zone: my-services-domain.net
@@ -151,6 +170,7 @@ All site definitions.
   Will be used for the Terraform state and naming all cloud resources.
 - `base_url` - Used for setting up the API Gateway, routing and SSL certificates
 - `commercetools` - [commercetools configuration](#commercetools) block
+- `sentry` - [Sentry configuration](#sentry_1) block
 - `contentful` - [Contentful configuration](#contentful_1) block
 - `azure` - [Azure](#azure_1) settings
 - `aws` - [AWS](#aws_1) settings
@@ -162,7 +182,7 @@ commercetools configuration.
 
 Example:
 
-```
+```yaml
 commercetools:
   project_key: my-site-tst
   client_id: T9J5g5bJe-VV8aVvN5Q
@@ -196,13 +216,21 @@ commercetools:
 - `create_frontend_credentials` - Defines if frontend API credentials must be created
   Defaults to `true`
 
+### sentry
+
+Overwrites any value specified in the general configs [Sentry block](#sentry)
+
+- `dsn` - DSN to use in the components
+- `rate_limit_window` - The rate limit window that applies to a generated key
+- `rate_limit_count` - The rate limit count that applies to a generated key
+
 ### contentful
 
 Contentful configuration.
 
 Example:
 
-```
+```yaml
 contentful:
   space: "MySpace"
 ```
@@ -215,7 +243,7 @@ contentful:
 #### channels
 
 Example
-```
+```yaml
 channels:
   - key: INV
     roles:
@@ -251,7 +279,7 @@ Defines tax rates for various countries.
 Defines [commercetools stores](https://docs.commercetools.com/http-api-projects-stores).
 
 Example:
-```
+```yaml
 stores:
   - name:
       en-GB: my store
@@ -289,7 +317,7 @@ And adds the following exta attributes:
 #### alert_group
 Example:
 
-```
+```yaml
 alert_group:
   name: critical
   alert_emails:
@@ -309,7 +337,7 @@ Site-specific AWS settings.
 
 Example:
 
-```
+```yaml
 aws:
   account_id: 1234567890
   region: eu-west-1
@@ -333,6 +361,15 @@ aws:
 - `secrets` - Environment variables for this component that should be stored in a encrypted key-value store
 - `health_check_path` - Defines a custom healthcheck path.  
   Overwrites the default `health_check_path` defined in the component definition
+- `sentry` - [Sentry configuration](#sentry_2) block
+
+#### sentry
+
+Overwrites any value specified in the site configs [Sentry block](#sentry_1)
+
+- `dsn` - DSN to use in the components
+- `rate_limit_window` - The rate limit window that applies to a generated key
+- `rate_limit_count` - The rate limit count that applies to a generated key
 
 ## components
 
@@ -341,7 +378,7 @@ These components are used and configured separately [per site](#component-config
 
 Example:
 
-```
+```yaml
 components:
   - name: api-extensions
     short_name: apiexts
@@ -375,7 +412,7 @@ components:
 
 [^1]: commercetools uses [Localized strings](https://docs.commercetools.com/http-api-types#localizedstring) to be able to define strings in mulitple languages.  
 Whenever a localized string needs to be defined, this can be done in the following format:
-```
+```yaml
 some-string:
   - en-GB: My value
   - nl-NL:  Mijn waarde
