@@ -4,7 +4,7 @@ from enum import Enum
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Union
 
-from dataclasses_json import dataclass_json
+from dataclasses_json import config, dataclass_json
 from dataclasses_jsonschema import JsonSchemaMixin
 
 PROTOCOL_RE = re.compile(r"^(http(s)?://)")
@@ -13,6 +13,11 @@ TerraformVariables = Dict[str, Any]
 StoreVariables = Dict[str, TerraformVariables]
 StoreSecretVariables = Dict[str, StoreVariables]
 LocalizedString = Dict[str, str]
+
+
+# Define a none value as a custom dataclasses field so that
+# null values get excluded in a dataclass dump
+_none = lambda: field(default=None, metadata=config(exclude=lambda x: x is None))
 
 
 @dataclass_json
@@ -33,9 +38,9 @@ class AWSTFState(JsonSchemaMixin):
 
     bucket: str
     key_prefix: str
-    role_arn: Optional[str] = None
+    role_arn: Optional[str] = _none()
     region: str = "eu-west-1"
-    lock_table: Optional[str] = None
+    lock_table: Optional[str] = _none()
     encrypt = True
 
 
@@ -44,8 +49,8 @@ class AWSTFState(JsonSchemaMixin):
 class TerraformConfig(JsonSchemaMixin):
     """Terraform configuration."""
 
-    azure_remote_state: Optional[AzureTFState] = None
-    aws_remote_state: Optional[AWSTFState] = None
+    azure_remote_state: Optional[AzureTFState] = _none()
+    aws_remote_state: Optional[AWSTFState] = _none()
 
 
 @dataclass_json
@@ -53,14 +58,14 @@ class TerraformConfig(JsonSchemaMixin):
 class SentryConfig(JsonSchemaMixin):
     """Global Sentry configuration."""
 
-    dsn: Optional[str] = None
-    rate_limit_window: Optional[int] = None
-    rate_limit_count: Optional[int] = None
+    dsn: Optional[str] = _none()
+    rate_limit_window: Optional[int] = _none()
+    rate_limit_count: Optional[int] = _none()
 
-    auth_token: Optional[str] = None
-    base_url: Optional[str] = None
-    project: Optional[str] = None
-    organization: Optional[str] = None
+    auth_token: Optional[str] = _none()
+    base_url: Optional[str] = _none()
+    project: Optional[str] = _none()
+    organization: Optional[str] = _none()
 
     @property
     def managed(self):
@@ -87,8 +92,8 @@ class AlertGroup(JsonSchemaMixin):
 
     name: str
     alert_emails: List[str] = field(default_factory=list)
-    webhook_url: Optional[str] = None
-    logic_app: Optional[str] = None
+    webhook_url: Optional[str] = _none()
+    logic_app: Optional[str] = _none()
 
     @property
     def logic_app_name(self) -> Optional[str]:
@@ -104,7 +109,7 @@ class AlertGroup(JsonSchemaMixin):
 class AzureConfig(JsonSchemaMixin):
     """Azure configuration."""
 
-    front_door: Optional[FrontDoorSettings] = None
+    front_door: Optional[FrontDoorSettings] = _none()
     resources_prefix: Optional[str] = ""
     tenant_id: Optional[str] = ""
     subscription_id: Optional[str] = ""
@@ -143,9 +148,9 @@ class GeneralConfig(JsonSchemaMixin):
     environment: str
     terraform_config: TerraformConfig
     cloud: CloudOption
-    sentry: Optional[SentryConfig] = None
-    azure: Optional[AzureConfig] = None
-    contentful: Optional[ContentfulConfig] = None
+    sentry: Optional[SentryConfig] = _none()
+    azure: Optional[AzureConfig] = _none()
+    contentful: Optional[ContentfulConfig] = _none()
 
 
 @dataclass_json
@@ -156,11 +161,11 @@ class ComponentConfig(JsonSchemaMixin):
     name: str
     source: str
     version: str
-    short_name: Optional[str] = ""
+    short_name: Optional[str] = _none()
     integrations: List[str] = field(default_factory=list)
     has_public_api: Optional[bool] = False
-    health_check_path: Optional[str] = ""
-    branch: Optional[str] = ""
+    health_check_path: Optional[str] = _none()
+    branch: Optional[str] = _none()
 
     def __post_init__(self):
         """Ensure short_name is set."""
@@ -196,8 +201,8 @@ class CommercetoolsChannel(JsonSchemaMixin):
 
     key: str
     roles: List[str]
-    name: Optional[LocalizedString] = None
-    description: Optional[LocalizedString] = None
+    name: Optional[LocalizedString] = _none()
+    description: Optional[LocalizedString] = _none()
 
 
 @dataclass_json
@@ -252,9 +257,9 @@ class ContentfulSettings(JsonSchemaMixin):
 class SentryDsn(JsonSchemaMixin):
     """Specific sentry DSN settings."""
 
-    dsn: Optional[str] = None
-    rate_limit_window: Optional[int] = None
-    rate_limit_count: Optional[int] = None
+    dsn: Optional[str] = _none()
+    rate_limit_window: Optional[int] = _none()
+    rate_limit_count: Optional[int] = _none()
 
     @classmethod
     def from_config(cls, config: SentryConfig) -> "SentryDsn":
@@ -277,9 +282,9 @@ class Component(JsonSchemaMixin):
     name: str
     variables: TerraformVariables = field(default_factory=dict)
     secrets: TerraformVariables = field(default_factory=dict)
-    short_name: Optional[str] = ""
-    health_check_path: Optional[str] = ""
-    sentry: Optional[SentryDsn] = None
+    short_name: Optional[str] = _none()
+    health_check_path: Optional[str] = _none()
+    sentry: Optional[SentryDsn] = _none()
 
     @property
     def definition(self) -> ComponentConfig:
@@ -310,7 +315,7 @@ class SiteAWSSettings(JsonSchemaMixin):
 
     account_id: int
     region: str
-    deploy_role: Optional[str] = None
+    deploy_role: Optional[str] = _none()
     extra_providers: Optional[List[AWSProvider]] = field(default_factory=list)
     route53_zone_name: Optional[str] = ""
 
@@ -321,8 +326,8 @@ class SiteAzureSettings(JsonSchemaMixin):
     """Site-specific Azure settings."""
 
     service_object_ids: Dict[str, str] = field(default_factory=dict)
-    front_door: Optional[FrontDoorSettings] = None
-    alert_group: Optional[AlertGroup] = None
+    front_door: Optional[FrontDoorSettings] = _none()
+    alert_group: Optional[AlertGroup] = _none()
     resource_group: Optional[str] = ""
     tenant_id: Optional[str] = ""  # Can overwrite values from AzureConfig
     subscription_id: Optional[str] = ""  # Can overwrite values from AzureConfig
@@ -352,21 +357,22 @@ class Site(JsonSchemaMixin):
     """Site definition."""
 
     identifier: str
-    base_url: Optional[str] = ""
-    commercetools: Optional[CommercetoolsSettings] = None
-    contentful: Optional[ContentfulSettings] = None
-    azure: Optional[SiteAzureSettings] = None
-    aws: Optional[SiteAWSSettings] = None
+    base_url: Optional[str] = _none()
+    commercetools: Optional[CommercetoolsSettings] = _none()
+    contentful: Optional[ContentfulSettings] = _none()
+    azure: Optional[SiteAzureSettings] = _none()
+    aws: Optional[SiteAWSSettings] = _none()
     components: List[Component] = field(default_factory=list)
-    sentry: Optional[SentryDsn] = None
+    sentry: Optional[SentryDsn] = _none()
 
     @property
     def public_api_components(self) -> List[Component]:
         return [c for c in self.components if c.has_public_api]
 
     def __post_init__(self):
-        """Ensure short_name is set."""
-        self.base_url = PROTOCOL_RE.sub("", self.base_url)
+        """Ensure base_url has protocol stripped"""
+        if self.base_url:
+            self.base_url = PROTOCOL_RE.sub("", self.base_url)
 
 
 @dataclass_json
@@ -378,7 +384,7 @@ class MachConfig(JsonSchemaMixin):
     sites: List[Site]
     components: List[ComponentConfig] = field(default_factory=list)
     output_path: str = "deployments"
-    file: str = ""
+    file: Optional[str] = _none()
 
     @property
     def deployment_path(self) -> Path:
