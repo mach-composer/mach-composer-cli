@@ -31,6 +31,9 @@ def validate_general_config(config: types.GeneralConfig):
                 "Found azure_remote_state configuration, while cloud is set to 'aws'"
             )
 
+    if config.sentry:
+        validate_sentry_config(config.sentry)
+
 
 def validate_site(site: types.Site, *, config: types.MachConfig):
     if config.general_config.cloud == types.CloudOption.AWS and not site.aws:
@@ -85,6 +88,19 @@ def validate_components(config: types.MachConfig):
         validate_aws_components(config)
     elif config.general_config.cloud == types.CloudOption.AZURE:
         validate_azure_components(config)
+
+
+def validate_sentry_config(config: types.SentryConfig):
+    if not any([config.dsn, config.auth_token]):
+        raise ValidationError("sentry: Either dsn or auth_token should be set")
+
+    if all([config.dsn, config.auth_token]):
+        raise ValidationError("sentry: Only a dsn or auth_token should be defined")
+
+    if config.auth_token and not any([config.project, config.organization]):
+        raise ValidationError(
+            "sentry: A project and organization should be defined when using an auth_token"
+        )
 
 
 def validate_aws_components(config: types.MachConfig):

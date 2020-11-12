@@ -40,9 +40,21 @@ terraform {
       source = "labd/contentful"
     }
     {% endif %}
+    {% if general_config.sentry.managed %}
+    sentry = {
+      source = "jianyuan/sentry"
+    }
+    {% endif %}
   }
 }
 
+{% if general_config.sentry.managed %}
+provider "sentry" {
+  token = "{{ general_config.sentry.auth_token }}"
+  base_url = "{{ general_config.sentry.base_url|default('https://sentry.io/api/')}}"
+  version = "~> 0.6.0"
+}
+{% endif %}
 
 {% if site.commercetools %}{% include 'partials/commercetools.tf' %}{% endif %}
 {% if site.contentful %}{% include 'partials/contentful.tf' %}{% endif %}
