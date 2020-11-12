@@ -4,7 +4,7 @@
 resource "sentry_key" "{{ component.name }}" {
   organization = "{{ general_config.sentry.organization }}"
   project = "{{ general_config.sentry.project }}"
-  name = "{{ site.identifier }}_{{ component_name }}"
+  name = "{{ site.identifier }}_{{ component.name }}"
   {% if component.sentry.rate_limit_window %}
   rate_limit_window = {{ component.sentry.rate_limit_window }}
   {% endif %}
