@@ -11,6 +11,7 @@ Options:
 
 Commands:
   apply       Apply the configuration.
+  bootstrap   Bootstraps a configuration or component.
   components  List all components.
   generate    Generate the Terraform files.
   plan        Output the deploy plan.
@@ -25,3 +26,4 @@ Commands:
 ## `sites`
 ## `components`
 ## `update`
+## `bootstrap`
