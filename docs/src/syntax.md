@@ -16,7 +16,7 @@ The configuration file has the following structure:
 - **[sites](#sites)**
     - **[identifier](#sites)**
     - [commercetools](#commercetools)
-    - [contentful](#contentful)
+    - [contentful](#contentful_1)
     - [azure](#azure_1)
     - [aws](#aws)
     - [stores](#stores)
@@ -211,34 +211,10 @@ commercetools:
 - `messages_enabled` - When false the creation of messages is disabled.  
   Defaults to True
 - `channels` - List of [channel definitions](#channels)
-- `taxes` - List of [tax definitions](#tax)
-- `stores` - List of [store definitions](#store) if multiple (store) contexts are going to be used.
+- `taxes` - List of [tax definitions](#taxes)
+- `stores` - List of [store definitions](#stores) if multiple (store) contexts are going to be used.
 - `create_frontend_credentials` - Defines if frontend API credentials must be created
   Defaults to `true`
-
-### sentry
-
-Overwrites any value specified in the general configs [Sentry block](#sentry)
-
-- `dsn` - DSN to use in the components
-- `rate_limit_window` - The rate limit window that applies to a generated key
-- `rate_limit_count` - The rate limit count that applies to a generated key
-
-### contentful
-
-Contentful configuration.
-
-Example:
-
-```yaml
-contentful:
-  space: "MySpace"
-```
-
-- **`space`** - (Required) Name of the space to be created
-- `default_locale` - Set default locale. Defaults to "en-US"
-- `cma_token` - Override default `cma_token` setting (site-specific)
-- `organization_id` - Override default `organization_id` setting (site-specific)
 
 #### channels
 
@@ -292,6 +268,31 @@ stores:
 - **`key`** - (Required) Store key
 - `languages` - (Required)
 - `distribution_channels` - (Required)
+
+
+### sentry
+
+Overwrites any value specified in the general configs [Sentry block](#sentry)
+
+- `dsn` - DSN to use in the components
+- `rate_limit_window` - The rate limit window that applies to a generated key
+- `rate_limit_count` - The rate limit count that applies to a generated key
+
+### contentful
+
+Contentful configuration.
+
+Example:
+
+```yaml
+contentful:
+  space: "MySpace"
+```
+
+- **`space`** - (Required) Name of the space to be created
+- `default_locale` - Set default locale. Defaults to "en-US"
+- `cma_token` - Override default `cma_token` setting (site-specific)
+- `organization_id` - Override default `organization_id` setting (site-specific)
 
 
 ### azure

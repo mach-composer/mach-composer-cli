@@ -16,6 +16,10 @@ nav:
   - components/index.md
   - components/azure.md
   - components/aws.md
+- Integrations:
+  - integrations/commercetools.md
+  - integrations/sentry.md
+  - integrations/contentful.md
 - Deployment:
   - Components: deployment/components.md
   - MACH stack: deployment/config.md
