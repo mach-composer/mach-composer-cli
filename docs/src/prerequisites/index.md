@@ -33,3 +33,10 @@ Use the credentials for this client to configure each site's [commercetools sett
 ## Cloud environment
 
 Setup your [Azure](./azure.md) or [AWS](./aws.md) environment.
+
+## Other integrations
+
+MACH also provides other integrations that you can include in your MACH environment.
+
+- [Sentry integration](../integrations/sentry.md)
+- [Contentful integration](../integrations/contentful.md)

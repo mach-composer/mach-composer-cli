@@ -33,6 +33,19 @@ This is done by providing the necessary Terraform module files in the component.
 !!! tip ""
       A good practise usually is to place all Terraform files in a single `terraform/` directory and reference that in your MACH configuration.
 
+
+### Required variables
+
+MACH expects each component to have a certain set of variables defined.
+
+What variables it needs to have defined is controlled by the [integrations](../syntax.md#components) setting.
+
+If `integrations` is set to an empty list `[]`, no variables will be needed.
+
+!!! tip ""
+    An example of a component that takes no variables could be a component that creates custom product types in commercetools. This component operates with the same Terraform commercetools provider which is configured for the correct project already, so no additional information will be needed in the Terraform module itself.
+
+
 ### Integrations
 
 By defining a set of `integrations` in the [component definitions](../syntax.md#components), MACH knows what variables need to be passed on to the components.
@@ -52,12 +65,6 @@ By default, integrations are set on the given cloud provider. So when no `integr
 !!! tip "Non-cloud components"
     As an example; you might have a component defining some custom commercetools product types. No further cloud infrastructure is needed.  
     In this case, that component will have `integrations: ['commeretools']` and MACH won't pass any of the cloud-specific variables.
-
-### Required variables
-
-MACH expects each component to have a certain set of variables defined.
-
-Which variables it needs to define (and MACH expects it to accept) depends on the defined [integrations](../syntax.md#components).
 
 #### cloud integration
 
