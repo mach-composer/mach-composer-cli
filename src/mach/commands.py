@@ -5,6 +5,7 @@ from functools import update_wrapper
 from typing import List, Optional
 
 import click
+from mach import bootstrap as _bootstrap
 from mach import git, parse, updater
 from mach.exceptions import MachError
 from mach.terraform import apply_terraform, generate_terraform, plan_terraform
@@ -207,6 +208,18 @@ def sites(file: str):
                 click.echo(f"     {component.name}")
 
         click.echo("")
+
+
+@mach.command()
+@click.option(
+    "-o",
+    "--output",
+    default="main.yml",
+    help="Output file.",
+)
+def bootstrap(output: str):
+    """Bootstraps a configuration or component."""
+    _bootstrap.create_configuration(output)
 
 
 def get_input_files(file: Optional[str]) -> List[str]:
