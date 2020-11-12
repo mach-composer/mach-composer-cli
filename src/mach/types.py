@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Union
 
 from dataclasses_json import dataclass_json
+from dataclasses_jsonschema import JsonSchemaMixin
 
 PROTOCOL_RE = re.compile(r"^(http(s)?://)")
 
@@ -16,7 +17,9 @@ LocalizedString = Dict[str, str]
 
 @dataclass_json
 @dataclass
-class AzureTFState:
+class AzureTFState(JsonSchemaMixin):
+    """Azure storage account state backend configuration."""
+
     resource_group: str
     storage_account: str
     container_name: str
@@ -25,7 +28,9 @@ class AzureTFState:
 
 @dataclass_json
 @dataclass
-class AWSTFState:
+class AWSTFState(JsonSchemaMixin):
+    """AWS S3 bucket state backend configuration."""
+
     bucket: str
     key_prefix: str
     role_arn: Optional[str] = None
@@ -36,14 +41,16 @@ class AWSTFState:
 
 @dataclass_json
 @dataclass
-class TerraformConfig:
+class TerraformConfig(JsonSchemaMixin):
+    """Terraform configuration."""
+
     azure_remote_state: Optional[AzureTFState] = None
     aws_remote_state: Optional[AWSTFState] = None
 
 
 @dataclass_json
 @dataclass
-class SentryConfig:
+class SentryConfig(JsonSchemaMixin):
     """Global Sentry configuration."""
 
     dsn: Optional[str] = None
@@ -63,7 +70,9 @@ class SentryConfig:
 
 @dataclass_json
 @dataclass
-class FrontDoorSettings:
+class FrontDoorSettings(JsonSchemaMixin):
+    """Frontdoor settings."""
+
     resource_group: str
     dns_zone: str
     ssl_key_vault_name: str
@@ -73,7 +82,9 @@ class FrontDoorSettings:
 
 @dataclass_json
 @dataclass
-class AlertGroup:
+class AlertGroup(JsonSchemaMixin):
+    """Alert group configuration."""
+
     name: str
     alert_emails: List[str] = field(default_factory=list)
     webhook_url: Optional[str] = None
@@ -90,7 +101,9 @@ class AlertGroup:
 
 @dataclass_json
 @dataclass
-class AzureConfig:
+class AzureConfig(JsonSchemaMixin):
+    """Azure configuration."""
+
     front_door: Optional[FrontDoorSettings] = None
     resources_prefix: Optional[str] = ""
     tenant_id: Optional[str] = ""
@@ -101,14 +114,18 @@ class AzureConfig:
 
 @dataclass_json
 @dataclass
-class ContentfulConfig:
+class ContentfulConfig(JsonSchemaMixin):
+    """Generic Contenful configuration."""
+
     cma_token: str
     organization_id: str
 
 
 @dataclass_json
 @dataclass
-class AWSProvider:
+class AWSProvider(JsonSchemaMixin):
+    """AWS provider configuration."""
+
     name: str
     region: str
 
@@ -120,7 +137,7 @@ class CloudOption(Enum):
 
 @dataclass_json
 @dataclass
-class GeneralConfig:
+class GeneralConfig(JsonSchemaMixin):
     """Config this is shared across sites."""
 
     environment: str
@@ -133,7 +150,9 @@ class GeneralConfig:
 
 @dataclass_json
 @dataclass
-class ComponentConfig:
+class ComponentConfig(JsonSchemaMixin):
+    """Component definition."""
+
     name: str
     source: str
     version: str
@@ -161,13 +180,9 @@ class ComponentConfig:
 
 @dataclass_json
 @dataclass
-class AzureProvider:
-    resource_group: str
+class Store(JsonSchemaMixin):
+    """commercetools store definition."""
 
-
-@dataclass_json
-@dataclass
-class Store:
     name: LocalizedString
     key: str
     languages: List[str] = field(default_factory=list)
@@ -176,7 +191,9 @@ class Store:
 
 @dataclass_json
 @dataclass
-class CommercetoolsChannel:
+class CommercetoolsChannel(JsonSchemaMixin):
+    """commercetools channel definition."""
+
     key: str
     roles: List[str]
     name: Optional[LocalizedString] = None
@@ -185,7 +202,9 @@ class CommercetoolsChannel:
 
 @dataclass_json
 @dataclass
-class CommercetoolsTax:
+class CommercetoolsTax(JsonSchemaMixin):
+    """commercetools tax definition."""
+
     country: str
     amount: float
     name: str
@@ -193,7 +212,9 @@ class CommercetoolsTax:
 
 @dataclass_json
 @dataclass
-class CommercetoolsSettings:
+class CommercetoolsSettings(JsonSchemaMixin):
+    """commercetools configuration."""
+
     project_key: str
     client_id: str
     client_secret: str
@@ -213,7 +234,9 @@ class CommercetoolsSettings:
 
 @dataclass_json
 @dataclass
-class ContentfulSettings:
+class ContentfulSettings(JsonSchemaMixin):
+    """Contentful settings."""
+
     space: str
     default_locale: str = "en-US"
     cma_token: str = ""
@@ -226,7 +249,7 @@ class ContentfulSettings:
 
 @dataclass_json
 @dataclass
-class SentryDsn:
+class SentryDsn(JsonSchemaMixin):
     """Specific sentry DSN settings."""
 
     dsn: Optional[str] = None
@@ -248,7 +271,9 @@ class SentryDsn:
 
 @dataclass_json
 @dataclass
-class Component:
+class Component(JsonSchemaMixin):
+    """Component configuration."""
+
     name: str
     variables: TerraformVariables = field(default_factory=dict)
     secrets: TerraformVariables = field(default_factory=dict)
@@ -280,7 +305,9 @@ class Component:
 
 @dataclass_json
 @dataclass
-class SiteAWSSettings:
+class SiteAWSSettings(JsonSchemaMixin):
+    """Site-specific AWS settings."""
+
     account_id: int
     region: str
     deploy_role: Optional[str] = None
@@ -290,7 +317,9 @@ class SiteAWSSettings:
 
 @dataclass_json
 @dataclass
-class SiteAzureSettings:
+class SiteAzureSettings(JsonSchemaMixin):
+    """Site-specific Azure settings."""
+
     service_object_ids: Dict[str, str] = field(default_factory=dict)
     front_door: Optional[FrontDoorSettings] = None
     alert_group: Optional[AlertGroup] = None
@@ -319,7 +348,9 @@ class SiteAzureSettings:
 
 @dataclass_json
 @dataclass
-class Site:
+class Site(JsonSchemaMixin):
+    """Site definition."""
+
     identifier: str
     base_url: Optional[str] = ""
     commercetools: Optional[CommercetoolsSettings] = None
@@ -340,7 +371,9 @@ class Site:
 
 @dataclass_json
 @dataclass
-class MachConfig:
+class MachConfig(JsonSchemaMixin):
+    """Main MACH configuration object."""
+
     general_config: GeneralConfig
     sites: List[Site]
     components: List[ComponentConfig] = field(default_factory=list)

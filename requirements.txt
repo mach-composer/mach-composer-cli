@@ -4,19 +4,28 @@
 #
 #    pip-compile
 #
+attrs==20.3.0             # via jsonschema
 certifi==2020.6.20        # via requests
 chardet==3.0.4            # via requests
 click==7.1.2              # via -r requirements.in
 dataclasses-json==0.5.2   # via -r requirements.in
+dataclasses-jsonschema==2.13.0  # via -r requirements.in
 idna==2.10                # via requests
 jinja2==2.11.1            # via -r requirements.in
+jsonschema==3.2.0         # via dataclasses-jsonschema
 markupsafe==1.1.1         # via jinja2
 marshmallow-enum==1.5.1   # via dataclasses-json
 marshmallow==3.8.0        # via dataclasses-json, marshmallow-enum
-mypy-extensions==0.4.3    # via typing-inspect
+mypy-extensions==0.4.3    # via dataclasses-jsonschema, typing-inspect
+pyrsistent==0.17.3        # via jsonschema
+python-dateutil==2.8.1    # via dataclasses-jsonschema
 pyyaml==5.3               # via -r requirements.in
 requests==2.23.0          # via -r requirements.in
+six==1.15.0               # via jsonschema, python-dateutil
 stringcase==1.2.0         # via dataclasses-json
 typing-extensions==3.7.4.3  # via typing-inspect
 typing-inspect==0.6.0     # via dataclasses-json
 urllib3==1.25.10          # via requests
+
+# The following packages are considered to be unsafe in a requirements file:
+# setuptools
