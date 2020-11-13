@@ -1,7 +1,7 @@
 {% set commercetools = site.commercetools %}
 
 provider "commercetools" {
-    version       = "=0.23.0"
+    version       = "=0.24.1"
     client_id     = "{{ commercetools.client_id }}"
     client_secret = "{{ commercetools.client_secret }}"
     project_key   = "{{ commercetools.project_key }}"
