@@ -9,7 +9,7 @@ from mach.validate import validate_config
 # Add a time-out in case click expects more input
 @pytest.mark.timeout(2)
 @pytest.mark.parametrize("cloud", ["aws", "azure"])
-def test_create_configuration(click_runner, click_dir, cloud):
+def test_configuration(click_runner, click_dir, cloud):
     input_values = [
         "test",
         cloud,
@@ -24,10 +24,6 @@ def test_create_configuration(click_runner, click_dir, cloud):
 
     file_path = os.path.join(click_dir, "main.yml")
     assert os.path.exists(file_path)
-
-    raw_content = ""
-    with open(file_path) as f:
-        raw_content = f.read()
 
     config = parse_config_from_file(file_path)
     validate_config(config)
@@ -45,3 +41,37 @@ def test_create_configuration(click_runner, click_dir, cloud):
         assert config.general_config.azure
         assert config.general_config.terraform_config.azure_remote_state
         assert not config.general_config.terraform_config.aws_remote_state
+
+
+# Add a time-out in case click expects more input
+@pytest.mark.timeout(5)
+@pytest.mark.parametrize("cloud", ["aws", "azure"])
+def test_component(click_runner, click_dir, cloud):
+    input_values = [
+        cloud,
+        "python",
+        "api-extensions",
+        "API extensions component",
+        "apiext",
+        "api-extensions-component",
+        "api-extensions",
+        "n",
+    ]
+
+    if cloud == "aws":
+        input_values += [
+            "mach-lambda-repository"
+        ]
+    else:
+        input_values += [
+            "api-extension",
+            "shared-rg",
+            "sharedcomponentsrepo",
+            "code",
+        ]
+
+    result = click_runner.invoke(bootstrap, ["component"], input="\n".join(input_values))
+    assert not result.exception
+
+    component_path = os.path.join(click_dir, "api-extensions-component")
+    assert os.path.exists(component_path)
