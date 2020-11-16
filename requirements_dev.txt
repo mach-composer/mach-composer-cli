@@ -1,5 +1,7 @@
 -r requirements.txt
 
+pyhcl==0.4.4
+
 # Testing
 pytest==5.3.5
 pytest-cov==2.8.1
