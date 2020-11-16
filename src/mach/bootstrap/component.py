@@ -30,7 +30,7 @@ def create_component(output_dir: str):
         "Short name", default=name.replace("_", "").replace("-", "")
     )
     component_identifier = click.prompt(
-        "Component identifier", default=f"{_slugify(name)}_component"
+        "Component identifier", default=f"{_slugify(name, sep='-')}-component"
     )
     function_name = click.prompt("Function name", default=_slugify(name))
 
@@ -91,7 +91,7 @@ def _humanize_str(value: str) -> str:
     return re.sub(r"[-_]+", " ", value).title()
 
 
-def _slugify(value, allow_unicode=False):
+def _slugify(value, allow_unicode=False, sep="_"):
     value = str(value)
     if allow_unicode:
         value = unicodedata.normalize("NFKC", value)
@@ -102,4 +102,4 @@ def _slugify(value, allow_unicode=False):
             .decode("ascii")
         )
     value = re.sub(r"[^\w\s-]", "", value).strip().lower()
-    return re.sub(r"[-\s]+", "_", value)
+    return re.sub(r"[-\s]+", sep, value)
