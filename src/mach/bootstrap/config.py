@@ -67,6 +67,13 @@ def _create_config() -> types.MachConfig:
         cloud=cloud,
     )
 
+    if cloud == "azure":
+        general_config_kwargs["azure"] = types.AzureConfig(
+            tenant_id="<your-tenant-id>",
+            subscription_id="<your-subscription-id>",
+            region="westeurope",
+        )
+
     if use_sentry:
         general_config_kwargs["sentry"] = types.SentryConfig(
             auth_token="<your-auth-token>",
@@ -91,6 +98,12 @@ def _create_config() -> types.MachConfig:
         ],
     )
 
+    if cloud == "aws":
+        site.aws = types.SiteAWSSettings(
+            account_id=123456789,
+            region="eu-central-1",
+        )
+
     if use_commercetools:
         site.commercetools = types.CommercetoolsSettings(
             project_key=ct_project,
@@ -103,19 +116,21 @@ def _create_config() -> types.MachConfig:
             ),
         )
 
+    component_config = types.ComponentConfig(
+        name="your-component",
+        source="git::https://github.com/<username>/<your-component>.git//terraform",
+        version="0.1.0",
+        integrations=integrations,
+    )
+    if cloud == "azure":
+        component_config.short_name = "yourcomp"
+
     return types.MachConfig(
         general_config=types.GeneralConfig(
             **general_config_kwargs,
         ),
         sites=[site],
-        components=[
-            types.ComponentConfig(
-                name="your-component",
-                source="git::https://github.com/<username>/<your-component>.git//terraform",
-                version="0.1.0",
-                integrations=integrations,
-            )
-        ],
+        components=[component_config],
     )
 
 

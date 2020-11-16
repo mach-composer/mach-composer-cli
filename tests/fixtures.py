@@ -1,6 +1,7 @@
 import tempfile
 
 import pytest
+from click.testing import CliRunner
 from mach import parse, types
 
 
@@ -42,3 +43,14 @@ def config():
 @pytest.fixture
 def parsed_config(config):
     return parse.parse_config(config)
+
+
+@pytest.fixture
+def click_runner():
+    return CliRunner()
+
+
+@pytest.fixture
+def click_dir(click_runner):
+    with click_runner.isolated_filesystem() as f:
+        yield f
