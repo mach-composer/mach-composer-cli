@@ -113,11 +113,11 @@ class AlertGroup(JsonSchemaMixin):
 class AzureConfig(JsonSchemaMixin):
     """Azure configuration."""
 
+    tenant_id: str
+    subscription_id: str
+    region: str
     front_door: Optional[FrontDoorSettings] = _none()
     resources_prefix: Optional[str] = ""
-    tenant_id: Optional[str] = ""
-    subscription_id: Optional[str] = ""
-    region: Optional[str] = ""
     service_object_ids: Dict[str, str] = field(default_factory=dict)
 
 
