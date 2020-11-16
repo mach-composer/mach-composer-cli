@@ -5,6 +5,7 @@
 - Improved dependencies between components and MACH-managed commercetools configurations
 - Improved git log parsing
 - Add `mach bootstrap config` command
+- Updated Terraform commercetools provider to `0.24.1`
   
 
 ## 0.5.1 (2020-11-10)
