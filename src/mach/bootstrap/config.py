@@ -20,7 +20,7 @@ def create_configuration(output_file: str):
         f.write(content)
 
 
-def _create_config() -> types.MachConfig:
+def _create_config() -> types.MachConfig:  # noqa: C901
     environment = click.prompt("Environment", "test")
     cloud = click.prompt(
         "Cloud environment", type=click.Choice(["aws", "azure"]), default="aws"
