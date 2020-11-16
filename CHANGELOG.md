@@ -4,7 +4,9 @@
 - Add Sentry DSN management options
 - Improved dependencies between components and MACH-managed commercetools configurations
 - Improved git log parsing
-- Add `mach bootstrap config` command
+- Add `mach bootstrap` commands:
+    - `mach bootstrap config` for creating a new MACH configuration
+    - `mach bootstrap component` for creating a new MACH component
 - Updated Terraform commercetools provider to `0.24.1`
   
 
