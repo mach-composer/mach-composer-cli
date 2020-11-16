@@ -59,9 +59,7 @@ def test_component(click_runner, click_dir, cloud):
     ]
 
     if cloud == "aws":
-        input_values += [
-            "mach-lambda-repository"
-        ]
+        input_values += ["mach-lambda-repository"]
     else:
         input_values += [
             "api-extension",
@@ -70,7 +68,9 @@ def test_component(click_runner, click_dir, cloud):
             "code",
         ]
 
-    result = click_runner.invoke(bootstrap, ["component"], input="\n".join(input_values))
+    result = click_runner.invoke(
+        bootstrap, ["component"], input="\n".join(input_values)
+    )
     assert not result.exception
 
     component_path = os.path.join(click_dir, "api-extensions-component")
