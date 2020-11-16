@@ -5,7 +5,7 @@ import unicodedata
 import click
 from cookiecutter.main import cookiecutter
 
-COOKIECUTTER_TEMPLATE = "https://github.com/labd/mach-component-cookiecutter.git"
+COOKIECUTTER_TEMPLATE = "git@github.com:labd/mach-component-cookiecutter.git"
 
 
 def create_component(output_dir: str):
