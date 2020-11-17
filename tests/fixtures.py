@@ -54,3 +54,26 @@ def click_runner():
 def click_dir(click_runner):
     with click_runner.isolated_filesystem() as f:
         yield f
+
+
+class CookiecutterCache:
+    _result = None
+
+    def determine_repo_dir(self, *args, **kwargs):
+        if self._result:
+            return self._result
+
+        from cookiecutter.repository import determine_repo_dir as _determine_repo_dir
+
+        self._result = _determine_repo_dir(*args, **kwargs)
+        return self._result
+
+
+cc_cache = CookiecutterCache()
+
+
+@pytest.fixture()
+def cookiecutter(mocker):
+    return mocker.patch(
+        "cookiecutter.main.determine_repo_dir", side_effect=cc_cache.determine_repo_dir
+    )
