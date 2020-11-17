@@ -45,11 +45,12 @@ def test_configuration(click_runner, click_dir, cloud):
 
 # Add a time-out in case click expects more input
 @pytest.mark.timeout(5)
+@pytest.mark.parametrize("language", ["python", "node"])
 @pytest.mark.parametrize("cloud", ["aws", "azure"])
-def test_component(click_runner, click_dir, cloud):
+def test_component(cookiecutter, click_runner, click_dir, cloud, language):
     input_values = [
         cloud,
-        "python",
+        language,
         "api-extensions",
         "API extensions component",
         "apiext",
