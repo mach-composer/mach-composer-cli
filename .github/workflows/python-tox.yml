@@ -2,8 +2,11 @@ name: Python Tests
 
 on: [push]
 
+env:
+  CI: true
+
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
     strategy:
       matrix:
