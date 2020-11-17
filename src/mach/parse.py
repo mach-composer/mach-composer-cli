@@ -1,4 +1,4 @@
-from os.path import splitext
+from os.path import basename, splitext
 from pathlib import Path
 from typing import Dict, List
 
@@ -28,7 +28,7 @@ def parse_configs(files: List[str], output_path: str = None) -> List[MachConfig]
         config = parse_config(config)
 
         if output_path:
-            full_output_path = Path(f"{output_path}/{splitext(file)[0]}")
+            full_output_path = Path(f"{output_path}/{splitext(basename(file))[0]}")
             full_output_path.mkdir(exist_ok=True, parents=True)
             config.output_path = str(full_output_path)
 
