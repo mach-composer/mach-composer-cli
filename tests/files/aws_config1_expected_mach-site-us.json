@@ -1,0 +1,515 @@
+{
+  "terraform": [
+    {
+      "backend": [
+        {
+          "s3": {
+            "bucket": [
+              "aws-bucket"
+            ],
+            "key": [
+              "mach-composer-tst/mach-site-us"
+            ],
+            "region": [
+              "eu-central-1"
+            ],
+            "dynamodb_table": [
+              "tfstate-lock"
+            ],
+            "encrypt": [
+              true
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "required_providers": [
+        {
+          "commercetools": [
+            {
+              "source": "labd/commercetools"
+            }
+          ],
+          "sentry": [
+            {
+              "source": "jianyuan/sentry"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "provider": [
+    {
+      "sentry": {
+        "token": [
+          "JdOheW3IzlsXBOPNdaMZgXoMcHqyf8CJMjBnfVHD3laXPpN23oAZG8KOPAiYfeGr"
+        ],
+        "base_url": [
+          "https://sentry.io/api/"
+        ],
+        "version": [
+          "~> 0.6.0"
+        ]
+      }
+    },
+    {
+      "commercetools": {
+        "version": [
+          "=0.24.1"
+        ],
+        "client_id": [
+          "6SWM8ttjAYll-f9dopjdt"
+        ],
+        "client_secret": [
+          "Q6gu2Hxlbhwv7wtrgPPydmS--6wv7tyh"
+        ],
+        "project_key": [
+          "mach-site-us"
+        ],
+        "scopes": [
+          "manage_api_clients:mach-site-us manage_project:mach-site-us view_api_clients:mach-site-us"
+        ],
+        "token_url": [
+          "https://auth.europe-west1.gcp.commercetools.com"
+        ],
+        "api_url": [
+          "https://api.europe-west1.gcp.commercetools.com"
+        ]
+      }
+    },
+    {
+      "aws": {
+        "region": [
+          "us-west-1"
+        ],
+        "version": [
+          "~> 3.8.0"
+        ]
+      }
+    }
+  ],
+  "resource": [
+    {
+      "commercetools_project_settings": {
+        "project": {
+          "name": [
+            "mach-site-us"
+          ],
+          "countries": [
+            []
+          ],
+          "currencies": [
+            [
+              "USD"
+            ]
+          ],
+          "languages": [
+            [
+              "en-US"
+            ]
+          ],
+          "messages": [
+            {
+              "enabled": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "null_resource": {
+        "commercetools": {
+          "depends_on": [
+            [
+              "${commercetools_project_settings.project}"
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "commercetools_api_client": {
+        "frontend_credentials": {
+          "name": [
+            "frontend_credentials_terraform"
+          ],
+          "scope": [
+            [
+              "manage_my_profile:mach-site-us",
+              "manage_my_orders:mach-site-us",
+              "view_states:mach-site-us",
+              "manage_my_shopping_lists:mach-site-us",
+              "view_products:mach-site-us",
+              "manage_my_payments:mach-site-us",
+              "create_anonymous_token:mach-site-us",
+              "view_project_settings:mach-site-us"
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "aws_acm_certificate": {
+        "main": {
+          "domain_name": [
+            "api.us-tst.mach-example.net"
+          ],
+          "validation_method": [
+            "DNS"
+          ]
+        }
+      }
+    },
+    {
+      "aws_apigatewayv2_domain_name": {
+        "main": {
+          "domain_name": [
+            "api.us-tst.mach-example.net"
+          ],
+          "domain_name_configuration": [
+            {
+              "certificate_arn": [
+                "${aws_acm_certificate.main.arn}"
+              ],
+              "endpoint_type": [
+                "REGIONAL"
+              ],
+              "security_policy": [
+                "TLS_1_2"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "aws_route53_record": {
+        "main": {
+          "name": [
+            "${aws_apigatewayv2_domain_name.main.domain_name}"
+          ],
+          "type": [
+            "A"
+          ],
+          "zone_id": [
+            "${data.aws_route53_zone.main.id}"
+          ],
+          "alias": [
+            {
+              "name": [
+                "${aws_apigatewayv2_domain_name.main.domain_name_configuration[0].target_domain_name}"
+              ],
+              "zone_id": [
+                "${aws_apigatewayv2_domain_name.main.domain_name_configuration[0].hosted_zone_id}"
+              ],
+              "evaluate_target_health": [
+                false
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "aws_route53_record": {
+        "new_acm_validation_site": {
+          "zone_id": [
+            "${data.aws_route53_zone.main.zone_id}"
+          ],
+          "name": [
+            "${tolist(aws_acm_certificate.main.domain_validation_options)[0].resource_record_name}"
+          ],
+          "type": [
+            "${tolist(aws_acm_certificate.main.domain_validation_options)[0].resource_record_type}"
+          ],
+          "ttl": [
+            60
+          ],
+          "records": [
+            [
+              "${tolist(aws_acm_certificate.main.domain_validation_options)[0].resource_record_value}"
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "aws_apigatewayv2_api": {
+        "main_gateway": {
+          "name": [
+            "mach-site-us-api"
+          ],
+          "protocol_type": [
+            "HTTP"
+          ]
+        }
+      }
+    },
+    {
+      "aws_apigatewayv2_route": {
+        "application": {
+          "api_id": [
+            "${aws_apigatewayv2_api.main_gateway.id}"
+          ],
+          "route_key": [
+            "$default"
+          ]
+        }
+      }
+    },
+    {
+      "aws_apigatewayv2_deployment": {
+        "default": {
+          "api_id": [
+            "${aws_apigatewayv2_api.main_gateway.id}"
+          ],
+          "description": [
+            "Stage for default release"
+          ],
+          "triggers": [
+            {
+              "redeployment": "${sha1(join(\",\",list(module.payment.component_version,)))}"
+            }
+          ],
+          "lifecycle": [
+            {
+              "create_before_destroy": [
+                true
+              ]
+            }
+          ],
+          "depends_on": [
+            [
+              "${module.payment}"
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "aws_apigatewayv2_stage": {
+        "default": {
+          "name": [
+            "$default"
+          ],
+          "api_id": [
+            "${aws_apigatewayv2_api.main_gateway.id}"
+          ],
+          "deployment_id": [
+            "${aws_apigatewayv2_deployment.default.id}"
+          ],
+          "depends_on": [
+            [
+              "${aws_apigatewayv2_deployment.default}"
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "aws_apigatewayv2_api_mapping": {
+        "custom_domain_mapping": {
+          "api_id": [
+            "${aws_apigatewayv2_api.main_gateway.id}"
+          ],
+          "stage": [
+            "${aws_apigatewayv2_stage.default.id}"
+          ],
+          "domain_name": [
+            "api.us-tst.mach-example.net"
+          ]
+        }
+      }
+    },
+    {
+      "sentry_key": {
+        "api-extensions": {
+          "organization": [
+            "labd"
+          ],
+          "project": [
+            "mach"
+          ],
+          "name": [
+            "mach-site-us_api-extensions"
+          ],
+          "rate_limit_window": [
+            21600
+          ],
+          "rate_limit_count": [
+            100
+          ]
+        }
+      }
+    }
+  ],
+  "output": [
+    {
+      "frontend_channels": {
+        "value": [
+          []
+        ]
+      }
+    },
+    {
+      "frontend_client_scope": {
+        "value": [
+          "${commercetools_api_client.frontend_credentials.scope}"
+        ]
+      }
+    },
+    {
+      "frontend_client_id": {
+        "value": [
+          "${commercetools_api_client.frontend_credentials.id}"
+        ]
+      }
+    },
+    {
+      "frontend_client_secret": {
+        "value": [
+          "${commercetools_api_client.frontend_credentials.secret}"
+        ]
+      }
+    }
+  ],
+  "data": [
+    {
+      "aws_route53_zone": {
+        "main": {
+          "name": [
+            "us-tst.mach-example.net"
+          ]
+        }
+      }
+    }
+  ],
+  "module": [
+    {
+      "commercetools-config": {
+        "source": [
+          "git::https://github.com/some-organisation/mach-component-commercetools.git//terraform?ref=1aa9215"
+        ],
+        "providers": [
+          {}
+        ],
+        "depends_on": [
+          [
+            "${null_resource.commercetools}"
+          ]
+        ]
+      }
+    },
+    {
+      "payment": {
+        "source": [
+          "git::https://github.com/some-organisation/mach-component-payment.git//terraform?ref=0a9a0b5"
+        ],
+        "api_gateway": [
+          "${aws_apigatewayv2_api.main_gateway.id}"
+        ],
+        "api_gateway_execution_arn": [
+          "${aws_apigatewayv2_api.main_gateway.execution_arn}"
+        ],
+        "component_version": [
+          "0a9a0b5"
+        ],
+        "environment": [
+          "site"
+        ],
+        "site": [
+          "mach-site-us"
+        ],
+        "variables": [
+          {
+            "CT_API_URL": "https://api.europe-west1.gcp.commercetools.com",
+            "CT_AUTH_URL": "https://auth.europe-west1.gcp.commercetools.com",
+            "CT_PROJECT_KEY": "mach-site-us"
+          }
+        ],
+        "environment_variables": [
+          {}
+        ],
+        "secrets": [
+          {}
+        ],
+        "ct_project_key": [
+          "mach-site-us"
+        ],
+        "ct_api_url": [
+          "https://api.europe-west1.gcp.commercetools.com"
+        ],
+        "ct_auth_url": [
+          "https://auth.europe-west1.gcp.commercetools.com"
+        ],
+        "providers": [
+          {
+            "aws": "${aws}"
+          }
+        ],
+        "depends_on": [
+          [
+            "${aws_apigatewayv2_api.main_gateway}",
+            "${null_resource.commercetools}"
+          ]
+        ]
+      }
+    },
+    {
+      "api-extensions": {
+        "source": [
+          "git::https://github.com/some-organisation/mach-component-api-extensions.git//terraform?ref=a4bbb28"
+        ],
+        "sentry_dsn": [
+          "${sentry_key.api-extensions.dsn_secret}"
+        ],
+        "component_version": [
+          "a4bbb28"
+        ],
+        "environment": [
+          "site"
+        ],
+        "site": [
+          "mach-site-us"
+        ],
+        "variables": [
+          {
+            "ORDER_PREFIX": "MACH-",
+            "CT_API_URL": "https://api.europe-west1.gcp.commercetools.com",
+            "CT_AUTH_URL": "https://auth.europe-west1.gcp.commercetools.com",
+            "CT_PROJECT_KEY": "mach-site-us"
+          }
+        ],
+        "environment_variables": [
+          {
+            "ORDER_PREFIX": "MACH-"
+          }
+        ],
+        "secrets": [
+          {}
+        ],
+        "ct_project_key": [
+          "mach-site-us"
+        ],
+        "ct_api_url": [
+          "https://api.europe-west1.gcp.commercetools.com"
+        ],
+        "ct_auth_url": [
+          "https://auth.europe-west1.gcp.commercetools.com"
+        ],
+        "providers": [
+          {
+            "aws": "${aws}"
+          }
+        ],
+        "depends_on": [
+          [
+            "${null_resource.commercetools}"
+          ]
+        ]
+      }
+    }
+  ]
+}

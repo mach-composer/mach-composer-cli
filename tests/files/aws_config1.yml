@@ -1,0 +1,76 @@
+---
+general_config:
+  environment: site
+  terraform_config:
+    aws_remote_state:
+      bucket: aws-bucket
+      key_prefix: mach-composer-tst
+      lock_table: tfstate-lock
+      region: eu-central-1
+  cloud: aws
+  sentry:
+    auth_token: JdOheW3IzlsXBOPNdaMZgXoMcHqyf8CJMjBnfVHD3laXPpN23oAZG8KOPAiYfeGr
+    organization: labd
+    project: mach
+    rate_limit_window: 21600
+    rate_limit_count: 100
+sites:
+  - identifier: mach-site-eu
+    base_url: https://api.eu-tst.mach-example.net
+    aws:
+      account_id: 940853598232
+      region: eu-central-1
+      route53_zone_name: eu-tst.mach-example.net
+    commercetools:
+      project_key: mach-site-eu
+      client_id: 6SWM8ttjAYll-f9dopjdt
+      client_secret: Q6gu2Hxlbhwv7wtrgPPydmS--6wv7tyh
+      scopes: manage_api_clients:mach-site-eu manage_project:mach-site-eu view_api_clients:mach-site-eu
+      languages:
+        - nl-NL
+        - en-GB
+      currencies:
+        - GBP
+        - EUR
+    components:
+      - name: commercetools-config
+      - name: payment
+      - name: api-extensions
+        variables:
+          ORDER_PREFIX: MACH-
+  - identifier: mach-site-us
+    base_url: https://api.us-tst.mach-example.net
+    aws:
+      account_id: 940853598234
+      region: us-west-1
+      route53_zone_name: us-tst.mach-example.net
+    commercetools:
+      project_key: mach-site-us
+      client_id: 6SWM8ttjAYll-f9dopjdt
+      client_secret: Q6gu2Hxlbhwv7wtrgPPydmS--6wv7tyh
+      scopes: manage_api_clients:mach-site-us manage_project:mach-site-us view_api_clients:mach-site-us
+      languages:
+        - en-US
+      currencies:
+        - USD
+    components:
+      - name: commercetools-config
+      - name: payment
+      - name: api-extensions
+        variables:
+          ORDER_PREFIX: MACH-
+
+components:
+  - name: commercetools-config
+    source: git::https://github.com/some-organisation/mach-component-commercetools.git//terraform
+    version: 1aa9215
+    integrations: [""]
+  - name: payment
+    source: git::https://github.com/some-organisation/mach-component-payment.git//terraform
+    has_public_api: true
+    version: 0a9a0b5
+    integrations: ["aws", "commercetools"]
+  - name: api-extensions
+    source: git::https://github.com/some-organisation/mach-component-api-extensions.git//terraform
+    version: a4bbb28
+    integrations: ["aws", "commercetools", "sentry"]
