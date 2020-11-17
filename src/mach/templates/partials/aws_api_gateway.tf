@@ -1,5 +1,4 @@
 {% if site.public_api_components %}
-
 {% include 'partials/aws_api_domain.tf' %}
 
 resource "aws_apigatewayv2_api" "main_gateway" {
@@ -17,9 +16,11 @@ resource "aws_apigatewayv2_deployment" "default" {
   description = "Stage for default release"
 
   triggers = {
-    redeployment = sha1(join(",", list({% for component in site.public_api_components %}
+    redeployment = sha1(join(",", list(
+      {% for component in site.public_api_components %}
       module.{{ component.name }}.component_version,
-    {% endfor %})))
+      {% endfor %}
+    )))
   }
 
   lifecycle {

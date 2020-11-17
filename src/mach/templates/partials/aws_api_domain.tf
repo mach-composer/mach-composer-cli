@@ -2,12 +2,10 @@ data "aws_route53_zone" "main" {
   name = "{{ site.aws.route53_zone_name|default(site.base_url)  }}"
 }
 
-
 resource "aws_acm_certificate" "main" {
   domain_name       = "{{ site.base_url }}"
   validation_method = "DNS"
 }
-
 
 resource "aws_apigatewayv2_domain_name" "main" {
   domain_name = "{{ site.base_url }}"
