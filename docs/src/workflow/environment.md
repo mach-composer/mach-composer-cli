@@ -8,7 +8,7 @@ The MACH composer is a Python project. In order to make this work on your local 
 
 - [ ] TODO: Describe installation steps
 
-## Using the JSON schema
+## Using the JSON schema for IntelliSense autocompletion
 
 ### On Visual Studio Code
 
