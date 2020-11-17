@@ -1,9 +1,11 @@
 import os
+import re
 import subprocess
 import sys
 from pathlib import Path
 from typing import List, Union
 
+import click
 from mach.templates import setup_jinja
 from mach.types import MachConfig
 
@@ -16,22 +18,32 @@ def generate_terraform(config: MachConfig):
         site_dir = config.deployment_path / Path(site.identifier)
         site_dir.mkdir(exist_ok=True)
         output_file = site_dir / Path("site.tf")
-        with open(output_file, "w+") as fh:
-            fh.write(
-                template.render(
-                    config=config, general_config=config.general_config, site=site
-                )
+        content = _clean_tf(
+            template.render(
+                config=config, general_config=config.general_config, site=site
             )
-            print(f"Generated file {output_file}")
+        )
+        with open(output_file, "w+") as fh:
+            fh.write(content)
+        click.echo(f"Generated file {output_file}")
 
         run_terraform("fmt", cwd=site_dir)
+
+
+def _clean_tf(content: str) -> str:
+    """Clean the Terraform file.
+
+    The pyhcl (used in testing for example) doesn't like empty objects with newlines
+    for example. Let's get rid of those.
+    """
+    return re.sub(r"\{(\s*)\}", "{}", content)
 
 
 def plan_terraform(output_dir: Path):
     """Terraform init and plan for all generated sites."""
     for site_dir in output_dir.iterdir():
         if site_dir.is_dir():
-            print(f"Terraform plan for {site_dir.name}")
+            click.echo(f"Terraform plan for {site_dir.name}")
             run_terraform("init", site_dir)
             run_terraform("plan", site_dir)
 
@@ -42,7 +54,7 @@ def apply_terraform(
     """Terraform apply for all generated sites."""
     for site_dir in output_dir.iterdir():
         if site_dir.is_dir():
-            print(f"Applying Terraform for {site_dir.name}")
+            click.echo(f"Applying Terraform for {site_dir.name}")
             run_terraform("init", site_dir)
             if with_sp_login:
                 azure_sp_login()
