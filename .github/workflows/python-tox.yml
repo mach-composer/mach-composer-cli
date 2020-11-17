@@ -2,9 +2,6 @@ name: Python Tests
 
 on: [push]
 
-env:
-  CI: true
-
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -27,3 +24,5 @@ jobs:
       - name: Run Tox
         # Run tox using the version of Python in `PATH`
         run: tox -e py
+        env:
+          CI: 1
