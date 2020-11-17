@@ -3,3 +3,11 @@ directory = reports/covhtml
 
 [xml]
 output = reports/coverage.xml
+
+[paths]
+source =
+    src/
+
+[run]
+include =
+    src/*
