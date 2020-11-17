@@ -23,6 +23,10 @@ The configuration file has the following structure:
     - [components](#component-configurations)
 - [components](#components)
 
+
+!!! tip "JSON schema"
+    A JSON schema for the syntax is [available on GitHub](https://github.com/labd/mach-composer/blob/master/schema.json).
+
 ## general_config
 All 'shared' configuration that applies to all sites.
 
