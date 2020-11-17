@@ -18,7 +18,7 @@ def test_generate(click_runner, click_dir, tf_mock):
 
     deployments_dir = os.path.join(click_dir, "deployments", "aws_config1")
     sites = os.listdir(deployments_dir)
-    assert sites == ["mach-site-eu", "mach-site-us"]
+    assert sorted(sites) == ["mach-site-eu", "mach-site-us"]
     assert tf_mock.call_count == 2
 
     with open(os.path.join(deployments_dir, "mach-site-eu", "site.tf")) as f:
