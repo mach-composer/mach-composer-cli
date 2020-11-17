@@ -26,8 +26,7 @@
       "default": "deployments"
     },
     "file": {
-      "type": "string",
-      "default": ""
+      "type": "string"
     }
   },
   "description": "Main MACH configuration object.",
@@ -157,23 +156,25 @@
     },
     "AzureConfig": {
       "type": "object",
+      "required": [
+        "tenant_id",
+        "subscription_id",
+        "region"
+      ],
       "properties": {
+        "tenant_id": {
+          "type": "string"
+        },
+        "subscription_id": {
+          "type": "string"
+        },
+        "region": {
+          "type": "string"
+        },
         "front_door": {
           "$ref": "#/definitions/FrontDoorSettings"
         },
         "resources_prefix": {
-          "type": "string",
-          "default": ""
-        },
-        "tenant_id": {
-          "type": "string",
-          "default": ""
-        },
-        "subscription_id": {
-          "type": "string",
-          "default": ""
-        },
-        "region": {
           "type": "string",
           "default": ""
         },
@@ -241,8 +242,7 @@
           "type": "string"
         },
         "base_url": {
-          "type": "string",
-          "default": ""
+          "type": "string"
         },
         "commercetools": {
           "$ref": "#/definitions/CommercetoolsSettings"
@@ -583,12 +583,10 @@
           "default": {}
         },
         "short_name": {
-          "type": "string",
-          "default": ""
+          "type": "string"
         },
         "health_check_path": {
-          "type": "string",
-          "default": ""
+          "type": "string"
         },
         "sentry": {
           "$ref": "#/definitions/SentryDsn"
@@ -629,8 +627,7 @@
           "type": "string"
         },
         "short_name": {
-          "type": "string",
-          "default": ""
+          "type": "string"
         },
         "integrations": {
           "type": "array",
@@ -644,12 +641,10 @@
           "default": false
         },
         "health_check_path": {
-          "type": "string",
-          "default": ""
+          "type": "string"
         },
         "branch": {
-          "type": "string",
-          "default": ""
+          "type": "string"
         }
       },
       "description": "Component definition."
