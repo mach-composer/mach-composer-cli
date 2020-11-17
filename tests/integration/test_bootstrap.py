@@ -44,6 +44,7 @@ def test_configuration(click_runner, click_dir, cloud):
 
 
 # Add a time-out in case click expects more input
+@pytest.mark.skipif(os.environ.get("CI"), reason="Disabled on CI for now (no Git access)")
 @pytest.mark.timeout(5)
 @pytest.mark.parametrize("language", ["python", "node"])
 @pytest.mark.parametrize("cloud", ["aws", "azure"])
