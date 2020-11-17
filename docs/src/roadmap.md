@@ -23,7 +23,7 @@ Include a Terraform template to bootstrap a Terraform state backend for you.
 
 
 ## TODOs
-- Improve componentn versioning itself; it is now based on a commit hash. This makes it unclear if a change means a down- or upgrade
+- Improve component versioning itself; it is now based on a commit hash. This makes it unclear if a change means a down- or upgrade
 - Output a `terraform plan` summary so that changes can be reviewed.  
   For example; if a minor change results in the removal of several resources, the developer knows something is wrong and can cancel the deployment.  
   At this moment there is no safe-guard for this.
