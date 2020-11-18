@@ -20,7 +20,7 @@ resource "commercetools_project_settings" "project" {
     }
 }
 
-{%- for channel in commercetools.channels %}
+{% for channel in commercetools.channels %}
 resource "commercetools_channel" "{{ channel.key }}" {
     key = "{{ channel.key }}"
     roles = [{% for role in channel.roles %}"{{ role }}"{% if not loop.last %}, {% endif %}{% endfor %}]
@@ -49,7 +49,7 @@ resource "commercetools_tax_category" "standard" {
   key  = "standard"
 }
 
-{%- for tax in commercetools.taxes %}
+{% for tax in commercetools.taxes %}
 resource "commercetools_tax_category_rate" "{{ tax.country|lower }}_vat" {
   tax_category_id = commercetools_tax_category.standard.id
   name = "{{ tax.name }}"
