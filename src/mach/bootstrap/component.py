@@ -33,6 +33,11 @@ def create_component(output_dir: str):
         "Component identifier", default=f"{_slugify(name, sep='-')}-component"
     )
     function_name = click.prompt("Function name", default=_slugify(name))
+    function_template = click.prompt(
+        "Function template to use",
+        type=click.Choice(["api-extension", "subscription", "public-api"]),
+        default="api-extension",
+    )
 
     context = {
         "language": language,
@@ -41,6 +46,7 @@ def create_component(output_dir: str):
         "short_name": short_name,
         "component_identifier": component_identifier,
         "function_name": function_name,
+        "function_template": function_template,
     }
 
     if click.confirm("Use Sentry?", default=False):
@@ -56,12 +62,6 @@ def create_component(output_dir: str):
             }
         )
     elif cloud == "azure":
-        function_template = click.prompt(
-            "Function template to use",
-            type=click.Choice(["api-extension", "public-api"]),
-            default="",
-        )
-
         context.update(
             {
                 "shared_resource_group": click.prompt("Shared resource group name"),
@@ -71,7 +71,6 @@ def create_component(output_dir: str):
                 "function_container_name": click.prompt(
                     "Function container name", default="code"
                 ),
-                "function_template": function_template or "none",
             }
         )
 

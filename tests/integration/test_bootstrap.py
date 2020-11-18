@@ -54,19 +54,19 @@ def test_component(cookiecutter, click_runner, click_dir, cloud, language):
     input_values = [
         cloud,
         language,
-        "api-extensions",
-        "API extensions component",
-        "apiext",
-        "api-extensions-component",
-        "api-extensions",
-        "n",
+        "api-extensions",  # Name
+        "API extensions component",  # Description
+        "apiext",  # Short name
+        "api-extensions-component",  # Component identifier
+        "api-extensions",  # Function name
+        "api-extension",  # Function template
+        "n",  # Use Sentry?
     ]
 
     if cloud == "aws":
         input_values += ["mach-lambda-repository"]
     else:
         input_values += [
-            "api-extension",
             "shared-rg",
             "sharedcomponentsrepo",
             "code",
