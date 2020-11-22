@@ -216,13 +216,19 @@ def sites(file: str):
     "--output",
     help="Output file or directory.",
 )
+@click.option(
+    "-c",
+    "--cookiecutter",
+    default="git@github.com:labd/mach-component-cookiecutter.git",
+    help="cookiecutter repository to generate from.",
+)
 @click.argument("type_", required=True, type=click.Choice(["config", "component"]))
-def bootstrap(output: str, type_: str):
+def bootstrap(output: str, type_: str, cookiecutter: str):
     """Bootstraps a configuration or component."""
     if type_ == "config":
         _bootstrap.create_configuration(output or "main.yml")
     if type_ == "component":
-        _bootstrap.create_component(output)
+        _bootstrap.create_component(output, cookiecutter)
 
 
 def get_input_files(file: Optional[str]) -> List[str]:

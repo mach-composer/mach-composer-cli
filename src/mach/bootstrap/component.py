@@ -5,10 +5,11 @@ import unicodedata
 import click
 from cookiecutter.main import cookiecutter
 
-COOKIECUTTER_TEMPLATE = "git@github.com:labd/mach-component-cookiecutter.git"
 
+def create_component(output_dir: str, cookiecutter_location: str):
 
-def create_component(output_dir: str):
+    COOKIECUTTER_TEMPLATE = cookiecutter_location
+
     if output_dir and os.path.exists(output_dir):
         if not click.confirm(
             f"Directory {output_dir} already exists. Do you want to overwrite?"
@@ -33,11 +34,6 @@ def create_component(output_dir: str):
         "Component identifier", default=f"{_slugify(name, sep='-')}-component"
     )
     function_name = click.prompt("Function name", default=_slugify(name))
-    function_template = click.prompt(
-        "Function template to use",
-        type=click.Choice(["api-extension", "subscription", "public-api"]),
-        default="api-extension",
-    )
 
     context = {
         "language": language,
@@ -46,8 +42,15 @@ def create_component(output_dir: str):
         "short_name": short_name,
         "component_identifier": component_identifier,
         "function_name": function_name,
-        "function_template": function_template,
     }
+
+    context["use_public_api"] = click.confirm("Generate public API?", default=True)
+    context["use_commercetools_api_extension"] = click.confirm(
+        "Generate commercetools API extension?", default=True
+    )
+    context["use_commercetools_subscription"] = click.confirm(
+        "Generate commercetools Subcription?", default=True
+    )
 
     if click.confirm("Use Sentry?", default=False):
         context["sentry_organization"] = click.prompt("Sentry Organization")
