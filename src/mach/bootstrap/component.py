@@ -5,10 +5,11 @@ import unicodedata
 import click
 from cookiecutter.main import cookiecutter
 
-COOKIECUTTER_TEMPLATE = "git@github.com:labd/mach-component-cookiecutter.git"
 
+def create_component(output_dir: str, cookiecutter_location: str):
 
-def create_component(output_dir: str):
+    COOKIECUTTER_TEMPLATE = cookiecutter_location
+
     if output_dir and os.path.exists(output_dir):
         if not click.confirm(
             f"Directory {output_dir} already exists. Do you want to overwrite?"
@@ -52,12 +53,8 @@ def create_component(output_dir: str):
     )
 
     context["use_public_api"] = 1 if use_public_api else 0
-    context["use_commercetools_api_extension"] = (
-        1 if use_commercetools_api_extension else 0
-    )
-    context["use_commercetools_subscription"] = (
-        1 if use_commercetools_subscription else 0
-    )
+    context["use_commercetools_api_extension"] = 1 if use_commercetools_api_extension else 0
+    context["use_commercetools_subscription"] = 1 if use_commercetools_subscription else 0
 
     if click.confirm("Use Sentry?", default=False):
         context["sentry_organization"] = click.prompt("Sentry Organization")
