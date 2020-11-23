@@ -1,85 +1,24 @@
 [![MACH composer](https://github.com/labd/mach-composer/blob/master/docs/src/_img/logo.png?raw=true)](https://docs.machcomposer.io)
 
-MACH composer let's you define your MACH system using infrastructure-as-code 
-principles, and augments this with a serverless micro services architecture.
+Documentation: [docs.machcomposer.io](https://docs.machcomposer.io)
 
-The idea is to define a configuration file in yml with one or more Commercetools
-sites with all the required configuration for that site, what components to use
-and which version of components.
+MACH composer is a framework that you use to orchestrate and extend modern digital commerce & experience platforms, based on MACH technologies and cloud native services. It provides a standards-based, future-proof tool-set and methodology to hand to your teams when building these types of platforms.
 
-### Site
-A site is one Commercetools instance (with one or more Commercetools stores) and
-a cloud environment (Azure resource group or AWS account)
+It includes:
 
-### Component
-A component is an isolated Terraform module. F.e. a component can define
-Commercetools product types (so you can use different product types per site).
-Typically the other use case for a component is a serverless function that
-either adds an API to the site or listens to Commercetools subscriptions (f.e.
-order created or order status changes).
+- A configuration framework for managing MACH-services configuration, using infrastructure-as-code underneath (powered by Terraform)
+- A microservices architecture based on modern serverless technology (AWS Lambda and Azure Functions), including (alpha) support for building your microservices with the Serverless Framework
+- Multi-tenancy support for managing many instances of your platform, that share the same library of micro services
+- CI/CD tools for automating the delivery of your MACH ecosystem
+- Tight integration with AWS an Azure, including an (opinionated) setup of these cloud environments
 
-#### component versioning
-We suggest to keep component versions global to avoid version conflicts between
-different sites, and a git commit for versions (preferably just the latest
-master git commit). Eventually you're gonna end up with 15 sites, each with 6
-components. By always releasing the latest version maintenance and releasing
-becomes a lot easier compared to the alternative.
+The framework is intended as the 'center piece' of your MACH architecture and incorporates industry best practises such as the 12 Factor Methodology, Infrastrucure-as-code, DevOps, immutable deployments, FAAS, etc.
 
-## Installation
+With combining (and requiring) these practises, using the framework has significant impact on your engineering methodology and organisation. On the other hand, by combining those practises we believe it offers an accelerated 'way in' in terms of embracing modern engineering practises in your organisation.
 
-- Make sure you have Terraform 0.13 installed 
-tip: Use [tfenv](https://github.com/tfutils/tfenv) to support multiple versions of Terraform)
-- Create a new virtualenv with Python 3.8
-- Run the following commands:
+## Getting started
 
-```
-$ make install
-$ az login
-``` 
- 
-
-## Running MACH
-
-To generate the files:
-
-`mach generate # generates all available configs.` 
-
-`mach generate -f main.yml`
-
-To plan Terraform:
-
-`mach plan`
-
-To apply Terraform config:
-
-`mach apply`
-
-## Checking for updates
-
-MACH can check your components for available updates.
-
-To do this, run:
-
-`mach update -f main.yml`
-
-
-## Code style
-The Python source code should be formatted using
-[black](https://github.com/python/black) and the JavaScript code should be
-formatted using [prettier](https://prettier.io/). You can use `make format`
-to run both black and prettier.
-
-This project uses [pre-commit](https://pre-commit.com) to validate the changed
-files before they are committed. You can install it on MacOS using brew:
-
-    $ brew install pre-commit
-
-In the repository you need to register the hooks in git the first time using:
-
-    $ pre-commit install
-
-The pre-commit config (`.pre-commit-config.yaml`) currently runs black and
-flake8.
+Read our [getting started guide](https://docs.machcomposer.io/gettingstarted.html) on how to deploy your MACH stack with the MACH composer.
 
 ## Example yaml file
 
@@ -125,14 +64,58 @@ components:
       version: e638e57
 ```
 
-## Terminology and settings
+### Installation
 
-### Azure
+- Make sure you have Terraform 0.13 installed 
+tip: Use [tfenv](https://github.com/tfutils/tfenv) to support multiple versions of Terraform)
+- Create a new virtualenv with Python 3.8
+- Run the following commands:
 
-#### service_object_id
-The Azure Active Directory principal ID which can access the necessary resources.  
-[More info](https://docs.microsoft.com/en-us/azure/active-directory/develop/app-objects-and-service-principals#service-principal-object)
+```
+$ make install
+``` 
 
-#### tenant_id
-The Azure Active Directory tenant ID that should be used for authenticating requests to the key vault.  
-[More info](https://docs.microsoft.com/en-us/azure/active-directory/develop/authentication-scenarios#tenants)
+### Running MACH
+
+To generate the files:
+
+`mach generate # generates all available configs.` 
+
+`mach generate -f main.yml`
+
+To plan Terraform:
+
+`mach plan`
+
+To apply Terraform config:
+
+`mach apply`
+
+### Checking for updates
+
+MACH can check your components for available updates.
+
+To do this, run:
+
+`mach update -f main.yml`
+
+
+## Contributing
+
+### Code style
+The Python source code should be formatted using
+[black](https://github.com/python/black) and the JavaScript code should be
+formatted using [prettier](https://prettier.io/). You can use `make format`
+to run both black and prettier.
+
+This project uses [pre-commit](https://pre-commit.com) to validate the changed
+files before they are committed. You can install it on MacOS using brew:
+
+    $ brew install pre-commit
+
+In the repository you need to register the hooks in git the first time using:
+
+    $ pre-commit install
+
+The pre-commit config (`.pre-commit-config.yaml`) currently runs black and
+flake8.
