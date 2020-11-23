@@ -13,7 +13,8 @@ nav:
 - gettingstarted.md
 - syntax.md
 - Components:
-  - components/index.md
+  - Introduction: components/index.md
+  - components/structure.md
   - components/azure.md
   - components/aws.md
 - Integrations:
