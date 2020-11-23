@@ -17,4 +17,4 @@ Simply by copy/pasting an existing configuration, make the necessary adjustments
 Easy to integrate the MACH composer into your (existing) CI/CD pipeline.
 
 !!! tip "Further reading"
-    - [What makes a component]()
+    - [What makes a component](./components/index.md)
