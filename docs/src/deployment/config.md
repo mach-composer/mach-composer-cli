@@ -9,3 +9,7 @@
 ### App service plan
 
 ### Action groups
+
+## Additional notes
+
+### Serverless framework

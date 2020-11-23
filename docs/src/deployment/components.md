@@ -9,32 +9,29 @@ In this section a couple of methods – for various cloud providers – will be 
 
 ## Package
 
-### AWS Lambda function
+### Using serverless
 
-=== "Python"
+When using [serverless](https://www.serverless.com) for local development, the easiest way to package your function would be to invoke
+
+```bash
+$ serverless package
+```
+
+### Python project
+
+Sample bash script to package your function to a ZIP file with the correct version tag.
+
+=== "AWS"
     ```bash
     VERSION=$(shell git rev-parse --short HEAD 2>/dev/null || echo "dev" )
-    NAME=$BASENAME-$VERSION
+    NAME=yourcomponent-$VERSION
     ARTIFACT_NAME=$NAME.zip
 
     python -m pip install dist/*.whl -t ./build
     cp handler.py ./build
     cd build && zip -9 -r $ARTIFACT_NAME .
     ```
-
-=== "Node"
-    ```bash
-    TODO
-    ```
-
-=== "C#"
-    ```bash
-    TODO
-    ```
-
-### Azure Function App
-
-=== "Python"
+=== "Azure"
     ```bash
     VERSION=$(shell git rev-parse --short HEAD 2>/dev/null || echo "dev" )
     NAME=yourcomponent-$VERSION
@@ -43,18 +40,6 @@ In this section a couple of methods – for various cloud providers – will be 
     func pack --build-native-deps --python
     mv $BASENAME.zip $ARTIFACT_NAME
     ```
-=== "Node"
-    ```bash
-    TODO
-    ```
-
-=== "C#"
-    ```bash
-    TODO
-    ```
-
-### Using serverless
-TODO
 
 
 ## Package & Upload script
