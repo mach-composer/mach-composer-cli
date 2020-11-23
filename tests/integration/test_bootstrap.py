@@ -59,7 +59,9 @@ def test_component(cookiecutter, click_runner, click_dir, cloud, language):
         "apiext",  # Short name
         "api-extensions-component",  # Component identifier
         "api-extensions",  # Function name
-        "api-extension",  # Function template
+        "y",  # generate Public API?
+        "y",  # generate API extension?
+        "y",  # generate API subscription?
         "n",  # Use Sentry?
     ]
 
