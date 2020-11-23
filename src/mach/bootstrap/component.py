@@ -7,9 +7,6 @@ from cookiecutter.main import cookiecutter
 
 
 def create_component(output_dir: str, cookiecutter_location: str):
-
-    COOKIECUTTER_TEMPLATE = cookiecutter_location
-
     if output_dir and os.path.exists(output_dir):
         if not click.confirm(
             f"Directory {output_dir} already exists. Do you want to overwrite?"
@@ -82,7 +79,7 @@ def create_component(output_dir: str, cookiecutter_location: str):
         )
 
     result = cookiecutter(
-        COOKIECUTTER_TEMPLATE,
+        cookiecutter_location,
         directory=cloud,
         no_input=True,
         output_dir=output_dir or ".",
