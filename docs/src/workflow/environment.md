@@ -22,5 +22,5 @@ Register the MACH schema per project by adding a .vscode/settings.json with the 
 ```
 
 !!! warning "Almost public.."
-    At the moment, the mach-composer repository is not public yet, so directly refering to a file without the use of a (temporary) token is not possible.  
+    At the moment, the mach-composer repository is not public yet, so directly refering to a file without the use of a (temporary) token is not possible.<br>
     For now, you can download the schema and place it in your configuration repo.

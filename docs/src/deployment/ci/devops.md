@@ -29,10 +29,10 @@ The pipeline needs this to be able to access the KeyVault to pull in other crede
 
 1. Go to your *Project settings*
 2. Choose **Pipelines** > **Service connections**
-3. Choose 'Azure Resource Manager'  
-   ![Azure connection](../../_img/deployment/devops/choose_azure_connection.png){: style="max-width:350px; padding-right: 20px"}![Azure connection step 2](../../_img/deployment/devops/choose_azure_connection2.png){: style="max-width:350px"}  
+3. Choose 'Azure Resource Manager'<br>
+   ![Azure connection](../../_img/deployment/devops/choose_azure_connection.png){: style="max-width:350px; padding-right: 20px"}![Azure connection step 2](../../_img/deployment/devops/choose_azure_connection2.png){: style="max-width:350px"}<br>
    And then 'Service principle (automatic)' or 'manual' depending on your situation and permissions.
-4. Enter the credentials needed.  
+4. Enter the credentials needed.<br>
    The name given in **Service connection name** will be used later in the pipeline.
 
 #### 3. MACH docker image
@@ -43,23 +43,23 @@ We do this by creating a service connection, and using that service connection l
 
 1. Go to your *Project settings*
 2. Choose **Pipelines** > **Service connections**
-3. Choose 'Docker Registry'  
+3. Choose 'Docker Registry'<br>
    ![Docker Registry](../../_img/deployment/devops/new_connection.png){: style="max-width:400px"}
-4. Enter `https://docker.pkg.github.com` as Docker registry and fill in your GitHub username and personal access token.  
+4. Enter `https://docker.pkg.github.com` as Docker registry and fill in your GitHub username and personal access token.<br>
    The name given in '**Service connection name**' will be used later in the pipeline
    ![New connection](../../_img/deployment/devops/docker_connection.png)
 
 #### 4. Component repositories
 1. Generate a SSH key pair.  [Instructions](https://docs.microsoft.com/en-us/azure/devops/repos/git/use-ssh-keys-to-authenticate?view=azure-devops#step-1-create-your-ssh-keys).
 2. Add the public key to the [SSH public keys](https://docs.microsoft.com/en-us/azure/devops/repos/git/use-ssh-keys-to-authenticate?view=azure-devops#step-2--add-the-public-key-to-azure-devops-servicestfs) of a user that has (at least read-) access to the component repositories.
-3. Store the private key in the KeyVault.  
+3. Store the private key in the KeyVault.<br>
    ```bash
    $ az keyvault secret set --name "SSHPrivateKey" --value "$(cat id_rsa)" --vault-name my-devops-secrets
    ```
 
 #### 5. Provide SP credentials
 
-The MACH composer needs to be able to login to Azure to manage the resources.  
+The MACH composer needs to be able to login to Azure to manage the resources.<br>
 We need to be able to provide the following environment variables:
 
 - `ARM_CLIENT_ID`
@@ -188,5 +188,5 @@ See the [Components deployment](../components.md#package-upload-script) section 
 
 !!! note
     In the example, you'll see a script to install the *Azure functions core tools*.
-    The functions core tools cannot be injected in the pipeline easier because of a still unresolved bug.  
+    The functions core tools cannot be injected in the pipeline easier because of a still unresolved bug.<br>
     See: [https://github.com/Azure/azure-functions-core-tools/issues/1899](https://github.com/Azure/azure-functions-core-tools/issues/1899)

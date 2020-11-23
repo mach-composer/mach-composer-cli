@@ -14,13 +14,13 @@ In addition to the [base variables](./index.md#required-variables), an Azure com
 - `name_prefix` - Name prefix to be used for all Azure resources. See [naming conventions](#nmaing-conventions)
 - `subscription_id` - The current subscription ID
 - `tenant_id` - The current tenant ID
-- `service_object_ids` - User/Group/Principle IDs that should be able to access for example a KeyVault.  
+- `service_object_ids` - User/Group/Principle IDs that should be able to access for example a KeyVault.<br>
 Type: `map(string)`
 - `region` - Azure region
 - `resource_group_name` - Name of the resource group the component should be created in
 - `resource_group_location` - The resource group location
 - `app_service_plan_id` - The [App service plan](../deployment/config.md#app-service-plan) managed by MACH
-- `tags` - Azure tags to be used on resources  
+- `tags` - Azure tags to be used on resources<br>
   Type: `map(string)`
 - `monitor_action_group_id` - [action group](../deployment/config.md#action-groups) ID when [alert_group](../syntax.md#azure) is configured.
 
@@ -77,7 +77,7 @@ resource "azurerm_function_app" "your_component" {
 ```
 ## HTTP routing
 
-MACH will provide the correct HTTP routing for you.  
+MACH will provide the correct HTTP routing for you.<br>
 To do so, the following has to be configured:
 
 - [Frontdoor](../syntax.md#front_door) settings in the Azure configuration
@@ -126,7 +126,7 @@ With `resources_prefix` configured as `mach-` and a site id of `uk-example-prd` 
 
 ### Azure naming restrictions
 
-Some resources might have a maximum length to be used as name.  
+Some resources might have a maximum length to be used as name.<br>
 To work with these limitations, the `short_name` variable can be used.
 
 For example, a Storage Account can be created using

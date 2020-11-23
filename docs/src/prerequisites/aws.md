@@ -42,7 +42,7 @@ A S3 bucket should be created where the packaged lambda function code is stored.
 
 ## Setup AWS account per site
 
-It is recommended to use a dedicated AWS account **per site**.  
+It is recommended to use a dedicated AWS account **per site**.<br>
 This way, all resources are strictly seperated from eachother.
 
 So the following steps need to be done per site:
@@ -58,7 +58,7 @@ In case you are planning to deploy public facing APIs, a Route53 zone needs to b
 The full URL of this hosted zone can be configured in the MACH configuration.
 
 !!! note "API routings"
-    MACH will make sure the API Gateway is created and a SSL certificate is created.  
+    MACH will make sure the API Gateway is created and a SSL certificate is created.<br>
     Each component is responsible for creating the correct routing to the Lambda endpoints.
 
 ### IAM deploy role
@@ -129,4 +129,4 @@ statement {
 }
 ```
 
-[^1]: Terraform syntax for a [`iam_policy_document`](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) is used here.  
+[^1]: Terraform syntax for a [`iam_policy_document`](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) is used here.<br>

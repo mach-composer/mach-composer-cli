@@ -12,6 +12,6 @@ You can define the name of the space that needs to be created in your [site conf
 
 ## Expose Space ID to components
 
-MACH needs to know what components want to use the Space ID.  
-For this you need to include `contentful` to the list of integrations.  
+MACH needs to know what components want to use the Space ID.<br>
+For this you need to include `contentful` to the list of integrations.<br>
 When doing so, MACH expects the component to have one variable `contentful_space_id` defined ([more info](../components/structure.md#contentful)).

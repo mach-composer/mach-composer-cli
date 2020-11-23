@@ -14,8 +14,8 @@ Setup can be done using [Terraform](#using-terraform) or [manually](#manual-setu
 ```bash
 $ az login
 ```
-Follow the prompts. On success, the CLI will respond with a JSON object of the subscriptions available to you.  
-Make sure the subscription you want to work in is set to default. If it is not, you can run  
+Follow the prompts. On success, the CLI will respond with a JSON object of the subscriptions available to you.<br>
+Make sure the subscription you want to work in is set to default. If it is not, you can run<br>
 `az account set --subscription <name or id>`
 2. Setup your Terraform configuration.
 In main.tf:
@@ -43,8 +43,8 @@ module "shared_infra" {
 $ terraform init
 $ terraform apply
 ```
-4. For a new Terraform setup, initially it will store the Terraform state locally and should be named `terraform.tfstate`.  
-   We'll move this state to the Storage Account that has been created by the shared infra module.  
+4. For a new Terraform setup, initially it will store the Terraform state locally and should be named `terraform.tfstate`.<br>
+   We'll move this state to the Storage Account that has been created by the shared infra module.<br>
    To do this, add a backend setting to project like below
 ```terraform
 terraform {
@@ -57,10 +57,10 @@ terraform {
 ```bash
 $ terraform init -reconfigure 
 ```
-Terraform will detect that you're trying to move your state into S3 and ask; "*Do you want to copy existing state to the new backend?*".  
-Enter **"yes"**.  
+Terraform will detect that you're trying to move your state into S3 and ask; "*Do you want to copy existing state to the new backend?*".<br>
+Enter **"yes"**.<br>
 Now the state is stored in the Storage Account and the DynamoDB table will be used to lock the state to prevent concurrent modifications.
-6. Check if `terraform.tfstate` is empty and remove it.  
+6. Check if `terraform.tfstate` is empty and remove it.<br>
    Repeat the above three steps for all other environments
 
 ## Manual setup
@@ -74,10 +74,10 @@ Create a storage account which will be used as Terraform state backend.
 
 
 !!! tip
-    A good convention is to place the Terraform state backend storage account in a 'shared' resource group which can be used for various shared resources accross all your environments and sites.  
-    For example:  
-    **Resource group**: `my-shared-we-rg`  
-    **Storage account** `mysharedwesaterra`  
+    A good convention is to place the Terraform state backend storage account in a 'shared' resource group which can be used for various shared resources accross all your environments and sites.<br>
+    For example:<br>
+    **Resource group**: `my-shared-we-rg`<br>
+    **Storage account** `mysharedwesaterra`<br>
     Where 'my' is replaced by a prefix of your choosing.
 
 #### Create container
@@ -92,9 +92,9 @@ Create a new `BlockBlobStorage` with a Premium account tier for improved perform
 
 !!! tip
     Again, like the Terraform state, place this in a 'shared' resource group
-    For example:  
-    **Resource group**: `my-shared-we-rg`  
-    **Storage account** `mysharedwesacomponents`  
+    For example:<br>
+    **Resource group**: `my-shared-we-rg`<br>
+    **Storage account** `mysharedwesacomponents`<br>
     Where 'my' is replaced by a prefix of your choosing.
 
 #### Create container
@@ -110,5 +110,5 @@ Make sure the following providers are registered on the subscription:
 - `Microsoft.Storage`
 - `Microsoft.Insights`
 
-More info:  
+More info:<br>
 [https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/error-register-resource-provider](https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/error-register-resource-provider)

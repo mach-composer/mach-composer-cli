@@ -37,7 +37,7 @@ resource "aws_lambda_function" "example" {
 ```
 ## HTTP routing
 
-MACH will provide the correct HTTP routing for you.  
+MACH will provide the correct HTTP routing for you.<br>
 To do so, the following has to be configured:
 
 - [base_url](../syntax.md#sites) settings in the Site configuration

@@ -9,7 +9,7 @@ Wether you're using AWS or Azure (or a mix of both), a choice has to be made whe
 The machine MACH runs on needs to have [Docker](https://www.docker.com) installed.
 
 !!! info  "From source"
-    It's also possible to run MACH from source.  
+    It's also possible to run MACH from source.<br>
     In order to do so, the following needs to be installed on the system:
 
     - Python 3.8
