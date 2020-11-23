@@ -31,7 +31,7 @@ The configuration file has the following structure:
 All 'shared' configuration that applies to all sites.
 
 - **`environment`** - (Required) [environment](#environment) Identifier for the environment. For example `development`, `test` or `production`.  
-Is used to set the `environment` variable of any [Terraform component](./components/index.md#terraform-component)
+Is used to set the `environment` variable of any [Terraform component](./components/structure.md#terraform-component)
 - **`terraform_config`** - (Required) [terraform_config](#terraform_config) block
 - `cloud` - Either `azure` or `aws`
 - `azure` - [Azure](#azure) block
@@ -401,7 +401,7 @@ components:
 - `source` - Source definition of the terraform module
 - `short_name` - Short name to be used in cloud resources. Should be at most 10 characters to avoid running into Resource naming limits.  
   Defaults to the given components `name`
-- `integrations` - Defines a list of integrations for the given component. It controls what Terraform variables are passed on to the components [Terraform module](./components/index.md#terraform-module).  
+- `integrations` - Defines a list of integrations for the given component. It controls what Terraform variables are passed on to the components [Terraform module](./components/structure.md#terraform-module).  
   Defaults to `["azure"]` or `["aws"]`, depending on your cloud provider.  
   Could be any of:
     - `azure`

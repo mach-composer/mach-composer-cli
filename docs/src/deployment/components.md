@@ -1,6 +1,6 @@
 # Component deployment
 
-As described in the [components section](../components/index.md#deployment-process), the component itself is responsible for the following steps:
+As described in the [components section](../components/structure.md#deployment-process), the component itself is responsible for the following steps:
 
 - Packaging the function
 - Deploying it to the code registry

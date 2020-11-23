@@ -38,7 +38,7 @@ The rate limits can also be defined/overwritten on [`site`](../syntax.md#sites) 
 
 MACH needs to know what components want to use the Sentry DSN.  
 For this you need to include `sentry` to the list of integrations.  
-When doing so, MACH expects the component to have one variable `sentry_dsn` defined ([more info](../components/index.md#sentry))
+When doing so, MACH expects the component to have one variable `sentry_dsn` defined ([more info](../components/structure.md#sentry))
 
 If the integration is set, MACH will;
 
