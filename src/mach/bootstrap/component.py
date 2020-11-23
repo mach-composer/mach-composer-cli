@@ -33,11 +33,6 @@ def create_component(output_dir: str):
         "Component identifier", default=f"{_slugify(name, sep='-')}-component"
     )
     function_name = click.prompt("Function name", default=_slugify(name))
-    function_template = click.prompt(
-        "Function template to use",
-        type=click.Choice(["api-extension", "subscription", "public-api"]),
-        default="api-extension",
-    )
 
     context = {
         "language": language,
@@ -46,8 +41,23 @@ def create_component(output_dir: str):
         "short_name": short_name,
         "component_identifier": component_identifier,
         "function_name": function_name,
-        "function_template": function_template,
     }
+
+    use_public_api = click.confirm("Generate public API?", default=True)
+    use_commercetools_api_extension = click.confirm(
+        "Generate commercetools API extension?", default=True
+    )
+    use_commercetools_subscription = click.confirm(
+        "Generate commercetools Subcription?", default=True
+    )
+
+    context["use_public_api"] = 1 if use_public_api else 0
+    context["use_commercetools_api_extension"] = (
+        1 if use_commercetools_api_extension else 0
+    )
+    context["use_commercetools_subscription"] = (
+        1 if use_commercetools_subscription else 0
+    )
 
     if click.confirm("Use Sentry?", default=False):
         context["sentry_organization"] = click.prompt("Sentry Organization")
