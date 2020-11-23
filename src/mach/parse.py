@@ -100,6 +100,12 @@ def resolve_site_configs(config: MachConfig) -> MachConfig:
                 if site.contentful:
                     site.contentful.merge(config.general_config.contentful)
 
+        # Merge Amplience settings
+        if config.general_config.amplience:
+            for site in config.sites:
+                if site.amplience:
+                    site.amplience.merge(config.general_config.amplience)
+
         if config.general_config.sentry:
             if not site.sentry:
                 site.sentry = SentryDsn.from_config(config.general_config.sentry)

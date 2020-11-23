@@ -132,6 +132,15 @@ class ContentfulConfig(JsonSchemaMixin):
 
 @dataclass_json
 @dataclass
+class AmplienceConfig(JsonSchemaMixin):
+    """Generic Amplience configuration."""
+
+    client_id: str
+    client_secret: str
+
+
+@dataclass_json
+@dataclass
 class AWSProvider(JsonSchemaMixin):
     """AWS provider configuration."""
 
@@ -155,6 +164,7 @@ class GeneralConfig(JsonSchemaMixin):
     sentry: Optional[SentryConfig] = _none()
     azure: Optional[AzureConfig] = _none()
     contentful: Optional[ContentfulConfig] = _none()
+    amplience: Optional[AmplienceConfig] = _none()
 
 
 @dataclass_json
@@ -258,6 +268,20 @@ class ContentfulSettings(JsonSchemaMixin):
     def merge(self, config: ContentfulConfig):
         self.cma_token = self.cma_token or config.cma_token
         self.organization_id = self.organization_id or config.organization_id
+
+
+@dataclass_json
+@dataclass
+class AmplienceSettings(JsonSchemaMixin):
+    """Amplience settings."""
+
+    hub_id: str
+    client_id: str = ""
+    client_secret: str = ""
+
+    def merge(self, config: AmplienceConfig):
+        self.client_id = self.client_id or config.client_id
+        self.client_secret = self.client_secret or config.client_secret
 
 
 @dataclass_json
@@ -372,6 +396,7 @@ class Site(JsonSchemaMixin):
     base_url: Optional[str] = _none()
     commercetools: Optional[CommercetoolsSettings] = _none()
     contentful: Optional[ContentfulSettings] = _none()
+    amplience: Optional[AmplienceSettings] = _none()
     azure: Optional[SiteAzureSettings] = _none()
     aws: Optional[SiteAWSSettings] = _none()
     components: List[Component] = _list()
