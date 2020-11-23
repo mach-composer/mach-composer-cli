@@ -47,6 +47,19 @@ It should be present in your:
 
 The [getting started guide](../gettingstarted.md) includes an example of a configuration file with a component implemented.
 
+## Using Serverless framework
+
+The 'function'-part of a MACH component can easily be integrated with the [serverless framework](https://www.serverless.com) for "*zero-friction serverless development*".
+
+This gives you a couple of features:
+
+- Easy local development of your function code including mocked infrastructure that might be needed for your setup
+- Build & package your function by calling `sls package`. [More info about Packaging & Deployment](../deployment/components.md##using-serverless)
+
+!!! info "Serverless framework in your MACH deployment"
+    Altho we do encourage the usage of the serverless framework for development and packaging, we don't recommend using it for the actual MACH deployment itself.  
+    More info about this in the [MACH configuration deployment notes](../deployment/config.md#serverless-framework).
+
 ## Further reading
 
 Continue to [component structure](./structure.md) for an explenation of a component's internals.
