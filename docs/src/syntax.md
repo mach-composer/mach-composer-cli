@@ -13,10 +13,12 @@ The configuration file has the following structure:
     - [azure](#azure)
     - [sentry](#sentry)
     - [contentful](#contentful)
+    - [amplience](#amplience)
 - **[sites](#sites)**
     - **[identifier](#sites)**
     - [commercetools](#commercetools)
     - [contentful](#contentful_1)
+    - [amplience](#amplience_1)
     - [azure](#azure_1)
     - [aws](#aws)
     - [stores](#stores)
@@ -98,14 +100,14 @@ This could be a predefined DSN to be used in the components, or MACH can manage 
 
 - **`dsn`** - DSN to use in the components
 
-or 
+or
 
 - **`auth_token`** - Auth token to manage keys with
 - **`organization`** - Organization name
 - **`project`** - Project to create the key for
 - `rate_limit_window` - The rate limit window that applies to a generated key
 - `rate_limit_count` - The rate limit count that applies to a generated key
-  
+
 When defined, a `sentry` integration can be used in the components to expose a Sentry DSN value.
 
 !!! tip ""
@@ -164,6 +166,12 @@ Defines global Contentful credentials to manage the spaces
 - **cma_token** - (Required)
 - **organization_id** - (Required)
 
+
+### amplience
+Defines global Amplience credentials to manage hubs
+
+- **client_id** - (Required)
+- **client_secret** - (Required)
 
 ## sites
 All site definitions.
@@ -297,6 +305,17 @@ contentful:
 - `default_locale` - Set default locale. Defaults to "en-US"
 - `cma_token` - Override default `cma_token` setting (site-specific)
 - `organization_id` - Override default `organization_id` setting (site-specific)
+
+
+### amplience
+
+Amplience configuration.
+
+Example:
+
+- `client_id` - Overrides default `client_id` settings (site-specific)
+- `client_secret` - Override default `client_secret` setting (site-specific)
+- `hub_id` - Override default `hub_id` setting (site-specific)
 
 
 ### azure
