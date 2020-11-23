@@ -14,8 +14,8 @@ From a MACH configuration file, you can configure the following items in commerc
 For more information about these configuration options, see the [syntax](../syntax.md#commercetools).
 
 !!! tip "More fine-grained control"
-    MACH provides a couple of basic configuration options which in most cases are sufficient and is setup very quickly.  
-    If you need more control over the configuration in your project, you can load custom configuration through a new component which would include the necessary Terraform configuration for that.  
+    MACH provides a couple of basic configuration options which in most cases are sufficient and is setup very quickly.<br>
+    If you need more control over the configuration in your project, you can load custom configuration through a new component which would include the necessary Terraform configuration for that.<br>
     For example a `commercetools-setup-component`.
 
 ## API client management

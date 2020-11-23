@@ -24,10 +24,10 @@ These will be explained further:
 
 Since the MACH docker image is hosted on a private GitHub repository, we need to add credentials to be able to pull the image.
 
-1. Create a [personal access token](https://docs.github.com/en/free-pro-team@latest/github/authenticating-to-github/creating-a-personal-access-token)  
+1. Create a [personal access token](https://docs.github.com/en/free-pro-team@latest/github/authenticating-to-github/creating-a-personal-access-token)<br>
    Make sure this as the `read:packages` permission
 2. Determine your [`DOCKER_AUTH_CONFIG` data](https://docs.gitlab.com/ee/ci/docker/using_docker_images.html#determining-your-docker_auth_config-data)
-   
+ <br>
 Following the [example from GitLab](https://docs.gitlab.com/ee/ci/docker/using_docker_images.html#determining-your-docker_auth_config-data), you can create the auth-token as such:
 
 ```bash
@@ -53,10 +53,10 @@ And then give `DOCKER_AUTH_CONFIG` the following value:
 
 #### Component repositories
 
-When MACH is applied it will have to download the various components from their Git repositories.  
+When MACH is applied it will have to download the various components from their Git repositories.<br>
 We have to make sure the current runner has access to those.
 
-Most probably you'll have the CI for the MACH configuration running under the same GitLab account as the components itself.  
+Most probably you'll have the CI for the MACH configuration running under the same GitLab account as the components itself.<br>
 In that case you can use the [`CI_JOB_TOKEN`](https://docs.gitlab.com/ee/ci/variables/predefined_variables.html) variable and place it in a [`.netrc`](https://docs.gitlab.com/ee/user/project/new_ci_build_permissions_model.html#dependent-repositories) file so that other repositories can be accessed (see [example](#example)).
 
 ### Example
@@ -74,7 +74,7 @@ variables:
 before_script:
   - mkdir -p ~/.ssh
   - chmod 700 ~/.ssh
-  # Replace with your custom GitLab domain  
+  # Replace with your custom GitLab domain<br>
   - ssh-keyscan your.gitlab-domain.com >> ~/.ssh/known_hosts
   - chmod 644 ~/.ssh/known_hosts
   - echo -e "machine your.gitlab-domain.com\nlogin gitlab-ci-token\npassword ${CI_JOB_TOKEN}" > ~/.netrc

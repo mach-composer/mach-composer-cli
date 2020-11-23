@@ -10,14 +10,14 @@ Other then the [Terraform configuration](#terraform-component), a component migh
 
 The deployment of a full-fledged component typically flows through the following steps:
 
-1. Serverless function is built, packaged up and uploaded to a shared resources all environments and sites can access.  
+1. Serverless function is built, packaged up and uploaded to a shared resources all environments and sites can access.<br>
    **Note** at this point, no actual deployment is made; the function doesn't run yet.
-2. At the moment the MACH composer deploys a site's Terraform configuration, it uses the component's Terraform configuration to make the necessary modifications to the resources.  
+2. At the moment the MACH composer deploys a site's Terraform configuration, it uses the component's Terraform configuration to make the necessary modifications to the resources.<br>
    For example: create the function app instance, necessary routing, etc.
 3. MACH composer will use the packages function (from step 1) to deploy the function itself
 
 !!! info "Simple components"
-      Not all components need to be a serverless function. A component might be just a set of Terraform instructions to, for example, create a custom product type in commercetools.  
+      Not all components need to be a serverless function. A component might be just a set of Terraform instructions to, for example, create a custom product type in commercetools.<br>
       In that case, step 1 and 3 will be skipped.
 
 Zooming in on the [main diagram](../index.md#how-does-it-work), you'll see the steps illustrated.
@@ -63,7 +63,7 @@ Available integrations are:
 By default, integrations are set on the given cloud provider. So when no `integrations` defintion is given, it defaults to `['aws']` in case of an AWS deployment.
 
 !!! tip "Non-cloud components"
-    As an example; you might have a component defining some custom commercetools product types. No further cloud infrastructure is needed.  
+    As an example; you might have a component defining some custom commercetools product types. No further cloud infrastructure is needed.<br>
     In this case, that component will have `integrations: ['commeretools']` and MACH won't pass any of the cloud-specific variables.
 
 #### cloud integration

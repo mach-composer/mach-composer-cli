@@ -30,7 +30,7 @@ The configuration file has the following structure:
 ## general_config
 All 'shared' configuration that applies to all sites.
 
-- **`environment`** - (Required) [environment](#environment) Identifier for the environment. For example `development`, `test` or `production`.  
+- **`environment`** - (Required) [environment](#environment) Identifier for the environment. For example `development`, `test` or `production`.<br>
 Is used to set the `environment` variable of any [Terraform component](./components/structure.md#terraform-component)
 - **`terraform_config`** - (Required) [terraform_config](#terraform_config) block
 - `cloud` - Either `azure` or `aws`
@@ -40,7 +40,7 @@ Is used to set the `environment` variable of any [Terraform component](./compone
 
 
 ### terraform_config
-Configuration of the Terraform state backend.  
+Configuration of the Terraform state backend.<br>
 This can be any of:
 
 - Azure Blob Container
@@ -169,8 +169,8 @@ Defines global Contentful credentials to manage the spaces
 All site definitions.
 
 
-- **`identifier`** - (Required)  
-  Unique identifier for this site.  
+- **`identifier`** - (Required)<br>
+  Unique identifier for this site.<br>
   Will be used for the Terraform state and naming all cloud resources.
 - `base_url` - Used for setting up the API Gateway, routing and SSL certificates
 - `commercetools` - [commercetools configuration](#commercetools) block
@@ -212,7 +212,7 @@ commercetools:
 - `currencies` - List of three-digit currency codes as per ISO 4217
 - `languages` - List of IETF language tag
 - `countries` - List of two-digit country codes as per [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2)
-- `messages_enabled` - When false the creation of messages is disabled.  
+- `messages_enabled` - When false the creation of messages is disabled.<br>
   Defaults to True
 - `channels` - List of [channel definitions](#channels)
 - `taxes` - List of [tax definitions](#taxes)
@@ -242,7 +242,7 @@ channels:
 ```
 
 - **`key`** - (Required) 
-- **`roles`** - (Required) List of [channel roles](https://docs.commercetools.com/http-api-projects-channels#channelroleenum).  
+- **`roles`** - (Required) List of [channel roles](https://docs.commercetools.com/http-api-projects-channels#channelroleenum).<br>
     Can be one of `InventorySupply`, `ProductDistribution`, `OrderExport`, `OrderImport` or `Primary`
 - `name` - Name of the channel. Localized string [^1]
 - `description` - Description of the channel. Localized string [^1]
@@ -300,7 +300,7 @@ contentful:
 
 
 ### azure
-Site-specific Azure settings.  
+Site-specific Azure settings.<br>
 Can overwrite any value from the generic [Azure settings](#azure):
 
 - `tenant_id`
@@ -315,8 +315,8 @@ And adds the following exta attributes:
 - `resource_group` - Name of an already existing resource group.
 
 !!! warning
-    Use `resource_group` with care.  
-    By default, MACH will manage the site resource groups for you. If you add this option later, the managed resource group will get **deleted**.  
+    Use `resource_group` with care.<br>
+    By default, MACH will manage the site resource groups for you. If you add this option later, the managed resource group will get **deleted**.<br>
     So only use for new site definitions
 
 #### alert_group
@@ -334,7 +334,7 @@ alert_group:
 - `name` - (Required) The name of the alert group
 - `alert_emails` - Hook alert group to these email addresses
 - `webhook_url` - Hooks alert group to a webhook
-- `logic_app` - Reference to a Logic App the alert group needs to be connected to.  
+- `logic_app` - Reference to a Logic App the alert group needs to be connected to.<br>
   Format is `<resource_group>.<logic_app_name>`
 
 ### aws
@@ -364,7 +364,7 @@ aws:
 - **`name`** - (Required) Reference to a [component](#component) definition
 - `variables` - Environment variables for this components runtime
 - `secrets` - Environment variables for this component that should be stored in a encrypted key-value store
-- `health_check_path` - Defines a custom healthcheck path.  
+- `health_check_path` - Defines a custom healthcheck path.<br>
   Overwrites the default `health_check_path` defined in the component definition
 - `sentry` - [Sentry configuration](#sentry_2) block
 
@@ -378,7 +378,7 @@ Overwrites any value specified in the site configs [Sentry block](#sentry_1)
 
 ## components
 
-Component definitions.  
+Component definitions.<br>
 These components are used and configured separately [per site](#component-configurations).
 
 Example:
@@ -399,23 +399,23 @@ components:
 - `name` - Name of the component. To be used as reference in the site definitions.
 - `version` - A Git commit hash or tag
 - `source` - Source definition of the terraform module
-- `short_name` - Short name to be used in cloud resources. Should be at most 10 characters to avoid running into Resource naming limits.  
+- `short_name` - Short name to be used in cloud resources. Should be at most 10 characters to avoid running into Resource naming limits.<br>
   Defaults to the given components `name`
-- `integrations` - Defines a list of integrations for the given component. It controls what Terraform variables are passed on to the components [Terraform module](./components/structure.md#terraform-module).  
-  Defaults to `["azure"]` or `["aws"]`, depending on your cloud provider.  
+- `integrations` - Defines a list of integrations for the given component. It controls what Terraform variables are passed on to the components [Terraform module](./components/structure.md#terraform-module).<br>
+  Defaults to `["azure"]` or `["aws"]`, depending on your cloud provider.<br>
   Could be any of:
     - `azure`
     - `aws`
     - `commercetools`
-    - `contentful`  
-- `has_public_api` - Defines if the serverless function should be exposed publically.  
+    - `contentful`<br>
+- `has_public_api` - Defines if the serverless function should be exposed publically.<br>
   Will create proper Frontdoor routing when `true`.
-- `health_check_path` - Defines a custom healthcheck path.  
+- `health_check_path` - Defines a custom healthcheck path.<br>
   Defaults to `/<name>/healthchecks`
 - `branch` - Configure the git branch of the component. Only used to facilitate the `mach update` CLI command.
 
 
-[^1]: commercetools uses [Localized strings](https://docs.commercetools.com/http-api-types#localizedstring) to be able to define strings in mulitple languages.  
+[^1]: commercetools uses [Localized strings](https://docs.commercetools.com/http-api-types#localizedstring) to be able to define strings in mulitple languages.<br>
 Whenever a localized string needs to be defined, this can be done in the following format:
 ```yaml
 some-string:

@@ -17,8 +17,8 @@ In order to make your MACH stack truly composable, components should be designed
 For some components, the *domain* and thus the implementation is quite straight-forward and clear, like for example a component responsible for **handling payments** or a component that should **sends a confirmation email** upon a new order.
 
 #### Complex components
-Some components might be a bit more complex, but still a good fit for a single component;  
-For example an **ERP component** that imports data from an ERP system and exports commercetools order data to be imported in the ERP.  
+Some components might be a bit more complex, but still a good fit for a single component;<br>
+For example an **ERP component** that imports data from an ERP system and exports commercetools order data to be imported in the ERP.<br>
 This might include multiple serverless functions that receive different triggers for example:
 
 - New object is upload to a S3 bucket or Storage account
@@ -57,7 +57,7 @@ This gives you a couple of features:
 - Build & package your function by calling `sls package`. [More info about Packaging & Deployment](../deployment/components.md##using-serverless)
 
 !!! info "Serverless framework in your MACH deployment"
-    Altho we do encourage the usage of the serverless framework for development and packaging, we don't recommend using it for the actual MACH deployment itself.  
+    Altho we do encourage the usage of the serverless framework for development and packaging, we don't recommend using it for the actual MACH deployment itself.<br>
     More info about this in the [MACH configuration deployment notes](../deployment/config.md#serverless-framework).
 
 ## Further reading

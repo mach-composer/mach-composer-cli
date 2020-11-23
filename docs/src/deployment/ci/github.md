@@ -14,7 +14,7 @@ For an deployment we have to make sure the following variables set in the GitLab
 - AWS or Azure credentials
 
 #### Create access token
-1. Create a [personal access token](https://docs.github.com/en/free-pro-team@latest/github/authenticating-to-github/creating-a-personal-access-token)  
+1. Create a [personal access token](https://docs.github.com/en/free-pro-team@latest/github/authenticating-to-github/creating-a-personal-access-token)<br>
    Make sure this has the `read:packages` and `repo` permission
 2. Set the personal access token credentials as secrets in your MACH configuration repo settings.
 
