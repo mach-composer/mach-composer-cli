@@ -44,13 +44,17 @@ def create_component(output_dir: str, cookiecutter_location: str):
         "function_name": function_name,
     }
 
-    context["use_public_api"] = click.confirm("Generate public API?", default=True)
-    context["use_commercetools_api_extension"] = click.confirm(
+    use_public_api = click.confirm("Generate public API?", default=True)
+    use_commercetools_api_extension = click.confirm(
         "Generate commercetools API extension?", default=True
     )
-    context["use_commercetools_subscription"] = click.confirm(
+    use_commercetools_subscription = click.confirm(
         "Generate commercetools Subcription?", default=True
     )
+
+    context["use_public_api"] = 1 if use_public_api else 0
+    context["use_commercetools_api_extension"] = 1 if use_commercetools_api_extension else 0
+    context["use_commercetools_subscription"] = 1 if use_commercetools_subscription else 0
 
     if click.confirm("Use Sentry?", default=False):
         context["sentry_organization"] = click.prompt("Sentry Organization")
