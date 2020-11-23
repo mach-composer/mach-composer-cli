@@ -14,7 +14,7 @@ The deployment of a full-fledged component typically flows through the following
    **Note** at this point, no actual deployment is made; the function doesn't run yet.
 2. At the moment the MACH composer deploys a site's Terraform configuration, it uses the component's Terraform configuration to make the necessary modifications to the resources.<br>
    For example: create the function app instance, necessary routing, etc.
-3. MACH composer will use the packages function (from step 1) to deploy the function itself
+3. MACH composer will use the packaged function (from step 1) to deploy the function itself
 
 !!! info "Simple components"
       Not all components need to be a serverless function. A component might be just a set of Terraform instructions to, for example, create a custom product type in commercetools.<br>

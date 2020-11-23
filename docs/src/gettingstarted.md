@@ -53,7 +53,7 @@ See [Syntax](./syntax.md) for all configuration options.
 You can deploy your current configuration by running
 
 ```bash
-$ mach generate
+$ mach apply
 ```
 
 If you wish to review the changes before applying them, run
@@ -64,10 +64,10 @@ $ mach plan
 
 !!! tip "Using Docker image"
     You can invoke MACH by running the Docker image:<br>
-    `$ docker run --rm --volume $(pwd):/code docker.pkg.github.com/labd/mach-composer/mach plan`
+    `$ docker run --rm --volume $(pwd):/code docker.pkg.github.com/labd/mach-composer/mach apply`
 
-    You do need to provide the docker container with the necessary environment variables to be able to authenticate with the cloud provider. More info on that in the [deployment section](./deployment/config.md)
+    You do need to provide the docker container with the necessary environment variables to be able to authenticate with the cloud provider. More info on that in the [deployment section](./deployment/config/index.md)
 
 
 ## Additional options
-See the [Deployment section](./deployment/config.md) for more deployment options.
+See the [CLI reference](./workflow/cli.md#apply) for more deployment options.

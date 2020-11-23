@@ -58,7 +58,7 @@ This gives you a couple of features:
 
 !!! info "Serverless framework in your MACH deployment"
     Altho we do encourage the usage of the serverless framework for development and packaging, we don't recommend using it for the actual MACH deployment itself.<br>
-    More info about this in the [MACH configuration deployment notes](../deployment/config.md#serverless-framework).
+    More info about this in the [MACH configuration deployment notes](../deployment/config/components.md#serverless-framework).
 
 ## Further reading
 

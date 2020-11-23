@@ -19,10 +19,10 @@ Type: `map(string)`
 - `region` - Azure region
 - `resource_group_name` - Name of the resource group the component should be created in
 - `resource_group_location` - The resource group location
-- `app_service_plan_id` - The [App service plan](../deployment/config.md#app-service-plan) managed by MACH
+- `app_service_plan_id` - The [App service plan](../deployment/config/azure.md#app-service-plan) managed by MACH
 - `tags` - Azure tags to be used on resources<br>
   Type: `map(string)`
-- `monitor_action_group_id` - [action group](../deployment/config.md#action-groups) ID when [alert_group](../syntax.md#azure) is configured.
+- `monitor_action_group_id` - [action group](../deployment/config/azure.md#action-groups) ID when [alert_group](../syntax.md#azure) is configured.
 
 ```terraform
 variable "short_name" {}
@@ -83,7 +83,7 @@ To do so, the following has to be configured:
 - [Frontdoor](../syntax.md#front_door) settings in the Azure configuration
 - The component has to be marked as [`has_public_api`](../syntax.md#components)
 
-More information in the [deployment section](../deployment/config.md#http-routing).
+More information in the [deployment section](../deployment/config/azure.md#http-routing).
 
 ## Naming conventions
 
