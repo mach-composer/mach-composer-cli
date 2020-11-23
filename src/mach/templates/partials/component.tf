@@ -86,7 +86,7 @@ module "{{ component.name }}" {
   {% endif %}
 
   {% if "amplience" in component.integrations %}
-    client_id = "{{ site.amplience }}"
+    client_id = "{{ site.amplience.client_id }}"
     client_secret = "{{ site.amplience.client_secret }}"
     hub_id = "{{ site.amplience.hub_id }}"
   {% endif %}
