@@ -23,7 +23,12 @@ nav:
   - integrations/contentful.md
 - Deployment:
   - Components: deployment/components.md
-  - MACH stack: deployment/config.md
+  - MACH stack: 
+    - Overview: deployment/config/index.md
+    - deployment/config/aws.md
+    - deployment/config/azure.md
+    - deployment/config/integrations.md
+    - Components: deployment/config/components.md
   - CI/CD: 
     - GitLab: deployment/ci/gitlab.md
     - GitHub actions: deployment/ci/github.md

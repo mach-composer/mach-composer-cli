@@ -1,11 +1,16 @@
-# Component deployment
+# Component deployment - first stage
 
-As described in the [components section](../components/structure.md#deployment-process), the component itself is responsible for the following steps:
+As described in the [components section](../components/structure.md#deployment-process), whenever a component contains a **serverless function** that needs to be uploaded to a registry, it needs a '*first stage*' deployment.
+
+In that case, the component itself is responsible for the following steps:
 
 - Packaging the function
 - Deploying it to the code registry
 
 In this section a couple of methods – for various cloud providers – will be described.
+
+!!! tip "Second stage deployment"
+    The second stage deployment is described in the ['MACH configuration deployment' section](./config/components.md)
 
 ## Package
 
@@ -138,3 +143,12 @@ Refer to the CI/CD section for instructions on how to setup your Continuous Inte
 - [GitLab](./ci/gitlab.md#components)
 - [GitHub actions](./ci/github.md#components)
 - [Azure DevOps](./ci/devops.md#components)
+
+
+## Second stage - MACH deployment
+
+As part of the [MACH deployment](./config/index.md), the component will be loaded as a Terraform module so that the component can deploy the necessary resources needed for the specific site it is configured for.
+
+It will deploy any resources that are defined as part of the Terraform module.
+
+### 
