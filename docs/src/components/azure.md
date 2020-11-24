@@ -141,3 +141,34 @@ resource "azurerm_storage_account" "main" {
 Where `sa` stands for *'storage account'*
 
 [^1]: Some resources have a name restriction of max 24 characters. Obviously we want to avoid hitting that limit. See [Azure naming restrictions](#azure-naming-restrictions) on how to avoid that.
+
+## Function App
+
+We recommend using the [`azurerm_function_app`](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/function_app)
+
+```terraform
+resource "azurerm_function_app" "example_component" {
+  name                       = lower(format("%s-func-%s", var.name_prefix, var.short_name))
+  location                   = var.resource_group_location
+  resource_group_name        = var.resource_group_name
+  app_service_plan_id        = var.app_service_plan_id
+  storage_account_name       = azurerm_storage_account.main.name
+  storage_account_access_key = azurerm_storage_account.main.primary_access_key
+  app_settings               = local.environment_variables
+  os_type                    = "linux"
+  version                    = "~3"
+  https_only                 = true
+
+  site_config {
+    linux_fx_version = "PYTHON|3.8"
+  }
+
+  identity {
+    type = "SystemAssigned"
+  }
+
+  tags = var.tags
+}
+```
+
+See also [notes on using the serverless framework](../deployment/config/components.md#serverless-framework)
