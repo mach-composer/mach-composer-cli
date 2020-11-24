@@ -16,7 +16,30 @@ Only when a MACH stack contains components that are configures as [`has_public_a
 
 It will use the information from the [`front_door` configuration](../../syntax.md#front_door) to setup the Frontdoor instance.
 
-The information needed for components to add custom routes to that API Gateway are provided through [Terraform variables](../../components/azure.md#terraform-variables).
+### Routes to the component
+
+For each *Public API* component the MACH composer will add a route to the Frontdoor instance using the name if the component.
+
+So when having the following components defined:
+
+```yaml
+components:
+    - name: payment
+      source: git::ssh://git@github.com/your-project/components/payment-component.git//terraform
+      has_public_api: true
+      version: ....
+    - name: api-extensions
+      source: git::ssh://git@github.com/your-project/components/api-extensions-component.git//terraform
+      version: ....
+    - name: graphql
+      source: git::ssh://git@github.com/your-project/components/graphql-component.git//terraform
+      has_public_api: true
+      version: ....
+```
+
+The routing in Frontdoor that will be created:
+
+![Frontdoor routes](../../_img/azure/frontdoor_routes.png)
 
 ## App service plan
 

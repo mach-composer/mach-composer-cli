@@ -45,4 +45,27 @@ To do so, the following has to be configured:
 
 More information in the [deployment section](../deployment/config/aws.md).
 
+## Lambda function
 
+We recommend using the [AWS Lambda Terraform module](https://registry.terraform.io/modules/terraform-aws-modules/lambda/aws/latest) for managing a Lambda function.
+
+```terraform
+module "lambda_function" {
+  source = "terraform-aws-modules/lambda/aws"
+
+  function_name = "${var.site}-${var.short_name}"
+  handler       = "src/index.handler"
+  runtime       = "nodejs12.x"
+  memory_size   = 512
+  timeout       = 10
+
+  environment_variables = local.environment_variables
+  create_package = false
+  s3_existing_package = {
+    bucket = local.lambda_s3_repository
+    key    = local.lambda_s3_key
+  }
+}
+```
+
+See also [notes on using the serverless framework](../deployment/config/components.md#serverless-framework)
