@@ -149,6 +149,6 @@ Refer to the CI/CD section for instructions on how to setup your Continuous Inte
 
 As part of the [MACH deployment](./config/index.md), the component will be loaded as a Terraform module so that the component can deploy the necessary resources needed for the specific site it is configured for.
 
-It will deploy any resources that are defined as part of the Terraform module.
+This is what we call the ['second stage' deployment](./config/components.md).
 
 ### 
