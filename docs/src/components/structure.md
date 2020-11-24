@@ -59,6 +59,7 @@ Available integrations are:
 - `commercetools`
 - `sentry`
 - `contentful`
+- `amplience`
 
 By default, integrations are set on the given cloud provider. So when no `integrations` defintion is given, it defaults to `['aws']` in case of an AWS deployment.
 
@@ -147,6 +148,27 @@ The following variable is given when `contentful` integration is defined.
 variable "contentful_space_id" {
   type        = string
   description = "Contentful Space ID"
+}
+```
+
+#### amplience
+
+The following variable is given when `amplience` integration is defined.
+
+```terraform
+variable "amplience_client_id" {
+  type        = string
+  description = "Amplience client id"
+}
+
+variable "amplience_client_secret" {
+  type        = string
+  description = "Amplience client secret"
+}
+
+variable "amplience_hub_id" {
+  type        = string
+  description = "Amplience hub id"
 }
 ```
 
