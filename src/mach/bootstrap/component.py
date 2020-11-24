@@ -5,19 +5,46 @@ import unicodedata
 import click
 from cookiecutter.main import cookiecutter
 
-COOKIECUTTER_TEMPLATE = "git@github.com:labd/mach-component-cookiecutter.git"
+DEFAULT_COOKIECUTTER = "git@github.com:labd/mach-component-cookiecutter.git"
 
 
-def create_component(output_dir: str):
+def create_component(output_dir: str, cookiecutter_location: str):
+    """Create a component using the given cookiecutter template or the default one."""
+    cookiecutter_kwargs = {
+        "output_dir": output_dir or ".",
+    }
+
     if output_dir and os.path.exists(output_dir):
         if not click.confirm(
             f"Directory {output_dir} already exists. Do you want to overwrite?"
         ):
             return
 
-    cloud = click.prompt(
-        "Cloud environment", type=click.Choice(["aws", "azure"]), default="aws"
+    if not cookiecutter_location:
+        cookiecutter_location = DEFAULT_COOKIECUTTER
+        cloud = click.prompt(
+            "Cloud environment", type=click.Choice(["aws", "azure"]), default="aws"
+        )
+
+        cookiecutter_kwargs.update(
+            {
+                "directory": cloud,
+                "extra_context": _get_component_context(cloud),
+                "no_input": True,
+            }
+        )
+
+    result = cookiecutter(
+        cookiecutter_location,
+        **cookiecutter_kwargs,
     )
+
+    dirname = os.path.basename(result)
+    click.echo(f"New component {dirname} created 🎉")
+
+
+def _get_component_context(cloud: str) -> dict:
+    """Prompt user for input for the cookiecutter."""
     language = click.prompt(
         "Language", type=click.Choice(["python", "node"]), default="python"
     )
@@ -84,16 +111,7 @@ def create_component(output_dir: str):
             }
         )
 
-    result = cookiecutter(
-        COOKIECUTTER_TEMPLATE,
-        directory=cloud,
-        no_input=True,
-        output_dir=output_dir or ".",
-        extra_context=context,
-    )
-
-    dirname = os.path.basename(result)
-    click.echo(f"New component {dirname} created 🎉")
+    return context
 
 
 def _humanize_str(value: str) -> str:
