@@ -219,7 +219,7 @@ def sites(file: str):
 @click.option(
     "-c",
     "--cookiecutter",
-    default="git@github.com:labd/mach-component-cookiecutter.git",
+    default="",
     help="cookiecutter repository to generate from.",
 )
 @click.argument("type_", required=True, type=click.Choice(["config", "component"]))
