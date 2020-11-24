@@ -35,4 +35,35 @@ MACH needs to be able to access:
 - The components repositories
 - The AWS account / Azure subscription it needs to manage resources in
   
-TODO: Describe steps
+When running MACH composer directly **from the command line**, whenever you have been authenticated (either by setting the correct AWS environment variables or on Azure using `az login`) you should be able to deploy using MACH without any issues.
+
+When running the **MACH Docker image**, the necessary environment variables need to be passed on to the docker container:
+
+=== "AWS"
+    ```bash
+    docker run --rm \
+        --volume $(pwd):/code \
+        --volume $SSH_AUTH_SOCK:/ssh-agent \
+        -e SSH_AUTH_SOCK=/ssh-agent \
+        -e AWS_DEFAULT_REGION=<your-region> \
+        -e AWS_ACCESS_KEY_ID=<your-access-key-id> \
+        -e AWS_SECRET_ACCESS_KEY=<your-secret-access-key> \
+        docker.pkg.github.com/labd/mach-composer/mach:latest \
+        apply
+    ```
+=== "Azure"
+    ```bash
+    docker run --rm \
+        --volume $(pwd):/code \
+        --volume $SSH_AUTH_SOCK:/ssh-agent \
+        -e SSH_AUTH_SOCK=/ssh-agent \
+        -e ARM_CLIENT_ID=<your-client-id> \
+        -e ARM_CLIENT_SECRET=<your-client-secret> \
+        -e ARM_SUBSCRIPTION_ID=<your-subscription-id> \
+        -e ARM_TENANT_ID=<your-tenant-id> \
+        docker.pkg.github.com/labd/mach-composer/mach:latest \
+        apply --with-sp-login
+    ```
+
+    For Azure you'll need to run it with the `--with-sp-login` option let the MACH composer perform an `az login` command.<br>
+    [More info](./../../workflow/cli.md#apply).
