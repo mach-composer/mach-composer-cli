@@ -61,28 +61,51 @@ In that case you can use the [`CI_JOB_TOKEN`](https://docs.gitlab.com/ee/ci/vari
 
 ### Example
 
-```yaml
----
-image: docker.pkg.github.com/labd/mach-composer/mach:0.4
+=== "AWS"
+      ```yaml
+      ---
+      image: docker.pkg.github.com/labd/mach-composer/mach:0.4
 
-variables:
-  ARM_CLIENT_ID: $AZURE_SP_CLIENT_ID
-  ARM_CLIENT_SECRET: $AZURE_SP_CLIENT_SECRET
-  ARM_SUBSCRIPTION_ID: $AZURE_SP_SUBSCRIPTION_ID
-  ARM_TENANT_ID: $AZURE_SP_TENANT_ID
+      variables:
+        AWS_DEFAULT_REGION: $AWS_DEFAULT_REGION
+        AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID
+        AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
 
-before_script:
-  - mkdir -p ~/.ssh
-  - chmod 700 ~/.ssh
-  # Replace with your custom GitLab domain<br>
-  - ssh-keyscan your.gitlab-domain.com >> ~/.ssh/known_hosts
-  - chmod 644 ~/.ssh/known_hosts
-  - echo -e "machine your.gitlab-domain.com\nlogin gitlab-ci-token\npassword ${CI_JOB_TOKEN}" > ~/.netrc
+      before_script:
+        - mkdir -p ~/.ssh
+        - chmod 700 ~/.ssh
+        # Replace with your custom GitLab domain<br>
+        - ssh-keyscan your.gitlab-domain.com >> ~/.ssh/known_hosts
+        - chmod 644 ~/.ssh/known_hosts
+        - echo -e "machine your.gitlab-domain.com\nlogin gitlab-ci-token\npassword ${CI_JOB_TOKEN}" > ~/.netrc
 
-deploy:
-  script:
-    - mach apply --auto-approve --with-sp-login -f $CI_PROJECT_DIR/main.yml
-```
+      deploy:
+        script:
+          - mach apply --auto-approve -f $CI_PROJECT_DIR/main.yml
+      ```
+=== "Azure"
+      ```yaml
+      ---
+      image: docker.pkg.github.com/labd/mach-composer/mach:0.4
+
+      variables:
+        ARM_CLIENT_ID: $AZURE_SP_CLIENT_ID
+        ARM_CLIENT_SECRET: $AZURE_SP_CLIENT_SECRET
+        ARM_SUBSCRIPTION_ID: $AZURE_SP_SUBSCRIPTION_ID
+        ARM_TENANT_ID: $AZURE_SP_TENANT_ID
+
+      before_script:
+        - mkdir -p ~/.ssh
+        - chmod 700 ~/.ssh
+        # Replace with your custom GitLab domain<br>
+        - ssh-keyscan your.gitlab-domain.com >> ~/.ssh/known_hosts
+        - chmod 644 ~/.ssh/known_hosts
+        - echo -e "machine your.gitlab-domain.com\nlogin gitlab-ci-token\npassword ${CI_JOB_TOKEN}" > ~/.netrc
+
+      deploy:
+        script:
+          - mach apply --auto-approve --with-sp-login -f $CI_PROJECT_DIR/main.yml
+      ```
 
 ## Components
 
