@@ -37,7 +37,6 @@ nav:
   - workflow/cli.md
   - workflow/environment.md
 - changelog.md
-- roadmap.md
 
 extra_javascript:
   - _js/mermaid.min.js
