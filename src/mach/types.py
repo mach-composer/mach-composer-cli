@@ -329,7 +329,7 @@ class SiteAWSSettings(JsonSchemaMixin):
     region: str
     deploy_role: Optional[str] = _none()
     extra_providers: Optional[List[AWSProvider]] = _list()
-    route53_zone_name: Optional[str] = ""
+    route53_zone_name: Optional[str] = _none()
 
 
 @dataclass_json
