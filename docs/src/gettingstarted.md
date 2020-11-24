@@ -39,6 +39,8 @@ sites:
           - name: api-extensions
             variables:
                 ORDER_PREFIX: mysitetst
+            secrets:
+                SOME_API_KEY: secret-value
 components:
     - name: api-extensions
       short_name: apiexts

@@ -361,6 +361,22 @@ aws:
 
 ### component configurations
 
+Configures the components (defined in the [component definitions](#components)) for the site.
+
+Example:
+
+```yaml
+components:
+  - name: api-extensions
+    variables:
+      ORDER_PREFIX: mysitetst
+  - name: order-mailer
+    variables:
+      FROM_EMAIL: mach@example.com
+    secrets:
+      SENDGRID_API_KEY: my-api-token
+```
+
 - **`name`** - (Required) Reference to a [component](#component) definition
 - `variables` - Environment variables for this components runtime
 - `secrets` - Environment variables for this component that should be stored in a encrypted key-value store
