@@ -22,4 +22,11 @@ provider "aws" {
   {% endif %}
 }
 {% endfor %}
-{% include 'partials/aws_api_gateway.tf' %}
+
+{% if site.public_api_components %}
+  {% include 'partials/endpoints/aws_domains.tf' %}
+
+  {% for endpoint_name, endpoint_url in site.endpoints.items() %}
+    {% include 'partials/endpoints/aws_api_gateway.tf' %}
+  {% endfor %}
+{% endif %}

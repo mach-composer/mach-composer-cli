@@ -16,7 +16,8 @@ general_config:
     rate_limit_count: 100
 sites:
   - identifier: mach-site-eu
-    base_url: https://api.eu-tst.mach-example.net
+    endpoints: 
+      main: https://api.eu-tst.mach-example.net
     aws:
       account_id: 940853598232
       region: eu-central-1
@@ -39,7 +40,8 @@ sites:
         variables:
           ORDER_PREFIX: MACH-
   - identifier: mach-site-us
-    base_url: https://api.us-tst.mach-example.net
+    endpoints: 
+      main: https://api.us-tst.mach-example.net
     aws:
       account_id: 940853598234
       region: us-west-1
@@ -67,7 +69,7 @@ components:
     integrations: [""]
   - name: payment
     source: git::https://github.com/some-organisation/mach-component-payment.git//terraform
-    has_public_api: true
+    endpoint: main
     version: 0a9a0b5
     integrations: ["aws", "commercetools"]
   - name: api-extensions
