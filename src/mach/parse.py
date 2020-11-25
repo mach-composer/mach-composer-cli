@@ -24,8 +24,8 @@ def parse_configs(files: List[str], output_path: str = None) -> List[MachConfig]
         config.file = file
         click.echo(f"Parsed {file} into config")
 
-        validate_config(config)
         config = parse_config(config)
+        validate_config(config)
 
         if output_path:
             full_output_path = Path(f"{output_path}/{splitext(basename(file))[0]}")
