@@ -482,12 +482,6 @@
       "name_prefix": [
         "${format(\"mach-site-eu-%s\",local.region_short)}"
       ],
-      "front_door_domain": [
-        "${format(\"%s-fd.azurefd.net\",local.name_prefix)}"
-      ],
-      "front_door_domain_identifier": [
-        "${replace(local.front_door_domain,\".\",\"-\")}"
-      ],
       "service_object_ids": [
         {}
       ],
@@ -503,6 +497,14 @@
       ],
       "resource_group_location": [
         "${azurerm_resource_group.main.location}"
+      ]
+    },
+    {
+      "front_door_domain": [
+        "${format(\"%s-fd.azurefd.net\",local.name_prefix)}"
+      ],
+      "front_door_domain_identifier": [
+        "${replace(local.front_door_domain,\".\",\"-\")}"
       ]
     },
     {

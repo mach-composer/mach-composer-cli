@@ -39,11 +39,46 @@ def validate_site(site: types.Site, *, config: types.MachConfig):
     if config.general_config.cloud == types.CloudOption.AWS and not site.aws:
         raise ValidationError(f"Site {site.identifier} is missing an aws configuration")
 
+    validate_endpoints(site, config.general_config.cloud)
     validate_commercetools(site)
 
     if site.components:
         component_names = [component.name for component in config.components]
         validate_site_components(site.components, component_names)
+
+
+def validate_endpoints(site: types.Site, cloud: types.CloudOption):
+    dns_zone = None
+
+    if site.endpoints:
+        if cloud == types.CloudOption.AWS:
+            dns_zone = site.aws.route53_zone_name
+            if not dns_zone:
+                raise ValidationError(
+                    f"Site {site.identifier} needs to have a route53_zone_name "
+                    "defined before endpoints can be used."
+                )
+
+        elif cloud == types.CloudOption.AZURE:
+            if not site.azure.front_door:
+                raise ValidationError(
+                    f"Site {site.identifier} needs to have a Frontdoor dns_zone "
+                    "defined before endpoints can be used."
+                )
+
+            dns_zone = site.azure.front_door.dns_zone
+
+        for endpoint in site.endpoints.values():
+            if not endpoint.endswith(dns_zone):
+                raise ValidationError(
+                    f"No match between endpoint {endpoint} and DNS zone {dns_zone}"
+                )
+
+    expected_endpoint_names = {c.endpoint for c in site.components if c.endpoint}
+    endpoint_names = set(site.endpoints.keys())
+    missing = expected_endpoint_names - endpoint_names
+    if missing:
+        raise ValidationError(f"Missing required endpoints {', '.join(missing)}")
 
 
 def validate_site_components(

@@ -9,7 +9,7 @@ MACH will create a **[resource group](https://registry.terraform.io/providers/ha
 
 ## HTTP routing
 
-Only when a MACH stack contains components that are configures as [`has_public_api`](../../syntax.md#components), MACH will setup the necessary resources to be able to route traffic to that component:
+Only when a MACH stack contains components that have an [`endpoint`](../../syntax.md#components) defined, MACH will setup the necessary resources to be able to route traffic to that component:
 
 - Frontdoor instance
 - DNS record
@@ -18,7 +18,7 @@ It will use the information from the [`front_door` configuration](../../syntax.m
 
 ### Routes to the component
 
-For each *Public API* component the MACH composer will add a route to the Frontdoor instance using the name if the component.
+For each component with an `endpoint` the MACH composer will add a route to the Frontdoor instance using the name of the component.
 
 So when having the following components defined:
 
@@ -26,14 +26,14 @@ So when having the following components defined:
 components:
     - name: payment
       source: git::ssh://git@github.com/your-project/components/payment-component.git//terraform
-      has_public_api: true
+      endpoint: main
       version: ....
     - name: api-extensions
       source: git::ssh://git@github.com/your-project/components/api-extensions-component.git//terraform
       version: ....
     - name: graphql
       source: git::ssh://git@github.com/your-project/components/graphql-component.git//terraform
-      has_public_api: true
+      endpoint: main
       version: ....
 ```
 

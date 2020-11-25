@@ -80,9 +80,11 @@ An example:
       sites:
         - identifier: my-site
           aws:
-            account_id: ........
+            account_id: 1234567890
             region: eu-central-1
             route53_zone_name: tst.mach-example.net
+          endpoints:
+            main: api.tst.mach-example.net
           commercetools:
             project_key: my-site-tst
             client_id: ...
@@ -98,15 +100,15 @@ An example:
               - GB
               - NL
           components:
-            - name: api-extensions
+            - name: payment
               variables:
-                ORDER_PREFIX: mysitetst
+                STRIPE_ACCOUNT_ID: 0123456789
               secrets:
-                SOME_API_KEY: secret-value
+                STRIPE_SECRET_KEY: secret-value
       components:
-        - name: api-extensions
-          short_name: apiexts
-          source: git::ssh://git@github.com/your-project/components/api-extensions-component.git//terraform
+        - name: payment
+          source: git::ssh://git@github.com/your-project/components/payment-component.git//terraform
+          endpoint: main
           version: e638e57
       ```
 === "Azure"
@@ -142,15 +144,15 @@ An example:
             - GB
             - NL
           components:
-            - name: api-extensions
+            - name: payment
               variables:
-                ORDER_PREFIX: mysitetst
+                STRIPE_ACCOUNT_ID: 0123456789
               secrets:
-                SOME_API_KEY: secret-value
+                STRIPE_SECRET_KEY: secret-value
       components:
-        - name: api-extensions
-          short_name: apiexts
-          source: git::ssh://git@github.com/your-project/components/api-extensions-component.git//terraform
+        - name: payment
+          source: git::ssh://git@github.com/your-project/components/payment-component.git//terraform
+          endpoint: main
           version: e638e57
       ```
 

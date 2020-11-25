@@ -26,6 +26,10 @@ def config():
                         name="api-extensions",
                     )
                 ],
+                aws=types.SiteAWSSettings(
+                    account_id=1234567890,
+                    region="eu-central-1",
+                ),
             ),
         ],
         components=[
