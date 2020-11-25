@@ -28,5 +28,6 @@ provider "aws" {
 
   {% for endpoint_name, endpoint_url in site.endpoints.items() %}
     {% include 'partials/endpoints/aws_api_gateway.tf' %}
+    
   {% endfor %}
 {% endif %}
