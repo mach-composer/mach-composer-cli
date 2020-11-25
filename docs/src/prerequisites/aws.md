@@ -48,12 +48,12 @@ This way, all resources are strictly seperated from eachother.
 So the following steps need to be done per site:
 
 1. Create an AWS account
-2. Create a [Route53 hosted zone](#route53-zone)
+2. Create the [Route53 hosted zones](#route53-zone) needed for the endpoints
 3. Create a ['*deploy*' IAM role](#iam-deploy-role) for MACH to manage your resources
 
 ### Route53 zone
 
-In case you are planning to deploy public facing APIs, a Route53 zone needs to be configured.
+In case you are planning to deploy APIs that need custom routing, one or more Route53 zones needs to be configured.
 
 The full URL of this hosted zone can be configured in the MACH configuration.
 

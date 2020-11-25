@@ -29,6 +29,7 @@
       main: https://api.eu-tst.mach-example.net
   ```
 
+  When you name the endpoint that replaces `base_url` "main", it will have the least effect on your existing Terraform state.
 
 ## 0.5.1 (2020-11-10)
 - Removed `aws` block in general_config
