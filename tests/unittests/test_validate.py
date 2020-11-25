@@ -45,9 +45,7 @@ def test_validate_endpoints(parsed_config: types.MachConfig):
 
 
 def test_validate_component_endpoint(parsed_config: types.MachConfig):
-    """An endpoint defined on a component must exist for all sites
-    that use that component.
-    """
+    """An endpoint defined on a component must exist for all sites that use that component."""
     config = parsed_config
 
     config.components[0].endpoint = "public"
