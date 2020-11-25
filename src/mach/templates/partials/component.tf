@@ -16,11 +16,11 @@ resource "sentry_key" "{{ component.name }}" {
 
 module "{{ component.name }}" {
   source            = "{{ definition.source }}{% if definition.use_version_reference %}?ref={{ definition.version }}{% endif %}"
-  
+
   {% if "azure" in component.integrations %}
   {% include 'partials/component_azure_variables.tf' %}
   {% endif %}
-  
+
   {% if "aws" in component.integrations %}
   {% include 'partials/component_aws_variables.tf' %}
   {% endif %}
@@ -33,12 +33,12 @@ module "{{ component.name }}" {
   component_version       = "{{ definition.version }}"
   environment             = "{{ general_config.environment }}"
   site                    = "{{ site.identifier }}"
-  
+
   variables = {
     {% for key, value in component.variables.items() %}
     {{ key }} = {{ value|component_value }}
     {% endfor %}
-    
+
     {% if site.azure.front_door and component.endpoint %}
     FRONTDOOR_ID = azurerm_frontdoor.app-service.header_frontdoor_id
     {% endif %}
@@ -84,7 +84,13 @@ module "{{ component.name }}" {
   {% if "contentful" in component.integrations %}
     contentful_space_id = contentful_space.space.id
   {% endif %}
-  
+
+  {% if "amplience" in component.integrations %}
+    amplience_client_id = "{{ site.amplience.client_id }}"
+    amplience_client_secret = "{{ site.amplience.client_secret }}"
+    amplience_hub_id = "{{ site.amplience.hub_id }}"
+  {% endif %}
+
   providers = {
     {% if "azure" in component.integrations %}azurerm = azurerm{% endif %}
     {% if "aws" in component.integrations %}

@@ -62,7 +62,7 @@ def parse_config(config: MachConfig) -> MachConfig:
     config = resolve_site_configs(config)
     return config
 
-
+# flake8: noqa: C901
 def resolve_site_configs(config: MachConfig) -> MachConfig:
     """Use and merge site-specific configurations with general config."""
     for site in config.sites:
@@ -98,6 +98,12 @@ def resolve_site_configs(config: MachConfig) -> MachConfig:
             for site in config.sites:
                 if site.contentful:
                     site.contentful.merge(config.general_config.contentful)
+
+        # Merge Amplience settings
+        if config.general_config.amplience:
+            for site in config.sites:
+                if site.amplience:
+                    site.amplience.merge(config.general_config.amplience)
 
         if config.general_config.sentry:
             if not site.sentry:
