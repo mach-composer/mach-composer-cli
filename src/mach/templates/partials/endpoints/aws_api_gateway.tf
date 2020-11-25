@@ -48,9 +48,9 @@ resource "aws_apigatewayv2_deployment" "{{ endpoint_name|slugify }}_default" {
 resource "aws_apigatewayv2_stage" "{{ endpoint_name|slugify }}_default" {
   name                  = "$default"
   api_id                = aws_apigatewayv2_api.{{ endpoint_name|slugify }}_gateway.id
-  deployment_id         = aws_apigatewayv2_deployment.default.id
+  deployment_id         = aws_apigatewayv2_deployment.{{ endpoint_name|slugify }}_default.id
 
-  depends_on = [aws_apigatewayv2_deployment.default]
+  depends_on = [aws_apigatewayv2_deployment.{{ endpoint_name|slugify }}_default]
 }
 
 # Route53 mappings
@@ -78,6 +78,6 @@ resource "aws_route53_record" "{{ endpoint_name|slugify }}" {
 
 resource "aws_apigatewayv2_api_mapping" "{{ endpoint_name|slugify }}" {
   api_id      = aws_apigatewayv2_api.{{ endpoint_name|slugify }}_gateway.id
-  stage       = aws_apigatewayv2_stage.default.id
+  stage       = aws_apigatewayv2_stage.{{ endpoint_name|slugify }}_default.id
   domain_name = "{{ endpoint_url }}"
 }
