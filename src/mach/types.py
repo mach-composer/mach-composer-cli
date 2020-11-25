@@ -1,4 +1,3 @@
-import re
 from dataclasses import dataclass, field
 from enum import Enum
 from pathlib import Path
@@ -6,8 +5,7 @@ from typing import Any, Dict, List, Optional, Union
 
 from dataclasses_json import config, dataclass_json
 from dataclasses_jsonschema import JsonSchemaMixin
-
-PROTOCOL_RE = re.compile(r"^(http(s)?://)")
+from mach import utils
 
 TerraformVariables = Dict[str, Any]
 StoreVariables = Dict[str, TerraformVariables]
@@ -166,10 +164,8 @@ class ComponentConfig(JsonSchemaMixin):
     source: str
     version: str
     short_name: Optional[str] = _none()
-    integrations: List[str] = field(
-        default_factory=list, metadata=config(exclude=lambda x: not x)
-    )
-    has_public_api: Optional[bool] = _default(False)
+    integrations: List[str] = _list()
+    endpoint: Optional[str] = _none()
     health_check_path: Optional[str] = _none()
     branch: Optional[str] = _none()
 
@@ -316,8 +312,8 @@ class Component(JsonSchemaMixin):
         return "aws" in self.integrations or "azure" in self.integrations
 
     @property
-    def has_public_api(self):
-        return self.definition.has_public_api
+    def endpoint(self) -> str:
+        return self.definition.endpoint
 
 
 @dataclass_json
@@ -369,7 +365,7 @@ class Site(JsonSchemaMixin):
     """Site definition."""
 
     identifier: str
-    base_url: Optional[str] = _none()
+    endpoints: Dict[str, str] = _default({})
     commercetools: Optional[CommercetoolsSettings] = _none()
     contentful: Optional[ContentfulSettings] = _none()
     azure: Optional[SiteAzureSettings] = _none()
@@ -379,12 +375,14 @@ class Site(JsonSchemaMixin):
 
     @property
     def public_api_components(self) -> List[Component]:
-        return [c for c in self.components if c.has_public_api]
+        return [c for c in self.components if c.endpoint]
 
     def __post_init__(self):
-        """Ensure base_url has protocol stripped."""
-        if self.base_url:
-            self.base_url = PROTOCOL_RE.sub("", self.base_url)
+        """Ensure endpoints have protocol stripped."""
+        if self.endpoints:
+            self.endpoints = {
+                k: utils.strip_protocol(v) for k, v in self.endpoints.items()
+            }
 
 
 @dataclass_json

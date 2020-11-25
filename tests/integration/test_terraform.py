@@ -23,10 +23,12 @@ def test_generate_aws(click_runner, click_dir, tf_mock):
 
     with open(os.path.join(deployments_dir, "mach-site-eu", "site.tf")) as f:
         site_config = hcl2.load(f)
+    # write_json("aws_config1_expected_mach-site-eu.json", site_config)
     assert site_config == get_json("aws_config1_expected_mach-site-eu.json")
 
     with open(os.path.join(deployments_dir, "mach-site-us", "site.tf")) as f:
         site_config = hcl2.load(f)
+    # write_json("aws_config1_expected_mach-site-us.json", site_config)
     assert site_config == get_json("aws_config1_expected_mach-site-us.json")
 
 
@@ -41,8 +43,10 @@ def test_generate_azure(click_runner, click_dir, tf_mock):
 
     with open(os.path.join(deployments_dir, "mach-site-eu", "site.tf")) as f:
         site_config = hcl2.load(f)
+    # write_json("azure_config1_expected_mach-site-eu.json", site_config)
     assert site_config == get_json("azure_config1_expected_mach-site-eu.json")
 
     with open(os.path.join(deployments_dir, "mach-site-us", "site.tf")) as f:
         site_config = hcl2.load(f)
+    # write_json("azure_config1_expected_mach-site-us.json", site_config)
     assert site_config == get_json("azure_config1_expected_mach-site-us.json")

@@ -21,6 +21,10 @@ def config():
         sites=[
             types.Site(
                 identifier="unittest-nl",
+                endpoints={
+                    "public": "api.mach-example.com",
+                    "services": "mach-services.net",
+                },
                 components=[
                     types.Component(
                         name="api-extensions",
