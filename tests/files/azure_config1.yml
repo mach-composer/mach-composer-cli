@@ -12,6 +12,12 @@ general_config:
     tenant_id: e180345a-b3e1-421f-b448-672ab50d8502
     subscription_id: 086bd7e7-0755-44ab-a730-7a0b8ad4883f
     region: westeurope
+    front_door:
+      resource_group: mach-shared-we-rg
+      dns_zone: mach-services.net
+      ssl_key_vault_name: machsharedwekvcdn
+      ssl_key_vault_secret_name: wildcard-mach-services-net
+      ssl_key_vault_secret_version: oIXGVSNdwVAX7i6uUcCl
   sentry:
     auth_token: JdOheW3IzlsXBOPNdaMZgXoMcHqyf8CJMjBnfVHD3laXPpN23oAZG8KOPAiYfeGr
     organization: labd
@@ -20,7 +26,7 @@ general_config:
     rate_limit_count: 100
 sites:
   - identifier: mach-site-eu
-    base_url: https://api.eu-tst.mach-example.net
+    base_url: https://eu-tst-api.mach-services.net
     commercetools:
       project_key: mach-site-eu
       client_id: 6SWM8ttjAYll-f9dopjdt
