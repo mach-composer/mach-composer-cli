@@ -23,8 +23,6 @@ def parse_configs(files: List[str], output_path: str = None) -> List[MachConfig]
         config = parse_config_from_file(file)
         config.file = file
         click.echo(f"Parsed {file} into config")
-
-        config = parse_config(config)
         validate_config(config)
 
         if output_path:
@@ -34,12 +32,6 @@ def parse_configs(files: List[str], output_path: str = None) -> List[MachConfig]
 
         valid_configs.append(config)
     return valid_configs
-
-
-def parse_config(config: MachConfig) -> MachConfig:
-    config = resolve_component_definitions(config)
-    config = resolve_site_configs(config)
-    return config
 
 
 def parse_config_from_file(file: str) -> MachConfig:
@@ -61,6 +53,13 @@ def parse_config_from_file(file: str) -> MachConfig:
         raise exceptions.ParseError(
             "Configuration file could not be validated", details=e.normalized_messages()
         ) from e
+
+    return parse_config(config)
+
+
+def parse_config(config: MachConfig) -> MachConfig:
+    config = resolve_component_definitions(config)
+    config = resolve_site_configs(config)
     return config
 
 
