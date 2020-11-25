@@ -2,6 +2,7 @@ import os
 
 from jinja2 import Environment, FileSystemLoader
 from jinja2.filters import do_mark_safe
+from mach import utils
 
 
 def setup_jinja() -> Environment:
@@ -19,6 +20,8 @@ def load_filters(env: Environment):
             "component_value": render_value,
             "azure_region_long": azure_region_long,
             "azure_region_short": azure_region_short,
+            "zone_name": zone_name,
+            "slugify": utils.slugify,
         }
     )
 
@@ -114,3 +117,8 @@ def azure_region_short(value):
         return AZURE_REGION_DISPLAY_MAP_SHORT[value]
     except KeyError:
         raise
+
+
+def zone_name(value: str) -> str:
+    value = utils.strip_protocol(value)
+    return ".".join(value.split(".")[1:])
