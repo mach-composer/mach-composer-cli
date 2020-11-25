@@ -12,9 +12,9 @@ def tf_mock(mocker):
     return mocker.patch("mach.terraform.run_terraform")
 
 
-def test_generate(click_runner, click_dir, tf_mock):
+def test_generate_aws(click_runner, click_dir, tf_mock):
     result = click_runner.invoke(generate, ["-f", get_file("aws_config1.yml")])
-    assert result.exit_code == 0
+    assert result.exit_code == 0, result.stdout_bytes
 
     deployments_dir = os.path.join(click_dir, "deployments", "aws_config1")
     sites = os.listdir(deployments_dir)
@@ -28,3 +28,21 @@ def test_generate(click_runner, click_dir, tf_mock):
     with open(os.path.join(deployments_dir, "mach-site-us", "site.tf")) as f:
         site_config = hcl2.load(f)
     assert site_config == get_json("aws_config1_expected_mach-site-us.json")
+
+
+def test_generate_azure(click_runner, click_dir, tf_mock):
+    result = click_runner.invoke(generate, ["-f", get_file("azure_config1.yml")])
+    assert result.exit_code == 0, result.stdout_bytes
+
+    deployments_dir = os.path.join(click_dir, "deployments", "azure_config1")
+    sites = os.listdir(deployments_dir)
+    assert sorted(sites) == ["mach-site-eu", "mach-site-us"]
+    assert tf_mock.call_count == 2
+
+    with open(os.path.join(deployments_dir, "mach-site-eu", "site.tf")) as f:
+        site_config = hcl2.load(f)
+    assert site_config == get_json("azure_config1_expected_mach-site-eu.json")
+
+    with open(os.path.join(deployments_dir, "mach-site-us", "site.tf")) as f:
+        site_config = hcl2.load(f)
+    assert site_config == get_json("azure_config1_expected_mach-site-us.json")
