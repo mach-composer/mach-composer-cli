@@ -32,6 +32,7 @@ def _create_config() -> types.MachConfig:  # noqa: C901
         ct_project = click.prompt("commercetools project name", default=site_id)
     use_sentry = click.confirm("Use Sentry?", default=False)
     use_contentful = click.confirm("Use Contentful?", default=False)
+    use_amplience = click.confirm("Use Amplience?", default=False)
 
     integrations = []
     if use_commercetools:
@@ -40,6 +41,8 @@ def _create_config() -> types.MachConfig:  # noqa: C901
         integrations.append("sentry")
     if use_contentful:
         integrations.append("contentful")
+    if use_amplience:
+        integrations.append("amplience")
     # If we do have integrations, add the default (cloud) integration here as well
     if integrations:
         integrations = [cloud] + integrations
@@ -85,6 +88,12 @@ def _create_config() -> types.MachConfig:  # noqa: C901
         general_config_kwargs["contentful"] = types.ContentfulConfig(
             cma_token="<your-cma-token>",
             organization_id="<your-organization-id>",
+        )
+
+    if use_amplience:
+        general_config_kwargs["amplience"] = types.AmplienceConfig(
+            client_id="<your-client-id>",
+            client_secret="<your-client-secret>",
         )
 
     site = types.Site(

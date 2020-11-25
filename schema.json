@@ -61,6 +61,9 @@
         },
         "contentful": {
           "$ref": "#/definitions/ContentfulConfig"
+        },
+        "amplience": {
+          "$ref": "#/definitions/AmplienceConfig"
         }
       },
       "description": "Config this is shared across sites."
@@ -232,6 +235,22 @@
       },
       "description": "Generic Contenful configuration."
     },
+    "AmplienceConfig": {
+      "type": "object",
+      "required": [
+        "client_id",
+        "client_secret"
+      ],
+      "properties": {
+        "client_id": {
+          "type": "string"
+        },
+        "client_secret": {
+          "type": "string"
+        }
+      },
+      "description": "Generic Amplience configuration."
+    },
     "Site": {
       "type": "object",
       "required": [
@@ -249,6 +268,9 @@
         },
         "contentful": {
           "$ref": "#/definitions/ContentfulSettings"
+        },
+        "amplience": {
+          "$ref": "#/definitions/AmplienceSettings"
         },
         "azure": {
           "$ref": "#/definitions/SiteAzureSettings"
@@ -458,6 +480,26 @@
         }
       },
       "description": "Contentful settings."
+    },
+    "AmplienceSettings": {
+      "type": "object",
+      "required": [
+        "hub_id"
+      ],
+      "properties": {
+        "hub_id": {
+          "type": "string"
+        },
+        "client_id": {
+          "type": "string",
+          "default": ""
+        },
+        "client_secret": {
+          "type": "string",
+          "default": ""
+        }
+      },
+      "description": "Amplience settings."
     },
     "SiteAzureSettings": {
       "type": "object",
