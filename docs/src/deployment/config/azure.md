@@ -18,7 +18,7 @@ It will use the information from the [`front_door` configuration](../../syntax.m
 
 ### Routes to the component
 
-For each *Public API* component the MACH composer will add a route to the Frontdoor instance using the name if the component.
+For each component with an `endpoint` the MACH composer will add a route to the Frontdoor instance using the name of the component.
 
 So when having the following components defined:
 
