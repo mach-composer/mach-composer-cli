@@ -13,6 +13,18 @@ StoreSecretVariables = Dict[str, StoreVariables]
 LocalizedString = Dict[str, str]
 
 
+class StringEnum(str, Enum):
+    def __eq__(self, value):
+        if isinstance(value, str):
+            return self.value == value
+        return super().__eq__(value)
+
+    def __ne__(self, value):
+        if isinstance(value, str):
+            return self.value != value
+        return super().__ne__(value)
+
+
 # Define a none value as a custom dataclasses field so that
 # null values get excluded in a dataclass dump
 _none = lambda: field(default=None, metadata=config(exclude=lambda x: x is None))
@@ -137,7 +149,7 @@ class AWSProvider(JsonSchemaMixin):
     region: str
 
 
-class CloudOption(Enum):
+class CloudOption(StringEnum):
     AWS = "aws"
     AZURE = "azure"
 
