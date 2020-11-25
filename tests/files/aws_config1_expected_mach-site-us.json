@@ -164,7 +164,7 @@
     },
     {
       "aws_route53_record": {
-        "new_acm_validation_site": {
+        "main_acm_validation": {
           "zone_id": [
             "${data.aws_route53_zone.main.zone_id}"
           ],
