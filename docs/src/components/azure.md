@@ -81,7 +81,7 @@ MACH will provide the correct HTTP routing for you.<br>
 To do so, the following has to be configured:
 
 - [Frontdoor](../syntax.md#front_door) settings in the Azure configuration
-- The component has to be marked as [`has_public_api`](../syntax.md#components)
+- The component needs to have an [`endpoint`](../syntax.md#components) defined
 
 More information in the [deployment section](../deployment/config/azure.md#http-routing).
 

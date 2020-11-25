@@ -10,8 +10,8 @@ In addition to this, the component itself is responsible for [packaging and depl
 
 In addition to the [base variables](./index.md#required-variables), an AWS component expects the following:
 
-- `api_gateway` - API Gateway ID to publish in (only if component is marked as `has_public_api`)
-- `api_gateway_execution_arn` API Gateway API Execution ARN (only if component is marked as `has_public_api`)
+- `api_gateway` - API Gateway ID to publish in (only if component has an `endpoint` defined)
+- `api_gateway_execution_arn` API Gateway API Execution ARN (only if component is has an `endpoint` defined)
 
 
 ```terraform

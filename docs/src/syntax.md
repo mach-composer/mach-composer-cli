@@ -172,13 +172,32 @@ All site definitions.
 - **`identifier`** - (Required)<br>
   Unique identifier for this site.<br>
   Will be used for the Terraform state and naming all cloud resources.
-- `endpoints` - Endpoint definitions to be used in the API Gateway or Frontdoor routing
+- `endpoints` - [Endpoint definitions](#endpoints) to be used in the API Gateway or Frontdoor routing
 - `commercetools` - [commercetools configuration](#commercetools) block
 - `sentry` - [Sentry configuration](#sentry_1) block
 - `contentful` - [Contentful configuration](#contentful_1) block
 - `azure` - [Azure](#azure_1) settings
 - `aws` - [AWS](#aws_1) settings
 - `components` - [Component configurations](#component-configurations)
+
+### endpoints
+
+Endpoint definitions to be used in the API Gateway or Frontdoor routing.
+
+Each component might require a different endpoint. In the [component definition](#components) it can be defined which endpoint it expects. The actual endpoint can be defined here using the unique key.
+
+Example:
+
+```yaml
+endpoints:
+  main: api.tst.mach-example.net
+  services: services.tst.mach-example.net
+```
+
+!!! info "Azure support"
+    At the moment, this option is not supported when using Azure and simply ignored.
+
+    For Azure, the endpoints that are created for the APIs are constructed by using the commercetools project key as DNS record. More on that in the [Azure routing](./deployment/config/azure.md#http-routing) section
 
 ### commercetools
 
@@ -405,7 +424,7 @@ components:
     short_name: apiexts
     source: git::ssh://git@git.labdigital.nl/mach-components/api-extensions-component.git//terraform
     version: 3b8ab91
-    has_public_api: true
+    endpoint: main
   - name: ct-products-types
     source: git::ssh://git@git.labdigital.nl/mach-components/ct-product-types.git//terraform
     version: 1.4.0
@@ -424,8 +443,8 @@ components:
     - `aws`
     - `commercetools`
     - `contentful`<br>
-- `has_public_api` - Defines if the serverless function should be exposed publically.<br>
-  Will create proper Frontdoor routing when `true`.
+- `endpoint` - Defines the endpoint that needs to connect to this component.<br>
+  Will setup Frontdoor routing or pass API Gateway information when set.
 - `health_check_path` - Defines a custom healthcheck path.<br>
   Defaults to `/<name>/healthchecks`
 - `branch` - Configure the git branch of the component. Only used to facilitate the `mach update` CLI command.
