@@ -10,8 +10,8 @@ In addition to this, the component itself is responsible for [packaging and depl
 
 In addition to the [base variables](./index.md#required-variables), an AWS component expects the following:
 
-- `api_gateway` - API Gateway ID to publish in (only if component is marked as `has_public_api`)
-- `api_gateway_execution_arn` API Gateway API Execution ARN (only if component is marked as `has_public_api`)
+- `api_gateway` - API Gateway ID to publish in (only if component has an `endpoint` defined)
+- `api_gateway_execution_arn` API Gateway API Execution ARN (only if component is has an `endpoint` defined)
 
 
 ```terraform
@@ -40,10 +40,10 @@ resource "aws_lambda_function" "example" {
 MACH will provide the correct HTTP routing for you.<br>
 To do so, the following has to be configured:
 
-- [base_url](../syntax.md#sites) settings in the Site configuration
-- The component has to be marked as [`has_public_api`](../syntax.md#components)
+- [endpoints](../syntax.md#sites) settings in the Site configuration
+- The component needs to have a [`endpoint`](../syntax.md#components) defined
 
-More information in the [deployment section](../deployment/config/aws.md).
+More information in the [deployment section](../deployment/config/aws.md#http-routing).
 
 ## Lambda function
 

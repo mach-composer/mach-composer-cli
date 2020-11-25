@@ -39,7 +39,7 @@ module "{{ component.name }}" {
     {{ key }} = {{ value|component_value }}
     {% endfor %}
 
-    {% if site.azure.front_door and component.has_public_api %}
+    {% if site.azure.front_door and component.endpoint %}
     FRONTDOOR_ID = azurerm_frontdoor.app-service.header_frontdoor_id
     {% endif %}
 
@@ -102,7 +102,7 @@ module "{{ component.name }}" {
   }
 
   depends_on = [
-    {% if site.aws and component.has_public_api %}
+    {% if site.aws and component.endpoint %}
     aws_apigatewayv2_api.main_gateway,
     {% endif %}
     {% if site.commercetools %}

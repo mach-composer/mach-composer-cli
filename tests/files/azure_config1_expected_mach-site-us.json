@@ -1,0 +1,759 @@
+{
+  "terraform": [
+    {
+      "backend": [
+        {
+          "azurerm": {
+            "resource_group_name": [
+              "my-shared-rg"
+            ],
+            "storage_account_name": [
+              "mysharedsaterra"
+            ],
+            "container_name": [
+              "tfstate"
+            ],
+            "key": [
+              "test/mach-site-us"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "required_providers": [
+        {
+          "commercetools": [
+            {
+              "source": "labd/commercetools"
+            }
+          ],
+          "sentry": [
+            {
+              "source": "jianyuan/sentry"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "provider": [
+    {
+      "sentry": {
+        "token": [
+          "JdOheW3IzlsXBOPNdaMZgXoMcHqyf8CJMjBnfVHD3laXPpN23oAZG8KOPAiYfeGr"
+        ],
+        "base_url": [
+          "https://sentry.io/api/"
+        ],
+        "version": [
+          "~> 0.6.0"
+        ]
+      }
+    },
+    {
+      "commercetools": {
+        "version": [
+          "=0.24.1"
+        ],
+        "client_id": [
+          "6SWM8ttjAYll-f9dopjdt"
+        ],
+        "client_secret": [
+          "Q6gu2Hxlbhwv7wtrgPPydmS--6wv7tyh"
+        ],
+        "project_key": [
+          "mach-site-us"
+        ],
+        "scopes": [
+          "manage_api_clients:mach-site-us manage_project:mach-site-us view_api_clients:mach-site-us"
+        ],
+        "token_url": [
+          "https://auth.europe-west1.gcp.commercetools.com"
+        ],
+        "api_url": [
+          "https://api.europe-west1.gcp.commercetools.com"
+        ]
+      }
+    },
+    {
+      "azurerm": {
+        "version": [
+          "=2.29.0"
+        ],
+        "subscription_id": [
+          "086bd7e7-0755-44ab-a730-7a0b8ad4883f"
+        ],
+        "tenant_id": [
+          "e180345a-b3e1-421f-b448-672ab50d8502"
+        ],
+        "skip_provider_registration": [
+          true
+        ],
+        "features": [
+          {}
+        ]
+      }
+    }
+  ],
+  "resource": [
+    {
+      "commercetools_project_settings": {
+        "project": {
+          "name": [
+            "mach-site-us"
+          ],
+          "countries": [
+            []
+          ],
+          "currencies": [
+            [
+              "USD"
+            ]
+          ],
+          "languages": [
+            [
+              "en-US"
+            ]
+          ],
+          "messages": [
+            {
+              "enabled": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "null_resource": {
+        "commercetools": {
+          "depends_on": [
+            [
+              "${commercetools_project_settings.project}"
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "commercetools_api_client": {
+        "frontend_credentials": {
+          "name": [
+            "frontend_credentials_terraform"
+          ],
+          "scope": [
+            [
+              "manage_my_profile:mach-site-us",
+              "manage_my_orders:mach-site-us",
+              "view_states:mach-site-us",
+              "manage_my_shopping_lists:mach-site-us",
+              "view_products:mach-site-us",
+              "manage_my_payments:mach-site-us",
+              "create_anonymous_token:mach-site-us",
+              "view_project_settings:mach-site-us"
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "azurerm_resource_group": {
+        "main": {
+          "name": [
+            "${format(\"%s-rg\",local.name_prefix)}"
+          ],
+          "location": [
+            "West Europe"
+          ],
+          "tags": [
+            "${local.tags}"
+          ]
+        }
+      }
+    },
+    {
+      "azurerm_dns_cname_record": {
+        "mach-site-us": {
+          "name": [
+            "mach-site-us"
+          ],
+          "zone_name": [
+            "${data.azurerm_dns_zone.domain.name}"
+          ],
+          "resource_group_name": [
+            "mach-shared-we-rg"
+          ],
+          "ttl": [
+            600
+          ],
+          "record": [
+            "${local.front_door_domain}"
+          ]
+        }
+      }
+    },
+    {
+      "azurerm_frontdoor": {
+        "app-service": {
+          "name": [
+            "${format(\"%s-fd\",local.name_prefix)}"
+          ],
+          "resource_group_name": [
+            "${local.resource_group_name}"
+          ],
+          "enforce_backend_pools_certificate_name_check": [
+            false
+          ],
+          "tags": [
+            "${local.tags}"
+          ],
+          "backend_pool_load_balancing": [
+            {
+              "name": [
+                "lbSettings"
+              ]
+            }
+          ],
+          "frontend_endpoint": [
+            {
+              "name": [
+                "${local.front_door_domain_identifier}"
+              ],
+              "host_name": [
+                "${local.front_door_domain}"
+              ],
+              "custom_https_provisioning_enabled": [
+                false
+              ]
+            },
+            {
+              "name": [
+                "${local.front_door_external_domain_identifier}"
+              ],
+              "host_name": [
+                "${local.front_door_external_domain}"
+              ],
+              "custom_https_provisioning_enabled": [
+                true
+              ],
+              "custom_https_configuration": [
+                {
+                  "certificate_source": [
+                    "AzureKeyVault"
+                  ],
+                  "azure_key_vault_certificate_vault_id": [
+                    "${data.azurerm_key_vault.ssl.id}"
+                  ],
+                  "azure_key_vault_certificate_secret_name": [
+                    "wildcard-mach-services-net"
+                  ],
+                  "azure_key_vault_certificate_secret_version": [
+                    "oIXGVSNdwVAX7i6uUcCl"
+                  ]
+                }
+              ]
+            }
+          ],
+          "depends_on": [
+            [
+              "${azurerm_dns_cname_record.mach-site-us}"
+            ]
+          ],
+          "backend_pool_health_probe": [
+            {
+              "name": [
+                "payment-hpSettings"
+              ],
+              "path": [
+                "/payment/healthchecks"
+              ],
+              "protocol": [
+                "Https"
+              ],
+              "enabled": [
+                false
+              ],
+              "probe_method": [
+                "HEAD"
+              ]
+            }
+          ],
+          "routing_rule": [
+            {
+              "name": [
+                "http-https-redirect"
+              ],
+              "accepted_protocols": [
+                [
+                  "Http"
+                ]
+              ],
+              "patterns_to_match": [
+                [
+                  "/*"
+                ]
+              ],
+              "frontend_endpoints": [
+                [
+                  "${local.front_door_domain_identifier}",
+                  "${local.front_door_external_domain_identifier}"
+                ]
+              ],
+              "redirect_configuration": [
+                {
+                  "redirect_type": [
+                    "PermanentRedirect"
+                  ],
+                  "redirect_protocol": [
+                    "HttpsOnly"
+                  ]
+                }
+              ]
+            },
+            {
+              "name": [
+                "payment-routing-rule"
+              ],
+              "accepted_protocols": [
+                [
+                  "Https"
+                ]
+              ],
+              "patterns_to_match": [
+                [
+                  "/payment/*"
+                ]
+              ],
+              "frontend_endpoints": [
+                [
+                  "${local.front_door_domain_identifier}",
+                  "${local.front_door_external_domain_identifier}"
+                ]
+              ],
+              "forwarding_configuration": [
+                {
+                  "forwarding_protocol": [
+                    "MatchRequest"
+                  ],
+                  "backend_pool_name": [
+                    "payment"
+                  ]
+                }
+              ]
+            }
+          ],
+          "backend_pool": [
+            {
+              "name": [
+                "payment"
+              ],
+              "backend": [
+                {
+                  "host_header": [
+                    "${local.name_prefix}-func-payment.azurewebsites.net"
+                  ],
+                  "address": [
+                    "${local.name_prefix}-func-payment.azurewebsites.net"
+                  ],
+                  "http_port": [
+                    80
+                  ],
+                  "https_port": [
+                    443
+                  ]
+                }
+              ],
+              "load_balancing_name": [
+                "lbSettings"
+              ],
+              "health_probe_name": [
+                "payment-hpSettings"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "azurerm_app_service_plan": {
+        "functionapps": {
+          "name": [
+            "${format(\"%s-plan\",local.name_prefix)}"
+          ],
+          "resource_group_name": [
+            "${local.resource_group_name}"
+          ],
+          "location": [
+            "${local.resource_group_location}"
+          ],
+          "kind": [
+            "FunctionApp"
+          ],
+          "reserved": [
+            true
+          ],
+          "sku": [
+            {
+              "tier": [
+                "Dynamic"
+              ],
+              "size": [
+                "Y1"
+              ]
+            }
+          ],
+          "tags": [
+            "${local.tags}"
+          ]
+        }
+      }
+    },
+    {
+      "sentry_key": {
+        "api-extensions": {
+          "organization": [
+            "labd"
+          ],
+          "project": [
+            "mach"
+          ],
+          "name": [
+            "mach-site-us_api-extensions"
+          ],
+          "rate_limit_window": [
+            21600
+          ],
+          "rate_limit_count": [
+            100
+          ]
+        }
+      }
+    }
+  ],
+  "output": [
+    {
+      "frontend_channels": {
+        "value": [
+          []
+        ]
+      }
+    },
+    {
+      "frontend_client_scope": {
+        "value": [
+          "${commercetools_api_client.frontend_credentials.scope}"
+        ]
+      }
+    },
+    {
+      "frontend_client_id": {
+        "value": [
+          "${commercetools_api_client.frontend_credentials.id}"
+        ]
+      }
+    },
+    {
+      "frontend_client_secret": {
+        "value": [
+          "${commercetools_api_client.frontend_credentials.secret}"
+        ]
+      }
+    }
+  ],
+  "locals": [
+    {
+      "tenant_id": [
+        "e180345a-b3e1-421f-b448-672ab50d8502"
+      ],
+      "region": [
+        "westeurope"
+      ],
+      "subscription_id": [
+        "086bd7e7-0755-44ab-a730-7a0b8ad4883f"
+      ],
+      "project_key": [
+        "mach-site-us"
+      ],
+      "region_short": [
+        "we"
+      ],
+      "name_prefix": [
+        "${format(\"mach-site-us-%s\",local.region_short)}"
+      ],
+      "service_object_ids": [
+        {}
+      ],
+      "tags": [
+        {
+          "project_key": "mach-site-us"
+        }
+      ]
+    },
+    {
+      "resource_group_name": [
+        "${azurerm_resource_group.main.name}"
+      ],
+      "resource_group_location": [
+        "${azurerm_resource_group.main.location}"
+      ]
+    },
+    {
+      "front_door_domain": [
+        "${format(\"%s-fd.azurefd.net\",local.name_prefix)}"
+      ],
+      "front_door_domain_identifier": [
+        "${replace(local.front_door_domain,\".\",\"-\")}"
+      ]
+    },
+    {
+      "front_door_external_domain": [
+        "mach-site-us.mach-services.net"
+      ],
+      "front_door_external_domain_identifier": [
+        "${replace(local.front_door_external_domain,\".\",\"-\")}"
+      ]
+    }
+  ],
+  "data": [
+    {
+      "azurerm_dns_zone": {
+        "domain": {
+          "name": [
+            "mach-services.net"
+          ],
+          "resource_group_name": [
+            "mach-shared-we-rg"
+          ]
+        }
+      }
+    },
+    {
+      "azurerm_key_vault": {
+        "ssl": {
+          "name": [
+            "machsharedwekvcdn"
+          ],
+          "resource_group_name": [
+            "mach-shared-we-rg"
+          ]
+        }
+      }
+    },
+    {
+      "external": {
+        "sync_triggers_payment": {
+          "program": [
+            [
+              "bash",
+              "-c",
+              "az rest --method post --uri 'https://management.azure.com/subscriptions/${local.subscription_id}/resourceGroups/${local.resource_group_name}/providers/Microsoft.Web/sites/${module.payment.app_service_name}/syncfunctiontriggers?api-version=2016-08-01'"
+            ]
+          ],
+          "depends_on": [
+            [
+              "${module.payment.app_service_name}"
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "external": {
+        "sync_triggers_api-extensions": {
+          "program": [
+            [
+              "bash",
+              "-c",
+              "az rest --method post --uri 'https://management.azure.com/subscriptions/${local.subscription_id}/resourceGroups/${local.resource_group_name}/providers/Microsoft.Web/sites/${module.api-extensions.app_service_name}/syncfunctiontriggers?api-version=2016-08-01'"
+            ]
+          ],
+          "depends_on": [
+            [
+              "${module.api-extensions.app_service_name}"
+            ]
+          ]
+        }
+      }
+    }
+  ],
+  "module": [
+    {
+      "commercetools-config": {
+        "source": [
+          "git::https://github.com/some-organisation/mach-component-commercetools.git//terraform?ref=1aa9215"
+        ],
+        "providers": [
+          {}
+        ],
+        "depends_on": [
+          [
+            "${null_resource.commercetools}"
+          ]
+        ]
+      }
+    },
+    {
+      "payment": {
+        "source": [
+          "git::https://github.com/some-organisation/mach-component-payment.git//terraform?ref=0a9a0b5"
+        ],
+        "short_name": [
+          "payment"
+        ],
+        "name_prefix": [
+          "${local.name_prefix}"
+        ],
+        "subscription_id": [
+          "${local.subscription_id}"
+        ],
+        "tenant_id": [
+          "${local.tenant_id}"
+        ],
+        "service_object_ids": [
+          "${local.service_object_ids}"
+        ],
+        "region": [
+          "${local.region}"
+        ],
+        "resource_group_name": [
+          "${local.resource_group_name}"
+        ],
+        "resource_group_location": [
+          "${local.resource_group_location}"
+        ],
+        "app_service_plan_id": [
+          "${azurerm_app_service_plan.functionapps.id}"
+        ],
+        "tags": [
+          "${local.tags}"
+        ],
+        "component_version": [
+          "0a9a0b5"
+        ],
+        "environment": [
+          "site"
+        ],
+        "site": [
+          "mach-site-us"
+        ],
+        "variables": [
+          {
+            "FRONTDOOR_ID": "${azurerm_frontdoor.app-service.header_frontdoor_id}",
+            "CT_API_URL": "https://api.europe-west1.gcp.commercetools.com",
+            "CT_AUTH_URL": "https://auth.europe-west1.gcp.commercetools.com",
+            "CT_PROJECT_KEY": "mach-site-us"
+          }
+        ],
+        "environment_variables": [
+          {}
+        ],
+        "secrets": [
+          {}
+        ],
+        "ct_project_key": [
+          "mach-site-us"
+        ],
+        "ct_api_url": [
+          "https://api.europe-west1.gcp.commercetools.com"
+        ],
+        "ct_auth_url": [
+          "https://auth.europe-west1.gcp.commercetools.com"
+        ],
+        "providers": [
+          {
+            "azurerm": "${azurerm}"
+          }
+        ],
+        "depends_on": [
+          [
+            "${null_resource.commercetools}"
+          ]
+        ]
+      }
+    },
+    {
+      "api-extensions": {
+        "source": [
+          "git::https://github.com/some-organisation/mach-component-api-extensions.git//terraform?ref=a4bbb28"
+        ],
+        "short_name": [
+          "apiexts"
+        ],
+        "name_prefix": [
+          "${local.name_prefix}"
+        ],
+        "subscription_id": [
+          "${local.subscription_id}"
+        ],
+        "tenant_id": [
+          "${local.tenant_id}"
+        ],
+        "service_object_ids": [
+          "${local.service_object_ids}"
+        ],
+        "region": [
+          "${local.region}"
+        ],
+        "resource_group_name": [
+          "${local.resource_group_name}"
+        ],
+        "resource_group_location": [
+          "${local.resource_group_location}"
+        ],
+        "app_service_plan_id": [
+          "${azurerm_app_service_plan.functionapps.id}"
+        ],
+        "tags": [
+          "${local.tags}"
+        ],
+        "sentry_dsn": [
+          "${sentry_key.api-extensions.dsn_secret}"
+        ],
+        "component_version": [
+          "a4bbb28"
+        ],
+        "environment": [
+          "site"
+        ],
+        "site": [
+          "mach-site-us"
+        ],
+        "variables": [
+          {
+            "ORDER_PREFIX": "MACH-",
+            "CT_API_URL": "https://api.europe-west1.gcp.commercetools.com",
+            "CT_AUTH_URL": "https://auth.europe-west1.gcp.commercetools.com",
+            "CT_PROJECT_KEY": "mach-site-us"
+          }
+        ],
+        "environment_variables": [
+          {
+            "ORDER_PREFIX": "MACH-"
+          }
+        ],
+        "secrets": [
+          {}
+        ],
+        "ct_project_key": [
+          "mach-site-us"
+        ],
+        "ct_api_url": [
+          "https://api.europe-west1.gcp.commercetools.com"
+        ],
+        "ct_auth_url": [
+          "https://auth.europe-west1.gcp.commercetools.com"
+        ],
+        "providers": [
+          {
+            "azurerm": "${azurerm}"
+          }
+        ],
+        "depends_on": [
+          [
+            "${null_resource.commercetools}"
+          ]
+        ]
+      }
+    }
+  ]
+}

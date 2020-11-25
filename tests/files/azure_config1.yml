@@ -2,12 +2,22 @@
 general_config:
   environment: site
   terraform_config:
-    aws_remote_state:
-      bucket: aws-bucket
-      key_prefix: mach-composer-tst
-      lock_table: tfstate-lock
-      region: eu-central-1
-  cloud: aws
+    azure_remote_state:
+      resource_group: my-shared-rg
+      storage_account: mysharedsaterra
+      container_name: tfstate
+      state_folder: test
+  cloud: azure
+  azure:
+    tenant_id: e180345a-b3e1-421f-b448-672ab50d8502
+    subscription_id: 086bd7e7-0755-44ab-a730-7a0b8ad4883f
+    region: westeurope
+    front_door:
+      resource_group: mach-shared-we-rg
+      dns_zone: mach-services.net
+      ssl_key_vault_name: machsharedwekvcdn
+      ssl_key_vault_secret_name: wildcard-mach-services-net
+      ssl_key_vault_secret_version: oIXGVSNdwVAX7i6uUcCl
   sentry:
     auth_token: JdOheW3IzlsXBOPNdaMZgXoMcHqyf8CJMjBnfVHD3laXPpN23oAZG8KOPAiYfeGr
     organization: labd
@@ -17,11 +27,7 @@ general_config:
 sites:
   - identifier: mach-site-eu
     endpoints: 
-      main: https://api.eu-tst.mach-example.net
-    aws:
-      account_id: 940853598232
-      region: eu-central-1
-      route53_zone_name: eu-tst.mach-example.net
+      public: https://api.eu-tst.mach-services.net
     commercetools:
       project_key: mach-site-eu
       client_id: 6SWM8ttjAYll-f9dopjdt
@@ -41,11 +47,7 @@ sites:
           ORDER_PREFIX: MACH-
   - identifier: mach-site-us
     endpoints: 
-      main: https://api.us-tst.mach-example.net
-    aws:
-      account_id: 940853598234
-      region: us-west-1
-      route53_zone_name: us-tst.mach-example.net
+      public: https://api.us-tst.mach-services.net
     commercetools:
       project_key: mach-site-us
       client_id: 6SWM8ttjAYll-f9dopjdt
@@ -69,10 +71,11 @@ components:
     integrations: [""]
   - name: payment
     source: git::https://github.com/some-organisation/mach-component-payment.git//terraform
-    endpoint: main
+    endpoint: public
     version: 0a9a0b5
-    integrations: ["aws", "commercetools"]
+    integrations: ["azure", "commercetools"]
   - name: api-extensions
     source: git::https://github.com/some-organisation/mach-component-api-extensions.git//terraform
     version: a4bbb28
-    integrations: ["aws", "commercetools", "sentry"]
+    short_name: apiexts
+    integrations: ["azure", "commercetools", "sentry"]

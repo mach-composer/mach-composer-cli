@@ -8,7 +8,28 @@
     - `mach bootstrap config` for creating a new MACH configuration
     - `mach bootstrap component` for creating a new MACH component
 - Updated Terraform commercetools provider to `0.24.1`
-  
+- Add support for multiple API endpoints:
+    - `base_url` replaced with `endpoints`
+    - `has_public_api` replaced with `endpoint`
+
+### Breaking changes
+- `base_url` has been replaced by the `endpoints` settings:<br>
+  ```yaml
+  sites:
+  - identifier: mach-site-eu
+    base_url: https://api.eu-tst.mach-example.net
+  ```
+
+  becomes
+
+  ```yaml
+  sites:
+  - identifier: mach-site-eu
+    endpoints: 
+      main: https://api.eu-tst.mach-example.net
+  ```
+
+  When you name the endpoint that replaces `base_url` "main", it will have the least effect on your existing Terraform state.
 
 ## 0.5.1 (2020-11-10)
 - Removed `aws` block in general_config
