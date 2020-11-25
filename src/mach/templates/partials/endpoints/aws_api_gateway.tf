@@ -3,7 +3,7 @@ resource "aws_acm_certificate" "{{ endpoint_name|slugify }}" {
   validation_method = "DNS"
 }
 
-resource "aws_route53_record" "new_acm_validation_site" {
+resource "aws_route53_record" "{{ endpoint_name|slugify }}_acm_validation" {
   zone_id = data.aws_route53_zone.main.zone_id
   name    = tolist(aws_acm_certificate.{{ endpoint_name|slugify }}.domain_validation_options)[0].resource_record_name
   type    = tolist(aws_acm_certificate.{{ endpoint_name|slugify }}.domain_validation_options)[0].resource_record_type
