@@ -1,0 +1,73 @@
+---
+general_config:
+  environment: site
+  terraform_config:
+    azure_remote_state:
+      resource_group: my-shared-rg
+      storage_account: mysharedsaterra
+      container_name: tfstate
+      state_folder: test
+  cloud: azure
+  azure:
+    tenant_id: e180345a-b3e1-421f-b448-672ab50d8502
+    subscription_id: 086bd7e7-0755-44ab-a730-7a0b8ad4883f
+    region: westeurope
+  sentry:
+    auth_token: JdOheW3IzlsXBOPNdaMZgXoMcHqyf8CJMjBnfVHD3laXPpN23oAZG8KOPAiYfeGr
+    organization: labd
+    project: mach
+    rate_limit_window: 21600
+    rate_limit_count: 100
+sites:
+  - identifier: mach-site-eu
+    base_url: https://api.eu-tst.mach-example.net
+    commercetools:
+      project_key: mach-site-eu
+      client_id: 6SWM8ttjAYll-f9dopjdt
+      client_secret: Q6gu2Hxlbhwv7wtrgPPydmS--6wv7tyh
+      scopes: manage_api_clients:mach-site-eu manage_project:mach-site-eu view_api_clients:mach-site-eu
+      languages:
+        - nl-NL
+        - en-GB
+      currencies:
+        - GBP
+        - EUR
+    components:
+      - name: commercetools-config
+      - name: payment
+      - name: api-extensions
+        variables:
+          ORDER_PREFIX: MACH-
+  - identifier: mach-site-us
+    base_url: https://api.us-tst.mach-example.net
+    commercetools:
+      project_key: mach-site-us
+      client_id: 6SWM8ttjAYll-f9dopjdt
+      client_secret: Q6gu2Hxlbhwv7wtrgPPydmS--6wv7tyh
+      scopes: manage_api_clients:mach-site-us manage_project:mach-site-us view_api_clients:mach-site-us
+      languages:
+        - en-US
+      currencies:
+        - USD
+    components:
+      - name: commercetools-config
+      - name: payment
+      - name: api-extensions
+        variables:
+          ORDER_PREFIX: MACH-
+
+components:
+  - name: commercetools-config
+    source: git::https://github.com/some-organisation/mach-component-commercetools.git//terraform
+    version: 1aa9215
+    integrations: [""]
+  - name: payment
+    source: git::https://github.com/some-organisation/mach-component-payment.git//terraform
+    has_public_api: true
+    version: 0a9a0b5
+    integrations: ["azure", "commercetools"]
+  - name: api-extensions
+    source: git::https://github.com/some-organisation/mach-component-api-extensions.git//terraform
+    version: a4bbb28
+    short_name: apiexts
+    integrations: ["azure", "commercetools", "sentry"]
