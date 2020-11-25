@@ -172,7 +172,7 @@ All site definitions.
 - **`identifier`** - (Required)<br>
   Unique identifier for this site.<br>
   Will be used for the Terraform state and naming all cloud resources.
-- `base_url` - Used for setting up the API Gateway, routing and SSL certificates
+- `endpoints` - Endpoint definitions to be used in the API Gateway or Frontdoor routing
 - `commercetools` - [commercetools configuration](#commercetools) block
 - `sentry` - [Sentry configuration](#sentry_1) block
 - `contentful` - [Contentful configuration](#contentful_1) block
@@ -355,7 +355,7 @@ aws:
 - **`account_id`** - (Required) AWS account ID for this site
 - **`region`** - AWS region to deploy site in
 - `deploy_role` - The [IAM role](./prerequisites/aws#iam-deploy-role) needed for deployment
-- `route53_zone_name` - Define the Route53 zone name that should be created in case of public API components. Defaults the the specified `base_url`
+- `route53_zone_name` - Define the Route53 zone name on which the endpoints need to be added to. Required when endpoints are defined.
 - `extra_providers`
 
 
