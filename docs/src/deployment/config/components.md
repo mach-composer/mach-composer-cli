@@ -24,7 +24,7 @@ resource "aws_apigatewayv2_route" "app_route" {
     target    = "integrations/${aws_apigatewayv2_integration.gateway.id}"
 }
 ```
-Where the `var.api_gateway` references the [Gateway created by MACH](./aws.md)
+Where the `var.api_gateway` references the [Gateway created by MACH](./aws.md#http-routing)
 
 ## Additional notes
 

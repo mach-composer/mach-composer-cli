@@ -165,6 +165,102 @@
       }
     },
     {
+      "aws_route53_record": {
+        "main_acm_validation": {
+          "zone_id": [
+            "${data.aws_route53_zone.main.zone_id}"
+          ],
+          "name": [
+            "${tolist(aws_acm_certificate.main.domain_validation_options)[0].resource_record_name}"
+          ],
+          "type": [
+            "${tolist(aws_acm_certificate.main.domain_validation_options)[0].resource_record_type}"
+          ],
+          "ttl": [
+            60
+          ],
+          "records": [
+            [
+              "${tolist(aws_acm_certificate.main.domain_validation_options)[0].resource_record_value}"
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "aws_apigatewayv2_api": {
+        "main_gateway": {
+          "name": [
+            "mach-site-eu-api"
+          ],
+          "protocol_type": [
+            "HTTP"
+          ]
+        }
+      }
+    },
+    {
+      "aws_apigatewayv2_route": {
+        "main_application": {
+          "api_id": [
+            "${aws_apigatewayv2_api.main_gateway.id}"
+          ],
+          "route_key": [
+            "$default"
+          ]
+        }
+      }
+    },
+    {
+      "aws_apigatewayv2_deployment": {
+        "main_default": {
+          "api_id": [
+            "${aws_apigatewayv2_api.main_gateway.id}"
+          ],
+          "description": [
+            "Stage for default release"
+          ],
+          "triggers": [
+            {
+              "redeployment": "${sha1(join(\",\",list(module.payment.component_version,)))}"
+            }
+          ],
+          "lifecycle": [
+            {
+              "create_before_destroy": [
+                true
+              ]
+            }
+          ],
+          "depends_on": [
+            [
+              "${module.payment}"
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "aws_apigatewayv2_stage": {
+        "main_default": {
+          "name": [
+            "$default"
+          ],
+          "api_id": [
+            "${aws_apigatewayv2_api.main_gateway.id}"
+          ],
+          "deployment_id": [
+            "${aws_apigatewayv2_deployment.main_default.id}"
+          ],
+          "depends_on": [
+            [
+              "${aws_apigatewayv2_deployment.main_default}"
+            ]
+          ]
+        }
+      }
+    },
+    {
       "aws_apigatewayv2_domain_name": {
         "main": {
           "domain_name": [
@@ -215,109 +311,13 @@
       }
     },
     {
-      "aws_route53_record": {
-        "new_acm_validation_site": {
-          "zone_id": [
-            "${data.aws_route53_zone.main.zone_id}"
-          ],
-          "name": [
-            "${tolist(aws_acm_certificate.main.domain_validation_options)[0].resource_record_name}"
-          ],
-          "type": [
-            "${tolist(aws_acm_certificate.main.domain_validation_options)[0].resource_record_type}"
-          ],
-          "ttl": [
-            60
-          ],
-          "records": [
-            [
-              "${tolist(aws_acm_certificate.main.domain_validation_options)[0].resource_record_value}"
-            ]
-          ]
-        }
-      }
-    },
-    {
-      "aws_apigatewayv2_api": {
-        "main_gateway": {
-          "name": [
-            "mach-site-eu-api"
-          ],
-          "protocol_type": [
-            "HTTP"
-          ]
-        }
-      }
-    },
-    {
-      "aws_apigatewayv2_route": {
-        "application": {
-          "api_id": [
-            "${aws_apigatewayv2_api.main_gateway.id}"
-          ],
-          "route_key": [
-            "$default"
-          ]
-        }
-      }
-    },
-    {
-      "aws_apigatewayv2_deployment": {
-        "default": {
-          "api_id": [
-            "${aws_apigatewayv2_api.main_gateway.id}"
-          ],
-          "description": [
-            "Stage for default release"
-          ],
-          "triggers": [
-            {
-              "redeployment": "${sha1(join(\",\",list(module.payment.component_version,)))}"
-            }
-          ],
-          "lifecycle": [
-            {
-              "create_before_destroy": [
-                true
-              ]
-            }
-          ],
-          "depends_on": [
-            [
-              "${module.payment}"
-            ]
-          ]
-        }
-      }
-    },
-    {
-      "aws_apigatewayv2_stage": {
-        "default": {
-          "name": [
-            "$default"
-          ],
-          "api_id": [
-            "${aws_apigatewayv2_api.main_gateway.id}"
-          ],
-          "deployment_id": [
-            "${aws_apigatewayv2_deployment.default.id}"
-          ],
-          "depends_on": [
-            [
-              "${aws_apigatewayv2_deployment.default}"
-            ]
-          ]
-        }
-      }
-    },
-    {
       "aws_apigatewayv2_api_mapping": {
-        "custom_domain_mapping": {
+        "main": {
           "api_id": [
             "${aws_apigatewayv2_api.main_gateway.id}"
           ],
           "stage": [
-            "${aws_apigatewayv2_stage.default.id}"
+            "${aws_apigatewayv2_stage.main_default.id}"
           ],
           "domain_name": [
             "api.eu-tst.mach-example.net"

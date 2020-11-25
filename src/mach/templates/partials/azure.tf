@@ -17,8 +17,6 @@ locals {
 
   region_short                 = "{{ azure.region|azure_region_short }}"
   name_prefix                  = format("{{ general_config.azure.resources_prefix }}{{ site.identifier| replace("dev", "d") | replace("tst", "t") | replace("prd", "p") }}-%s", local.region_short)
-  front_door_domain            = format("%s-fd.azurefd.net", local.name_prefix)
-  front_door_domain_identifier = replace(local.front_door_domain, ".", "-")
 
   service_object_ids           = {
       {% for key, value in azure.service_object_ids.items() %}

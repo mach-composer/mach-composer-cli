@@ -1,3 +1,8 @@
+locals {
+  front_door_domain            = format("%s-fd.azurefd.net", local.name_prefix)
+  front_door_domain_identifier = replace(local.front_door_domain, ".", "-")
+}
+
 {% if site.azure.front_door  %}
 data "azurerm_dns_zone" "domain" {
     name                = "{{ site.azure.front_door.dns_zone }}"
