@@ -27,7 +27,7 @@ general_config:
 sites:
   - identifier: mach-site-eu
     endpoints: 
-      public: https://api.eu-tst.mach-example.net
+      public: https://api.eu-tst.mach-services.net
     commercetools:
       project_key: mach-site-eu
       client_id: 6SWM8ttjAYll-f9dopjdt
@@ -47,7 +47,7 @@ sites:
           ORDER_PREFIX: MACH-
   - identifier: mach-site-us
     endpoints: 
-      public: https://api.us-tst.mach-example.net
+      public: https://api.us-tst.mach-services.net
     commercetools:
       project_key: mach-site-us
       client_id: 6SWM8ttjAYll-f9dopjdt
