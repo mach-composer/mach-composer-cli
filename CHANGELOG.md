@@ -2,6 +2,7 @@
 
 ## 0.6.0 (unreleased)
 - Add Sentry DSN management options
+- Add Amplience support
 - Improved dependencies between components and MACH-managed commercetools configurations
 - Improved git log parsing
 - Add `mach bootstrap` commands:
