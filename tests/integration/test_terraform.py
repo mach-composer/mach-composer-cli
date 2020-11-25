@@ -4,7 +4,7 @@ import hcl2
 import pytest
 from mach.commands import generate
 
-from tests.utils import get_file, get_json, write_json
+from tests.utils import get_file, get_json
 
 
 @pytest.fixture
