@@ -250,11 +250,11 @@
             "${aws_apigatewayv2_api.main_gateway.id}"
           ],
           "deployment_id": [
-            "${aws_apigatewayv2_deployment.default.id}"
+            "${aws_apigatewayv2_deployment.main_default.id}"
           ],
           "depends_on": [
             [
-              "${aws_apigatewayv2_deployment.default}"
+              "${aws_apigatewayv2_deployment.main_default}"
             ]
           ]
         }
@@ -317,7 +317,7 @@
             "${aws_apigatewayv2_api.main_gateway.id}"
           ],
           "stage": [
-            "${aws_apigatewayv2_stage.default.id}"
+            "${aws_apigatewayv2_stage.main_default.id}"
           ],
           "domain_name": [
             "api.eu-tst.mach-example.net"
