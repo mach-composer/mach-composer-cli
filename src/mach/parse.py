@@ -113,6 +113,7 @@ def resolve_site_configs(config: MachConfig) -> MachConfig:
                 site.sentry.merge(config.general_config.sentry)
 
     config = resolve_site_components(config)
+
     return config
 
 

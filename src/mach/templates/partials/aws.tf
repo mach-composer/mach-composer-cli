@@ -23,10 +23,10 @@ provider "aws" {
 }
 {% endfor %}
 
-{% if site.public_api_components %}
+{% if site.used_endpoints %}
   {% include 'partials/endpoints/aws_domains.tf' %}
 
-  {% for endpoint_name, endpoint_url in site.endpoints.items() %}
+  {% for endpoint_name, endpoint_url in site.used_endpoints.items() %}
     {% include 'partials/endpoints/aws_api_gateway.tf' %}
     
   {% endfor %}

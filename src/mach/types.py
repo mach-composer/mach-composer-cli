@@ -421,6 +421,13 @@ class Site(JsonSchemaMixin):
                 k: utils.strip_protocol(v) for k, v in self.endpoints.items()
             }
 
+    @property
+    def used_endpoints(self):
+        """Return only the endpoints that are actually used by the components."""
+        used_endpoints = {c.endpoint for c in self.components if c.endpoint}
+
+        return {k: v for k, v in self.endpoints.items() if k in used_endpoints}
+
 
 @dataclass_json
 @dataclass
