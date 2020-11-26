@@ -1,8 +1,9 @@
 import json
 import os
+from typing import List
 
 import pytest
-from mach import terraform, types
+from mach import parse, terraform, types
 
 from tests.utils import HclWrapper, load_hcl
 
@@ -90,3 +91,82 @@ def test_generate_w_sentry(parsed_config: types.MachConfig, tf_mock):
     sentry_data = data.resource.sentry_key["api-extensions"]
     assert sentry_data["rate_limit_window"] == 21600
     assert sentry_data["rate_limit_count"] == 100
+
+
+def test_generate_w_endpoints(parsed_config: types.MachConfig, tf_mock):
+    config = parsed_config
+    config.sites[0].endpoints = {
+        "public": "api.mach-example.com",
+    }
+    data = _generate(config)
+
+    # 'public' endpoint not used in component yet; no resources created
+    assert "resource" not in data
+
+    config.components[0].endpoint = "public"
+    data = _generate(config)
+
+    # API gateway items need to be created since a component now uses it
+    expected_resources = [
+        "aws_acm_certificate.public",
+        "aws_apigatewayv2_api.public_gateway",
+        "aws_apigatewayv2_api_mapping.public",
+        "aws_apigatewayv2_deployment.public_default",
+        "aws_apigatewayv2_domain_name.public",
+        "aws_apigatewayv2_route.public_application",
+        "aws_apigatewayv2_stage.public_default",
+        "aws_route53_record.public",
+        "aws_route53_record.public_acm_validation",
+    ]
+    assert _get_resource_ids(data) == expected_resources
+
+    config.sites[0].endpoints["private"] = "private-api.mach-example.com"
+    data = _generate(config)
+
+    # We've added an extra endpoint definition, but hasn't been used.
+    # List of resources should be the same as previous check
+    assert _get_resource_ids(data) == expected_resources
+
+    config.components.append(
+        types.ComponentConfig(
+            name="logger",
+            source="some-source//terraform",
+            version="1.0",
+            endpoint="private",
+        )
+    )
+    config.sites[0].components.append(
+        types.Component(
+            name="logger",
+        )
+    )
+    data = _generate(parse.parse_config(config))
+    assert _get_resource_ids(data) == [
+        "aws_acm_certificate.private",
+        "aws_acm_certificate.public",
+        "aws_apigatewayv2_api.private_gateway",
+        "aws_apigatewayv2_api.public_gateway",
+        "aws_apigatewayv2_api_mapping.private",
+        "aws_apigatewayv2_api_mapping.public",
+        "aws_apigatewayv2_deployment.private_default",
+        "aws_apigatewayv2_deployment.public_default",
+        "aws_apigatewayv2_domain_name.private",
+        "aws_apigatewayv2_domain_name.public",
+        "aws_apigatewayv2_route.private_application",
+        "aws_apigatewayv2_route.public_application",
+        "aws_apigatewayv2_stage.private_default",
+        "aws_apigatewayv2_stage.public_default",
+        "aws_route53_record.private",
+        "aws_route53_record.private_acm_validation",
+        "aws_route53_record.public",
+        "aws_route53_record.public_acm_validation",
+    ]
+
+
+def _get_resource_ids(data: HclWrapper) -> List[str]:
+    """Get all resource ids in <resource-type>.<name> format."""
+    result = []
+    for type_, resources in data.resource.items():
+        for key, resource in resources.items():
+            result.append(f"{type_}.{key}")
+    return sorted(result)
