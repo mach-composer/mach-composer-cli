@@ -103,7 +103,7 @@ module "{{ component.name }}" {
 
   depends_on = [
     {% if site.aws and component.endpoint %}
-    aws_apigatewayv2_api.main_gateway,
+    aws_apigatewayv2_api.{{ component.endpoint|slugify }}_gateway,
     {% endif %}
     {% if site.commercetools %}
     null_resource.commercetools,
