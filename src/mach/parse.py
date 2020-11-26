@@ -62,6 +62,7 @@ def parse_config(config: MachConfig) -> MachConfig:
     config = resolve_site_configs(config)
     return config
 
+
 # flake8: noqa: C901
 def resolve_site_configs(config: MachConfig) -> MachConfig:
     """Use and merge site-specific configurations with general config."""
