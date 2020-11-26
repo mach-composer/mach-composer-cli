@@ -260,8 +260,12 @@
         "identifier": {
           "type": "string"
         },
-        "base_url": {
-          "type": "string"
+        "endpoints": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "default": {}
         },
         "commercetools": {
           "$ref": "#/definitions/CommercetoolsSettings"
@@ -585,8 +589,7 @@
           "default": []
         },
         "route53_zone_name": {
-          "type": "string",
-          "default": ""
+          "type": "string"
         }
       },
       "description": "Site-specific AWS settings."
@@ -678,9 +681,8 @@
           },
           "default": []
         },
-        "has_public_api": {
-          "type": "boolean",
-          "default": false
+        "endpoint": {
+          "type": "string"
         },
         "health_check_path": {
           "type": "string"
