@@ -33,6 +33,8 @@
 
   When you name the endpoint that replaces `base_url` "main", it will have the least effect on your existing Terraform state.
 - The `FRONTDOOR_ID` value is removed from the `var.variables` of a component. Replaced with `var.frontdoor_id`
+- The `front_door` configuration block has been renamed to `frontdoor`
+  
 
 ## 0.5.1 (2020-11-10)
 - Removed `aws` block in general_config

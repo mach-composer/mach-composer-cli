@@ -133,7 +133,7 @@ azure:
 - **`subscription_id`** - (Required)
 - **`region`** - (Required)
 - `resources_prefix` - Prefix to be used for all Azure resources, for example `my-`
-- `front_door` - [Front-door](#frontdoor) settings
+- `frontdoor` - [Front-door](#frontdoor) settings
 - `service_object_ids` - Map of objects IDs that should have access to things like KeyVaults created for components
 
 
@@ -141,11 +141,11 @@ azure:
     Make sure that, as a minimum, you set the `service_object_ids` to the objects IDs of the users or groups that perform the `mach apply`
 
 
-#### front_door
+#### frontdoor
 
 Example:
 ```yaml
-front_door:
+frontdoor:
   resource_group: my-shared-rg
   dns_zone: my-services-domain.net
   ssl_key_vault_name: mysharedwekvcdn
@@ -343,7 +343,7 @@ Can overwrite any value from the generic [Azure settings](#azure):
 
 - `tenant_id`
 - `service_object_ids`
-- `front_door`
+- `frontdoor`
 - `subscription_id`
 - `region`
 

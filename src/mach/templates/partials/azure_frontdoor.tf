@@ -1,30 +1,30 @@
 locals {
-  front_door_domain            = format("%s-fd.azurefd.net", local.name_prefix)
-  front_door_domain_identifier = replace(local.front_door_domain, ".", "-")
+  frontdoor_domain            = format("%s-fd.azurefd.net", local.name_prefix)
+  frontdoor_domain_identifier = replace(local.frontdoor_domain, ".", "-")
 }
 
-{% if site.azure.front_door  %}
+{% if site.azure.frontdoor  %}
 data "azurerm_dns_zone" "domain" {
-    name                = "{{ site.azure.front_door.dns_zone }}"
-    resource_group_name = "{{ site.azure.front_door.resource_group }}"
+    name                = "{{ site.azure.frontdoor.dns_zone }}"
+    resource_group_name = "{{ site.azure.frontdoor.resource_group }}"
 }
 
 data "azurerm_key_vault" "ssl" {
-  name                = "{{ site.azure.front_door.ssl_key_vault_name }}"
-  resource_group_name = "{{ site.azure.front_door.resource_group }}"
+  name                = "{{ site.azure.frontdoor.ssl_key_vault_name }}"
+  resource_group_name = "{{ site.azure.frontdoor.resource_group }}"
 }
 
 locals {
-    front_door_external_domain = "{{ site.commercetools.project_key }}.{{ site.azure.front_door.dns_zone }}"
-    front_door_external_domain_identifier = replace(local.front_door_external_domain, ".", "-")
+    frontdoor_external_domain = "{{ site.commercetools.project_key }}.{{ site.azure.frontdoor.dns_zone }}"
+    frontdoor_external_domain_identifier = replace(local.frontdoor_external_domain, ".", "-")
 }
 
 resource "azurerm_dns_cname_record" "{{ site.commercetools.project_key }}" {
   name                = "{{ site.commercetools.project_key }}"
   zone_name           = data.azurerm_dns_zone.domain.name
-  resource_group_name = "{{ site.azure.front_door.resource_group }}"
+  resource_group_name = "{{ site.azure.frontdoor.resource_group }}"
   ttl                 = 600
-  record              = local.front_door_domain
+  record              = local.frontdoor_domain
 }
 {% endif %}
 
@@ -40,23 +40,23 @@ resource "azurerm_frontdoor" "app-service" {
   }
 
   frontend_endpoint {
-    name                              = local.front_door_domain_identifier
-    host_name                         = local.front_door_domain
+    name                              = local.frontdoor_domain_identifier
+    host_name                         = local.frontdoor_domain
     custom_https_provisioning_enabled = false
   }
 
-  {% if site.azure.front_door %}
+  {% if site.azure.frontdoor %}
   frontend_endpoint {
-    name                              = local.front_door_external_domain_identifier
-    host_name                         = local.front_door_external_domain
+    name                              = local.frontdoor_external_domain_identifier
+    host_name                         = local.frontdoor_external_domain
     custom_https_provisioning_enabled = true
 
     custom_https_configuration {
       certificate_source                         = "AzureKeyVault"
       azure_key_vault_certificate_vault_id       = data.azurerm_key_vault.ssl.id
       # no data source for certificates yet.
-      azure_key_vault_certificate_secret_name    = "{{ site.azure.front_door.ssl_key_vault_secret_name }}"
-      azure_key_vault_certificate_secret_version = "{{ site.azure.front_door.ssl_key_vault_secret_version }}"
+      azure_key_vault_certificate_secret_name    = "{{ site.azure.frontdoor.ssl_key_vault_secret_name }}"
+      azure_key_vault_certificate_secret_version = "{{ site.azure.frontdoor.ssl_key_vault_secret_version }}"
     }
   }
   
@@ -77,7 +77,7 @@ resource "azurerm_frontdoor" "app-service" {
     name               = "http-https-redirect"
     accepted_protocols = ["Http"]
     patterns_to_match  = ["/*"]
-    frontend_endpoints = [local.front_door_domain_identifier{% if site.azure.front_door %}, local.front_door_external_domain_identifier{% endif %}]
+    frontend_endpoints = [local.frontdoor_domain_identifier{% if site.azure.frontdoor %}, local.frontdoor_external_domain_identifier{% endif %}]
     redirect_configuration {
       redirect_type     = "PermanentRedirect"
       redirect_protocol = "HttpsOnly"
@@ -88,7 +88,7 @@ resource "azurerm_frontdoor" "app-service" {
     name               = "{{ component.name }}-routing-rule"
     accepted_protocols = ["Https"]
     patterns_to_match  = ["/{{ component.name }}/*"]
-    frontend_endpoints = [local.front_door_domain_identifier{% if site.azure.front_door %}, local.front_door_external_domain_identifier{% endif %}]
+    frontend_endpoints = [local.frontdoor_domain_identifier{% if site.azure.frontdoor %}, local.frontdoor_external_domain_identifier{% endif %}]
     forwarding_configuration {
         forwarding_protocol = "MatchRequest"
         backend_pool_name   = "{{ component.name }}"

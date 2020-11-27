@@ -12,7 +12,7 @@ general_config:
     tenant_id: e180345a-b3e1-421f-b448-672ab50d8502
     subscription_id: 086bd7e7-0755-44ab-a730-7a0b8ad4883f
     region: westeurope
-    front_door:
+    frontdoor:
       resource_group: mach-shared-we-rg
       dns_zone: mach-services.net
       ssl_key_vault_name: machsharedwekvcdn

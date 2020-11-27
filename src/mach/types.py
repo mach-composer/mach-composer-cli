@@ -126,7 +126,7 @@ class AzureConfig(JsonSchemaMixin):
     tenant_id: str
     subscription_id: str
     region: str
-    front_door: Optional[FrontDoorSettings] = _none()
+    frontdoor: Optional[FrontDoorSettings] = _none()
     resources_prefix: Optional[str] = ""
     service_object_ids: Dict[str, str] = field(default_factory=dict)
 
@@ -370,7 +370,7 @@ class SiteAzureSettings(JsonSchemaMixin):
     """Site-specific Azure settings."""
 
     service_object_ids: Dict[str, str] = field(default_factory=dict)
-    front_door: Optional[FrontDoorSettings] = _none()
+    frontdoor: Optional[FrontDoorSettings] = _none()
     alert_group: Optional[AlertGroup] = _none()
     resource_group: Optional[str] = ""
     tenant_id: Optional[str] = ""  # Can overwrite values from AzureConfig
@@ -380,7 +380,7 @@ class SiteAzureSettings(JsonSchemaMixin):
     @classmethod
     def from_config(cls, config: AzureConfig):
         return cls(
-            front_door=config.front_door,
+            frontdoor=config.frontdoor,
             tenant_id=config.tenant_id,
             subscription_id=config.subscription_id,
             region=config.region,
@@ -388,7 +388,7 @@ class SiteAzureSettings(JsonSchemaMixin):
         )
 
     def merge(self, config: AzureConfig):
-        self.front_door = self.front_door or config.front_door
+        self.frontdoor = self.frontdoor or config.frontdoor
         self.tenant_id = self.tenant_id or config.tenant_id
         self.subscription_id = self.subscription_id or config.subscription_id
         self.region = self.region or config.region
