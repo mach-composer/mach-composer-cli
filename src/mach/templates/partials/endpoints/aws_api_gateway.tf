@@ -65,13 +65,13 @@ resource "aws_apigatewayv2_domain_name" "{{ endpoint_name|slugify }}" {
 }
 
 resource "aws_route53_record" "{{ endpoint_name|slugify }}" {
-  name    = aws_apigatewayv2_domain_name.main.domain_name
+  name    = aws_apigatewayv2_domain_name.{{ endpoint_name|slugify }}.domain_name
   type    = "A"
   zone_id = data.aws_route53_zone.main.id
 
   alias {
-    name                   = aws_apigatewayv2_domain_name.main.domain_name_configuration[0].target_domain_name
-    zone_id                = aws_apigatewayv2_domain_name.main.domain_name_configuration[0].hosted_zone_id
+    name                   = aws_apigatewayv2_domain_name.{{ endpoint_name|slugify }}.domain_name_configuration[0].target_domain_name
+    zone_id                = aws_apigatewayv2_domain_name.{{ endpoint_name|slugify }}.domain_name_configuration[0].hosted_zone_id
     evaluate_target_health = false
   }
 }
