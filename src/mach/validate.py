@@ -1,7 +1,10 @@
+import re
 from typing import List
 
 from mach import types
 from mach.exceptions import ValidationError
+
+STORE_KEY_RE = re.compile(r"^[\w_-]*$")
 
 
 def validate_config(config: types.MachConfig):
@@ -43,8 +46,7 @@ def validate_site(site: types.Site, *, config: types.MachConfig):
     validate_commercetools(site)
 
     if site.components:
-        component_names = [component.name for component in config.components]
-        validate_site_components(site.components, component_names)
+        validate_site_components(site.components, site=site)
 
 
 def validate_endpoints(site: types.Site, cloud: types.CloudOption):
@@ -81,15 +83,13 @@ def validate_endpoints(site: types.Site, cloud: types.CloudOption):
         raise ValidationError(f"Missing required endpoints {', '.join(missing)}")
 
 
-def validate_site_components(
-    components: List[types.ComponentConfig], component_names: List[str]
-):
+def validate_site_components(components: List[types.Component], *, site: types.Site):
     """Sanity checks on component configuration per site."""
+    defined_stores = (
+        [s.key for s in site.commercetools.stores] if site.commercetools else []
+    )
+
     for component in components:
-        if component.name not in component_names:
-            raise ValidationError(
-                f"Component {component.name} does not exist in global components."
-            )
         if component.health_check_path and not component.health_check_path.startswith(
             "/"
         ):
@@ -97,6 +97,12 @@ def validate_site_components(
                 f"Component health check {component.health_check_path} does "
                 "not start with '/'."
             )
+
+        for store in component.store_variables.keys():
+            if store not in defined_stores:
+                raise ValidationError(
+                    f"Store {store} is not defined in your commercetools stores definition"
+                )
 
 
 def validate_commercetools(site: types.Site):
@@ -115,6 +121,11 @@ def validate_store_keys(ct_settings: types.CommercetoolsSettings):
                 )
             if store_keys.count(key) != 1:
                 raise ValidationError(f"Store key {key} must be unique.")
+
+            if not STORE_KEY_RE.match(key):
+                raise ValidationError(
+                    f"Store key {key} may only contain alphanumeric characters or underscores"
+                )
 
 
 def validate_components(config: types.MachConfig):
