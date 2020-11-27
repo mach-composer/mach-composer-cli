@@ -627,6 +627,9 @@
         "tags": [
           "${local.tags}"
         ],
+        "frontdoor_id": [
+          "${azurerm_frontdoor.app-service.header_frontdoor_id}"
+        ],
         "component_version": [
           "0a9a0b5"
         ],
@@ -638,7 +641,6 @@
         ],
         "variables": [
           {
-            "FRONTDOOR_ID": "${azurerm_frontdoor.app-service.header_frontdoor_id}",
             "CT_API_URL": "https://api.europe-west1.gcp.commercetools.com",
             "CT_AUTH_URL": "https://auth.europe-west1.gcp.commercetools.com",
             "CT_PROJECT_KEY": "mach-site-us"

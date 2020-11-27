@@ -12,3 +12,6 @@ tags                    = local.tags
 {% if site.azure.alert_group %}
 monitor_action_group_id = azurerm_monitor_action_group.alert_action_group.id
 {% endif %}
+{% if component.endpoint %}
+frontdoor_id = azurerm_frontdoor.app-service.header_frontdoor_id
+{% endif %}

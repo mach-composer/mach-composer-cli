@@ -12,6 +12,7 @@
 - Add support for multiple API endpoints:
     - `base_url` replaced with `endpoints`
     - `has_public_api` replaced with `endpoint`
+- Add new required `frontdoor_id` Terraform variable for components with `endpoint` defined
 
 ### Breaking changes
 - `base_url` has been replaced by the `endpoints` settings:<br>
@@ -31,6 +32,7 @@
   ```
 
   When you name the endpoint that replaces `base_url` "main", it will have the least effect on your existing Terraform state.
+- The `FRONTDOOR_ID` value is removed from the `var.variables` of a component. Replaced with `var.frontdoor_id`
 
 ## 0.5.1 (2020-11-10)
 - Removed `aws` block in general_config

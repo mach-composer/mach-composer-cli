@@ -46,6 +46,14 @@ variable "monitor_action_group_id" {
 }
 ```
 
+
+### With `endpoint`
+
+In order to support the [`endpoint`](../deployment/config/azure.md#http-routing) attribute on the component, the component needs to have the following variables defined:
+
+- `frontdoor_id` - Frontdoor ID on which routing is created for that component
+
+
 ## Packaging and deploying
 
 For Azure functions, the deployment process constist of two steps:

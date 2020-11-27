@@ -24,7 +24,7 @@ def test_validate_sentry():
     )
 
 
-def test_validate_endpoints(parsed_config: types.MachConfig):
+def test_validate_aws_endpoints(parsed_config: types.MachConfig):
     config = parsed_config
 
     config.sites[0].endpoints = {
@@ -36,6 +36,34 @@ def test_validate_endpoints(parsed_config: types.MachConfig):
         validate.validate_config(config)
 
     config.sites[0].aws.route53_zone_name = "mach-example.com"
+    validate.validate_config(config)
+
+    # Change one of the components that does not match the DNS zone anymore
+    config.sites[0].endpoints["services"] = "api.mach-services.com"
+    with pytest.raises(ValidationError):
+        validate.validate_config(config)
+
+
+def test_validate_azure_endpoints(parsed_azure_config: types.MachConfig):
+    config = parsed_azure_config
+
+    config.sites[0].endpoints = {
+        "public": "api.mach-example.com",
+        "services": "services.mach-example.com",
+    }
+
+    with pytest.raises(ValidationError):
+        validate.validate_config(config)
+
+    config.general_config.azure.front_door = types.FrontDoorSettings(
+        resource_group="my-shared-rg",
+        dns_zone="mach-example.com",
+        ssl_key_vault_name="mysharedwekvcdn",
+        ssl_key_vault_secret_name="wildcard-my-services-domain-net",
+        ssl_key_vault_secret_version="IOlB8XmYLH1keYcpkcji23sp",
+    )
+    config = parse.parse_config(config)
+
     validate.validate_config(config)
 
     # Change one of the components that does not match the DNS zone anymore
