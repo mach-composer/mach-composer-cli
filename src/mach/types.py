@@ -324,8 +324,10 @@ class Component(JsonSchemaMixin):
     """Component configuration."""
 
     name: str
-    variables: TerraformVariables = field(default_factory=dict)
-    secrets: TerraformVariables = field(default_factory=dict)
+    variables: Optional[TerraformVariables] = field(default_factory=dict)
+    secrets: Optional[TerraformVariables] = field(default_factory=dict)
+    store_variables: Optional[StoreVariables] = field(default_factory=dict)
+    store_secrets: Optional[StoreVariables] = field(default_factory=dict)
     short_name: Optional[str] = _none()
     health_check_path: Optional[str] = _none()
     sentry: Optional[SentryDsn] = _none()
