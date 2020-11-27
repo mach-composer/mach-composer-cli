@@ -1,6 +1,6 @@
 # Azure components
 
-Unless a component is flagged as `is_software_component: false`, a component within a Azure-based MACH configuration is considered an *Azure component*.
+All components within a Azure-based MACH configuration are automatically considered to have a 'azure' integration by default. Only if 'azure' is explicitely omitted from the `integrations` definition, it won't require any Azure-specific variables.
 
 To be able to create the resources needed, a couple of extra [Terraform variables](#terraform-variables) are set by MACH.
 

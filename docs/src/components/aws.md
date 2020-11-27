@@ -1,6 +1,6 @@
 # AWS components
 
-Unless a component is flagged as `is_software_component: false`, a component within a AWS-based MACH configuration is considered an *AWS component*.
+All components within a AWS-based MACH configuration are automatically considered to have a 'aws' integration by default. Only if 'aws' is explicitely omitted from the `integrations` definition, it won't require any AWS-specific variables.
 
 To be able to create the resources needed, a couple of extra [Terraform variables](#terraform-variables) are set by MACH.
 
