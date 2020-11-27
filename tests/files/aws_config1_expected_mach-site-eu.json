@@ -479,7 +479,6 @@
         ],
         "environment_variables": [
           {
-            "ORDER_PREFIX": "MACH-"
           }
         ],
         "secrets": [

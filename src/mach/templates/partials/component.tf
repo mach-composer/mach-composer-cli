@@ -40,13 +40,8 @@ module "{{ component.name }}" {
     {% endfor %}
   }
 
-  {# TODO: See if we can merge variables and environment_variables #}
   environment_variables = {
     {% filter indent(width=4) %}
-    {% for key, value in component.variables.items() %}
-    {{ key }} = {{ value|component_value }}
-    {% endfor %}
-
     {% if site.commercetools and site.commercetools.stores %}
         STORES = "{% for store in site.commercetools.stores %}{{ store.key }}{% if not loop.last %},{% endif %}{% endfor %}"
         {% if site.commercetools.stores|length == 1 %}
