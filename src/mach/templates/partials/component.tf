@@ -29,7 +29,7 @@ module "{{ component.name }}" {
   sentry_dsn              = {% if general_config.sentry.managed %}sentry_key.{{ component.name }}.dsn_secret{% else %}"{{ component.sentry.dsn }}"{% endif %}
   {% endif %}
 
-  {% if component.is_software_component %}
+  {% if component.has_cloud_integration %}
   component_version       = "{{ definition.version }}"
   environment             = "{{ general_config.environment }}"
   site                    = "{{ site.identifier }}"
@@ -95,7 +95,7 @@ module "{{ component.name }}" {
   ]
 }
 
-{% if site.azure and component.is_software_component %}
+{% if site.azure and component.has_cloud_integration %}
 # see https://docs.microsoft.com/en-us/azure/azure-functions/functions-deployment-technologies#trigger-syncing
 # this updates the functionapp in case of any changes.
 data "external" "sync_triggers_{{ component.name }}" {

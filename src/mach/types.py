@@ -344,7 +344,7 @@ class Component(JsonSchemaMixin):
         return self.definition.integrations
 
     @property
-    def is_software_component(self) -> bool:
+    def has_cloud_integration(self) -> bool:
         return "aws" in self.integrations or "azure" in self.integrations
 
     @property
