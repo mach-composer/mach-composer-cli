@@ -57,13 +57,13 @@ module "{{ component.name }}" {
     {{ key }} = {{ value|component_value }}
     {% endfor %}
   }
+  {% endif -%}
 
   {% if "commercetools" in component.integrations %}
-  ct_project_key    = "{{ site.commercetools.project_key }}"
-  ct_api_url        = "{{ site.commercetools.api_url }}"
-  ct_auth_url       = "{{ site.commercetools.token_url }}"
+    ct_project_key    = "{{ site.commercetools.project_key }}"
+    ct_api_url        = "{{ site.commercetools.api_url }}"
+    ct_auth_url       = "{{ site.commercetools.token_url }}"
   {% endif %}
-  {% endif -%}
 
   {% if "contentful" in component.integrations %}
     contentful_space_id = contentful_space.space.id
