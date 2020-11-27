@@ -640,11 +640,7 @@
           "mach-site-us"
         ],
         "variables": [
-          {
-            "CT_API_URL": "https://api.europe-west1.gcp.commercetools.com",
-            "CT_AUTH_URL": "https://auth.europe-west1.gcp.commercetools.com",
-            "CT_PROJECT_KEY": "mach-site-us"
-          }
+          {}
         ],
         "environment_variables": [
           {}
@@ -721,12 +717,7 @@
           "mach-site-us"
         ],
         "variables": [
-          {
-            "ORDER_PREFIX": "MACH-",
-            "CT_API_URL": "https://api.europe-west1.gcp.commercetools.com",
-            "CT_AUTH_URL": "https://auth.europe-west1.gcp.commercetools.com",
-            "CT_PROJECT_KEY": "mach-site-us"
-          }
+          {"ORDER_PREFIX": "MACH-"}
         ],
         "environment_variables": [
           {

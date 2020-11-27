@@ -38,13 +38,6 @@ module "{{ component.name }}" {
     {% for key, value in component.variables.items() %}
     {{ key }} = {{ value|component_value }}
     {% endfor %}
-
-    {% if site.commercetools %}
-    {# BACKWARDS COMPATABILITY - DEPRECATED #}
-    CT_API_URL = "{{ site.commercetools.api_url }}"
-    CT_AUTH_URL = "{{ site.commercetools.token_url }}"
-    CT_PROJECT_KEY = "{{ site.commercetools.project_key }}"
-    {% endif %}
   }
 
   {# TODO: See if we can merge variables and environment_variables #}
