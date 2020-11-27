@@ -21,19 +21,23 @@
   - identifier: mach-site-eu
     base_url: https://api.eu-tst.mach-example.net
   ```
-
   becomes
-
   ```yaml
   sites:
   - identifier: mach-site-eu
     endpoints: 
       main: https://api.eu-tst.mach-example.net
   ```
-
   When you name the endpoint that replaces `base_url` "main", it will have the least effect on your existing Terraform state.
 - The `FRONTDOOR_ID` value is removed from the `var.variables` of a component. Replaced with `var.frontdoor_id`
 - The `front_door` configuration block has been renamed to `frontdoor`
+- The folowing deprecated values in the `var.variables` are removed:
+  ```
+  var.variables["CT_PROJECT_KEY"]
+  var.variables["CT_API_URL"]
+  var.variables["CT_AUTH_URL"]
+  ```
+  See [0.5.0 release notes](#050-2020-11-09)
   
 
 ## 0.5.1 (2020-11-10)
