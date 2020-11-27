@@ -28,18 +28,6 @@ module "{{ component.name }}" {
     {% endfor %}
   }
 
-  environment_variables = {
-    {% filter indent(width=4) %}
-    {% if site.commercetools and site.commercetools.stores %}
-        STORES = "{% for store in site.commercetools.stores %}{{ store.key }}{% if not loop.last %},{% endif %}{% endfor %}"
-        {% if site.commercetools.stores|length == 1 %}
-        DEFAULT_STORE = "{{ site.commercetools.stores[0].key }}"
-        STORE         = "{{ site.commercetools.stores[0].key }}"
-        {% endif %}
-    {% endif %}
-    {% endfilter %}
-  }
-
   secrets = {
     {% for key, value in component.secrets.items() %}
     {{ key }} = {{ value|component_value }}
@@ -63,6 +51,25 @@ module "{{ component.name }}" {
     ct_project_key    = "{{ site.commercetools.project_key }}"
     ct_api_url        = "{{ site.commercetools.api_url }}"
     ct_auth_url       = "{{ site.commercetools.token_url }}"
+
+    stores {
+      {% for store in site.commercetools.stores %}
+      {{ store.key }} =  {
+        key = "{{ store.key }}"
+        variables = {
+          {% for key, value in component.store_variables.get(store.key, {}).items() %}
+          {{ key }} = {{ value|component_value }}
+          {% endfor %}
+        }
+        secrets = {
+          {% for key, value in component.store_secrets.get(store.key, {}).items() %}
+          {{ key }} = {{ value|component_value }}
+          {% endfor %}
+        }
+      }
+      {% endfor %}
+  }
+
   {% endif %}
 
   {% if "contentful" in component.integrations %}

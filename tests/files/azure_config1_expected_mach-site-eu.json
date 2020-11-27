@@ -599,6 +599,21 @@
         "source": [
           "git::https://github.com/some-organisation/mach-component-payment.git//terraform?ref=0a9a0b5"
         ],
+        "component_version": [
+          "0a9a0b5"
+        ],
+        "environment": [
+          "site"
+        ],
+        "site": [
+          "mach-site-eu"
+        ],
+        "variables": [
+          {}
+        ],
+        "secrets": [
+          {}
+        ],
         "short_name": [
           "payment"
         ],
@@ -632,24 +647,6 @@
         "frontdoor_id": [
           "${azurerm_frontdoor.app-service.header_frontdoor_id}"
         ],
-        "component_version": [
-          "0a9a0b5"
-        ],
-        "environment": [
-          "site"
-        ],
-        "site": [
-          "mach-site-eu"
-        ],
-        "variables": [
-          {}
-        ],
-        "environment_variables": [
-          {}
-        ],
-        "secrets": [
-          {}
-        ],
         "ct_project_key": [
           "mach-site-eu"
         ],
@@ -658,6 +655,9 @@
         ],
         "ct_auth_url": [
           "https://auth.europe-west1.gcp.commercetools.com"
+        ],
+        "stores": [
+          {}
         ],
         "providers": [
           {
@@ -675,6 +675,23 @@
       "api-extensions": {
         "source": [
           "git::https://github.com/some-organisation/mach-component-api-extensions.git//terraform?ref=a4bbb28"
+        ],
+        "component_version": [
+          "a4bbb28"
+        ],
+        "environment": [
+          "site"
+        ],
+        "site": [
+          "mach-site-eu"
+        ],
+        "variables": [
+          {
+            "ORDER_PREFIX": "MACH-"
+          }
+        ],
+        "secrets": [
+          {}
         ],
         "short_name": [
           "apiexts"
@@ -709,26 +726,6 @@
         "sentry_dsn": [
           "${sentry_key.api-extensions.dsn_secret}"
         ],
-        "component_version": [
-          "a4bbb28"
-        ],
-        "environment": [
-          "site"
-        ],
-        "site": [
-          "mach-site-eu"
-        ],
-        "variables": [
-          {
-            "ORDER_PREFIX": "MACH-"
-          }
-        ],
-        "environment_variables": [
-          {}
-        ],
-        "secrets": [
-          {}
-        ],
         "ct_project_key": [
           "mach-site-eu"
         ],
@@ -737,6 +734,9 @@
         ],
         "ct_auth_url": [
           "https://auth.europe-west1.gcp.commercetools.com"
+        ],
+        "stores": [
+          {}
         ],
         "providers": [
           {

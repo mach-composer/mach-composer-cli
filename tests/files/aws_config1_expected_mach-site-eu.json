@@ -409,12 +409,6 @@
         "source": [
           "git::https://github.com/some-organisation/mach-component-payment.git//terraform?ref=0a9a0b5"
         ],
-        "api_gateway": [
-          "${aws_apigatewayv2_api.main_gateway.id}"
-        ],
-        "api_gateway_execution_arn": [
-          "${aws_apigatewayv2_api.main_gateway.execution_arn}"
-        ],
         "component_version": [
           "0a9a0b5"
         ],
@@ -427,11 +421,14 @@
         "variables": [
           {}
         ],
-        "environment_variables": [
-          {}
-        ],
         "secrets": [
           {}
+        ],
+        "api_gateway": [
+          "${aws_apigatewayv2_api.main_gateway.id}"
+        ],
+        "api_gateway_execution_arn": [
+          "${aws_apigatewayv2_api.main_gateway.execution_arn}"
         ],
         "ct_project_key": [
           "mach-site-eu"
@@ -441,6 +438,9 @@
         ],
         "ct_auth_url": [
           "https://auth.europe-west1.gcp.commercetools.com"
+        ],
+        "stores": [
+          {}
         ],
         "providers": [
           {
@@ -460,9 +460,6 @@
         "source": [
           "git::https://github.com/some-organisation/mach-component-api-extensions.git//terraform?ref=a4bbb28"
         ],
-        "sentry_dsn": [
-          "${sentry_key.api-extensions.dsn_secret}"
-        ],
         "component_version": [
           "a4bbb28"
         ],
@@ -477,12 +474,11 @@
             "ORDER_PREFIX": "MACH-"
           }
         ],
-        "environment_variables": [
-          {
-          }
-        ],
         "secrets": [
           {}
+        ],
+        "sentry_dsn": [
+          "${sentry_key.api-extensions.dsn_secret}"
         ],
         "ct_project_key": [
           "mach-site-eu"
@@ -492,6 +488,9 @@
         ],
         "ct_auth_url": [
           "https://auth.europe-west1.gcp.commercetools.com"
+        ],
+        "stores": [
+          {}
         ],
         "providers": [
           {
