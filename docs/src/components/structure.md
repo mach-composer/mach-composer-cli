@@ -124,7 +124,7 @@ variable "ct_auth_url" {
 
 variable "stores" {
   type = map(object({
-    name = string
+    key = string
     variables      = map
     secrets        = map
   }))

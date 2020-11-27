@@ -3,18 +3,21 @@
 ## 0.6.0 (unreleased)
 - Add Sentry DSN management options
 - Add Amplience support
+- Add support for commercetools Store-specific variables and secrets on components: `store_variables` and `store_secrets`
+- Add support for multiple API endpoints:
+    - `base_url` replaced with `endpoints`
+    - `has_public_api` replaced with `endpoint`
+- Add new required `frontdoor_id` Terraform variable for components with `endpoint` defined
 - Improved dependencies between components and MACH-managed commercetools configurations
 - Improved git log parsing
 - Add `mach bootstrap` commands:
     - `mach bootstrap config` for creating a new MACH configuration
     - `mach bootstrap component` for creating a new MACH component
 - Updated Terraform commercetools provider to `0.24.1`
-- Add support for multiple API endpoints:
-    - `base_url` replaced with `endpoints`
-    - `has_public_api` replaced with `endpoint`
-- Add new required `frontdoor_id` Terraform variable for components with `endpoint` defined
 
-### Breaking changes
+
+**Breaking changes**
+
 - `base_url` has been replaced by the `endpoints` settings:<br>
   ```yaml
   sites:
@@ -31,8 +34,19 @@
   When you name the endpoint that replaces `base_url` "main", it will have the least effect on your existing Terraform state.
 - The `FRONTDOOR_ID` value is removed from the `var.variables` of a component. Replaced with `var.frontdoor_id`
 - The `front_door` configuration block has been renamed to `frontdoor`
-- The folowing deprecated values in the `var.variables` are removed:
+- Components with a `commercetools` integration require a new variable `stores`:
+  ```terraform
+  variable "stores" {
+    type = map(object({
+      key = string
+      variables      = map
+      secrets        = map
+    }))
+    default = {}
+  }
   ```
+- The folowing deprecated values in the `var.variables` are removed:
+  ```terraform
   var.variables["CT_PROJECT_KEY"]
   var.variables["CT_API_URL"]
   var.variables["CT_AUTH_URL"]
@@ -57,10 +71,12 @@
 - Remove unused `api_gateway` attribute on AWS config
 - Remove restriction from `environment` value; can now be any. Fixes #9
 
-### Breaking changes
+**Breaking changes**
+
 - Require `ct_api_url` and `ct_auth_url` for components with `commercetools` integration
 
-### Deprecations
+**Deprecations**
+
 In a component, the use of the following variables have been deprecated;
 
 ```
@@ -94,7 +110,8 @@ var.ct_auth_url
 ## 0.4.0 (2020-10-27)
 - Add Contentful support
 
-### Breaking changes
+**Breaking changes**
+
 - `is_software_component` has been replaced by the `integrations` settings
 
 ```
@@ -121,7 +138,8 @@ or `integrations: []` if no integrations are needed at all.
 ## 0.3.0 (2020-10-21)
 - Add option to specify custom resource group per site
   
-### Breaking changes
+**Breaking changes**
+
 - All `resource_group_name` attributes is renamed to `resource_group`
 - The `storage_account_name` attribute is renamed to `storage_account`
 
