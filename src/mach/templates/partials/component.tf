@@ -39,10 +39,6 @@ module "{{ component.name }}" {
     {{ key }} = {{ value|component_value }}
     {% endfor %}
 
-    {% if site.azure.front_door and component.endpoint %}
-    FRONTDOOR_ID = azurerm_frontdoor.app-service.header_frontdoor_id
-    {% endif %}
-
     {% if site.commercetools %}
     {# BACKWARDS COMPATABILITY - DEPRECATED #}
     CT_API_URL = "{{ site.commercetools.api_url }}"
