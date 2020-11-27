@@ -174,7 +174,7 @@
         "region": {
           "type": "string"
         },
-        "front_door": {
+        "frontdoor": {
           "$ref": "#/definitions/FrontDoorSettings"
         },
         "resources_prefix": {
@@ -515,7 +515,7 @@
           },
           "default": {}
         },
-        "front_door": {
+        "frontdoor": {
           "$ref": "#/definitions/FrontDoorSettings"
         },
         "alert_group": {

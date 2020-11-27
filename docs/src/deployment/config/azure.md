@@ -14,7 +14,7 @@ Only when a MACH stack contains components that have an [`endpoint`](../../synta
 - Frontdoor instance
 - DNS record
 
-It will use the information from the [`front_door` configuration](../../syntax.md#front_door) to setup the Frontdoor instance.
+It will use the information from the [`frontdoor` configuration](../../syntax.md#frontdoor) to setup the Frontdoor instance.
 
 ### Routes to the component
 

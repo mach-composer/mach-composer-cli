@@ -55,7 +55,7 @@ def test_validate_azure_endpoints(parsed_azure_config: types.MachConfig):
     with pytest.raises(ValidationError):
         validate.validate_config(config)
 
-    config.general_config.azure.front_door = types.FrontDoorSettings(
+    config.general_config.azure.frontdoor = types.FrontDoorSettings(
         resource_group="my-shared-rg",
         dns_zone="mach-example.com",
         ssl_key_vault_name="mysharedwekvcdn",

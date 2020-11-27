@@ -88,7 +88,7 @@ resource "azurerm_function_app" "your_component" {
 MACH will provide the correct HTTP routing for you.<br>
 To do so, the following has to be configured:
 
-- [Frontdoor](../syntax.md#front_door) settings in the Azure configuration
+- [Frontdoor](../syntax.md#frontdoor) settings in the Azure configuration
 - The component needs to have an [`endpoint`](../syntax.md#components) defined
 
 More information in the [deployment section](../deployment/config/azure.md#http-routing).

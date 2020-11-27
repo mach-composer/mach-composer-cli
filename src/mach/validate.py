@@ -60,13 +60,13 @@ def validate_endpoints(site: types.Site, cloud: types.CloudOption):
                 )
 
         elif cloud == types.CloudOption.AZURE:
-            if not site.azure.front_door:
+            if not site.azure.frontdoor:
                 raise ValidationError(
                     f"Site {site.identifier} needs to have a Frontdoor dns_zone "
                     "defined before endpoints can be used."
                 )
 
-            dns_zone = site.azure.front_door.dns_zone
+            dns_zone = site.azure.frontdoor.dns_zone
 
         for endpoint in site.endpoints.values():
             if not endpoint.endswith(dns_zone):

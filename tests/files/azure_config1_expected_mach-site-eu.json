@@ -189,7 +189,7 @@
             600
           ],
           "record": [
-            "${local.front_door_domain}"
+            "${local.frontdoor_domain}"
           ]
         }
       }
@@ -219,10 +219,10 @@
           "frontend_endpoint": [
             {
               "name": [
-                "${local.front_door_domain_identifier}"
+                "${local.frontdoor_domain_identifier}"
               ],
               "host_name": [
-                "${local.front_door_domain}"
+                "${local.frontdoor_domain}"
               ],
               "custom_https_provisioning_enabled": [
                 false
@@ -230,10 +230,10 @@
             },
             {
               "name": [
-                "${local.front_door_external_domain_identifier}"
+                "${local.frontdoor_external_domain_identifier}"
               ],
               "host_name": [
-                "${local.front_door_external_domain}"
+                "${local.frontdoor_external_domain}"
               ],
               "custom_https_provisioning_enabled": [
                 true
@@ -297,8 +297,8 @@
               ],
               "frontend_endpoints": [
                 [
-                  "${local.front_door_domain_identifier}",
-                  "${local.front_door_external_domain_identifier}"
+                  "${local.frontdoor_domain_identifier}",
+                  "${local.frontdoor_external_domain_identifier}"
                 ]
               ],
               "redirect_configuration": [
@@ -328,8 +328,8 @@
               ],
               "frontend_endpoints": [
                 [
-                  "${local.front_door_domain_identifier}",
-                  "${local.front_door_external_domain_identifier}"
+                  "${local.frontdoor_domain_identifier}",
+                  "${local.frontdoor_external_domain_identifier}"
                 ]
               ],
               "forwarding_configuration": [
@@ -500,19 +500,19 @@
       ]
     },
     {
-      "front_door_domain": [
+      "frontdoor_domain": [
         "${format(\"%s-fd.azurefd.net\",local.name_prefix)}"
       ],
-      "front_door_domain_identifier": [
-        "${replace(local.front_door_domain,\".\",\"-\")}"
+      "frontdoor_domain_identifier": [
+        "${replace(local.frontdoor_domain,\".\",\"-\")}"
       ]
     },
     {
-      "front_door_external_domain": [
+      "frontdoor_external_domain": [
         "mach-site-eu.mach-services.net"
       ],
-      "front_door_external_domain_identifier": [
-        "${replace(local.front_door_external_domain,\".\",\"-\")}"
+      "frontdoor_external_domain_identifier": [
+        "${replace(local.frontdoor_external_domain,\".\",\"-\")}"
       ]
     }
   ],
