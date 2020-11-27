@@ -17,18 +17,6 @@ resource "sentry_key" "{{ component.name }}" {
 module "{{ component.name }}" {
   source            = "{{ definition.source }}{% if definition.use_version_reference %}?ref={{ definition.version }}{% endif %}"
 
-  {% if "azure" in component.integrations %}
-  {% include 'partials/component_azure_variables.tf' %}
-  {% endif %}
-
-  {% if "aws" in component.integrations %}
-  {% include 'partials/component_aws_variables.tf' %}
-  {% endif %}
-
-  {% if "sentry" in component.integrations %}
-  sentry_dsn              = {% if general_config.sentry.managed %}sentry_key.{{ component.name }}.dsn_secret{% else %}"{{ component.sentry.dsn }}"{% endif %}
-  {% endif %}
-
   {% if component.has_cloud_integration %}
   component_version       = "{{ definition.version }}"
   environment             = "{{ general_config.environment }}"
@@ -57,7 +45,19 @@ module "{{ component.name }}" {
     {{ key }} = {{ value|component_value }}
     {% endfor %}
   }
-  {% endif -%}
+  {% endif %}
+
+  {% if "azure" in component.integrations %}
+  {% include 'partials/component_azure_variables.tf' %}
+  {% endif %}
+
+  {% if "aws" in component.integrations %}
+  {% include 'partials/component_aws_variables.tf' %}
+  {% endif %}
+
+  {% if "sentry" in component.integrations %}
+  sentry_dsn              = {% if general_config.sentry.managed %}sentry_key.{{ component.name }}.dsn_secret{% else %}"{{ component.sentry.dsn }}"{% endif %}
+  {% endif %}
 
   {% if "commercetools" in component.integrations %}
     ct_project_key    = "{{ site.commercetools.project_key }}"
