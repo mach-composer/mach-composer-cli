@@ -297,8 +297,8 @@ stores:
 
 - **`name`** - (Required) Name of the store. Localized string [^1]
 - **`key`** - (Required) Store key
-- `languages` - (Required)
-- `distribution_channels` - (Required)
+- `languages`
+- `distribution_channels`
 
 
 ### sentry

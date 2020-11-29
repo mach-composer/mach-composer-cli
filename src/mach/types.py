@@ -214,8 +214,8 @@ class Store(JsonSchemaMixin):
 
     name: LocalizedString
     key: str
-    languages: List[str] = _list()
-    distribution_channels: List[str] = _list()
+    languages: Optional[List[str]] = _list()
+    distribution_channels: Optional[List[str]] = _list()
 
 
 @dataclass_json
