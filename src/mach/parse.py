@@ -127,7 +127,12 @@ def resolve_site_components(config: MachConfig) -> MachConfig:
             continue
 
         for component in site.components:
-            info = component_info[component.name]
+            try:
+                info = component_info[component.name]
+            except KeyError:
+                raise exceptions.ParseError(
+                    f"Component {component.name} does not exist in global components."
+                )
             component.definition = info
 
             if not component.short_name:
