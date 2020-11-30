@@ -96,11 +96,6 @@ variable "secrets" {
   type        = map(string)
   description = "Map of secret values. Can be placed in a key vault."
 }
-
-variable "environment_variables" {
-  type        = map(string)
-  description = "Explicit map of variables that should be put in this function's environment variables."
-}
 ```
 
 !!! info "Cloud specific variables"
@@ -125,6 +120,15 @@ variable "ct_api_url" {
 variable "ct_auth_url" {
   type        = string
   description = "commercetools Auth URL"
+}
+
+variable "stores" {
+  type = map(object({
+    key = string
+    variables      = map
+    secrets        = map
+  }))
+  default = {}
 }
 ```
 

@@ -108,3 +108,87 @@ def test_validate_component_endpoint(parsed_config: types.MachConfig):
 
     with pytest.raises(ValidationError):
         validate.validate_config(config)
+
+
+@pytest.mark.parametrize(
+    "name, valid",
+    (
+        ("m", False),
+        ("main store", False),
+        ("main-store", True),
+        ("main_store", True),
+    ),
+)
+def test_validate_store_keys(name, valid):
+    ct = types.CommercetoolsSettings(
+        project_key="ct-unit-test",
+        client_id="a96e59be-24da-4f41-a6cf-d61d7b6e1766",
+        client_secret="98c32de8-1a6c-45a9-a718-d3cce5201799",
+        scopes="manage_project:ct-unit-test",
+        stores=[
+            types.Store(
+                key=name,
+                name={
+                    "en-GB": "Default store",
+                },
+            ),
+        ],
+    )
+
+    if not valid:
+        with pytest.raises(ValidationError):
+            validate.validate_store_keys(ct)
+    else:
+        validate.validate_store_keys(ct)
+
+    ct.stores[0].key = "main-store"
+    validate.validate_store_keys(ct)
+
+    ct.stores.append(
+        types.Store(
+            key="main-store",
+            name={
+                "en-GB": "Another store",
+            },
+        ),
+    )
+
+    with pytest.raises(ValidationError):
+        # Duplicate key
+        validate.validate_store_keys(ct)
+
+    ct.stores[1].key = "other-store"
+    validate.validate_store_keys(ct)
+
+
+def test_validate_stores(parsed_config: types.MachConfig):
+    """Tests if the stores used in the store variables match the defined commercetools stores."""
+    config = parsed_config
+    site = config.sites[0]
+
+    site.components[0].store_variables = {
+        "main-store": {
+            "FOO": "BAR",
+        }
+    }
+
+    # It should fail because we refer a store that hasnt been defined yet
+    with pytest.raises(ValidationError):
+        validate.validate_config(config)
+
+    site.commercetools = types.CommercetoolsSettings(
+        project_key="ct-unit-test",
+        client_id="a96e59be-24da-4f41-a6cf-d61d7b6e1766",
+        client_secret="98c32de8-1a6c-45a9-a718-d3cce5201799",
+        scopes="manage_project:ct-unit-test",
+        stores=[
+            types.Store(
+                name={
+                    "en-GB": "Default store",
+                },
+                key="main-store",
+            ),
+        ],
+    )
+
+    validate.validate_config(config)

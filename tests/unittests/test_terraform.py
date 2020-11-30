@@ -49,7 +49,6 @@ def test_generate_terraform(parsed_config: types.MachConfig, tf_mock):
                     "environment": ["test"],
                     "site": ["unittest-nl"],
                     "variables": [{}],
-                    "environment_variables": [{}],
                     "secrets": [{}],
                     "providers": [{"aws": "${aws}"}],
                     "depends_on": [[]],
@@ -161,6 +160,72 @@ def test_generate_w_endpoints(parsed_config: types.MachConfig, tf_mock):
         "aws_route53_record.public",
         "aws_route53_record.public_acm_validation",
     ]
+
+
+def test_generate_w_stores(config: types.MachConfig, tf_mock):
+    config.sites[0].commercetools = types.CommercetoolsSettings(
+        project_key="ct-unit-test",
+        client_id="a96e59be-24da-4f41-a6cf-d61d7b6e1766",
+        client_secret="98c32de8-1a6c-45a9-a718-d3cce5201799",
+        scopes="manage_project:ct-unit-test",
+        stores=[
+            types.Store(
+                name={
+                    "en-GB": "Default store",
+                },
+                key="main-store",
+            ),
+            types.Store(
+                name={
+                    "en-GB": "Some other store",
+                },
+                key="other-store",
+            ),
+            types.Store(
+                name={
+                    "en-GB": "Forgotten store",
+                },
+                key="forgotten-store",
+            ),
+        ],
+    )
+    config.components[0].integrations = ["aws", "commercetools"]
+    data = _generate(parse.parse_config(config))
+
+    assert len(data.resource.commercetools_store) == 3
+    assert "main-store" in data.resource.commercetools_store
+    assert "other-store" in data.resource.commercetools_store
+    assert "forgotten-store" in data.resource.commercetools_store
+
+    assert len(data.module["api-extensions"].stores) == 3
+    for store_key, store in data.module["api-extensions"].stores.items():
+        store = store[0]
+        assert store["key"] == store_key
+        assert not store["variables"]
+        assert not store["secrets"]
+
+    config.sites[0].components[0].store_variables = {
+        "main-store": {
+            "FOO": "BAR",
+            "EXTRA": "VALUES",
+        },
+        "other-store": {
+            "FOO": "SOMETHING ELSE",
+        },
+    }
+    config.sites[0].components[0].store_secrets = {
+        "main-store": {
+            "PAYMENT_KEY": "TLrlDf6XhKkXFGGHeQGY",
+        },
+    }
+
+    data = _generate(parse.parse_config(config))
+    main_store = data.module["api-extensions"].stores["main-store"]
+    other_store = data.module["api-extensions"].stores["other-store"]
+    assert len(main_store.variables) == 2
+    assert len(other_store.variables) == 1
+    assert len(main_store.secrets) == 1
+    assert not other_store.secrets
 
 
 def _get_resource_ids(data: HclWrapper) -> List[str]:

@@ -297,8 +297,8 @@ stores:
 
 - **`name`** - (Required) Name of the store. Localized string [^1]
 - **`key`** - (Required) Store key
-- `languages` - (Required)
-- `distribution_channels` - (Required)
+- `languages`
+- `distribution_channels`
 
 
 ### sentry
@@ -413,11 +413,18 @@ components:
       FROM_EMAIL: mach@example.com
     secrets:
       SENDGRID_API_KEY: my-api-token
+    store_variables:
+      brand-a:
+        FROM_EMAIL: mach@brand-a.com
+      other-brand:
+        FROM_EMAIL: mach@other-brand.com
 ```
 
 - **`name`** - (Required) Reference to a [component](#component) definition
-- `variables` - Environment variables for this components runtime
-- `secrets` - Environment variables for this component that should be stored in a encrypted key-value store
+- `variables` - Variables for this component
+- `secrets` - Variables for this component that should be stored in a encrypted key-value store
+- `store_variables` - Store-specific variables for this component
+- `store_secrets` - Store-specific variables for this component that should be stored in a encrypted key-value store
 - `health_check_path` - Defines a custom healthcheck path.<br>
   Overwrites the default `health_check_path` defined in the component definition
 - `sentry` - [Sentry configuration](#sentry_2) block

@@ -627,6 +627,20 @@
           "type": "object",
           "default": {}
         },
+        "store_variables": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object"
+          },
+          "default": {}
+        },
+        "store_secrets": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object"
+          },
+          "default": {}
+        },
         "short_name": {
           "type": "string"
         },

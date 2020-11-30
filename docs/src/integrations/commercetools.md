@@ -39,3 +39,85 @@ resource "commercetools_api_client" "client" {
   scope = local.ct_scopes
 }
 ```
+
+## Stores
+
+MACH provides built-in [commercetools Stores](https://docs.commercetools.com/api/projects/stores) support.
+
+It's possible to
+
+- Configure your stores within a MACH configuration (see [example](#example-configuration-block) below)
+- Define store-specific variables and secrets per component
+
+For example, when two stores are defined `uk-store` and `nl-store`, these can be used to configure your component:
+
+```yaml
+component:
+  - my-component:
+    variables:
+      FROM_EMAIL: mach@example.com
+    store_variables:
+      uk-store:
+        FROM_EMAIL: mach@example.co.uk
+      nl-store:
+        FROM_EMAIL: mach@example.nl
+    store_secrets:
+      uk-store:
+        MAIL_API_KEY: 5kg6Z4HxgLMfBjYj5BOg
+      nl-store:
+        MAIL_API_KEY: i1hajIJ92LPNYGB2p3W1
+```
+
+The component can use the correct variables based on the context that is decided based on incoming requests or other information available.
+
+## Example configuration block
+
+An example [commercetools configuration block](../syntax.md#commercetools):
+
+```yaml
+commercetools:
+  project_key: nl-mach-tst
+  client_id: ixwVv7T3rnmJ
+  client_secret: dElymMZvDqW3X5RLASMS
+  scopes: manage_project:nl-mach-tst manage_api_clients:nl-mach-tst view_api_clients:nl-mach-tst
+  languages:
+      - en-GB
+      - nl-NL
+  currencies:
+      - GBP
+      - EUR
+  countries:
+      - GB
+      - IE
+      - NL
+  channels:
+    - key: INV
+      roles:
+        - InventorySupply
+      name:
+        en-GB: Inventory
+      description:
+        en-GB: Main inventory channel
+    - key: DIST-EUR
+      roles:
+        - ProductDistribution
+      name:
+        en-GB: Europe Distribution
+      description:
+        en-GB: Europe distribution channel
+  stores:
+      - key: uk-store
+        name:
+          en: UK store
+        languages:
+          - en-GB
+        distribution_channels:
+          - DIST-EUR
+      - key: nl-store
+        name:
+          en: NL store
+        languages:
+          - nl-NL
+        distribution_channels:
+          - DIST-EUR
+```
