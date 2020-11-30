@@ -216,6 +216,7 @@ class Store(JsonSchemaMixin):
     key: str
     languages: Optional[List[str]] = _list()
     distribution_channels: Optional[List[str]] = _list()
+    supply_channels: Optional[List[str]] = _list()
 
 
 @dataclass_json

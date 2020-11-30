@@ -14,9 +14,10 @@ resource "commercetools_store" "{{ store.key }}" {
   {% endif %}
 
   {% if store.distribution_channels %}
-  distribution_channels = [{% for dc in store.distribution_channels %}"{{ dc }}"{% if not loop.last %},{% endif %}{% endfor %}]
-
-  depends_on = [{% for dc in store.distribution_channels %}commercetools_channel.{{ dc }}{% if not loop.last %},{% endif %}{% endfor %}]
+  distribution_channels = [{% for dc in store.distribution_channels %}commercetools_channel.{{ dc }}.key{% if not loop.last %},{% endif %}{% endfor %}]
+  {% endif %}
+  {% if store.supply_channels %}
+  supply_channels = [{% for sc in store.supply_channels %}commercetools_channel.{{ sc }}.key{% if not loop.last %},{% endif %}{% endfor %}]
   {% endif %}
 }
 

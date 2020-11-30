@@ -292,13 +292,16 @@ stores:
       en-GB: my store
     key: mystore
     distribution_channels:
-      - DIST
+      - EU-DIST
+    supply_channels:
+      - EU-SUPPL
 ```
 
 - **`name`** - (Required) Name of the store. Localized string [^1]
 - **`key`** - (Required) Store key
-- `languages`
-- `distribution_channels`
+- `languages` - List of languages
+- `distribution_channels` - List of supply channel keys used for [product projection store filtering](https://docs.commercetools.com/http-api-projects-productProjections#prices-beta)
+- `supply_channels` - List of supply channel keys used for [product projection store filtering](https://docs.commercetools.com/http-api-projects-productProjections#prices-beta)
 
 
 ### sentry
