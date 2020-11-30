@@ -70,6 +70,12 @@ component:
 
 The component can use the correct variables based on the context that is decided based on incoming requests or other information available.
 
+!!! warning "Using store-aware context in components"
+    Although MACH composer provides a data structure for managing your configuration in different contexts, it is the responsibility of the component itself, to parse this data structure correctly, and apply the right configuration in the right context.
+
+    <!--TODO: add link to example implementation where we parse and applye the store-aware configuration in a component.-->
+
+
 ## Example configuration block
 
 An example [commercetools configuration block](../syntax.md#commercetools):
