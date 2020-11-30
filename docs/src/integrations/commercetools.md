@@ -113,6 +113,8 @@ commercetools:
           - en-GB
         distribution_channels:
           - DIST-EUR
+        inventory_channels:
+          - INV
       - key: nl-store
         name:
           en: NL store
@@ -120,4 +122,6 @@ commercetools:
           - nl-NL
         distribution_channels:
           - DIST-EUR
+        inventory_channels:
+          - INV
 ```
