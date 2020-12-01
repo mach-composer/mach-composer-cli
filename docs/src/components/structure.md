@@ -122,11 +122,11 @@ variable "ct_auth_url" {
   description = "commercetools Auth URL"
 }
 
-variable "stores" {
+variable "ct_stores" {
   type = map(object({
-    key = string
-    variables      = map
-    secrets        = map
+    key       = string
+    variables = map(string)
+    secrets   = map(string)
   }))
   default = {}
 }

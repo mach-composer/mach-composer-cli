@@ -197,9 +197,9 @@ def test_generate_w_stores(config: types.MachConfig, tf_mock):
     assert "other-store" in data.resource.commercetools_store
     assert "forgotten-store" in data.resource.commercetools_store
 
-    assert len(data.module["api-extensions"].stores) == 3
+    assert len(data.module["api-extensions"].ct_stores) == 3
 
-    for store_key, store in data.module["api-extensions"].stores.items():
+    for store_key, store in data.module["api-extensions"].ct_stores.items():
         assert store["key"] == store_key
         assert not store["variables"]
         assert not store["secrets"]
@@ -220,8 +220,8 @@ def test_generate_w_stores(config: types.MachConfig, tf_mock):
     }
 
     data = _generate(parse.parse_config(config))
-    main_store = data.module["api-extensions"].stores["main-store"]
-    other_store = data.module["api-extensions"].stores["other-store"]
+    main_store = data.module["api-extensions"].ct_stores["main-store"]
+    other_store = data.module["api-extensions"].ct_stores["other-store"]
     assert len(main_store.variables) == 2
     assert len(other_store.variables) == 1
     assert len(main_store.secrets) == 1

@@ -52,7 +52,7 @@ module "{{ component.name }}" {
     ct_api_url        = "{{ site.commercetools.api_url }}"
     ct_auth_url       = "{{ site.commercetools.token_url }}"
 
-    stores = {
+    ct_stores = {
       {% for store in site.commercetools.stores %}
       {{ store.key }} =  {
         key = "{{ store.key }}"
