@@ -23,18 +23,27 @@ MACH systems (such as commercetools, contentful or Amplience) are usually multi-
 
 ### commercetools tenancy
 
-What to look at when deciding on your commercetools tenancy model
+*What to look at when deciding on your commercetools tenancy model:*
 
 1. Consider which commercetools `organisations` you will create (usually one per geographic region is sufficient)
 1. Consider when to create a new commercetools `project`.
 1. Consider how to look at the different geographic regions that commercetools has
 1. Consider how commercetools `project` multi-lingual and multi-country support can help when building multi-lingual and country commerce sites?
 1. Consider using commercetools' `shipping zones`
-1. Consider when to work with `inventory and supply channels`, including connecting these to `stores`
+1. Consider when to work with inventory and supply `channels`, including connecting these to `stores`
 1. Consider what commercetools `stores` can do for you within a `project` context
 
 <br/>
-**Things to be aware of**:
+*Relevant commercetools resources:*
+
+- [Projects documentation](https://docs.commercetools.com/api/projects/project)
+- [Channels documentation](https://docs.commercetools.com/api/projects/channels)
+- [Stores documentation](https://docs.commercetools.com/api/projects/stores)
+- [Organizations documentation (Merchant Center)](https://docs.commercetools.com/merchant-center/organizations)
+
+
+<br/>
+*Things to be aware of:*
 
 1. Known limitations when scaling commercetools `projects` across use-cases:
     - Currently, commercetools is implementing `assortments` in their product catalogue, which will enable you to create store-specific assortments (and thus catalogues). Currently this is not supported yet, but expected in Q1 2021
