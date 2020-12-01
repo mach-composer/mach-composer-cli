@@ -48,11 +48,11 @@ What to look at when deciding on your commercetools tenancy model
 
 ### contentful tenancy
 
-TODO
+TODO: describe/link to how contentful is structured and how that relates to MACH composer projects.
 
 ### Amplience tenancy
 
-TODO
+TODO: describe/link to how Amplience is structured and how that relates to MACH composer projects.
 
 
 ## Cloud provider tenancy
@@ -83,4 +83,4 @@ In Short:
 
 ## Building 'context aware' components
 
-Describe how to build components (microservices) that are able to work across tenancy contexts; i.e. they should be parameterised with context-settings, as well as able to 'detect' what store is currently active, for example.
+TODO: Describe how to build components (microservices) that are able to work across tenancy contexts; i.e. they should be parameterised with context-settings, as well as able to 'detect' what store is currently active, for example.
