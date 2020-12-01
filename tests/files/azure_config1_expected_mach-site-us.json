@@ -654,7 +654,7 @@
         "ct_auth_url": [
           "https://auth.europe-west1.gcp.commercetools.com"
         ],
-        "stores": [
+        "ct_stores": [
           {}
         ],
         "providers": [
@@ -733,7 +733,7 @@
         "ct_auth_url": [
           "https://auth.europe-west1.gcp.commercetools.com"
         ],
-        "stores": [
+        "ct_stores": [
           {}
         ],
         "providers": [
