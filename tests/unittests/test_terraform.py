@@ -198,8 +198,8 @@ def test_generate_w_stores(config: types.MachConfig, tf_mock):
     assert "forgotten-store" in data.resource.commercetools_store
 
     assert len(data.module["api-extensions"].stores) == 3
+
     for store_key, store in data.module["api-extensions"].stores.items():
-        store = store[0]
         assert store["key"] == store_key
         assert not store["variables"]
         assert not store["secrets"]
