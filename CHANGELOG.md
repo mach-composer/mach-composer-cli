@@ -34,6 +34,7 @@
   When you name the endpoint that replaces `base_url` "main", it will have the least effect on your existing Terraform state.
 - The `FRONTDOOR_ID` value is removed from the `var.variables` of a component. Replaced with `var.frontdoor_id`
 - The `front_door` configuration block has been renamed to `frontdoor`
+- The `deploy_role` setting has been renamed to `deploy_role_arn`
 - Components with a `commercetools` integration require a new variable `stores`:
   ```terraform
   variable "stores" {

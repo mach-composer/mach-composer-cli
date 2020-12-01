@@ -387,7 +387,7 @@ Example:
 aws:
   account_id: 1234567890
   region: eu-west-1
-  deploy_role: deploy
+  deploy_role_arn: deploy
   extra_providers:
     - name: email
       region: eu-west-1
@@ -395,7 +395,7 @@ aws:
 
 - **`account_id`** - (Required) AWS account ID for this site
 - **`region`** - AWS region to deploy site in
-- `deploy_role` - The [IAM role](./prerequisites/aws#iam-deploy-role) needed for deployment
+- `deploy_role_arn` - The [IAM role](./prerequisites/aws#iam-deploy-role) ARN needed for deployment
 - `route53_zone_name` - Define the Route53 zone name on which the endpoints need to be added to. Required when endpoints are defined.
 - `extra_providers`
 
