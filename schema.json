@@ -457,6 +457,13 @@
             "type": "string"
           },
           "default": []
+        },
+        "supply_channels": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": []
         }
       },
       "description": "commercetools store definition."
@@ -578,7 +585,7 @@
         "region": {
           "type": "string"
         },
-        "deploy_role": {
+        "deploy_role_arn": {
           "type": "string"
         },
         "extra_providers": {
