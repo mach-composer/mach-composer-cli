@@ -46,7 +46,8 @@ nav:
   - workflow/environment.md
 - Architecture guidance:
   - Overview: guidance/index.md
-  - Everything-as-code: guidance/terraform.md
+  - Terraform: guidance/terraform.md
+  - Tenancy: guidance/tenancy.md
 - changelog.md
 
 extra_javascript:
