@@ -249,14 +249,14 @@ class CommercetoolsSettings(JsonSchemaMixin):
     client_id: str
     client_secret: str
     scopes: str
+    currencies: List[str]
+    languages: List[str]
+    countries: List[str]
     token_url: Optional[str] = _default(
         "https://auth.europe-west1.gcp.commercetools.com"
     )
     api_url: Optional[str] = _default("https://api.europe-west1.gcp.commercetools.com")
     # CT settings
-    currencies: List[str] = _list()
-    languages: List[str] = _list()
-    countries: List[str] = _list()
     messages_enabled: Optional[bool] = _default(True)
     channels: Optional[List[CommercetoolsChannel]] = _list()
     taxes: Optional[List[CommercetoolsTax]] = _list()

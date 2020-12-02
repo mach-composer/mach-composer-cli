@@ -234,11 +234,11 @@ commercetools:
 - **`client_id`** - (Required) API client ID
 - **`client_secret`** - (Required) API client secret
 - **`scopes`** - (Required) Required scopes for given API client ID.
+- **`currencies`** - (Required) List of three-digit currency codes as per ISO 4217
+- **`languages`** - (Required) List of IETF language tag
+- **`countries`** - (Required) List of two-digit country codes as per [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2)
 - `token_url` - Defaults to `https://auth.europe-west1.gcp.commercetools.com`
 - `api_url` - Defaults to `https://api.europe-west1.gcp.commercetools.com`
-- `currencies` - List of three-digit currency codes as per ISO 4217
-- `languages` - List of IETF language tag
-- `countries` - List of two-digit country codes as per [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2)
 - `messages_enabled` - When false the creation of messages is disabled.<br>
   Defaults to True
 - `channels` - List of [channel definitions](#channels)
