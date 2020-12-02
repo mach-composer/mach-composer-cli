@@ -104,7 +104,10 @@
             "mach-site-eu"
           ],
           "countries": [
-            []
+            [
+              "NL",
+              "GB"
+            ]
           ],
           "currencies": [
             [

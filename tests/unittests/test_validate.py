@@ -125,6 +125,9 @@ def test_validate_store_keys(name, valid):
         client_id="a96e59be-24da-4f41-a6cf-d61d7b6e1766",
         client_secret="98c32de8-1a6c-45a9-a718-d3cce5201799",
         scopes="manage_project:ct-unit-test",
+        languages=["nl-NL"],
+        countries=["NL"],
+        currencies=["EUR"],
         stores=[
             types.Store(
                 key=name,
@@ -181,6 +184,9 @@ def test_validate_stores(parsed_config: types.MachConfig):
         client_id="a96e59be-24da-4f41-a6cf-d61d7b6e1766",
         client_secret="98c32de8-1a6c-45a9-a718-d3cce5201799",
         scopes="manage_project:ct-unit-test",
+        languages=["nl-NL"],
+        countries=["NL"],
+        currencies=["EUR"],
         stores=[
             types.Store(
                 name={

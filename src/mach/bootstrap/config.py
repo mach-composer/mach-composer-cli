@@ -123,6 +123,12 @@ def _create_config() -> types.MachConfig:  # noqa: C901
                 f"manage_project:{ct_project} "
                 f"view_api_clients:{ct_project}"
             ),
+            # TODO: Improve this by letting user select one or more countries
+            # and generate/guess the correct languages and currencies that probably
+            # need to be applied for that project
+            languages=["nl-NL"],
+            countries=["NL"],
+            currencies=["EUR"],
         )
 
     component_config = types.ComponentConfig(
