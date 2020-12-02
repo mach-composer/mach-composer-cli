@@ -26,7 +26,7 @@ provider "aws" {
 {% if site.used_endpoints %}
   {% include 'partials/endpoints/aws_domains.tf' %}
 
-  {% for endpoint_name, endpoint_url in site.used_endpoints.items() %}
+  {% for endpoint in site.used_endpoints %}
     {% include 'partials/endpoints/aws_api_gateway.tf' %}
     
   {% endfor %}

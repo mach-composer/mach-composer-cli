@@ -398,6 +398,13 @@ class SiteAzureSettings(JsonSchemaMixin):
         self.service_object_ids = self.service_object_ids or config.service_object_ids
 
 
+@dataclass
+class Endpoint:
+    key: str
+    url: str
+    components: List[Component] = _list()
+
+
 @dataclass_json
 @dataclass
 class Site(JsonSchemaMixin):
@@ -425,11 +432,20 @@ class Site(JsonSchemaMixin):
             }
 
     @property
-    def used_endpoints(self):
+    def used_endpoints(self) -> List[Endpoint]:
         """Return only the endpoints that are actually used by the components."""
-        used_endpoints = {c.endpoint for c in self.components if c.endpoint}
+        endpoints = {}
+        for c in self.components:
+            if not c.endpoint:
+                continue
 
-        return {k: v for k, v in self.endpoints.items() if k in used_endpoints}
+            if c.endpoint not in endpoints:
+                endpoints[c.endpoint] = Endpoint(
+                    key=c.endpoint, url=self.endpoints[c.endpoint]
+                )
+            endpoints[c.endpoint].components.append(c)
+
+        return list(endpoints.values())
 
 
 @dataclass_json
