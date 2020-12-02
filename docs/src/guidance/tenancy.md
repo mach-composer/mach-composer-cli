@@ -26,12 +26,12 @@ MACH systems (such as commercetools, contentful or Amplience) are usually multi-
 *What to look at when deciding on your commercetools tenancy model:*
 
 1. Consider which commercetools `organisations` you will create (usually one per geographic region is sufficient)
-1. Consider when to create a new commercetools `project`.
-1. Consider how to look at the different geographic regions that commercetools has
-1. Consider how commercetools `project` multi-lingual and multi-country support can help when building multi-lingual and country commerce sites?
-1. Consider using commercetools' `shipping zones`
-1. Consider when to work with inventory and supply `channels`, including connecting these to `stores`
-1. Consider what commercetools `stores` can do for you within a `project` context
+2. Consider when to create a new commercetools `project`.
+3. Consider how to look at the different geographic regions that commercetools has
+4. Consider how commercetools `project` multi-lingual and multi-country support can help when building multi-lingual and country commerce sites?
+5. Consider using commercetools' `shipping zones`
+6. Consider when to work with inventory and supply `channels`, including connecting these to `stores`
+7. Consider what commercetools `stores` can do for you within a `project` context
 
 <br/>
 *Relevant commercetools resources:*
@@ -49,19 +49,20 @@ MACH systems (such as commercetools, contentful or Amplience) are usually multi-
     - Currently, commercetools is implementing `assortments` in their product catalogue, which will enable you to create store-specific assortments (and thus catalogues). Currently this is not supported yet, but expected in Q1 2021
     - The Merchant Center does not always provide the `store` 'context'. This means that managers of store A might be able to see resources of store B.
         - If this is a problem, this might be a reason to create an additional `project` instead of solving it with a `store`
-
-1. When hosting multiple commercetools regions, commercetools might incur extra costs depending on the region (prices may differ).
-1. Extra costs might be incurred for extra `projects` that are created in your commercetools organisation. This i usually contract-bound.
+2. When hosting multiple commercetools regions, commercetools might incur extra costs depending on the region (prices may differ).
+3. Extra costs might be incurred for extra `projects` that are created in your commercetools organisation. This i usually contract-bound.
     - This includes setting up non-production (dev, test, qa) `projects` in commercetools
 
 
 ### contentful tenancy
 
-TODO: describe/link to how contentful is structured and how that relates to MACH composer projects.
+!!! TODO
+    describe/link to how contentful is structured and how that relates to MACH composer projects.
 
 ### Amplience tenancy
 
-TODO: describe/link to how Amplience is structured and how that relates to MACH composer projects.
+!!! TODO
+    describe/link to how Amplience is structured and how that relates to MACH composer projects.
 
 
 ## Cloud provider tenancy
@@ -76,20 +77,22 @@ How to structure an AWS environment?
 In short:
 
 1. Follow [AWS account best practices](https://aws.amazon.com/organizations/getting-started/best-practices/).
-1. Create an AWS account for each additional commercetools project that you create, which hosts all of the AWS resources tied to that commercetools project.
-1. Most likely there will be 'shared' accounts that host shared resources (i.e. CDN, front-ends)
+2. Create an AWS account for each additional commercetools project that you create, which hosts all of the AWS resources tied to that commercetools project.
+3. Most likely there will be 'shared' accounts that host shared resources (i.e. CDN, front-ends)
 
 
 ### Azure tenancy
 
 how to structure an Azure environment?
 
-In Short:
+In short:
+
 1. Follow [Azure Resource Group best-practices](https://docs.microsoft.com/en-us/azure/cloud-adoption-framework/ready/azure-setup-guide/organize-resources?tabs=AzureManagementGroupsAndHierarchy).
-1. Create an Azure Resource Group for each additional commercetools project that you create, which hosts all of the Azure resources tied to that commercetools project.
-1. Most likely there will be 'shared' Resource Groups that host shared resources (i.e. CDN, front-ends)
+2. Create an Azure Resource Group for each additional commercetools project that you create, which hosts all of the Azure resources tied to that commercetools project.
+3. Most likely there will be 'shared' Resource Groups that host shared resources (i.e. CDN, front-ends)
 
 
 ## Building 'context aware' components
 
-TODO: Describe how to build components (microservices) that are able to work across tenancy contexts; i.e. they should be parameterised with context-settings, as well as able to 'detect' what store is currently active, for example.
+!!! TODO
+    Describe how to build components (microservices) that are able to work across tenancy contexts; i.e. they should be parameterised with context-settings, as well as able to 'detect' what store is currently active, for example.
