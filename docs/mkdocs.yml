@@ -1,5 +1,11 @@
 site_name: MACH composer
 
+# Repository
+repo_name: labd/mach-composer
+repo_url: https://github.com/labd/mach-composer
+# edit_uri: tree/master/docs/src
+edit_uri: ""
+
 copyright: 'Copyright &copy; 2020 - Lab Digital B.V.'
 docs_dir: src
 
@@ -35,6 +41,10 @@ nav:
     - GitHub actions: deployment/ci/github.md
     - Azure DevOps: deployment/ci/devops.md
 - security.md
+- Architecture guidance:
+  - Overview: guidance/index.md
+  - Terraform: guidance/terraform.md
+  - Tenancy: guidance/tenancy.md
 - Development:
   - workflow/cli.md
   - workflow/environment.md
