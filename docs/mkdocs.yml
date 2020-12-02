@@ -41,13 +41,13 @@ nav:
     - GitHub actions: deployment/ci/github.md
     - Azure DevOps: deployment/ci/devops.md
 - security.md
-- Development:
-  - workflow/cli.md
-  - workflow/environment.md
 - Architecture guidance:
   - Overview: guidance/index.md
   - Terraform: guidance/terraform.md
   - Tenancy: guidance/tenancy.md
+- Development:
+  - workflow/cli.md
+  - workflow/environment.md
 - changelog.md
 
 extra_javascript:

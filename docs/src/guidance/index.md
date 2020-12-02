@@ -14,17 +14,21 @@ MACH composer is intended to facilitate multi-tenancy on top of a range of MACH 
 
 ## Resposibilities
 
-TODO: explain about responsibilities in the system
+!!! TODO
+    explain about responsibilities in the system
 
 ## Example architecture
 
-TODO: create example archicture overview (diagrams)
+!!! TODO
+    create example archicture overview (diagrams)
 
 ## Example AWS infrastructure
 
-TODO: create AWS infrastructure example (diagrams), links to best practises (i.e. account setup)?
+!!! TODO
+    create AWS infrastructure example (diagrams), links to best practises (i.e. account setup)?
 
 ## Example Azure infrastructure
 
-TODO: create Azure infrastructure example (diagrams), links to best practises?
+!!! TODO
+    create Azure infrastructure example (diagrams), links to best practises?
 
