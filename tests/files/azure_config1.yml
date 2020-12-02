@@ -39,6 +39,9 @@ sites:
       currencies:
         - GBP
         - EUR
+      countries:
+        - NL
+        - GB
     components:
       - name: commercetools-config
       - name: payment
@@ -57,6 +60,8 @@ sites:
         - en-US
       currencies:
         - USD
+      countries:
+        - US
     components:
       - name: commercetools-config
       - name: payment
