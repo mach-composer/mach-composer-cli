@@ -77,8 +77,8 @@ How to structure an AWS environment?
 In short:
 
 1. Follow [AWS account best practices](https://aws.amazon.com/organizations/getting-started/best-practices/).
-2. Create an AWS account for each additional commercetools project that you create, which hosts all of the AWS resources tied to that commercetools project.
-3. Most likely there will be 'shared' accounts that host shared resources (i.e. CDN, front-ends)
+2. Create **one AWS account per commercetools project** that you create, which hosts all of the AWS resources tied to that commercetools project.
+3. Create one dedicated '*service*' or '*shared*' account that hosts shared resources like component artifacts and centralized routing.
 
 
 ### Azure tenancy
