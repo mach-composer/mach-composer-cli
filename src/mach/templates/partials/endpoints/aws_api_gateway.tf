@@ -26,14 +26,6 @@ resource "aws_apigatewayv2_deployment" "{{ endpoint.key|slugify }}_default" {
   api_id      = aws_apigatewayv2_api.{{ endpoint.key|slugify }}_gateway.id
   description = "Stage for default release"
 
-  triggers = {
-    redeployment = sha1(join(",", list(
-      {% for component in endpoint.components %}
-      module.{{ component.name }}.component_version,
-      {% endfor %}
-    )))
-  }
-
   lifecycle {
     create_before_destroy = true
   }
@@ -49,8 +41,6 @@ resource "aws_apigatewayv2_stage" "{{ endpoint.key|slugify }}_default" {
   name                  = "$default"
   api_id                = aws_apigatewayv2_api.{{ endpoint.key|slugify }}_gateway.id
   deployment_id         = aws_apigatewayv2_deployment.{{ endpoint.key|slugify }}_default.id
-
-  depends_on = [aws_apigatewayv2_deployment.{{ endpoint.key|slugify }}_default]
 }
 
 # Route53 mappings
