@@ -24,24 +24,11 @@ def terraform_command(f):
         help="YAML file to parse. If not set parse all *.yml files.",
     )
     @click.option(
-        "--with-sp-login",
-        is_flag=True,
-        default=False,
-        help="If az login with service principal environment variables "
-        "(ARM_CLIENT_ID, ARM_CLIENT_SECRET, ARM_TENANT_ID) should be done.",
-    )
-    @click.option(
-        "--auto-approve",
-        is_flag=True,
-        default=False,
-        help="",
-    )
-    @click.option(
         "--output-path",
         default="deployments",
         help="Output path, defaults to `cwd`/deployments.",
     )
-    def new_func(file, with_sp_login: bool, auto_approve: bool, output_path: str):
+    def new_func(file, output_path: str, **kwargs):
         files = get_input_files(file)
 
         try:
@@ -52,9 +39,8 @@ def terraform_command(f):
         try:
             result = f(
                 file=file,
-                with_sp_login=with_sp_login,
-                auto_approve=auto_approve,
                 configs=configs,
+                **kwargs,
             )
         except subprocess.CalledProcessError as e:
             click.echo("Failed to run")
@@ -84,15 +70,35 @@ def plan(file, configs, *args, **kwargs):
 
 
 @mach.command()
+@click.option(
+    "--with-sp-login",
+    is_flag=True,
+    default=False,
+    help="If az login with service principal environment variables "
+    "(ARM_CLIENT_ID, ARM_CLIENT_SECRET, ARM_TENANT_ID) should be done.",
+)
+@click.option(
+    "--auto-approve",
+    is_flag=True,
+    default=False,
+    help="",
+)
+@click.option(
+    "--api-redeploy",
+    default=None,
+    multiple=True,
+    help="Which endpoint should be redeployed. Can be used multiple times",
+)
 @terraform_command
-def apply(file, configs, with_sp_login, auto_approve, *args, **kwargs):
+def apply(file, configs, with_sp_login, auto_approve, api_redeploy, *args, **kwargs):
     """Apply the configuration."""
     for config in configs:
         generate_terraform(config)
         apply_terraform(
-            config.deployment_path,
+            config,
             with_sp_login=with_sp_login,
             auto_approve=auto_approve,
+            api_redeploys=api_redeploy,
         )
 
 

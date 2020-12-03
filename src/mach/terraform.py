@@ -6,8 +6,9 @@ from pathlib import Path
 from typing import List, Union
 
 import click
+from mach import utils
 from mach.templates import setup_jinja
-from mach.types import MachConfig
+from mach.types import MachConfig, Site
 
 
 def generate_terraform(config: MachConfig):
@@ -49,19 +50,33 @@ def plan_terraform(output_dir: Path):
 
 
 def apply_terraform(
-    output_dir: Path, *, with_sp_login: bool = False, auto_approve: bool = False
+    config: MachConfig,
+    *,
+    with_sp_login: bool = False,
+    auto_approve: bool = False,
+    api_redeploys: List[str] = [],
 ):
     """Terraform apply for all generated sites."""
-    for site_dir in output_dir.iterdir():
-        if site_dir.is_dir():
-            click.echo(f"Applying Terraform for {site_dir.name}")
-            run_terraform("init", site_dir)
-            if with_sp_login:
-                azure_sp_login()
-            cmd = ["apply"]
-            if auto_approve:
-                cmd += ["-auto-approve"]
-            run_terraform(cmd, site_dir)
+    for site in config.sites:
+        site_dir = config.deployment_path / Path(site.identifier)
+        if not site_dir.is_dir():
+            click.echo(f"Could not find site directory {site_dir}")
+            continue
+
+        click.echo(f"Applying Terraform for {site.identifier}")
+        run_terraform("init", site_dir)
+
+        if with_sp_login:
+            azure_sp_login()
+
+        for taint in _get_taints(site, api_redeploys=api_redeploys):
+            click.echo(f"taint resource {taint}")
+            run_terraform(["taint", taint], site_dir)
+
+        cmd = ["apply"]
+        if auto_approve:
+            cmd += ["-auto-approve"]
+        run_terraform(cmd, site_dir)
 
 
 def azure_sp_login():
@@ -92,3 +107,27 @@ def run_terraform(command: Union[List[str], str], cwd):
         ["terraform", *command], cwd=cwd, stdout=sys.stdout, stderr=sys.stderr
     )
     p.check_returncode()
+
+
+def _get_taints(site: Site, *, api_redeploys: List[str]) -> List[str]:
+    """Get resources that need to be tainted before an Terraform apply is executed.
+
+    :param site: For which site to scan for resources that should be tainted
+    :param api_redeploys: List of endpoint keys of which the api gateway deployment should
+        be redeployed
+    """
+    taints = []
+
+    for endpoint in site.endpoints:
+        if not endpoint.redeploy:
+            continue
+        slug = utils.slugify(endpoint.key)
+        taints.append(f"aws_apigatewayv2_deployment.{slug}_default")
+
+    for redeploy in api_redeploys:
+        slug = utils.slugify(redeploy)
+        resource = f"aws_apigatewayv2_deployment.{slug}_default"
+        if resource not in taints:
+            taints.append(resource)
+
+    return taints
