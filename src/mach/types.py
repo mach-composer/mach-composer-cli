@@ -409,7 +409,7 @@ class Endpoint:
 
     @property
     def contains_defaults(self):
-        """Indicates if this endpoint contains just default values.
+        """Indicate if this endpoint contains just default values.
 
         Other then the `url` attribute.
         If only defaults, we can serialize the endpoints by just
