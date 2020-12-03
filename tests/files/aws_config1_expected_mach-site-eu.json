@@ -244,6 +244,9 @@
           "name": [
             "$default"
           ],
+          "description": [
+            "Stage for default release"
+          ],
           "api_id": [
             "${aws_apigatewayv2_api.main_gateway.id}"
           ],
