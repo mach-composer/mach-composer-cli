@@ -39,6 +39,7 @@ resource "aws_apigatewayv2_deployment" "{{ endpoint.key|slugify }}_default" {
 
 resource "aws_apigatewayv2_stage" "{{ endpoint.key|slugify }}_default" {
   name                  = "$default"
+  description           = "Stage for default release"
   api_id                = aws_apigatewayv2_api.{{ endpoint.key|slugify }}_gateway.id
   deployment_id         = aws_apigatewayv2_deployment.{{ endpoint.key|slugify }}_default.id
 }
