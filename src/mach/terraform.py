@@ -54,7 +54,7 @@ def apply_terraform(
     *,
     with_sp_login: bool = False,
     auto_approve: bool = False,
-    api_redeploys: List[str] = [],
+    endpoint_redeploys: List[str] = [],
 ):
     """Terraform apply for all generated sites."""
     for site in config.sites:
@@ -69,7 +69,7 @@ def apply_terraform(
         if with_sp_login:
             azure_sp_login()
 
-        for taint in _get_taints(site, api_redeploys=api_redeploys):
+        for taint in _get_taints(site, endpoint_redeploys=endpoint_redeploys):
             click.echo(f"taint resource {taint}")
             run_terraform(["taint", taint], site_dir)
 
@@ -109,11 +109,11 @@ def run_terraform(command: Union[List[str], str], cwd):
     p.check_returncode()
 
 
-def _get_taints(site: Site, *, api_redeploys: List[str]) -> List[str]:
+def _get_taints(site: Site, *, endpoint_redeploys: List[str]) -> List[str]:
     """Get resources that need to be tainted before an Terraform apply is executed.
 
     :param site: For which site to scan for resources that should be tainted
-    :param api_redeploys: List of endpoint keys of which the api gateway deployment should
+    :param endpoint_redeploys: List of endpoint keys of which the api gateway deployment should
         be redeployed
     """
     taints = []
@@ -124,7 +124,7 @@ def _get_taints(site: Site, *, api_redeploys: List[str]) -> List[str]:
         slug = utils.slugify(endpoint.key)
         taints.append(f"aws_apigatewayv2_deployment.{slug}_default")
 
-    for redeploy in api_redeploys:
+    for redeploy in endpoint_redeploys:
         slug = utils.slugify(redeploy)
         resource = f"aws_apigatewayv2_deployment.{slug}_default"
         if resource not in taints:

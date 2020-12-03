@@ -12,7 +12,7 @@ def tf_mock(mocker):
     return mocker.patch("mach.terraform.run_terraform")
 
 
-def test_api_redeploys(click_runner, click_dir, tf_mock, tmp_path):
+def test_endpoint_redeploys(click_runner, click_dir, tf_mock, tmp_path):
     orig_config = get_file("aws_config1.yml")
 
     with open(orig_config, "r") as fh:
@@ -56,7 +56,7 @@ def test_api_redeploys(click_runner, click_dir, tf_mock, tmp_path):
     ]
 
 
-def test_api_redeploy_via_cmd(click_runner, click_dir, tf_mock):
+def test_endpoint_redeploy_via_cmd(click_runner, click_dir, tf_mock):
     orig_config = get_file("aws_config1.yml")
 
     result = click_runner.invoke(apply, ["-f", orig_config])
@@ -72,7 +72,9 @@ def test_api_redeploy_via_cmd(click_runner, click_dir, tf_mock):
     ]
     tf_mock.reset_mock()
 
-    result = click_runner.invoke(apply, ["-f", orig_config, "--api-redeploy", "main"])
+    result = click_runner.invoke(
+        apply, ["-f", orig_config, "--endpoint-redeploy", "main"]
+    )
     assert result.exit_code == 0, result.stdout_bytes
 
     assert call_args(tf_mock) == [
