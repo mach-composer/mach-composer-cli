@@ -92,18 +92,17 @@ def test_generate_w_sentry(parsed_config: types.MachConfig, tf_mock):
     assert sentry_data["rate_limit_count"] == 100
 
 
-def test_generate_w_endpoints(parsed_config: types.MachConfig, tf_mock):
-    config = parsed_config
-    config.sites[0].endpoints = {
-        "public": "api.mach-example.com",
-    }
-    data = _generate(config)
+def test_generate_w_endpoints(config: types.MachConfig, tf_mock):
+    config.sites[0].endpoints = [
+        types.Endpoint(key="public", url="api.mach-example.com")
+    ]
+    data = _generate(parse.parse_config(config))
 
     # 'public' endpoint not used in component yet; no resources created
     assert "resource" not in data
 
     config.components[0].endpoint = "public"
-    data = _generate(config)
+    data = _generate(parse.parse_config(config))
 
     # API gateway items need to be created since a component now uses it
     expected_resources = [
@@ -119,8 +118,10 @@ def test_generate_w_endpoints(parsed_config: types.MachConfig, tf_mock):
     ]
     assert _get_resource_ids(data) == expected_resources
 
-    config.sites[0].endpoints["private"] = "private-api.mach-example.com"
-    data = _generate(config)
+    config.sites[0].endpoints.append(
+        types.Endpoint(key="private", url="private-api.mach-example.com")
+    )
+    data = _generate(parse.parse_config(config))
 
     # We've added an extra endpoint definition, but hasn't been used.
     # List of resources should be the same as previous check
