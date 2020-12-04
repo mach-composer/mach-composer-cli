@@ -52,8 +52,12 @@ def test_validate_azure_endpoints(parsed_azure_config: types.MachConfig):
         "services": "services.mach-example.com",
     }
 
-    with pytest.raises(ValidationError):
+    with pytest.raises(ValidationError) as e:
         validate.validate_config(config)
+
+    assert str(e.value) == (
+        "Site unittest-nl needs to have a Frontdoor dns_zone defined before endpoints can be used."
+    )
 
     config.general_config.azure.frontdoor = types.FrontDoorSettings(
         resource_group="my-shared-rg",
@@ -70,6 +74,21 @@ def test_validate_azure_endpoints(parsed_azure_config: types.MachConfig):
     config.sites[0].endpoints["services"] = "api.mach-services.com"
     with pytest.raises(ValidationError):
         validate.validate_config(config)
+
+
+def test_validate_azure_default_endpoint(parsed_azure_config: types.MachConfig):
+    """It must be possible for a component to use the default Frontdoor endpoint."""
+    config = parsed_azure_config
+
+    config.components[0].endpoint = "public"
+
+    with pytest.raises(ValidationError) as e:
+        validate.validate_config(config)
+
+    assert str(e.value) == "Missing required endpoints public"
+
+    config.components[0].endpoint = "default"
+    validate.validate_config(config)
 
 
 def test_validate_component_endpoint(parsed_config: types.MachConfig):
