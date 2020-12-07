@@ -49,19 +49,28 @@ def plan_terraform(output_dir: Path):
 
 
 def apply_terraform(
-    output_dir: Path, *, with_sp_login: bool = False, auto_approve: bool = False
+    config: MachConfig,
+    *,
+    with_sp_login: bool = False,
+    auto_approve: bool = False,
 ):
     """Terraform apply for all generated sites."""
-    for site_dir in output_dir.iterdir():
-        if site_dir.is_dir():
-            click.echo(f"Applying Terraform for {site_dir.name}")
-            run_terraform("init", site_dir)
-            if with_sp_login:
-                azure_sp_login()
-            cmd = ["apply"]
-            if auto_approve:
-                cmd += ["-auto-approve"]
-            run_terraform(cmd, site_dir)
+    for site in config.sites:
+        site_dir = config.deployment_path / Path(site.identifier)
+        if not site_dir.is_dir():
+            click.echo(f"Could not find site directory {site_dir}")
+            continue
+
+        click.echo(f"Applying Terraform for {site.identifier}")
+        run_terraform("init", site_dir)
+
+        if with_sp_login:
+            azure_sp_login()
+
+        cmd = ["apply"]
+        if auto_approve:
+            cmd += ["-auto-approve"]
+        run_terraform(cmd, site_dir)
 
 
 def azure_sp_login():
