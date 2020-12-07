@@ -27,10 +27,16 @@ def test_validate_sentry():
 def test_validate_aws_endpoints(parsed_config: types.MachConfig):
     config = parsed_config
 
-    config.sites[0].endpoints = {
-        "public": "api.mach-example.com",
-        "services": "services.mach-example.com",
-    }
+    config.sites[0].endpoints = [
+        types.Endpoint(
+            key="public",
+            url="api.mach-example.com",
+        ),
+        types.Endpoint(
+            key="services",
+            url="services.mach-example.com",
+        ),
+    ]
 
     with pytest.raises(ValidationError):
         validate.validate_config(config)
@@ -39,7 +45,9 @@ def test_validate_aws_endpoints(parsed_config: types.MachConfig):
     validate.validate_config(config)
 
     # Change one of the components that does not match the DNS zone anymore
-    config.sites[0].endpoints["services"] = "api.mach-services.com"
+    config.sites[0].endpoints.append(
+        types.Endpoint(key="services", url="api.mach-services.com")
+    )
     with pytest.raises(ValidationError):
         validate.validate_config(config)
 
@@ -47,10 +55,16 @@ def test_validate_aws_endpoints(parsed_config: types.MachConfig):
 def test_validate_azure_endpoints(parsed_azure_config: types.MachConfig):
     config = parsed_azure_config
 
-    config.sites[0].endpoints = {
-        "public": "api.mach-example.com",
-        "services": "services.mach-example.com",
-    }
+    config.sites[0].endpoints = [
+        types.Endpoint(
+            key="public",
+            url="api.mach-example.com",
+        ),
+        types.Endpoint(
+            key="services",
+            url="services.mach-example.com",
+        ),
+    ]
 
     with pytest.raises(ValidationError) as e:
         validate.validate_config(config)
@@ -71,7 +85,9 @@ def test_validate_azure_endpoints(parsed_azure_config: types.MachConfig):
     validate.validate_config(config)
 
     # Change one of the components that does not match the DNS zone anymore
-    config.sites[0].endpoints["services"] = "api.mach-services.com"
+    config.sites[0].endpoints.append(
+        types.Endpoint(key="services", url="api.mach-services.com")
+    )
     with pytest.raises(ValidationError):
         validate.validate_config(config)
 
@@ -91,19 +107,24 @@ def test_validate_azure_default_endpoint(parsed_azure_config: types.MachConfig):
     validate.validate_config(config)
 
 
-def test_validate_component_endpoint(parsed_config: types.MachConfig):
+def test_validate_component_endpoint(config: types.MachConfig):
     """An endpoint defined on a component must exist for all sites that use that component."""
-    config = parsed_config
-
     config.components[0].endpoint = "public"
+    config = parse.parse_config(config)
 
     with pytest.raises(ValidationError):
         validate.validate_config(config)
 
-    config.sites[0].endpoints = {
-        "public": "api.mach-example.com",
-        "services": "services.mach-example.com",
-    }
+    config.sites[0].endpoints = [
+        types.Endpoint(
+            key="public",
+            url="api.mach-example.com",
+        ),
+        types.Endpoint(
+            key="services",
+            url="services.mach-example.com",
+        ),
+    ]
     config.sites[0].aws.route53_zone_name = "mach-example.com"
     validate.validate_config(config)
 

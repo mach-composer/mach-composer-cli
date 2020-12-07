@@ -6,6 +6,7 @@ from typing import Any, Dict, List, Optional, Union
 from dataclasses_json import config, dataclass_json
 from dataclasses_jsonschema import JsonSchemaMixin
 from mach import utils
+from marshmallow import ValidationError, fields
 
 TerraformVariables = Dict[str, Any]
 StoreVariables = Dict[str, TerraformVariables]
@@ -400,11 +401,65 @@ class SiteAzureSettings(JsonSchemaMixin):
 
 @dataclass_json
 @dataclass
+class Endpoint:
+    url: str
+    key: str = field(metadata=config(exclude=lambda x: True))
+    components: Optional[List[Component]] = _list()
+
+    @property
+    def contains_defaults(self):
+        """Indicate if this endpoint contains just default values.
+
+        Other then the `url` attribute.
+        If only defaults, we can serialize the endpoints by just
+        rendering the url, not the entire object.
+
+        At this moment, we don't have any additional options, so it's always default.
+        This can be extended in the future.
+        """
+        return True
+
+    def __post_init__(self):
+        """Ensure endpoints have protocol stripped."""
+        self.url = utils.strip_protocol(self.url)
+
+
+class EndpointsField(fields.Dict):
+    def _serialize(self, value, attr, obj, **kwargs):
+        result = {}
+        for endpoint in value:
+            if endpoint.contains_defaults:
+                result[endpoint.key] = endpoint.url
+            else:
+                result[endpoint.key] = endpoint.to_dict()
+
+        return super()._deserialize(result, attr, obj, **kwargs)
+
+    def _deserialize(self, value, attr, data, **kwargs):
+        value = super()._deserialize(value, attr, data, **kwargs)
+        result = []
+        for k, v in value.items():
+            if isinstance(v, str):
+                result.append(Endpoint(key=k, url=v))
+            elif isinstance(v, dict):
+                v["key"] = k
+                result.append(Endpoint.schema(infer_missing=True).load(v))
+            else:
+                raise ValidationError(f"Unexpected value found for endpoint {k}")
+
+        return result
+
+
+@dataclass_json
+@dataclass
 class Site(JsonSchemaMixin):
     """Site definition."""
 
     identifier: str
-    endpoints: Dict[str, str] = _default({})
+    endpoints: Optional[List[Endpoint]] = field(
+        default_factory=list,
+        metadata=config(mm_field=EndpointsField(), exclude=lambda x: not x),
+    )
     commercetools: Optional[CommercetoolsSettings] = _none()
     contentful: Optional[ContentfulSettings] = _none()
     amplience: Optional[AmplienceSettings] = _none()
@@ -417,19 +472,10 @@ class Site(JsonSchemaMixin):
     def public_api_components(self) -> List[Component]:
         return [c for c in self.components if c.endpoint]
 
-    def __post_init__(self):
-        """Ensure endpoints have protocol stripped."""
-        if self.endpoints:
-            self.endpoints = {
-                k: utils.strip_protocol(v) for k, v in self.endpoints.items()
-            }
-
     @property
-    def used_endpoints(self):
+    def used_endpoints(self) -> List[Endpoint]:
         """Return only the endpoints that are actually used by the components."""
-        used_endpoints = {c.endpoint for c in self.components if c.endpoint}
-
-        return {k: v for k, v in self.endpoints.items() if k in used_endpoints}
+        return [ep for ep in self.endpoints if ep.components]
 
 
 @dataclass_json

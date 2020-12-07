@@ -1,3 +1,4 @@
+from collections import defaultdict
 from os.path import basename, splitext
 from pathlib import Path
 from typing import Dict, List
@@ -10,6 +11,7 @@ from mach.types import (
     ComponentConfig,
     MachConfig,
     SentryDsn,
+    Site,
     SiteAzureSettings,
 )
 from mach.validate import validate_config
@@ -114,7 +116,23 @@ def resolve_site_configs(config: MachConfig) -> MachConfig:
 
     config = resolve_site_components(config)
 
+    for site in config.sites:
+        resolve_endpoint_components(site)
+
     return config
+
+
+def resolve_endpoint_components(site: Site):
+    endpoint_components = defaultdict(list)
+
+    for c in site.components:
+        if not site.endpoints:
+            continue
+
+        endpoint_components[c.endpoint].append(c)
+
+    for endpoint in site.endpoints:
+        endpoint.components = endpoint_components.get(endpoint.key, [])
 
 
 def resolve_site_components(config: MachConfig) -> MachConfig:

@@ -7,13 +7,14 @@
 - Add support for multiple API endpoints:
     - `base_url` replaced with `endpoints`
     - `has_public_api` replaced with `endpoint`
-- Add new required `frontdoor_id` Terraform variable for components with `endpoint` defined
 - Improved dependencies between components and MACH-managed commercetools configurations
 - Improved git log parsing
 - Add `mach bootstrap` commands:
     - `mach bootstrap config` for creating a new MACH configuration
     - `mach bootstrap component` for creating a new MACH component
 - Updated Terraform commercetools provider to `0.24.1`
+- AWS: Set `auto-deploy` on API gateway stage
+- Azure: Add new required `frontdoor_id` Terraform variable for components with `endpoint` defined
 
 
 **Breaking changes**

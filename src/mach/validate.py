@@ -53,6 +53,7 @@ def validate_endpoints(site: types.Site, cloud: types.CloudOption):
     dns_zone = None
 
     if site.endpoints:
+        # Construct lookup dictionary of all endpoints with the components that use them
         if cloud == types.CloudOption.AWS:
             dns_zone = site.aws.route53_zone_name
             if not dns_zone:
@@ -70,14 +71,14 @@ def validate_endpoints(site: types.Site, cloud: types.CloudOption):
 
             dns_zone = site.azure.frontdoor.dns_zone
 
-        for endpoint in site.endpoints.values():
-            if not endpoint.endswith(dns_zone):
+        for endpoint in site.endpoints:
+            if not endpoint.url.endswith(dns_zone):
                 raise ValidationError(
                     f"No match between endpoint {endpoint} and DNS zone {dns_zone}"
                 )
 
     expected_endpoint_names = {c.endpoint for c in site.components if c.endpoint}
-    endpoint_names = set(site.endpoints.keys())
+    endpoint_names = {e.key for e in site.endpoints}
 
     if cloud == types.CloudOption.AZURE:
         # In Azure, we can create a Frontdoor instance without specifying a specific domain.

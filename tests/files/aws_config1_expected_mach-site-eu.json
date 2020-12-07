@@ -194,7 +194,7 @@
       "aws_apigatewayv2_api": {
         "main_gateway": {
           "name": [
-            "mach-site-eu-api"
+            "mach-site-eu-main-api"
           ],
           "protocol_type": [
             "HTTP"
@@ -223,11 +223,6 @@
           "description": [
             "Stage for default release"
           ],
-          "triggers": [
-            {
-              "redeployment": "${sha1(join(\",\",list(module.payment.component_version,)))}"
-            }
-          ],
           "lifecycle": [
             {
               "create_before_destroy": [
@@ -249,16 +244,17 @@
           "name": [
             "$default"
           ],
+          "description": [
+            "Stage for default release"
+          ],
           "api_id": [
             "${aws_apigatewayv2_api.main_gateway.id}"
           ],
           "deployment_id": [
             "${aws_apigatewayv2_deployment.main_default.id}"
           ],
-          "depends_on": [
-            [
-              "${aws_apigatewayv2_deployment.main_default}"
-            ]
+          "auto_deploy": [
+            true
           ]
         }
       }
