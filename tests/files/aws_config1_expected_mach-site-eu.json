@@ -252,6 +252,9 @@
           ],
           "deployment_id": [
             "${aws_apigatewayv2_deployment.main_default.id}"
+          ],
+          "auto_deploy": [
+            true
           ]
         }
       }

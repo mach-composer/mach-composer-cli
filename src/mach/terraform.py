@@ -118,12 +118,6 @@ def _get_taints(site: Site, *, endpoint_redeploys: List[str]) -> List[str]:
     """
     taints = []
 
-    for endpoint in site.endpoints:
-        if not endpoint.redeploy:
-            continue
-        slug = utils.slugify(endpoint.key)
-        taints.append(f"aws_apigatewayv2_deployment.{slug}_default")
-
     for redeploy in endpoint_redeploys:
         slug = utils.slugify(redeploy)
         resource = f"aws_apigatewayv2_deployment.{slug}_default"

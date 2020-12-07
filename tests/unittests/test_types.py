@@ -64,51 +64,38 @@ def test_site(config: types.MachConfig):
     ]
 
 
-@pytest.mark.parametrize(
-    "endpoints,redeploy",
-    (
-        (
-            {
-                "main": "api.example.com",
-                "private": "private.example.com",
-            },
-            False,
-        ),
-        (
-            {
-                "main": {
-                    "url": "api.example.com",
-                    "redeploy": True,
-                },
-                "private": {
-                    "url": "private.example.com",
-                    "redeploy": True,
-                },
-            },
-            True,
-        ),
-    ),
-)
-def test_hybrid_endpoints(endpoints, redeploy):
-    expected = deepcopy(endpoints)
+def test_hybrid_endpoints():
+    endpoints_flat = {
+        "main": "api.example.com",
+        "private": "private.example.com",
+    }
+    endpoints_complex = {
+        "main": {
+            "url": "api.example.com",
+        },
+        "private": {
+            "url": "private.example.com",
+        },
+    }
+
     site_schema = types.Site.schema(infer_missing=True)
-    site = site_schema.load({"identifier": "nl-unittest", "endpoints": endpoints})
 
-    assert site.endpoints == [
-        types.Endpoint(
-            key="main",
-            url="api.example.com",
-            redeploy=redeploy,
-        ),
-        types.Endpoint(
-            key="private",
-            url="private.example.com",
-            redeploy=redeploy,
-        ),
-    ]
+    for input_ in [endpoints_flat, endpoints_complex]:
+        site = site_schema.load({"identifier": "nl-unittest", "endpoints": input_})
 
-    serialized = site_schema.dump(site)
-    assert serialized["endpoints"] == expected
+        assert site.endpoints == [
+            types.Endpoint(
+                key="main",
+                url="api.example.com",
+            ),
+            types.Endpoint(
+                key="private",
+                url="private.example.com",
+            ),
+        ]
+
+        serialized = site_schema.dump(site)
+        assert serialized["endpoints"] == endpoints_flat
 
 
 def test_hybrid_endpoints_wrong_value():
