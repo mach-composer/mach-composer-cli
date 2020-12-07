@@ -42,6 +42,7 @@ resource "aws_apigatewayv2_stage" "{{ endpoint.key|slugify }}_default" {
   description           = "Stage for default release"
   api_id                = aws_apigatewayv2_api.{{ endpoint.key|slugify }}_gateway.id
   deployment_id         = aws_apigatewayv2_deployment.{{ endpoint.key|slugify }}_default.id
+  auto_deploy           = true
 }
 
 # Route53 mappings

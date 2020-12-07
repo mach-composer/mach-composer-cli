@@ -405,7 +405,6 @@ class Endpoint:
     url: str
     key: str = field(metadata=config(exclude=lambda x: True))
     components: Optional[List[Component]] = _list()
-    redeploy: bool = _default(False)
 
     @property
     def contains_defaults(self):
@@ -415,10 +414,10 @@ class Endpoint:
         If only defaults, we can serialize the endpoints by just
         rendering the url, not the entire object.
 
-        For now, only check on `redeploy`
+        At this moment, we don't have any additional options, so it's always default.
+        This can be extended in the future.
         """
-        if not self.redeploy:
-            return True
+        return True
 
     def __post_init__(self):
         """Ensure endpoints have protocol stripped."""
