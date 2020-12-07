@@ -194,7 +194,7 @@
       "aws_apigatewayv2_api": {
         "main_gateway": {
           "name": [
-            "mach-site-eu-api"
+            "mach-site-eu-main-api"
           ],
           "protocol_type": [
             "HTTP"

@@ -13,7 +13,7 @@ resource "aws_route53_record" "{{ endpoint.key|slugify }}_acm_validation" {
 
 # API Gateway
 resource "aws_apigatewayv2_api" "{{ endpoint.key|slugify }}_gateway" {
-  name                       = "{{ site.identifier }}-api"
+  name                       = "{{ site.identifier }}-{{ endpoint.key|slugify }}-api"
   protocol_type              = "HTTP"
 }
 
