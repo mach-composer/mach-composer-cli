@@ -1,5 +1,3 @@
-from copy import deepcopy
-
 import pytest
 from mach import parse, types
 
