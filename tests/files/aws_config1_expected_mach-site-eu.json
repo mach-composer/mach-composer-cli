@@ -215,30 +215,6 @@
       }
     },
     {
-      "aws_apigatewayv2_deployment": {
-        "main_default": {
-          "api_id": [
-            "${aws_apigatewayv2_api.main_gateway.id}"
-          ],
-          "description": [
-            "Stage for default release"
-          ],
-          "lifecycle": [
-            {
-              "create_before_destroy": [
-                true
-              ]
-            }
-          ],
-          "depends_on": [
-            [
-              "${module.payment}"
-            ]
-          ]
-        }
-      }
-    },
-    {
       "aws_apigatewayv2_stage": {
         "main_default": {
           "name": [
@@ -250,11 +226,13 @@
           "api_id": [
             "${aws_apigatewayv2_api.main_gateway.id}"
           ],
-          "deployment_id": [
-            "${aws_apigatewayv2_deployment.main_default.id}"
-          ],
           "auto_deploy": [
             true
+          ],
+          "depends_on": [
+            [
+              "${module.payment}"
+            ]
           ]
         }
       }
