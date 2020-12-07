@@ -22,27 +22,17 @@ resource "aws_apigatewayv2_route" "{{ endpoint.key|slugify }}_application" {
   route_key = "$default"
 }
 
-resource "aws_apigatewayv2_deployment" "{{ endpoint.key|slugify }}_default" {
-  api_id      = aws_apigatewayv2_api.{{ endpoint.key|slugify }}_gateway.id
-  description = "Stage for default release"
-
-  lifecycle {
-    create_before_destroy = true
-  }
+resource "aws_apigatewayv2_stage" "{{ endpoint.key|slugify }}_default" {
+  name                  = "$default"
+  description           = "Stage for default release"
+  api_id                = aws_apigatewayv2_api.{{ endpoint.key|slugify }}_gateway.id
+  auto_deploy           = true
 
   depends_on = [
     {% for component in endpoint.components %}
     module.{{ component.name }},
     {% endfor %}
   ]
-}
-
-resource "aws_apigatewayv2_stage" "{{ endpoint.key|slugify }}_default" {
-  name                  = "$default"
-  description           = "Stage for default release"
-  api_id                = aws_apigatewayv2_api.{{ endpoint.key|slugify }}_gateway.id
-  deployment_id         = aws_apigatewayv2_deployment.{{ endpoint.key|slugify }}_default.id
-  auto_deploy           = true
 }
 
 # Route53 mappings
