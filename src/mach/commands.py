@@ -83,16 +83,8 @@ def plan(file, configs, *args, **kwargs):
     default=False,
     help="",
 )
-@click.option(
-    "--endpoint-redeploy",
-    default=None,
-    multiple=True,
-    help="Which endpoint should be redeployed. Can be used multiple times",
-)
 @terraform_command
-def apply(
-    file, configs, with_sp_login, auto_approve, endpoint_redeploy, *args, **kwargs
-):
+def apply(file, configs, with_sp_login, auto_approve, *args, **kwargs):
     """Apply the configuration."""
     for config in configs:
         generate_terraform(config)
@@ -100,7 +92,6 @@ def apply(
             config,
             with_sp_login=with_sp_login,
             auto_approve=auto_approve,
-            endpoint_redeploys=endpoint_redeploy,
         )
 
 

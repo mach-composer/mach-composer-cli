@@ -9,35 +9,17 @@ def tf_mock(mocker):
     return mocker.patch("mach.terraform.run_terraform")
 
 
-def test_endpoint_redeploy(click_runner, click_dir, tf_mock):
+def test_apply(click_runner, click_dir, tf_mock):
     orig_config = get_file("aws_config1.yml")
 
     result = click_runner.invoke(apply, ["-f", orig_config])
     assert result.exit_code == 0, result.stdout_bytes
-
     assert call_args(tf_mock) == [
         "fmt",  # mach-site-eu
         "fmt",  # mach-site-us
         "init",  # mach-site-eu
         ["apply"],  # mach-site-eu
         "init",  # mach-site-us
-        ["apply"],  # mach-site-us
-    ]
-    tf_mock.reset_mock()
-
-    result = click_runner.invoke(
-        apply, ["-f", orig_config, "--endpoint-redeploy", "main"]
-    )
-    assert result.exit_code == 0, result.stdout_bytes
-
-    assert call_args(tf_mock) == [
-        "fmt",  # mach-site-eu
-        "fmt",  # mach-site-us
-        "init",  # mach-site-eu
-        ["taint", "aws_apigatewayv2_deployment.main_default"],  # mach-site-eu
-        ["apply"],  # mach-site-eu
-        "init",  # mach-site-us
-        ["taint", "aws_apigatewayv2_deployment.main_default"],  # mach-site-us
         ["apply"],  # mach-site-us
     ]
 
