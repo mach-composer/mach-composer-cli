@@ -40,7 +40,7 @@ def test_generate_terraform(parsed_config: types.MachConfig, tf_mock):
             },
             {"required_providers": [{}]},
         ],
-        "provider": [{"aws": {"region": ["eu-central-1"], "version": ["~> 3.8.0"]}}],
+        "provider": [{"aws": {"region": ["eu-central-1"], "version": ["~> 3.20.0"]}}],
         "module": [
             {
                 "api-extensions": {
