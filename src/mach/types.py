@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Union
 
 from dataclasses_json import config, dataclass_json
-from dataclasses_jsonschema import JsonSchemaMixin
+from dataclasses_jsonschema import FieldEncoder, JsonSchemaMixin
 from mach import utils
 from marshmallow import ValidationError, fields
 
@@ -404,7 +404,7 @@ class SiteAzureSettings(JsonSchemaMixin):
 class Endpoint:
     url: str
     key: str = field(metadata=config(exclude=lambda x: True))
-    components: Optional[List[Component]] = _list()
+    components: Optional[List["Component"]] = _list()
 
     @property
     def contains_defaults(self):
@@ -450,6 +450,15 @@ class EndpointsField(fields.Dict):
         return result
 
 
+class EndpointEncoder(FieldEncoder):
+    @property
+    def json_schema(self):
+        return {"type": "string"}
+
+
+JsonSchemaMixin.register_field_encoders({Endpoint: EndpointEncoder()})
+
+
 @dataclass_json
 @dataclass
 class Site(JsonSchemaMixin):
@@ -476,6 +485,17 @@ class Site(JsonSchemaMixin):
     def used_endpoints(self) -> List[Endpoint]:
         """Return only the endpoints that are actually used by the components."""
         return [ep for ep in self.endpoints if ep.components]
+
+    @classmethod
+    def json_schema(cls, *args, **kwargs):
+        result = super().json_schema(*args, **kwargs)
+        endpoints = result["Site"]["properties"]["endpoints"]
+        result["Site"]["properties"]["endpoints"] = {
+            "type": "object",
+            "additionalProperties": endpoints["items"],
+            "default": {},
+        }
+        return result
 
 
 @dataclass_json
