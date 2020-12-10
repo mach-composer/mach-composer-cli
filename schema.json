@@ -301,7 +301,10 @@
         "project_key",
         "client_id",
         "client_secret",
-        "scopes"
+        "scopes",
+        "currencies",
+        "languages",
+        "countries"
       ],
       "properties": {
         "project_key": {
@@ -316,6 +319,24 @@
         "scopes": {
           "type": "string"
         },
+        "currencies": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "languages": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "countries": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
         "token_url": {
           "type": "string",
           "default": "https://auth.europe-west1.gcp.commercetools.com"
@@ -323,27 +344,6 @@
         "api_url": {
           "type": "string",
           "default": "https://api.europe-west1.gcp.commercetools.com"
-        },
-        "currencies": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          },
-          "default": []
-        },
-        "languages": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          },
-          "default": []
-        },
-        "countries": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          },
-          "default": []
         },
         "messages_enabled": {
           "type": "boolean",

@@ -24,6 +24,9 @@ requirements:
 	pip install pip-tools
 	pip-compile
 
+schema:
+	python generate_schema.py
+
 # Docker building
 build:
 	docker build -t $(NAME) .
