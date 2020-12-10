@@ -1,6 +1,6 @@
 # Everything-as-configuration-as-code
 
-As a principle, MACH composer encourages delcaratively defining your configuration as code, as much as possible. This will enable you to manage much of your infrastructure in an automated fashion, which in turn will enable you to scale your MACH ecosystem to many instances and use-cases.
+As a principle, MACH composer encourages declaratively defining your configuration as code, as much as possible. This will enable you to manage much of your infrastructure in an automated fashion, which in turn will enable you to scale your MACH ecosystem to many instances and use-cases.
 
 
 ## Terraform & infrastructure-as-code
