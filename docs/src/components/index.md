@@ -4,10 +4,13 @@ A MACH component should be a single repository specifically to provide **domain-
 
 A single component can consist of one or more of the following things:
 
-- custom commercetools objects
 - one or more serverless functions
-- a commercetools API extension
 - other cloud specific infrastructure
+
+Or a MACH service specific functionality or configuration like:
+
+- custom commercetools objects
+- a commercetools API extension
 
 ## One component per domain
 
@@ -62,4 +65,4 @@ This gives you a couple of features:
 
 ## Further reading
 
-Continue to [component structure](./structure.md) for an explenation of a component's internals.
+Continue to [component structure](./structure.md) for an explanation of a component's internals.

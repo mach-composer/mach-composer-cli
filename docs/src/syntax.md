@@ -400,9 +400,9 @@ aws:
 - `extra_providers`
 
 
-### component configurations
+### Component configurations
 
-Configures the components (defined in the [component definitions](#components)) for the site.
+Configures the components for the site. The must reference a defined component (defined in the [component definitions](#components))
 
 Example:
 
@@ -440,9 +440,9 @@ Overwrites any value specified in the site configs [Sentry block](#sentry_1)
 - `rate_limit_window` - The rate limit window that applies to a generated key
 - `rate_limit_count` - The rate limit count that applies to a generated key
 
-## components
+## components definitions
 
-Component definitions.<br>
+All component definitions in this configuration file.<br>
 These components are used and configured separately [per site](#component-configurations).
 
 Example:
