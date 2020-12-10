@@ -42,13 +42,15 @@ Is used to set the `environment` variable of any [Terraform component](./compone
 
 
 ### terraform_config
-Configuration of the Terraform state backend.<br>
-This can be any of:
+Terraform configuration block.
 
-- Azure Blob Container
-- AWS S3
+Can be used to configure the state backend and Terraform provider versions.
 
-#### Azure storage
+- **`azure_remote_state`** - [Azure](#azure_remote_state) remote state configuration
+- **`aws_remote_state`** - [AWS](#aws_remote_state) remote state configuration
+- `providers` - [Providers](#providers) configuration block
+
+#### azure_remote_state
 An Azure state backend can be defined as:
 
 ```yaml
@@ -63,7 +65,7 @@ terraform_config:
 !!! tip ""
     A good convention is to give the state_folder the same name as [`environment`](#environment)
 
-#### AWS S3
+#### aws_remote_state
 An AWS S3 state backend can be defined as:
 
 ```yaml
@@ -79,6 +81,24 @@ terraform_config:
 - `role_arn` - Role ARN to access S3 bucket with
 - `lock_table` - DynamoDB lock table
 - `encrypt` - Enable server side encryption of the state file. Defaults to `True`
+
+#### providers
+
+Can be used to overwrite the MACH defaults for the Terraform provider versions.
+
+Example:
+
+```yaml
+terraform_config:
+  providers:
+    aws: 3.21.0
+```
+
+- `aws` [aws provider](https://registry.terraform.io/providers/hashicorp/aws) version overwrite
+- `azure` [azurerm provider](https://registry.terraform.io/providers/hashicorp/azurerm) version overwrite
+- `commercetools` [commercetools provider](https://registry.terraform.io/providers/labd/commercetools) version overwrite
+- `sentry` [sentry provider](https://registry.terraform.io/providers/jianyuan/sentry) version overwrite
+- `contentful` [contentful provider](https://registry.terraform.io/providers/labd/contentful) version overwrite
 
 ### sentry
 Defines a Sentry configuration.
