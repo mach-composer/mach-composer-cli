@@ -76,6 +76,9 @@
         },
         "aws_remote_state": {
           "$ref": "#/definitions/AWSTFState"
+        },
+        "providers": {
+          "$ref": "#/definitions/TerraformProviders"
         }
       },
       "description": "Terraform configuration."
@@ -129,6 +132,27 @@
         }
       },
       "description": "AWS S3 bucket state backend configuration."
+    },
+    "TerraformProviders": {
+      "type": "object",
+      "properties": {
+        "aws": {
+          "type": "string"
+        },
+        "azure": {
+          "type": "string"
+        },
+        "commercetools": {
+          "type": "string"
+        },
+        "sentry": {
+          "type": "string"
+        },
+        "contentful": {
+          "type": "string"
+        }
+      },
+      "description": "TerraformProviders(aws: Union[str, NoneType] = None, azure: Union[str, NoneType] = None, commercetools: Union[str, NoneType] = None, sentry: Union[str, NoneType] = None, contentful: Union[str, NoneType] = None)"
     },
     "SentryConfig": {
       "type": "object",

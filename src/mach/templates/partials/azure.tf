@@ -1,7 +1,6 @@
 {% set azure = site.azure %}
 
 provider "azurerm" {
-  version = "=2.29.0"
   subscription_id = "{{ azure.subscription_id }}"
   tenant_id       = "{{ azure.tenant_id }}"
   skip_provider_registration = true
