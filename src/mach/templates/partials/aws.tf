@@ -1,7 +1,6 @@
 {% set aws = site.aws %}
 provider "aws" {
   region  = "{{ aws.region }}"
-  version = "~> 3.20.0"
   {% if aws.deploy_role_arn %}
   assume_role {
     role_arn = "arn:aws:iam::{{ aws.account_id }}:role/{{ aws.deploy_role_arn }}"
@@ -13,7 +12,6 @@ provider "aws" {
 provider "aws" {
   alias   = "{{ provider.name }}"
   region  = "{{ provider.region }}"
-  version = "~> 3.20.0"
 
   {% if aws.deploy_role_arn %}
   assume_role {

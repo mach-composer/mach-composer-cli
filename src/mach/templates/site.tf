@@ -30,19 +30,33 @@ terraform {
 
 terraform {
   required_providers {
+    {% if site.aws %}
+    aws = {
+      version = "~> {{ general_config.terraform_config.providers.aws or '3.20.0' }}"
+    }
+    {% endif %}
+    
+    {% if site.azure %}
+    azurerm = {
+      version = "~> {{ general_config.terraform_config.providers.azure or '2.29.0' }}"
+    }
+    {% endif %}
     {% if site.commercetools %}
     commercetools = {
       source = "labd/commercetools"
+      version = "~> {{ general_config.terraform_config.providers.commercetools or '0.24.1' }}"
     }
     {% endif %}
     {% if site.contentful %}
     contentful = {
       source = "labd/contentful"
+      version = "~> {{ general_config.terraform_config.providers.contentful or '0.1.0' }}"
     }
     {% endif %}
     {% if general_config.sentry.managed %}
     sentry = {
       source = "jianyuan/sentry"
+      version = "~> {{ general_config.terraform_config.providers.sentry or '0.6.0' }}"
     }
     {% endif %}
   }
@@ -52,7 +66,6 @@ terraform {
 provider "sentry" {
   token = "{{ general_config.sentry.auth_token }}"
   base_url = "{% if general_config.sentry.base_url %}{{ general_config.sentry.base_url }}{% else %}https://sentry.io/api/{% endif %}"
-  version = "~> 0.6.0"
 }
 {% endif %}
 

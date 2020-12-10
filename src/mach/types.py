@@ -61,11 +61,24 @@ class AWSTFState(JsonSchemaMixin):
 
 @dataclass_json
 @dataclass
+class TerraformProviders(JsonSchemaMixin):
+    """Terraform provider version overwrites"""
+
+    aws: Optional[str] = _none()
+    azure: Optional[str] = _none()
+    commercetools: Optional[str] = _none()
+    sentry: Optional[str] = _none()
+    contentful: Optional[str] = _none()
+
+
+@dataclass_json
+@dataclass
 class TerraformConfig(JsonSchemaMixin):
     """Terraform configuration."""
 
     azure_remote_state: Optional[AzureTFState] = _none()
     aws_remote_state: Optional[AWSTFState] = _none()
+    providers: Optional[TerraformProviders] = _none()
 
 
 @dataclass_json
