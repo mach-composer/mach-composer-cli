@@ -18,3 +18,5 @@ Easy to integrate the MACH composer into your (existing) CI/CD pipeline.
 
 !!! tip "Further reading"
     - [What makes a component](./components/index.md)
+    - [Architectural Guidance](./guidance/index.md)
+    - [Getting started](./gettingstarted.md)

@@ -181,7 +181,7 @@ $ mach plan
 
 ## Example files
 
-You can find example files needed for preparing the infrastructure and a configuration file [on GitHub](https://github.com/labd/mach-composer/examples) in the [/examples](https://github.com/labd/mach-composer/examples) directory
+You can find example files needed for preparing the infrastructure and a configuration file [on GitHub](https://github.com/labd/mach-composer/tree/master/examples/) in the [/examples](https://github.com/labd/mach-composer/tree/master/examples/) directory
 
 ## Further reading
 
@@ -189,4 +189,5 @@ You can find example files needed for preparing the infrastructure and a configu
 - Setup your CI/CD pipeline on [GitLab](./deployment/ci/gitlab.md), [GitHub](./deployment/ci/github.md) or [Azure DevOps](./deployment/ci/devops.md)
 - [Encrypting your configuration](./security.md#encrypt-your-mach-configuration) with SOPS
 - How to create a [new MACH component](./components/index.md)
+- [Architectural Guidance](./guidance/index.md)
 

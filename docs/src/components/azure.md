@@ -91,6 +91,11 @@ To do so, the following has to be configured:
 - [Frontdoor](../syntax.md#frontdoor) settings in the Azure configuration
 - The component needs to have an [`endpoint`](../syntax.md#components) defined
 
+!!! tip "Default endpoint"
+    If you define `endpoint: default` in your component definition, no additional Frontdoor settings are needed.
+
+    MACH will create a Frontdoor instance for you without any custom domain.
+
 More information in the [deployment section](../deployment/config/azure.md#http-routing).
 
 ## Naming conventions
