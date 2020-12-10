@@ -62,7 +62,7 @@ class AWSTFState(JsonSchemaMixin):
 @dataclass_json
 @dataclass
 class TerraformProviders(JsonSchemaMixin):
-    """Terraform provider version overwrites"""
+    """Terraform provider version overwrites."""
 
     aws: Optional[str] = _none()
     azure: Optional[str] = _none()
