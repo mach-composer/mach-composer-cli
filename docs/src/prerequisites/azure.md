@@ -63,6 +63,10 @@ Now the state is stored in the Storage Account and the DynamoDB table will be us
 6. Check if `terraform.tfstate` is empty and remove it.<br>
    Repeat the above three steps for all other environments
 
+!!! tip "Example"
+      See the [examples directory](https://github.com/labd/mach-composer/tree/master/examples/azure/infra/) for an example of a Terraform setup
+
+
 ## Manual setup
 
 ### Create Terraform storage

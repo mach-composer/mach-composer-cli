@@ -23,6 +23,7 @@ nav:
   - components/structure.md
   - components/azure.md
   - components/aws.md
+  - components/public.md
 - Integrations:
   - integrations/commercetools.md
   - integrations/sentry.md
@@ -85,6 +86,7 @@ markdown_extensions:
       guess_lang: false
   - footnotes
   - pymdownx.tabbed
+  - fontawesome_markdown
   - pymdownx.tasklist:
       clickable_checkbox: true
       custom_checkbox: true

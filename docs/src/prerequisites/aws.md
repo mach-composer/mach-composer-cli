@@ -1,13 +1,23 @@
 # Setting up AWS
 
-## Create S3 state backend
+!!! todo
+    This section is not up-to-date yet
+
+## Using Terraform
+
+!!! tip "Example"
+      See the [examples directory](https://github.com/labd/mach-composer/tree/master/examples/aws/infra/) for an example of a Terraform setup
+
+## Manual setup
+
+### Create S3 state backend
 Create a S3 bucket which will be used as Terraform state backend.
 
 !!! info "Setting up AWS"
     For more information on how to setup a S3 state backend including the correct IAM roles, see the [Terraform documentation](https://www.terraform.io/docs/backends/types/s3.html#s3-bucket-permissions)
 
 
-## Create lambda repository
+### Create lambda repository
 
 A S3 bucket should be created where the packaged lambda function code is stored.
 
@@ -40,7 +50,7 @@ A S3 bucket should be created where the packaged lambda function code is stored.
    Along the way, as new sites gets added, extra deploy roles need to be added as well, see [IAM deploy roles](#iam-deploy-role).
 
 
-## Setup AWS account per site
+### Setup AWS account per site
 
 It is recommended to use a dedicated AWS account **per site**.<br>
 This way, all resources are strictly seperated from eachother.
@@ -51,7 +61,7 @@ So the following steps need to be done per site:
 2. Create the [Route53 hosted zones](#route53-zone) needed for the endpoints
 3. Create a ['*deploy*' IAM role](#iam-deploy-role) for MACH to manage your resources
 
-### Route53 zone
+#### Route53 zone
 
 In case you are planning to deploy APIs that need custom routing, one or more Route53 zones needs to be configured.
 
@@ -61,7 +71,7 @@ The full URL of this hosted zone can be configured in the MACH configuration.
     MACH will make sure the API Gateway is created and a SSL certificate is created.<br>
     Each component is responsible for creating the correct routing to the Lambda endpoints.
 
-### IAM deploy role
+#### IAM deploy role
 
 An IAM role should be created with which MACH can perform all necessary infra operations.
 
@@ -70,14 +80,14 @@ An IAM role should be created with which MACH can perform all necessary infra op
 
 It should be possible for the main IAM user MACH is running is can assume this role.
 
-#### Policies
+##### Policies
 Some examples of necessary actions that needs to be allowed on the deploy role are: [^1]
 
 !!! warning ""
     Note that these are very simplified and loose policies used as an example. 
     In practise you might want to configure more strict policies per resource.
 
-##### Access to code repository
+###### Access to code repository
 ```
 statement {
    resources = [
@@ -102,7 +112,7 @@ statement {
 }
 ```
 
-##### Public facing APIs
+###### Public facing APIs
 
 In case you have a public facing API:
 
@@ -117,7 +127,7 @@ statement {
 }
 ```
 
-##### Lambdas
+###### Lambdas
 
 ```
 statement {

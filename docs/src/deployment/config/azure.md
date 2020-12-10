@@ -9,12 +9,28 @@ MACH will create a **[resource group](https://registry.terraform.io/providers/ha
 
 ## HTTP routing
 
-Only when a MACH stack contains components that have an [`endpoint`](../../syntax.md#components) defined, MACH will setup the necessary resources to be able to route traffic to that component:
+Only when a MACH stack contains components that have an [`endpoint`](../../syntax.md#components) defined, MACH will setup a **Frontdoor instance** to be able to route traffic to that component.
 
-- Frontdoor instance
-- DNS record
+### Default endpoint
 
-It will use the information from the [`frontdoor` configuration](../../syntax.md#frontdoor) to setup the Frontdoor instance.
+If you have defined your component with a `default` endpoint, MACH will create a Frontdoor instance for you which includes the default Azure domain.
+
+```
+components:
+  - name: payment
+    source: git::ssh://git@github.com/your-project/components/payment-component.git//terraform
+    endpoint: default
+    version: ....
+```
+
+!!! note ""
+    This `default` endpoint doesnt need to be defined in your [endpoints definition](../../syntax.md#endpoints).
+
+### Custom endpoint
+
+Whenever a custom endpoint from your [endpoints definition](../../syntax.md#endpoints) is used, MACH will require that you have configured [`frontdoor`](../../syntax.md#frontdoor) for additional DNS information that it needs to setup your Frontdoor instance.
+
+In addition to that it will also setup the necessary DNS record.
 
 ### Routes to the component
 
@@ -24,17 +40,17 @@ So when having the following components defined:
 
 ```yaml
 components:
-    - name: payment
-      source: git::ssh://git@github.com/your-project/components/payment-component.git//terraform
-      endpoint: main
-      version: ....
-    - name: api-extensions
-      source: git::ssh://git@github.com/your-project/components/api-extensions-component.git//terraform
-      version: ....
-    - name: graphql
-      source: git::ssh://git@github.com/your-project/components/graphql-component.git//terraform
-      endpoint: main
-      version: ....
+  - name: payment
+    source: git::ssh://git@github.com/your-project/components/payment-component.git//terraform
+    endpoint: main
+    version: ....
+  - name: api-extensions
+    source: git::ssh://git@github.com/your-project/components/api-extensions-component.git//terraform
+    version: ....
+  - name: graphql
+    source: git::ssh://git@github.com/your-project/components/graphql-component.git//terraform
+    endpoint: main
+    version: ....
 ```
 
 The routing in Frontdoor that will be created:

@@ -27,3 +27,10 @@ It uses the [Terraform contentful provider](https://registry.terraform.io/provid
 
 !!! note ""
     [more info](../../integrations/contentful.md) about the Contentful integration
+
+### Amplience
+
+It will use the information from the [amplience settings](../../syntax.md#amplience) to pass to the components that have `amplience` included in their integrations.
+
+!!! note ""
+    [more info](../../integrations/amplience.md) about the Ampience integration
