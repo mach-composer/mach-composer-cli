@@ -26,9 +26,9 @@ nav:
   - components/public.md
 - Integrations:
   - integrations/commercetools.md
-  - integrations/sentry.md
   - integrations/contentful.md
   - integrations/amplience.md
+  - integrations/sentry.md
 - Deployment:
   - Components: deployment/components.md
   - MACH stack: 
