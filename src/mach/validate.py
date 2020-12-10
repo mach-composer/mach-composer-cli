@@ -1,6 +1,7 @@
 import re
 from typing import List
 
+import click
 from mach import types
 from mach.exceptions import ValidationError
 
@@ -34,8 +35,25 @@ def validate_general_config(config: types.GeneralConfig):
                 "Found azure_remote_state configuration, while cloud is set to 'aws'"
             )
 
+    if config.terraform_config:
+        validate_terraform_config(config.terraform_config)
+
     if config.sentry:
         validate_sentry_config(config.sentry)
+
+
+def validate_terraform_config(config: types.TerraformConfig):
+    if config.providers:
+        click.secho("Terraform provider versions", bold=True, fg="yellow")
+        click.secho(
+            "\n".join(
+                [
+                    "You are using custom Terraform provider versions.",
+                    "Please be aware that some unexpected changes might occur compared to the MACH defaults.",  # noqa
+                ]
+            ),
+            fg="yellow",
+        )
 
 
 def validate_site(site: types.Site, *, config: types.MachConfig):
