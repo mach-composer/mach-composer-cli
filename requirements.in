@@ -6,3 +6,4 @@ Jinja2==2.11.1
 PyYAML==5.3
 requests==2.23.0
 cookiecutter==1.7.2
+colorama==0.4.4
