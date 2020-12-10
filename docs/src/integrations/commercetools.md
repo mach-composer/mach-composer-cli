@@ -1,4 +1,4 @@
-# Commercetools
+# commercetools
 
 ## Configuration
 
