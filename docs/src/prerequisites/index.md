@@ -18,7 +18,7 @@ The machine MACH runs on needs to have [Docker](https://www.docker.com) installe
 ## commercetools
 
 !!! note "Optional"
-    Follow this steps if you want to follow the documentation as a tutorial
+    This step is only necessary if you are going to use the commercetools integration in your MACH stack
 
 Create a API client *'to rule them all'*.
 
