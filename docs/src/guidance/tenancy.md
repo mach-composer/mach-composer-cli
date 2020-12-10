@@ -1,6 +1,6 @@
 # Designing your Tenancy model
 
-When using MACH composer, chances are you want to manage multiple use-cases with it, from a single basis. At least, this is what MACH composer is inteded for: building platforms that span many use-cases that share a big part of how they are built. 
+When using MACH composer, chances are you want to manage multiple use-cases with it, from a single basis. At least, this is what MACH composer is intended for: building platforms that span many use-cases that share a big part of how they are built. 
 
 MACH composer allows you to orchestrate multi-tenant environments and implement use-case specific requirements where needed, without sacrificing the scalability (and perhaps more importantly, its maintainability) for it.
 
@@ -50,7 +50,7 @@ MACH systems (such as commercetools, contentful or Amplience) are usually multi-
     - The Merchant Center does not always provide the `store` 'context'. This means that managers of store A might be able to see resources of store B.
         - If this is a problem, this might be a reason to create an additional `project` instead of solving it with a `store`
 2. When hosting multiple commercetools regions, commercetools might incur extra costs depending on the region (prices may differ).
-3. Extra costs might be incurred for extra `projects` that are created in your commercetools organisation. This i usually contract-bound.
+3. Extra costs might be incurred for extra `projects` that are created in your commercetools organisation. This is usually contract-bound.
     - This includes setting up non-production (dev, test, qa) `projects` in commercetools
 
 

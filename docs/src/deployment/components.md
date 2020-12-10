@@ -69,7 +69,6 @@ The content of the `upload` and `package` functions can be taken from the exampl
     upload () {
         src="build/${ARTIFACT_NAME}"
         dest=$ARTIFACT_NAME
-      <br>
         STORAGE_ACCOUNT_KEY=`az storage account keys list -g my-shared-we-rg -n mysharedwesacomponents --query [0].value -o tsv`
         az storage blob upload --account-name mysharedwesacomponents --account-key ${STORAGE_ACCOUNT_KEY} -c code -f $src -c code -n $dest
     }

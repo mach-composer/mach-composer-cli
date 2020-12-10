@@ -49,7 +49,7 @@ $ terraform apply
 ```terraform
 terraform {
  required_version = ">= 0.13.0"
- backend "s3" {
+ backend "azurerm" {
  }
 }
 ```
@@ -57,7 +57,7 @@ terraform {
 ```bash
 $ terraform init -reconfigure 
 ```
-Terraform will detect that you're trying to move your state into S3 and ask; "*Do you want to copy existing state to the new backend?*".<br>
+Terraform will detect that you're trying to move your state into Azure and ask; "*Do you want to copy existing state to the new backend?*".<br>
 Enter **"yes"**.<br>
 Now the state is stored in the Storage Account and the DynamoDB table will be used to lock the state to prevent concurrent modifications.
 6. Check if `terraform.tfstate` is empty and remove it.<br>

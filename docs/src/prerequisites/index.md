@@ -17,6 +17,9 @@ The machine MACH runs on needs to have [Docker](https://www.docker.com) installe
 
 ## commercetools
 
+!!! note "Optional"
+    Follow this steps if you want to follow the documentation as a tutorial
+
 Create a API client *'to rule them all'*.
 
 Required scopes:
@@ -34,9 +37,11 @@ Use the credentials for this client to configure each site's [commercetools sett
 
 Setup your [Azure](./azure.md) or [AWS](./aws.md) environment.
 
-## Other integrations
+## Other built-in integrations
 
 MACH also provides other integrations that you can include in your MACH environment.
 
-- [Sentry integration](../integrations/sentry.md)
+- [Commercetools integration](../integrations/commercetools.md)
 - [Contentful integration](../integrations/contentful.md)
+- [Amplience integration](../integrations/amplience.md)
+- [Sentry integration](../integrations/sentry.md)
