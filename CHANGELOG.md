@@ -54,6 +54,7 @@
   var.variables["CT_AUTH_URL"]
   ```
   See [0.5.0 release notes](#050-2020-11-09)
+- The `var.environment_variables` won't be set by MACH anymore. Use `var.variables` for this
   
 
 ## 0.5.1 (2020-11-10)
