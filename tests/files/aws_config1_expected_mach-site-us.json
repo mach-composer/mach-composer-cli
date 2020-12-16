@@ -26,14 +26,21 @@
     {
       "required_providers": [
         {
+          "aws": [
+            {
+              "version": "~> 3.20.0"
+            }
+          ],
           "commercetools": [
             {
-              "source": "labd/commercetools"
+              "source": "labd/commercetools",
+              "version": "~> 0.24.1"
             }
           ],
           "sentry": [
             {
-              "source": "jianyuan/sentry"
+              "source": "jianyuan/sentry",
+              "version": "~> 0.6.0"
             }
           ]
         }
@@ -48,17 +55,11 @@
         ],
         "base_url": [
           "https://sentry.io/api/"
-        ],
-        "version": [
-          "~> 0.6.0"
         ]
       }
     },
     {
       "commercetools": {
-        "version": [
-          "=0.24.1"
-        ],
         "client_id": [
           "6SWM8ttjAYll-f9dopjdt"
         ],
@@ -83,9 +84,6 @@
       "aws": {
         "region": [
           "us-west-1"
-        ],
-        "version": [
-          "~> 3.20.0"
         ]
       }
     }
