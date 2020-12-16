@@ -420,7 +420,6 @@ aws:
 - **`account_id`** - (Required) AWS account ID for this site
 - **`region`** - AWS region to deploy site in
 - `deploy_role_arn` - The [IAM role](./prerequisites/aws#iam-deploy-role) ARN needed for deployment
-- `route53_zone_name` - Define the Route53 zone name on which the endpoints need to be added to. Required when endpoints are defined.
 - `extra_providers`
 
 

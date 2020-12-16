@@ -21,7 +21,6 @@ sites:
     aws:
       account_id: 940853598232
       region: eu-central-1
-      route53_zone_name: eu-tst.mach-example.net
     commercetools:
       project_key: mach-site-eu
       client_id: 6SWM8ttjAYll-f9dopjdt
@@ -46,7 +45,6 @@ sites:
     aws:
       account_id: 940853598234
       region: us-west-1
-      route53_zone_name: us-tst.mach-example.net
     commercetools:
       project_key: mach-site-us
       client_id: 6SWM8ttjAYll-f9dopjdt

@@ -27,7 +27,7 @@ A site might have a couple of [endpoints](../../syntax.md#endpoints) defined and
 
 - API Gateway + default routing
 - ACM Certificate (with DNS validation)
-- Route53 record on the zone configured with the [`route53_zone_name` setting](../../syntax.md#aws)
+- Route53 record on the zone auto-detected or configured on the endpoint
 
 
 !!! info "Route53 zone"
