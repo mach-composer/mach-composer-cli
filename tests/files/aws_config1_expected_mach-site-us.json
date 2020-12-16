@@ -252,7 +252,7 @@
   "data": [
     {
       "aws_route53_zone": {
-        "main": {
+        "us_tstmach_examplenet": {
           "name": [
             "us-tst.mach-example.net"
           ]
