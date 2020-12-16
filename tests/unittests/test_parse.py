@@ -40,7 +40,6 @@ def test_resolve_sentry_configs(config: types.MachConfig):
 
 
 def test_parse_endpoints(config: types.MachConfig):
-    config.sites[0].aws.route53_zone_name = "mach-example.com"
     config.sites[0].endpoints = [
         types.Endpoint(
             key="public",

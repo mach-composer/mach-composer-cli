@@ -104,9 +104,7 @@ def resolve_site_configs(config: MachConfig) -> MachConfig:
             if endpoint.zone:
                 continue
 
-            if site.aws:
-                endpoint.zone = site.aws.route53_zone_name
-            elif site.azure and site.azure.frontdoor:
+            if site.azure and site.azure.frontdoor:
                 endpoint.zone = site.azure.frontdoor.dns_zone
 
         # Merge Contentful settings

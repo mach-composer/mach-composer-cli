@@ -378,13 +378,6 @@ class SiteAWSSettings(JsonSchemaMixin):
     region: str
     deploy_role_arn: Optional[str] = _none()
     extra_providers: Optional[List[AWSProvider]] = _list()
-    route53_zone_name: Optional[str] = _none()
-
-    @property
-    def route53_zones(self):
-        if self.route53_zone_name:
-            return [self.route53_zone_name]
-        return []
 
 
 @dataclass_json
@@ -442,6 +435,12 @@ class Endpoint:
     def __post_init__(self):
         """Ensure endpoints have protocol stripped."""
         self.url = utils.strip_protocol(self.url)
+
+        if not self.zone:
+            try:
+                self.zone = utils.dns_zone_from_url(self.url)
+            except ValueError as e:
+                raise ValidationError(f"Could not determine DNS zone: {e}")
 
 
 class EndpointsField(fields.Dict):
@@ -505,6 +504,10 @@ class Site(JsonSchemaMixin):
     def used_endpoints(self) -> List[Endpoint]:
         """Return only the endpoints that are actually used by the components."""
         return [ep for ep in self.endpoints if ep.components]
+
+    @property
+    def dns_zones(self) -> List[str]:
+        return list({e.zone for e in self.used_endpoints if e.zone})
 
     @classmethod
     def json_schema(cls, *args, **kwargs):
