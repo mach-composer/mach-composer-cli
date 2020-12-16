@@ -218,7 +218,7 @@ def test_generate_azure_w_endpoints(azure_config: types.MachConfig, tf_mock):
 
 
 def test_generate_aws_w_default_endpoint(config: types.MachConfig, tf_mock):
-    """When endpoint 'default' is used, no custom domain has to be set"""
+    """When endpoint 'default' is used, no custom domain has to be set."""
     data = _generate(parse.parse_config(config))
 
     # 'public' endpoint not used in component yet; no resources created
@@ -237,7 +237,7 @@ def test_generate_aws_w_default_endpoint(config: types.MachConfig, tf_mock):
 
 
 def test_generate_azure_w_default_endpoint(azure_config: types.MachConfig, tf_mock):
-    """When endpoint 'default' is used, no custom domain has to be set"""
+    """When endpoint 'default' is used, no custom domain has to be set."""
     config = azure_config
     data = _generate(parse.parse_config(config))
 
