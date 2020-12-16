@@ -126,7 +126,7 @@ def resolve_endpoint_components(site: Site):
     endpoint_components = defaultdict(list)
 
     for c in site.components:
-        if not site.endpoints:
+        if not c.endpoint:
             continue
 
         endpoint_components[c.endpoint].append(c)
