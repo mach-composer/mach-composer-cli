@@ -17,7 +17,9 @@ RUN apk add --no-cache --virtual .build-deps g++ libffi-dev openssl-dev wget unz
 RUN pip --no-cache-dir install azure-cli==${AZURE_CLI_VERSION}
 
 # Pre-install Terreform plugins
+ENV TF_PLUGIN_CACHE_DIR=/root/.terraform.d/plugin-cache
 ENV TERRAFORM_PLUGINS_PATH=/root/.terraform.d/plugins/linux_amd64
+RUN mkdir -p ${TF_PLUGIN_CACHE_DIR}
 RUN mkdir -p ${TERRAFORM_PLUGINS_PATH}
 
 # Install terraform

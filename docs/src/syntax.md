@@ -100,6 +100,10 @@ terraform_config:
 - `sentry` [sentry provider](https://registry.terraform.io/providers/jianyuan/sentry) version overwrite
 - `contentful` [contentful provider](https://registry.terraform.io/providers/labd/contentful) version overwrite
 
+
+!!! tip "Cache your providers"
+    If you're overwriting the provider versions, make sure you [mount the plugins cache](./deployment/config/index.md#cache-terraform-providers)
+
 ### sentry
 Defines a Sentry configuration.
 

@@ -67,3 +67,20 @@ When running the **MACH Docker image**, the necessary environment variables need
 
     For Azure you'll need to run it with the `--with-sp-login` option let the MACH composer perform an `az login` command.<br>
     [More info](./../../workflow/cli.md#apply).
+
+
+## Cache Terraform providers
+
+The MACH composer comes with Terraform providers pre-installed in the Docker image.
+
+If you're overwriting these versions with in your [`terraform_config` block](../../syntax.md#terraform_config), these providers will be downloaded.
+
+To avoid having to re-download it everytime you run MACH through the Docker image, make sure you mount the [plugin cache](https://www.terraform.io/docs/commands/cli-config.html#provider-plugin-cache) directory;
+
+```bash
+docker run --rm \
+    --volume $(pwd):/code \
+    --volume $(pwd)/.terraform_cache:/root/.terraform.d/plugin-cache \
+    docker.pkg.github.com/labd/mach-composer/mach:latest \
+    apply
+```
