@@ -22,7 +22,11 @@ provider "aws" {
 {% endfor %}
 
 {% if site.used_endpoints %}
-  {% include 'partials/endpoints/aws_domains.tf' %}
+  {% if site.aws.route53_zone_name %}
+  data "aws_route53_zone" "main" {
+    name = "{{ site.aws.route53_zone_name }}"
+  }
+  {% endif %}
 
   {% for endpoint in site.used_endpoints %}
     {% include 'partials/endpoints/aws_api_gateway.tf' %}

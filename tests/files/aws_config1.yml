@@ -43,8 +43,6 @@ sites:
         variables:
           ORDER_PREFIX: MACH-
   - identifier: mach-site-us
-    endpoints: 
-      main: https://api.us-tst.mach-example.net
     aws:
       account_id: 940853598234
       region: us-west-1
@@ -62,7 +60,7 @@ sites:
         - US
     components:
       - name: commercetools-config
-      - name: payment
+      - name: us-payment
       - name: api-extensions
         variables:
           ORDER_PREFIX: MACH-
@@ -75,6 +73,11 @@ components:
   - name: payment
     source: git::https://github.com/some-organisation/mach-component-payment.git//terraform
     endpoint: main
+    version: 0a9a0b5
+    integrations: ["aws", "commercetools"]
+  - name: us-payment
+    source: git::https://github.com/some-organisation/mach-component-payment.git//terraform
+    endpoint: default
     version: 0a9a0b5
     integrations: ["aws", "commercetools"]
   - name: api-extensions
