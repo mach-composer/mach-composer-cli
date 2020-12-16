@@ -92,11 +92,10 @@ def test_validate_azure_endpoints(parsed_azure_config: types.MachConfig):
         validate.validate_config(config)
 
 
-def test_validate_azure_default_endpoint(parsed_azure_config: types.MachConfig):
-    """It must be possible for a component to use the default Frontdoor endpoint."""
-    config = parsed_azure_config
-
+def test_validate_aws_default_endpoint(config: types.MachConfig):
+    """It must be possible for a component to use the default API Gateway endpoint."""
     config.components[0].endpoint = "public"
+    config = parse.parse_config(config)
 
     with pytest.raises(ValidationError) as e:
         validate.validate_config(config)
@@ -104,6 +103,23 @@ def test_validate_azure_default_endpoint(parsed_azure_config: types.MachConfig):
     assert str(e.value) == "Missing required endpoints public"
 
     config.components[0].endpoint = "default"
+    config = parse.parse_config(config)
+    validate.validate_config(config)
+
+
+def test_validate_azure_default_endpoint(azure_config: types.MachConfig):
+    """It must be possible for a component to use the default Frontdoor endpoint."""
+    config = azure_config
+    config.components[0].endpoint = "public"
+    config = parse.parse_config(config)
+
+    with pytest.raises(ValidationError) as e:
+        validate.validate_config(config)
+
+    assert str(e.value) == "Missing required endpoints public"
+
+    config.components[0].endpoint = "default"
+    config = parse.parse_config(config)
     validate.validate_config(config)
 
 

@@ -151,45 +151,10 @@
       }
     },
     {
-      "aws_acm_certificate": {
-        "main": {
-          "domain_name": [
-            "api.us-tst.mach-example.net"
-          ],
-          "validation_method": [
-            "DNS"
-          ]
-        }
-      }
-    },
-    {
-      "aws_route53_record": {
-        "main_acm_validation": {
-          "zone_id": [
-            "${data.aws_route53_zone.main.zone_id}"
-          ],
-          "name": [
-            "${tolist(aws_acm_certificate.main.domain_validation_options)[0].resource_record_name}"
-          ],
-          "type": [
-            "${tolist(aws_acm_certificate.main.domain_validation_options)[0].resource_record_type}"
-          ],
-          "ttl": [
-            60
-          ],
-          "records": [
-            [
-              "${tolist(aws_acm_certificate.main.domain_validation_options)[0].resource_record_value}"
-            ]
-          ]
-        }
-      }
-    },
-    {
       "aws_apigatewayv2_api": {
-        "main_gateway": {
+        "default_gateway": {
           "name": [
-            "mach-site-us-main-api"
+            "mach-site-us-default-api"
           ],
           "protocol_type": [
             "HTTP"
@@ -199,9 +164,9 @@
     },
     {
       "aws_apigatewayv2_route": {
-        "main_application": {
+        "default_application": {
           "api_id": [
-            "${aws_apigatewayv2_api.main_gateway.id}"
+            "${aws_apigatewayv2_api.default_gateway.id}"
           ],
           "route_key": [
             "$default"
@@ -211,7 +176,7 @@
     },
     {
       "aws_apigatewayv2_stage": {
-        "main_default": {
+        "default_default": {
           "name": [
             "$default"
           ],
@@ -219,80 +184,15 @@
             "Stage for default release"
           ],
           "api_id": [
-            "${aws_apigatewayv2_api.main_gateway.id}"
+            "${aws_apigatewayv2_api.default_gateway.id}"
           ],
           "auto_deploy": [
             true
           ],
           "depends_on": [
             [
-              "${module.payment}"
+              "${module.us-payment}"
             ]
-          ]
-        }
-      }
-    },
-    {
-      "aws_apigatewayv2_domain_name": {
-        "main": {
-          "domain_name": [
-            "api.us-tst.mach-example.net"
-          ],
-          "domain_name_configuration": [
-            {
-              "certificate_arn": [
-                "${aws_acm_certificate.main.arn}"
-              ],
-              "endpoint_type": [
-                "REGIONAL"
-              ],
-              "security_policy": [
-                "TLS_1_2"
-              ]
-            }
-          ]
-        }
-      }
-    },
-    {
-      "aws_route53_record": {
-        "main": {
-          "name": [
-            "${aws_apigatewayv2_domain_name.main.domain_name}"
-          ],
-          "type": [
-            "A"
-          ],
-          "zone_id": [
-            "${data.aws_route53_zone.main.id}"
-          ],
-          "alias": [
-            {
-              "name": [
-                "${aws_apigatewayv2_domain_name.main.domain_name_configuration[0].target_domain_name}"
-              ],
-              "zone_id": [
-                "${aws_apigatewayv2_domain_name.main.domain_name_configuration[0].hosted_zone_id}"
-              ],
-              "evaluate_target_health": [
-                false
-              ]
-            }
-          ]
-        }
-      }
-    },
-    {
-      "aws_apigatewayv2_api_mapping": {
-        "main": {
-          "api_id": [
-            "${aws_apigatewayv2_api.main_gateway.id}"
-          ],
-          "stage": [
-            "${aws_apigatewayv2_stage.main_default.id}"
-          ],
-          "domain_name": [
-            "api.us-tst.mach-example.net"
           ]
         }
       }
@@ -377,7 +277,7 @@
       }
     },
     {
-      "payment": {
+      "us-payment": {
         "source": [
           "git::https://github.com/some-organisation/mach-component-payment.git//terraform?ref=0a9a0b5"
         ],
@@ -397,10 +297,10 @@
           {}
         ],
         "api_gateway": [
-          "${aws_apigatewayv2_api.main_gateway.id}"
+          "${aws_apigatewayv2_api.default_gateway.id}"
         ],
         "api_gateway_execution_arn": [
-          "${aws_apigatewayv2_api.main_gateway.execution_arn}"
+          "${aws_apigatewayv2_api.default_gateway.execution_arn}"
         ],
         "ct_project_key": [
           "mach-site-us"
@@ -421,7 +321,7 @@
         ],
         "depends_on": [
           [
-            "${aws_apigatewayv2_api.main_gateway}",
+            "${aws_apigatewayv2_api.default_gateway}",
             "${null_resource.commercetools}"
           ]
         ]

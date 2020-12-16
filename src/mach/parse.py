@@ -9,6 +9,7 @@ from mach import exceptions
 from mach.types import (
     CloudOption,
     ComponentConfig,
+    Endpoint,
     MachConfig,
     SentryDsn,
     Site,
@@ -124,12 +125,23 @@ def resolve_site_configs(config: MachConfig) -> MachConfig:
 
 def resolve_endpoint_components(site: Site):
     endpoint_components = defaultdict(list)
-
     for c in site.components:
         if not c.endpoint:
             continue
 
         endpoint_components[c.endpoint].append(c)
+
+    # If one of the components has a 'default' endpoint defined,
+    # we'll include it to our site endpoints.
+    # A 'default' endpoint is one without a custom domain, so no further
+    # Route53 or DNS zone settings required.
+    if "default" in endpoint_components:
+        site.endpoints.append(
+            Endpoint(
+                url="",
+                key="default",
+            )
+        )
 
     for endpoint in site.endpoints:
         endpoint.components = endpoint_components.get(endpoint.key, [])
