@@ -45,7 +45,8 @@ Encrypting your file can be done with the `sops --encrypt` command:
     ```
 === "Azure"
     ```bash
-    $ sops -e --encrypted-regex '^(.*(secret|token).*)$' --azure-kv https://yoursharedsops.vault.azure.net/keys/sops-key/<your-key> main.yml > main.enc.yml
+    $ export SOPS_AZURE_KEYVAULT_URLS="https://yoursharedsops.vault.azure.net/keys/sops-key/<your-key>"
+    $ sops -e --encrypted-regex '^(.*(secret|token).*)$' main.yml > main.enc.yml
     $ mv main.enc.yml main.yml
     ```
 
