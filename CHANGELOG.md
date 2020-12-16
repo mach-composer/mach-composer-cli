@@ -15,6 +15,7 @@
 - Updated Terraform commercetools provider to `0.24.1`
 - AWS: Set `auto-deploy` on API gateway stage
 - Azure: Add new required `frontdoor_id` Terraform variable for components with `endpoint` defined
+- Azure: Add `--with-sp-login` option to `mach plan` command
 
 
 **Breaking changes**

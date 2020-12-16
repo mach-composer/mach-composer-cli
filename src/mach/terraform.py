@@ -39,13 +39,21 @@ def _clean_tf(content: str) -> str:
     return re.sub(r"\{(\s*)\}", "{}", content)
 
 
-def plan_terraform(output_dir: Path):
+def plan_terraform(config: MachConfig, *, with_sp_login: bool = False):
     """Terraform init and plan for all generated sites."""
-    for site_dir in output_dir.iterdir():
-        if site_dir.is_dir():
-            click.echo(f"Terraform plan for {site_dir.name}")
-            run_terraform("init", site_dir)
-            run_terraform("plan", site_dir)
+    for site in config.sites:
+        site_dir = config.deployment_path / Path(site.identifier)
+        if not site_dir.is_dir():
+            click.echo(f"Could not find site directory {site_dir}")
+            continue
+
+        click.echo(f"Terraform plan for {site_dir.name}")
+        run_terraform("init", site_dir)
+
+        if with_sp_login:
+            azure_sp_login()
+
+        run_terraform("plan", site_dir)
 
 
 def apply_terraform(
