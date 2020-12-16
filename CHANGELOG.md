@@ -7,6 +7,7 @@
 - Add support for multiple API endpoints:
     - `base_url` replaced with `endpoints`
     - `has_public_api` replaced with `endpoint`
+- Add option to override Terraform provider versions
 - Improved dependencies between components and MACH-managed commercetools configurations
 - Improved git log parsing
 - Add `mach bootstrap` commands:
