@@ -1,3 +1,4 @@
+{% if endpoint.url %}
 resource "aws_acm_certificate" "{{ endpoint.key|slugify }}" {
   domain_name       = "{{ endpoint.url }}"
   validation_method = "DNS"
@@ -10,6 +11,7 @@ resource "aws_route53_record" "{{ endpoint.key|slugify }}_acm_validation" {
   ttl     = 60
   records = [tolist(aws_acm_certificate.{{ endpoint.key|slugify }}.domain_validation_options)[0].resource_record_value]
 }
+{% endif %}
 
 # API Gateway
 resource "aws_apigatewayv2_api" "{{ endpoint.key|slugify }}_gateway" {
@@ -35,6 +37,7 @@ resource "aws_apigatewayv2_stage" "{{ endpoint.key|slugify }}_default" {
   ]
 }
 
+{% if endpoint.url %}
 # Route53 mappings
 resource "aws_apigatewayv2_domain_name" "{{ endpoint.key|slugify }}" {
   domain_name = "{{ endpoint.url }}"
@@ -63,3 +66,4 @@ resource "aws_apigatewayv2_api_mapping" "{{ endpoint.key|slugify }}" {
   stage       = aws_apigatewayv2_stage.{{ endpoint.key|slugify }}_default.id
   domain_name = "{{ endpoint.url }}"
 }
+{% endif %}

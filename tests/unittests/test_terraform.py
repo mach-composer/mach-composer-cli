@@ -92,7 +92,7 @@ def test_generate_w_sentry(parsed_config: types.MachConfig, tf_mock):
     assert sentry_data["rate_limit_count"] == 100
 
 
-def test_generate_w_endpoints(config: types.MachConfig, tf_mock):
+def test_generate_aws_w_endpoints(config: types.MachConfig, tf_mock):
     config.sites[0].endpoints = [
         types.Endpoint(key="public", url="api.mach-example.com")
     ]
@@ -157,6 +157,103 @@ def test_generate_w_endpoints(config: types.MachConfig, tf_mock):
         "aws_route53_record.private_acm_validation",
         "aws_route53_record.public",
         "aws_route53_record.public_acm_validation",
+    ]
+
+
+def test_generate_azure_w_endpoints(azure_config: types.MachConfig, tf_mock):
+    config = azure_config
+    config.sites[0].endpoints = [
+        types.Endpoint(key="public", url="api.mach-example.com")
+    ]
+    data = _generate(parse.parse_config(config))
+
+    # 'public' endpoint not used in component yet; no resources created
+    assert _get_resource_ids(data) == [
+        "azurerm_app_service_plan.functionapps",
+        "azurerm_resource_group.main",
+    ]
+
+    config.components[0].endpoint = "public"
+    data = _generate(parse.parse_config(config))
+
+    # Frontdoor instance need to be created since a component now uses it
+    expected_resources = [
+        "azurerm_app_service_plan.functionapps",
+        "azurerm_frontdoor.app-service",
+        "azurerm_resource_group.main",
+    ]
+    assert _get_resource_ids(data) == expected_resources
+
+    config.sites[0].endpoints.append(
+        types.Endpoint(key="private", url="private-api.mach-example.com")
+    )
+    data = _generate(parse.parse_config(config))
+
+    # We've added an extra endpoint definition, but hasn't been used.
+    # List of resources should be the same as previous check
+    assert _get_resource_ids(data) == expected_resources
+
+    config.components.append(
+        types.ComponentConfig(
+            name="logger",
+            source="some-source//terraform",
+            version="1.0",
+            endpoint="private",
+        )
+    )
+    config.sites[0].components.append(
+        types.Component(
+            name="logger",
+        )
+    )
+    data = _generate(parse.parse_config(config))
+    # TODO: At the moment, we don't support multiple endpoints in Azure yet.
+    # So still 1 frontdoor instance.
+    # Open issue: https://github.com/labd/mach-composer/issues/32
+    assert _get_resource_ids(data) == [
+        "azurerm_app_service_plan.functionapps",
+        "azurerm_frontdoor.app-service",
+        "azurerm_resource_group.main",
+    ]
+
+
+def test_generate_aws_w_default_endpoint(config: types.MachConfig, tf_mock):
+    """When endpoint 'default' is used, no custom domain has to be set"""
+    data = _generate(parse.parse_config(config))
+
+    # 'public' endpoint not used in component yet; no resources created
+    assert "resource" not in data
+
+    config.components[0].endpoint = "default"
+    data = _generate(parse.parse_config(config))
+
+    # API gateway items need to be created since a component now uses it
+    expected_resources = [
+        "aws_apigatewayv2_api.default_gateway",
+        "aws_apigatewayv2_route.default_application",
+        "aws_apigatewayv2_stage.default_default",
+    ]
+    assert _get_resource_ids(data) == expected_resources
+
+
+def test_generate_azure_w_default_endpoint(azure_config: types.MachConfig, tf_mock):
+    """When endpoint 'default' is used, no custom domain has to be set"""
+    config = azure_config
+    data = _generate(parse.parse_config(config))
+
+    # 'public' endpoint not used in component yet; no resources created
+    assert _get_resource_ids(data) == [
+        "azurerm_app_service_plan.functionapps",
+        "azurerm_resource_group.main",
+    ]
+
+    config.components[0].endpoint = "default"
+    data = _generate(parse.parse_config(config))
+
+    assert _get_resource_ids(data) == [
+        "azurerm_app_service_plan.functionapps",
+        "azurerm_frontdoor.app-service",
+        "azurerm_resource_group.main",
     ]
 
 

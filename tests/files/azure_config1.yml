@@ -26,8 +26,6 @@ general_config:
     rate_limit_count: 100
 sites:
   - identifier: mach-site-eu
-    endpoints: 
-      public: https://api.eu-tst.mach-services.net
     commercetools:
       project_key: mach-site-eu
       client_id: 6SWM8ttjAYll-f9dopjdt
@@ -44,7 +42,7 @@ sites:
         - GB
     components:
       - name: commercetools-config
-      - name: payment
+      - name: us-payment
       - name: api-extensions
         variables:
           ORDER_PREFIX: MACH-
@@ -77,6 +75,11 @@ components:
   - name: payment
     source: git::https://github.com/some-organisation/mach-component-payment.git//terraform
     endpoint: public
+    version: 0a9a0b5
+    integrations: ["azure", "commercetools"]
+  - name: us-payment
+    source: git::https://github.com/some-organisation/mach-component-payment.git//terraform
+    endpoint: default
     version: 0a9a0b5
     integrations: ["azure", "commercetools"]
   - name: api-extensions

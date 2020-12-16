@@ -70,7 +70,7 @@ def validate_site(site: types.Site, *, config: types.MachConfig):
 def validate_endpoints(site: types.Site, cloud: types.CloudOption):
     dns_zone = None
 
-    if site.endpoints:
+    if site.endpoints and any([e.url for e in site.endpoints]):
         # Construct lookup dictionary of all endpoints with the components that use them
         if cloud == types.CloudOption.AWS:
             dns_zone = site.aws.route53_zone_name
@@ -97,13 +97,6 @@ def validate_endpoints(site: types.Site, cloud: types.CloudOption):
 
     expected_endpoint_names = {c.endpoint for c in site.components if c.endpoint}
     endpoint_names = {e.key for e in site.endpoints}
-
-    if cloud == types.CloudOption.AZURE:
-        # In Azure, we can create a Frontdoor instance without specifying a specific domain.
-        # If no custom domains are needed, a component can define their endpoint with 'default',
-        # indicating that it does need an endpoint, but doesnt need to be one defined in the site
-        # definition
-        endpoint_names |= {"default"}
 
     missing = expected_endpoint_names - endpoint_names
     if missing:
