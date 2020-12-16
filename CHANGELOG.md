@@ -7,6 +7,7 @@
 - Add support for multiple API endpoints:
     - `base_url` replaced with `endpoints`
     - `has_public_api` replaced with `endpoint`
+    - Supports a `default` endpoint that doesnt require custom domain settings
 - Add option to override Terraform provider versions
 - Improved dependencies between components and MACH-managed commercetools configurations
 - Improved git log parsing
