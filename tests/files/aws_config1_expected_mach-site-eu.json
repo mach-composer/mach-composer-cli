@@ -154,41 +154,6 @@
       }
     },
     {
-      "aws_acm_certificate": {
-        "main": {
-          "domain_name": [
-            "api.eu-tst.mach-example.net"
-          ],
-          "validation_method": [
-            "DNS"
-          ]
-        }
-      }
-    },
-    {
-      "aws_route53_record": {
-        "main_acm_validation": {
-          "zone_id": [
-            "${data.aws_route53_zone.main.zone_id}"
-          ],
-          "name": [
-            "${tolist(aws_acm_certificate.main.domain_validation_options)[0].resource_record_name}"
-          ],
-          "type": [
-            "${tolist(aws_acm_certificate.main.domain_validation_options)[0].resource_record_type}"
-          ],
-          "ttl": [
-            60
-          ],
-          "records": [
-            [
-              "${tolist(aws_acm_certificate.main.domain_validation_options)[0].resource_record_value}"
-            ]
-          ]
-        }
-      }
-    },
-    {
       "aws_apigatewayv2_api": {
         "main_gateway": {
           "name": [
@@ -230,6 +195,41 @@
           "depends_on": [
             [
               "${module.payment}"
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "aws_acm_certificate": {
+        "main": {
+          "domain_name": [
+            "api.eu-tst.mach-example.net"
+          ],
+          "validation_method": [
+            "DNS"
+          ]
+        }
+      }
+    },
+    {
+      "aws_route53_record": {
+        "main_acm_validation": {
+          "zone_id": [
+            "${data.aws_route53_zone.main.zone_id}"
+          ],
+          "name": [
+            "${tolist(aws_acm_certificate.main.domain_validation_options)[0].resource_record_name}"
+          ],
+          "type": [
+            "${tolist(aws_acm_certificate.main.domain_validation_options)[0].resource_record_type}"
+          ],
+          "ttl": [
+            60
+          ],
+          "records": [
+            [
+              "${tolist(aws_acm_certificate.main.domain_validation_options)[0].resource_record_value}"
             ]
           ]
         }
