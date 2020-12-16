@@ -216,7 +216,7 @@
       "aws_route53_record": {
         "main_acm_validation": {
           "zone_id": [
-            "${data.aws_route53_zone.main.zone_id}"
+            "${data.aws_route53_zone.eu_tstmach_examplenet.zone_id}"
           ],
           "name": [
             "${tolist(aws_acm_certificate.main.domain_validation_options)[0].resource_record_name}"
@@ -267,7 +267,7 @@
             "A"
           ],
           "zone_id": [
-            "${data.aws_route53_zone.main.id}"
+            "${data.aws_route53_zone.eu_tstmach_examplenet.id}"
           ],
           "alias": [
             {
@@ -355,7 +355,7 @@
   "data": [
     {
       "aws_route53_zone": {
-        "main": {
+        "eu_tstmach_examplenet": {
           "name": [
             "eu-tst.mach-example.net"
           ]

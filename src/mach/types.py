@@ -380,6 +380,12 @@ class SiteAWSSettings(JsonSchemaMixin):
     extra_providers: Optional[List[AWSProvider]] = _list()
     route53_zone_name: Optional[str] = _none()
 
+    @property
+    def route53_zones(self):
+        if self.route53_zone_name:
+            return [self.route53_zone_name]
+        return []
+
 
 @dataclass_json
 @dataclass
@@ -417,6 +423,7 @@ class SiteAzureSettings(JsonSchemaMixin):
 class Endpoint:
     url: str
     key: str = field(metadata=config(exclude=lambda x: True))
+    zone: Optional[str] = _none()
     components: Optional[List["Component"]] = _list()
 
     @property
