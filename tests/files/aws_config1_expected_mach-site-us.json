@@ -249,17 +249,6 @@
       }
     }
   ],
-  "data": [
-    {
-      "aws_route53_zone": {
-        "us_tstmach_examplenet": {
-          "name": [
-            "us-tst.mach-example.net"
-          ]
-        }
-      }
-    }
-  ],
   "module": [
     {
       "commercetools-config": {

@@ -37,7 +37,6 @@ sites:
     aws:
       account_id: 1234567890
       region: eu-central-1
-      route53_zone_name: tst.mach-example.net
     endpoints:
       main: api.tst.mach-example.net
     commercetools:

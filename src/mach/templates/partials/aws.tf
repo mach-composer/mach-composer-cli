@@ -22,7 +22,7 @@ provider "aws" {
 {% endfor %}
 
 {% if site.used_endpoints %}
-  {% for zone in site.aws.route53_zones %}
+  {% for zone in site.dns_zones %}
   data "aws_route53_zone" "{{ zone|slugify }}" {
     name = "{{ zone }}"
   }

@@ -115,16 +115,21 @@ def test_generate_aws_w_endpoints(config: types.MachConfig, tf_mock):
         "aws_route53_record.public",
         "aws_route53_record.public_acm_validation",
     ]
+    expected_data_sources = [
+        "aws_route53_zone.mach_examplecom",
+    ]
     assert _get_resource_ids(data) == expected_resources
+    assert _get_data_ids(data) == expected_data_sources
 
     config.sites[0].endpoints.append(
-        types.Endpoint(key="private", url="private-api.mach-example.com")
+        types.Endpoint(key="private", url="private-api.mach-services.io")
     )
     data = _generate(parse.parse_config(config))
 
     # We've added an extra endpoint definition, but hasn't been used.
     # List of resources should be the same as previous check
     assert _get_resource_ids(data) == expected_resources
+    assert _get_data_ids(data) == expected_data_sources
 
     config.components.append(
         types.ComponentConfig(
@@ -157,6 +162,10 @@ def test_generate_aws_w_endpoints(config: types.MachConfig, tf_mock):
         "aws_route53_record.private_acm_validation",
         "aws_route53_record.public",
         "aws_route53_record.public_acm_validation",
+    ]
+    assert _get_data_ids(data) == [
+        "aws_route53_zone.mach_examplecom",
+        "aws_route53_zone.mach_servicesio",
     ]
 
 
@@ -331,5 +340,14 @@ def _get_resource_ids(data: HclWrapper) -> List[str]:
     result = []
     for type_, resources in data.resource.items():
         for key, resource in resources.items():
+            result.append(f"{type_}.{key}")
+    return sorted(result)
+
+
+def _get_data_ids(data: HclWrapper) -> List[str]:
+    """Get all data ids in <resource-type>.<name> format."""
+    result = []
+    for type_, data_ in data.data.items():
+        for key in data_.keys():
             result.append(f"{type_}.{key}")
     return sorted(result)
