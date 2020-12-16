@@ -40,13 +40,12 @@ Encrypting your file can be done with the `sops --encrypt` command:
 === "AWS"
     ```bash
     $ export SOPS_KMS_ARN="arn:aws:kms:us-west-2:927034868273:key/fe86dd69-4132-404c-ab86-4269956b4500"
-    $ export SOPS_PGP_FP="C9CAB0AF1165060DB58D6D6B2653B624D620786D"
-    $ sops -e main.yml > main.enc.yml
+    $ sops -e --encrypted-regex '^(.*(secret|token).*)$' main.yml > main.enc.yml
     $ mv main.enc.yml main.yml
     ```
 === "Azure"
     ```bash
-    $ sops --encrypt --azure-kv https://yoursharedsops.vault.azure.net/keys/sops-key/<your-key> main.yml > main.enc.yml
+    $ sops -e --encrypted-regex '^(.*(secret|token).*)$' --azure-kv https://yoursharedsops.vault.azure.net/keys/sops-key/<your-key> main.yml > main.enc.yml
     $ mv main.enc.yml main.yml
     ```
 
@@ -55,6 +54,6 @@ Encrypting your file can be done with the `sops --encrypt` command:
 In order to make this work with a MACH deployment you'll need to add an extra step to your CI/CD process:
 
 ```bash
-$ sops -d main.yml --output-type=yaml
+$ sops -d main.yml --output-type=yaml > main.yml.dec
 $ mach apply -f main.yml.dec
 ```
