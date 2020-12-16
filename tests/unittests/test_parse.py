@@ -37,3 +37,21 @@ def test_resolve_sentry_configs(config: types.MachConfig):
     assert comp_sentry.dsn == sentry_dsn
     assert comp_sentry.rate_limit_window == 500
     assert comp_sentry.rate_limit_count == 50
+
+
+def test_parse_endpoints(config: types.MachConfig):
+    config.sites[0].aws.route53_zone_name = "mach-example.com"
+    config.sites[0].endpoints = [
+        types.Endpoint(
+            key="public",
+            url="api.mach-example.com",
+        ),
+        types.Endpoint(
+            key="services",
+            url="services.mach-example.com",
+        ),
+    ]
+
+    config = parse.parse_config(config)
+    for endpoint in config.sites[0].endpoints:
+        assert endpoint.zone == "mach-example.com"
