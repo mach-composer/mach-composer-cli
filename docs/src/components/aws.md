@@ -47,6 +47,11 @@ To do so, the following has to be configured:
 - [endpoints](../syntax.md#sites) settings in the Site configuration
 - The component needs to have a [`endpoint`](../syntax.md#components) defined
 
+!!! tip "Default endpoint"
+    If you define `endpoint: default` in your component definition, no additional Route53 settings are needed.
+
+    MACH will create an API Gateway for you without any custom domain.
+
 More information in the [deployment section](../deployment/config/aws.md#http-routing).
 
 ## Lambda function
