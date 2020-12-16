@@ -61,12 +61,22 @@ def generate(file, configs, *args, **kwargs):
 
 
 @mach.command()
+@click.option(
+    "--with-sp-login",
+    is_flag=True,
+    default=False,
+    help="If az login with service principal environment variables "
+    "(ARM_CLIENT_ID, ARM_CLIENT_SECRET, ARM_TENANT_ID) should be done.",
+)
 @terraform_command
-def plan(file, configs, *args, **kwargs):
+def plan(file, configs, with_sp_login, *args, **kwargs):
     """Output the deploy plan."""
     for config in configs:
         generate_terraform(config)
-        plan_terraform(config.deployment_path)
+        plan_terraform(
+            config,
+            with_sp_login=with_sp_login,
+        )
 
 
 @mach.command()
