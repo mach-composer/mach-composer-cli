@@ -14,7 +14,6 @@ general_config:
     region: westeurope
     frontdoor:
       resource_group: mach-shared-we-rg
-      dns_zone: mach-services.net
   sentry:
     auth_token: JdOheW3IzlsXBOPNdaMZgXoMcHqyf8CJMjBnfVHD3laXPpN23oAZG8KOPAiYfeGr
     organization: labd
