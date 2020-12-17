@@ -500,17 +500,13 @@ class Site(JsonSchemaMixin):
     sentry: Optional[SentryDsn] = _none()
 
     @property
-    def public_api_components(self) -> List[Component]:
-        return [c for c in self.components if c.endpoint]
-
-    @property
     def used_endpoints(self) -> List[Endpoint]:
         """Return only the endpoints that are actually used by the components."""
         return [ep for ep in self.endpoints if ep.components]
 
     @property
     def used_custom_endpoints(self) -> List[Endpoint]:
-        """Return only the endpoints that are actually used by the components."""
+        """Return custom endpoints that are used by the components."""
         return [ep for ep in self.used_endpoints if ep.url]
 
     @property
