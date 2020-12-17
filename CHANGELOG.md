@@ -17,6 +17,7 @@
 - AWS: Set `auto-deploy` on API gateway stage
 - Azure: Add new required `frontdoor_id` Terraform variable for components with `endpoint` defined
 - Azure: Add `--with-sp-login` option to `mach plan` command
+- Azure: Add two extra tags to all resources: `environment` and `site`
 
 
 **Breaking changes**
