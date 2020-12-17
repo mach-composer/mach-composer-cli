@@ -485,6 +485,8 @@
       ],
       "tags": [
         {
+          "site": "mach-site-us",
+          "environment": "site",
           "project_key": "mach-site-us"
         }
       ]
