@@ -488,6 +488,8 @@
       ],
       "tags": [
         {
+          "site": "mach-site-eu",
+          "environment": "site",
           "project_key": "mach-site-eu"
         }
       ]
