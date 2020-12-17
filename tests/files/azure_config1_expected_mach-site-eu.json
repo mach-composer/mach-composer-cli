@@ -224,9 +224,6 @@
               ],
               "host_name": [
                 "${local.frontdoor_domain}"
-              ],
-              "custom_https_provisioning_enabled": [
-                false
               ]
             },
             {
@@ -236,22 +233,10 @@
               "host_name": [
                 "${local.frontdoor_external_domain}"
               ],
-              "custom_https_provisioning_enabled": [
-                true
-              ],
               "custom_https_configuration": [
                 {
                   "certificate_source": [
-                    "AzureKeyVault"
-                  ],
-                  "azure_key_vault_certificate_vault_id": [
-                    "${data.azurerm_key_vault.ssl.id}"
-                  ],
-                  "azure_key_vault_certificate_secret_name": [
-                    "wildcard-mach-services-net"
-                  ],
-                  "azure_key_vault_certificate_secret_version": [
-                    "oIXGVSNdwVAX7i6uUcCl"
+                    "FrontDoor"
                   ]
                 }
               ]
@@ -525,18 +510,6 @@
         "domain": {
           "name": [
             "mach-services.net"
-          ],
-          "resource_group_name": [
-            "mach-shared-we-rg"
-          ]
-        }
-      }
-    },
-    {
-      "azurerm_key_vault": {
-        "ssl": {
-          "name": [
-            "machsharedwekvcdn"
           ],
           "resource_group_name": [
             "mach-shared-we-rg"
