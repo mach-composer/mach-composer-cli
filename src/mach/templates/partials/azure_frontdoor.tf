@@ -9,11 +9,6 @@ data "azurerm_dns_zone" "domain" {
     resource_group_name = "{{ site.azure.frontdoor.resource_group }}"
 }
 
-data "azurerm_key_vault" "ssl" {
-  name                = "{{ site.azure.frontdoor.ssl_key_vault_name }}"
-  resource_group_name = "{{ site.azure.frontdoor.resource_group }}"
-}
-
 locals {
     frontdoor_external_domain = "{{ site.commercetools.project_key }}.{{ site.azure.frontdoor.dns_zone }}"
     frontdoor_external_domain_identifier = replace(local.frontdoor_external_domain, ".", "-")
@@ -42,21 +37,15 @@ resource "azurerm_frontdoor" "app-service" {
   frontend_endpoint {
     name                              = local.frontdoor_domain_identifier
     host_name                         = local.frontdoor_domain
-    custom_https_provisioning_enabled = false
   }
 
   {% if site.azure.frontdoor %}
   frontend_endpoint {
     name                              = local.frontdoor_external_domain_identifier
     host_name                         = local.frontdoor_external_domain
-    custom_https_provisioning_enabled = true
 
     custom_https_configuration {
-      certificate_source                         = "AzureKeyVault"
-      azure_key_vault_certificate_vault_id       = data.azurerm_key_vault.ssl.id
-      # no data source for certificates yet.
-      azure_key_vault_certificate_secret_name    = "{{ site.azure.frontdoor.ssl_key_vault_secret_name }}"
-      azure_key_vault_certificate_secret_version = "{{ site.azure.frontdoor.ssl_key_vault_secret_version }}"
+      certificate_source = "FrontDoor"
     }
   }
   

@@ -48,9 +48,6 @@ def test_validate_azure_endpoints(parsed_azure_config: types.MachConfig):
     config.general_config.azure.frontdoor = types.FrontDoorSettings(
         resource_group="my-shared-rg",
         dns_zone="mach-example.com",
-        ssl_key_vault_name="mysharedwekvcdn",
-        ssl_key_vault_secret_name="wildcard-my-services-domain-net",
-        ssl_key_vault_secret_version="IOlB8XmYLH1keYcpkcji23sp",
     )
     config = parse.parse_config(config)
 

@@ -108,9 +108,6 @@ class FrontDoorSettings(JsonSchemaMixin):
 
     resource_group: str
     dns_zone: str
-    ssl_key_vault_name: str
-    ssl_key_vault_secret_name: str
-    ssl_key_vault_secret_version: str
 
 
 @dataclass_json
