@@ -31,7 +31,7 @@
           "commercetools": [
             {
               "source": "labd/commercetools",
-              "version": "~> 0.24.1"
+              "version": "~> 0.25.3"
             }
           ],
           "sentry": [
