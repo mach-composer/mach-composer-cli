@@ -171,11 +171,9 @@ Example:
 ```yaml
 frontdoor:
   resource_group: my-shared-rg
-  dns_zone: my-services-domain.net
 ```
 
 - **`resource_group`** - (Required)
-- **`dns_zone`** - (Required)
 
 ### contentful
 Defines global Contentful credentials to manage the spaces

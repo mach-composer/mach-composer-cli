@@ -97,16 +97,6 @@ def resolve_site_configs(config: MachConfig) -> MachConfig:
                     )
                 )
 
-        for endpoint in site.endpoints:
-            # Ensure all endpoints have a 'zone' set.
-            # This is a temporary solution; eventually we want to have
-            # the endpoints to determine their zone themselves.
-            if endpoint.zone:
-                continue
-
-            if site.azure and site.azure.frontdoor:
-                endpoint.zone = site.azure.frontdoor.dns_zone
-
         # Merge Contentful settings
         if config.general_config.contentful:
             for site in config.sites:

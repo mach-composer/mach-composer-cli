@@ -24,43 +24,6 @@ def test_validate_sentry():
     )
 
 
-def test_validate_azure_endpoints(parsed_azure_config: types.MachConfig):
-    config = parsed_azure_config
-
-    config.sites[0].endpoints = [
-        types.Endpoint(
-            key="public",
-            url="api.mach-example.com",
-        ),
-        types.Endpoint(
-            key="services",
-            url="services.mach-example.com",
-        ),
-    ]
-
-    with pytest.raises(ValidationError) as e:
-        validate.validate_config(config)
-
-    assert str(e.value) == (
-        "Site unittest-nl needs to have a Frontdoor dns_zone defined before endpoints can be used."
-    )
-
-    config.general_config.azure.frontdoor = types.FrontDoorSettings(
-        resource_group="my-shared-rg",
-        dns_zone="mach-example.com",
-    )
-    config = parse.parse_config(config)
-
-    validate.validate_config(config)
-
-    # Change one of the components that does not match the DNS zone anymore
-    config.sites[0].endpoints.append(
-        types.Endpoint(key="services", url="api.mach-services.com")
-    )
-    with pytest.raises(ValidationError):
-        validate.validate_config(config)
-
-
 def test_validate_aws_default_endpoint(config: types.MachConfig):
     """It must be possible for a component to use the default API Gateway endpoint."""
     config.components[0].endpoint = "public"

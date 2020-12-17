@@ -3,27 +3,22 @@ locals {
   frontdoor_domain_identifier = replace(local.frontdoor_domain, ".", "-")
 }
 
-{% if site.azure.frontdoor  %}
-data "azurerm_dns_zone" "domain" {
-    name                = "{{ site.azure.frontdoor.dns_zone }}"
+{% for endpoint in site.used_custom_endpoints %}
+data "azurerm_dns_zone" "{{ endpoint.key }}" {
+    name                = "{{ endpoint.zone }}"
     resource_group_name = "{{ site.azure.frontdoor.resource_group }}"
 }
 
-locals {
-    frontdoor_external_domain = "{{ site.commercetools.project_key }}.{{ site.azure.frontdoor.dns_zone }}"
-    frontdoor_external_domain_identifier = replace(local.frontdoor_external_domain, ".", "-")
-}
-
-resource "azurerm_dns_cname_record" "{{ site.commercetools.project_key }}" {
-  name                = "{{ site.commercetools.project_key }}"
-  zone_name           = data.azurerm_dns_zone.domain.name
+resource "azurerm_dns_cname_record" "{{ endpoint.key }}" {
+  name                = "{{ endpoint.subdomain }}"
+  zone_name           = data.azurerm_dns_zone.{{ endpoint.key }}.name
   resource_group_name = "{{ site.azure.frontdoor.resource_group }}"
   ttl                 = 600
   record              = local.frontdoor_domain
 }
-{% endif %}
+{% endfor %}
 
-{% if site.public_api_components %}
+{% if site.used_endpoints %}
 resource "azurerm_frontdoor" "app-service" {
   name                                          = format("%s-fd", local.name_prefix)
   resource_group_name                           = local.resource_group_name
@@ -39,21 +34,41 @@ resource "azurerm_frontdoor" "app-service" {
     host_name                         = local.frontdoor_domain
   }
 
-  {% if site.azure.frontdoor %}
+  {% for endpoint in site.used_custom_endpoints %}
   frontend_endpoint {
-    name                              = local.frontdoor_external_domain_identifier
-    host_name                         = local.frontdoor_external_domain
+    name                              = "{{ endpoint.key }}"
+    host_name                         = "{{ endpoint.url }}"
 
     custom_https_configuration {
       certificate_source = "FrontDoor"
     }
   }
-  
-  depends_on = [azurerm_dns_cname_record.{{ site.commercetools.project_key }}]
-  {% endif %}
+  {% endfor %}
 
+  depends_on = [
+    {% for endpoint in site.used_custom_endpoints %}
+    azurerm_dns_cname_record.{{ endpoint.key }},
+    {% endfor %}
+  ]
 
-  {% for component in site.public_api_components %}
+  routing_rule {
+    name               = "http-https-redirect"
+    accepted_protocols = ["Http"]
+    patterns_to_match  = ["/*"]
+    frontend_endpoints = [
+      local.frontdoor_domain_identifier,
+      {% for endpoint in site.used_custom_endpoints %}
+      "{{ endpoint.key }}",
+      {% endfor %}
+    ]
+    redirect_configuration {
+      redirect_type     = "PermanentRedirect"
+      redirect_protocol = "HttpsOnly"
+    }
+  }
+
+  {% for endpoint in site.used_endpoints %}
+  {% for component in endpoint.components %}
   backend_pool_health_probe {
     name = "{{ component.name }}-hpSettings"
     path = "{% if component.health_check_path %}{{ component.health_check_path }}{% else %}/{{ component.name }}/healthchecks{% endif %}"
@@ -63,21 +78,15 @@ resource "azurerm_frontdoor" "app-service" {
   }
 
   routing_rule {
-    name               = "http-https-redirect"
-    accepted_protocols = ["Http"]
-    patterns_to_match  = ["/*"]
-    frontend_endpoints = [local.frontdoor_domain_identifier{% if site.azure.frontdoor %}, local.frontdoor_external_domain_identifier{% endif %}]
-    redirect_configuration {
-      redirect_type     = "PermanentRedirect"
-      redirect_protocol = "HttpsOnly"
-    }
-  }
-
-  routing_rule {
     name               = "{{ component.name }}-routing-rule"
     accepted_protocols = ["Https"]
     patterns_to_match  = ["/{{ component.name }}/*"]
-    frontend_endpoints = [local.frontdoor_domain_identifier{% if site.azure.frontdoor %}, local.frontdoor_external_domain_identifier{% endif %}]
+    frontend_endpoints = [
+      local.frontdoor_domain_identifier,
+      {% if endpoint.url %}
+      "{{ endpoint.key }}",
+      {% endif %}
+    ]
     forwarding_configuration {
         forwarding_protocol = "MatchRequest"
         backend_pool_name   = "{{ component.name }}"
@@ -96,6 +105,7 @@ resource "azurerm_frontdoor" "app-service" {
     load_balancing_name = "lbSettings"
     health_probe_name   = "{{ component.name }}-hpSettings"
   }
+  {% endfor %}
   {% endfor %}
 }
 {% endif %}
