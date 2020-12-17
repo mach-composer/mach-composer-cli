@@ -436,7 +436,7 @@ class Endpoint:
         """Ensure endpoints have protocol stripped."""
         self.url = utils.strip_protocol(self.url)
 
-        if not self.zone:
+        if not self.zone and self.url:
             try:
                 self.zone = utils.dns_zone_from_url(self.url)
             except ValueError as e:

@@ -1,6 +1,8 @@
 import re
 import unicodedata
 
+import tldextract
+
 PROTOCOL_RE = re.compile(r"^(http(s)?://)")
 
 
@@ -9,11 +11,12 @@ def strip_protocol(value: str) -> str:
 
 
 def dns_zone_from_url(url: str) -> str:
-    url = strip_protocol(url)
-    parts = url.split("/")[0].split(".")
-    if len(parts) == 2:
+    ext = tldextract.extract(url)
+    if not ext.subdomain:
         raise ValueError("Given URL is already top-level domain")
-    return ".".join(parts[1:])
+
+    parts = ext.subdomain.split(".")[1:] + [ext.domain, ext.suffix]
+    return ".".join(parts)
 
 
 def humanize_str(value: str) -> str:
