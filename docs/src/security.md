@@ -50,7 +50,7 @@ Encrypting your file can be done with the `sops --encrypt` command:
     $ mv main.enc.yml main.yml
     ```
 
-#### Decrypt using deployment
+#### Decrypt during deployment
 
 In order to make this work with a MACH deployment you'll need to add an extra step to your CI/CD process:
 
@@ -58,3 +58,5 @@ In order to make this work with a MACH deployment you'll need to add an extra st
 $ sops -d main.yml --output-type=yaml > main.yml.dec
 $ mach apply -f main.yml.dec
 ```
+
+Make sure that your CI/CD environment has access to the appropriate encryption keys in AWS KMS or Azure KeyVault.
