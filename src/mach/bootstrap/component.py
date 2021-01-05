@@ -44,8 +44,12 @@ def create_component(output_dir: str, cookiecutter_location: str):
 
 def _get_component_context(cloud: str) -> dict:
     """Prompt user for input for the cookiecutter."""
+    # We have a different default language here because the cookiecutter
+    # doesnt contain examples for all languages yet.
+    default_lang = "node" if cloud == "aws" else "python"
+
     language = click.prompt(
-        "Language", type=click.Choice(["python", "node"]), default="python"
+        "Language", type=click.Choice(["python", "node"]), default=default_lang
     )
 
     name = click.prompt("Name", default="example")
@@ -67,23 +71,31 @@ def _get_component_context(cloud: str) -> dict:
         "short_name": short_name,
         "component_identifier": component_identifier,
         "function_name": function_name,
+        "use_commercetools": 0,
+        "use_commercetools_api_extension": 0,
+        "use_commercetools_subscription": 0,
+        "use_commercetools_token_rotator": 0,
     }
 
-    use_endpoint = click.confirm("Uses an HTTP endpoint?", default=True)
-    use_commercetools_api_extension = click.confirm(
-        "Generate commercetools API extension?", default=True
-    )
-    use_commercetools_subscription = click.confirm(
-        "Generate commercetools Subcription?", default=True
+    context["use_public_api"] = int(
+        click.confirm("Uses an HTTP endpoint?", default=True)
     )
 
-    context["use_public_api"] = 1 if use_endpoint else 0
-    context["use_commercetools_api_extension"] = (
-        1 if use_commercetools_api_extension else 0
-    )
-    context["use_commercetools_subscription"] = (
-        1 if use_commercetools_subscription else 0
-    )
+    if click.confirm("Uses commercetools?", default=True):
+        context["use_commercetools"] = 1
+        context["use_commercetools_api_extension"] = int(
+            click.confirm("Generate commercetools API extension?", default=True)
+        )
+        context["use_commercetools_subscription"] = int(
+            click.confirm("Generate commercetools Subcription?", default=True)
+        )
+        if cloud == "aws":
+            context["use_commercetools_token_rotator"] = int(
+                click.confirm(
+                    "Do you want use the commercetools token rotator component?",
+                    default=False,
+                )
+            )
 
     if click.confirm("Use Sentry?", default=False):
         context["sentry_organization"] = click.prompt("Sentry Organization")
@@ -92,9 +104,7 @@ def _get_component_context(cloud: str) -> dict:
     if cloud == "aws":
         context.update(
             {
-                "lambda_s3_repository": click.prompt(
-                    "Lambda repository S3 bucket", default="mach-lambda-repository"
-                ),
+                "lambda_s3_repository": click.prompt("Lambda repository S3 bucket"),
             }
         )
     elif cloud == "azure":
