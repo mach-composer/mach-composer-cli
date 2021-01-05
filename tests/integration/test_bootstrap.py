@@ -59,9 +59,18 @@ def test_component(cookiecutter, click_runner, click_dir, cloud, language):
         "apiext",  # Short name
         "api-extensions-component",  # Component identifier
         "api-extensions",  # Function name
-        "y",  # generate Public API?
+        "y",  # use an HTTP endpoint?
+        "y",  # use commercetools?
         "y",  # generate API extension?
         "y",  # generate API subscription?
+    ]
+
+    if cloud == "aws":
+        input_values += [
+            "y",  # token rotator?
+        ]
+
+    input_values += [
         "n",  # Use Sentry?
     ]
 
