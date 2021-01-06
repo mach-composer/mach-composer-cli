@@ -77,7 +77,7 @@ def _get_component_context(cloud: str) -> dict:
         "component_identifier": dirname,
         "function_name": function_name,
         "use_public_api": 0,
-        "use_graphql": 0,
+        "include_graphql_server": 0,
         "use_commercetools": 0,
         "use_commercetools_api_extension": 0,
         "use_commercetools_subscription": 0,
@@ -86,7 +86,7 @@ def _get_component_context(cloud: str) -> dict:
 
     if click.confirm("Uses an HTTP endpoint?", default=True):
         context["use_public_api"] = 1
-        context["use_graphql"] = int(
+        context["include_graphql_server"] = int(
             click.confirm("Include GraphQL support?", default=True)
         )
 
