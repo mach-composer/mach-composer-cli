@@ -52,34 +52,43 @@ def _get_component_context(cloud: str) -> dict:
         "Language", type=click.Choice(["python", "node"]), default=default_lang
     )
 
-    name = click.prompt("Name", default="example")
+    name = click.prompt("Name", default="example-name")
     description = click.prompt(
         "Description", default=f"{utils.humanize_str(name)} component"
     )
-    short_name = click.prompt(
-        "Short name", default=name.replace("_", "").replace("-", "")
+
+    short_name = None
+    function_name = None
+    if cloud == "azure":
+        short_name = click.prompt(
+            "Short name", default=name.replace("_", "").replace("-", "")
+        )
+        function_name = click.prompt("Function name", default=utils.slugify(name))
+
+    dirname = click.prompt(
+        "Directory name", default=f"{utils.slugify(name, sep='-')}-component"
     )
-    component_identifier = click.prompt(
-        "Component identifier", default=f"{utils.slugify(name, sep='-')}-component"
-    )
-    function_name = click.prompt("Function name", default=utils.slugify(name))
 
     context = {
         "language": language,
         "name": name,
         "description": description,
         "short_name": short_name,
-        "component_identifier": component_identifier,
+        "component_identifier": dirname,
         "function_name": function_name,
+        "use_public_api": 0,
+        "use_graphql": 0,
         "use_commercetools": 0,
         "use_commercetools_api_extension": 0,
         "use_commercetools_subscription": 0,
         "use_commercetools_token_rotator": 0,
     }
 
-    context["use_public_api"] = int(
-        click.confirm("Uses an HTTP endpoint?", default=True)
-    )
+    if click.confirm("Uses an HTTP endpoint?", default=True):
+        context["use_public_api"] = 1
+        context["use_graphql"] = int(
+            click.confirm("Include GraphQL support?", default=True)
+        )
 
     if click.confirm("Uses commercetools?", default=True):
         context["use_commercetools"] = 1
@@ -102,11 +111,7 @@ def _get_component_context(cloud: str) -> dict:
         context["sentry_project"] = click.prompt("Sentry Project")
 
     if cloud == "aws":
-        context.update(
-            {
-                "lambda_s3_repository": click.prompt("Lambda repository S3 bucket"),
-            }
-        )
+        context["lambda_s3_repository"] = click.prompt("Lambda repository S3 bucket")
     elif cloud == "azure":
         context.update(
             {

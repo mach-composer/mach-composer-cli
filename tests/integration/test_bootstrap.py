@@ -50,34 +50,38 @@ def test_configuration(click_runner, click_dir, cloud):
 @pytest.mark.timeout(5)
 @pytest.mark.parametrize("language", ["python", "node"])
 @pytest.mark.parametrize("cloud", ["aws", "azure"])
-def test_component(cookiecutter, click_runner, click_dir, cloud, language):
+def test_component(cookiecutter, click_runner, click_dir, language, cloud):
     input_values = [
         cloud,
         language,
         "api-extensions",  # Name
         "API extensions component",  # Description
-        "apiext",  # Short name
-        "api-extensions-component",  # Component identifier
-        "api-extensions",  # Function name
-        "y",  # use an HTTP endpoint?
-        "y",  # use commercetools?
-        "y",  # generate API extension?
-        "y",  # generate API subscription?
     ]
 
     if cloud == "aws":
         input_values += [
+            "api-extensions-component",  # Directory name
+            "y",  # use an HTTP endpoint?
+            "y",  # support GraphQL?
+            "y",  # use commercetools?
+            "y",  # generate API extension?
+            "y",  # generate API subscription?
             "y",  # token rotator?
+            "n",  # Use Sentry?
+            "mach-lambda-repository",  # s3 bucket
         ]
 
-    input_values += [
-        "n",  # Use Sentry?
-    ]
-
-    if cloud == "aws":
-        input_values += ["mach-lambda-repository"]
-    else:
+    elif cloud == "azure":
         input_values += [
+            "apiext",  # Short name
+            "api-extensions",  # Function name
+            "api-extensions-component",  # Directory name
+            "y",  # use an HTTP endpoint?
+            "y",  # support GraphQL?
+            "y",  # use commercetools?
+            "y",  # generate API extension?
+            "y",  # generate API subscription?
+            "n",  # Use Sentry?
             "shared-rg",
             "sharedcomponentsrepo",
             "code",
