@@ -505,42 +505,6 @@
           ]
         }
       }
-    },
-    {
-      "external": {
-        "sync_triggers_payment": {
-          "program": [
-            [
-              "bash",
-              "-c",
-              "az rest --method post --uri 'https://management.azure.com/subscriptions/${local.subscription_id}/resourceGroups/${local.resource_group_name}/providers/Microsoft.Web/sites/${module.payment.app_service_name}/syncfunctiontriggers?api-version=2016-08-01'"
-            ]
-          ],
-          "depends_on": [
-            [
-              "${module.payment.app_service_name}"
-            ]
-          ]
-        }
-      }
-    },
-    {
-      "external": {
-        "sync_triggers_api-extensions": {
-          "program": [
-            [
-              "bash",
-              "-c",
-              "az rest --method post --uri 'https://management.azure.com/subscriptions/${local.subscription_id}/resourceGroups/${local.resource_group_name}/providers/Microsoft.Web/sites/${module.api-extensions.app_service_name}/syncfunctiontriggers?api-version=2016-08-01'"
-            ]
-          ],
-          "depends_on": [
-            [
-              "${module.api-extensions.app_service_name}"
-            ]
-          ]
-        }
-      }
     }
   ],
   "module": [
