@@ -14,7 +14,8 @@ colorama==0.4.4           # via -r requirements.in
 cookiecutter==1.7.2       # via -r requirements.in
 dataclasses-json==0.5.2   # via -r requirements.in
 dataclasses-jsonschema==2.13.0  # via -r requirements.in
-idna==2.10                # via requests
+filelock==3.0.12          # via tldextract
+idna==2.10                # via requests, tldextract
 jinja2-time==0.2.0        # via cookiecutter
 jinja2==2.11.1            # via -r requirements.in, cookiecutter, jinja2-time
 jsonschema==3.2.0         # via dataclasses-jsonschema
@@ -27,10 +28,12 @@ pyrsistent==0.17.3        # via jsonschema
 python-dateutil==2.8.1    # via arrow, dataclasses-jsonschema
 python-slugify==4.0.1     # via cookiecutter
 pyyaml==5.3               # via -r requirements.in
-requests==2.23.0          # via -r requirements.in, cookiecutter
-six==1.15.0               # via cookiecutter, jsonschema, python-dateutil
+requests-file==1.5.1      # via tldextract
+requests==2.23.0          # via -r requirements.in, cookiecutter, requests-file, tldextract
+six==1.15.0               # via cookiecutter, jsonschema, python-dateutil, requests-file
 stringcase==1.2.0         # via dataclasses-json
 text-unidecode==1.3       # via python-slugify
+tldextract==3.1.0         # via -r requirements.in
 typing-extensions==3.7.4.3  # via typing-inspect
 typing-inspect==0.6.0     # via dataclasses-json
 urllib3==1.25.10          # via requests

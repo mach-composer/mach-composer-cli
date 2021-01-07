@@ -24,34 +24,6 @@ def test_validate_sentry():
     )
 
 
-def test_validate_aws_endpoints(parsed_config: types.MachConfig):
-    config = parsed_config
-
-    config.sites[0].endpoints = [
-        types.Endpoint(
-            key="public",
-            url="api.mach-example.com",
-        ),
-        types.Endpoint(
-            key="services",
-            url="services.mach-example.com",
-        ),
-    ]
-
-    with pytest.raises(ValidationError):
-        validate.validate_config(config)
-
-    config.sites[0].aws.route53_zone_name = "mach-example.com"
-    validate.validate_config(config)
-
-    # Change one of the components that does not match the DNS zone anymore
-    config.sites[0].endpoints.append(
-        types.Endpoint(key="services", url="api.mach-services.com")
-    )
-    with pytest.raises(ValidationError):
-        validate.validate_config(config)
-
-
 def test_validate_azure_endpoints(parsed_azure_config: types.MachConfig):
     config = parsed_azure_config
 
@@ -92,11 +64,10 @@ def test_validate_azure_endpoints(parsed_azure_config: types.MachConfig):
         validate.validate_config(config)
 
 
-def test_validate_azure_default_endpoint(parsed_azure_config: types.MachConfig):
-    """It must be possible for a component to use the default Frontdoor endpoint."""
-    config = parsed_azure_config
-
+def test_validate_aws_default_endpoint(config: types.MachConfig):
+    """It must be possible for a component to use the default API Gateway endpoint."""
     config.components[0].endpoint = "public"
+    config = parse.parse_config(config)
 
     with pytest.raises(ValidationError) as e:
         validate.validate_config(config)
@@ -104,6 +75,23 @@ def test_validate_azure_default_endpoint(parsed_azure_config: types.MachConfig):
     assert str(e.value) == "Missing required endpoints public"
 
     config.components[0].endpoint = "default"
+    config = parse.parse_config(config)
+    validate.validate_config(config)
+
+
+def test_validate_azure_default_endpoint(azure_config: types.MachConfig):
+    """It must be possible for a component to use the default Frontdoor endpoint."""
+    config = azure_config
+    config.components[0].endpoint = "public"
+    config = parse.parse_config(config)
+
+    with pytest.raises(ValidationError) as e:
+        validate.validate_config(config)
+
+    assert str(e.value) == "Missing required endpoints public"
+
+    config.components[0].endpoint = "default"
+    config = parse.parse_config(config)
     validate.validate_config(config)
 
 
@@ -125,7 +113,6 @@ def test_validate_component_endpoint(config: types.MachConfig):
             url="services.mach-example.com",
         ),
     ]
-    config.sites[0].aws.route53_zone_name = "mach-example.com"
     validate.validate_config(config)
 
     new_site = types.Site(
