@@ -19,6 +19,7 @@
 - Azure: Add new required `frontdoor_id` Terraform variable for components with `endpoint` defined
 - Azure: Add `--with-sp-login` option to `mach plan` command
 - Azure: Add two extra tags to all resources: `environment` and `site`
+- Azure: Remove function app sync bash command: this is now the responsibility of the component
 
 
 **Breaking changes**
