@@ -107,10 +107,6 @@ class FrontDoorSettings(JsonSchemaMixin):
     """Frontdoor settings."""
 
     resource_group: str
-    dns_zone: str
-    ssl_key_vault_name: str
-    ssl_key_vault_secret_name: str
-    ssl_key_vault_secret_version: str
 
 
 @dataclass_json
@@ -432,6 +428,13 @@ class Endpoint:
         """
         return True
 
+    @property
+    def subdomain(self) -> str:
+        if not self.url:
+            return ""
+
+        return utils.subdomain_from_url(self.url)
+
     def __post_init__(self):
         """Ensure endpoints have protocol stripped."""
         self.url = utils.strip_protocol(self.url)
@@ -497,13 +500,14 @@ class Site(JsonSchemaMixin):
     sentry: Optional[SentryDsn] = _none()
 
     @property
-    def public_api_components(self) -> List[Component]:
-        return [c for c in self.components if c.endpoint]
-
-    @property
     def used_endpoints(self) -> List[Endpoint]:
         """Return only the endpoints that are actually used by the components."""
         return [ep for ep in self.endpoints if ep.components]
+
+    @property
+    def used_custom_endpoints(self) -> List[Endpoint]:
+        """Return custom endpoints that are used by the components."""
+        return [ep for ep in self.used_endpoints if ep.url]
 
     @property
     def dns_zones(self) -> List[str]:

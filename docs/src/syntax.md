@@ -171,18 +171,9 @@ Example:
 ```yaml
 frontdoor:
   resource_group: my-shared-rg
-  dns_zone: my-services-domain.net
-  ssl_key_vault_name: mysharedwekvcdn
-  ssl_key_vault_secret_name: wildcard-my-services-domain-net
-  ssl_key_vault_secret_version: IOlB8XmYLH1keYcpkcji23sp
 ```
 
 - **`resource_group`** - (Required)
-- **`dns_zone`** - (Required)
-- **`ssl_key_vault_name`** - (Required)
-- **`ssl_key_vault_secret_name`** - (Required)
-- **`ssl_key_vault_secret_version`** - (Required)
-
 
 ### contentful
 Defines global Contentful credentials to manage the spaces

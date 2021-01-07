@@ -37,10 +37,16 @@
       main: https://api.eu-tst.mach-example.net
   ```
   When you name the endpoint that replaces `base_url` "main", it will have the least effect on your existing Terraform state.
-- The `FRONTDOOR_ID` value is removed from the `var.variables` of a component. Replaced with `var.frontdoor_id`
-- The `front_door` configuration block has been renamed to `frontdoor`
-- The `deploy_role` setting has been renamed to `deploy_role_arn`
 - The AWS `route53_zone_name` setting has been removed in favour of multiple endpoint support
+- The `front_door` configuration block has been renamed to `frontdoor`
+- The Azure frontdoor settings `dns_zone` and `ssl_key_*` settings have been removed;<br>
+  Certificates are now managed by Frontdoor and dns_zone is auto-detected.
+- The Terraform `azurerm_dns_cname_record` resources have been renamed; they now take the name of the associated endpoint key. For the smoothest transition, rename them in your Terraform state:<br>
+  ```bash
+  terraform state mv azurerm_dns_cname_record.<project-key> azurerm_dns_cname_record.<endpoint-key>
+  ```
+- The `FRONTDOOR_ID` value is removed from the `var.variables` of a component. Replaced with `var.frontdoor_id`
+- The `deploy_role` setting has been renamed to `deploy_role_arn`
 - Components with a `commercetools` integration require a new variable `ct_stores`:
   ```terraform
   variable "ct_stores" {

@@ -173,12 +173,12 @@
     },
     {
       "azurerm_dns_cname_record": {
-        "mach-site-us": {
+        "public": {
           "name": [
-            "mach-site-us"
+            "api"
           ],
           "zone_name": [
-            "${data.azurerm_dns_zone.domain.name}"
+            "${data.azurerm_dns_zone.public.name}"
           ],
           "resource_group_name": [
             "mach-shared-we-rg"
@@ -221,34 +221,19 @@
               ],
               "host_name": [
                 "${local.frontdoor_domain}"
-              ],
-              "custom_https_provisioning_enabled": [
-                false
               ]
             },
             {
               "name": [
-                "${local.frontdoor_external_domain_identifier}"
+                "public"
               ],
               "host_name": [
-                "${local.frontdoor_external_domain}"
-              ],
-              "custom_https_provisioning_enabled": [
-                true
+                "api.us-tst.mach-services.net"
               ],
               "custom_https_configuration": [
                 {
                   "certificate_source": [
-                    "AzureKeyVault"
-                  ],
-                  "azure_key_vault_certificate_vault_id": [
-                    "${data.azurerm_key_vault.ssl.id}"
-                  ],
-                  "azure_key_vault_certificate_secret_name": [
-                    "wildcard-mach-services-net"
-                  ],
-                  "azure_key_vault_certificate_secret_version": [
-                    "oIXGVSNdwVAX7i6uUcCl"
+                    "FrontDoor"
                   ]
                 }
               ]
@@ -256,27 +241,8 @@
           ],
           "depends_on": [
             [
-              "${azurerm_dns_cname_record.mach-site-us}"
+              "${azurerm_dns_cname_record.public}"
             ]
-          ],
-          "backend_pool_health_probe": [
-            {
-              "name": [
-                "payment-hpSettings"
-              ],
-              "path": [
-                "/payment/healthchecks"
-              ],
-              "protocol": [
-                "Https"
-              ],
-              "enabled": [
-                false
-              ],
-              "probe_method": [
-                "HEAD"
-              ]
-            }
           ],
           "routing_rule": [
             {
@@ -296,7 +262,7 @@
               "frontend_endpoints": [
                 [
                   "${local.frontdoor_domain_identifier}",
-                  "${local.frontdoor_external_domain_identifier}"
+                  "public"
                 ]
               ],
               "redirect_configuration": [
@@ -327,7 +293,7 @@
               "frontend_endpoints": [
                 [
                   "${local.frontdoor_domain_identifier}",
-                  "${local.frontdoor_external_domain_identifier}"
+                  "public"
                 ]
               ],
               "forwarding_configuration": [
@@ -339,6 +305,25 @@
                     "payment"
                   ]
                 }
+              ]
+            }
+          ],
+          "backend_pool_health_probe": [
+            {
+              "name": [
+                "payment-hpSettings"
+              ],
+              "path": [
+                "/payment/healthchecks"
+              ],
+              "protocol": [
+                "Https"
+              ],
+              "enabled": [
+                false
+              ],
+              "probe_method": [
+                "HEAD"
               ]
             }
           ],
@@ -506,34 +491,14 @@
       "frontdoor_domain_identifier": [
         "${replace(local.frontdoor_domain,\".\",\"-\")}"
       ]
-    },
-    {
-      "frontdoor_external_domain": [
-        "mach-site-us.mach-services.net"
-      ],
-      "frontdoor_external_domain_identifier": [
-        "${replace(local.frontdoor_external_domain,\".\",\"-\")}"
-      ]
     }
   ],
   "data": [
     {
       "azurerm_dns_zone": {
-        "domain": {
+        "public": {
           "name": [
-            "mach-services.net"
-          ],
-          "resource_group_name": [
-            "mach-shared-we-rg"
-          ]
-        }
-      }
-    },
-    {
-      "azurerm_key_vault": {
-        "ssl": {
-          "name": [
-            "machsharedwekvcdn"
+            "us-tst.mach-services.net"
           ],
           "resource_group_name": [
             "mach-shared-we-rg"
