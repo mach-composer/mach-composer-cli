@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.6.0 (unreleased)
+## 1.0.0 (unreleased)
 - Add Sentry DSN management options
 - Add Amplience support
 - Add support for commercetools Store-specific variables and secrets on components: `store_variables` and `store_secrets`
