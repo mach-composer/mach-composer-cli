@@ -7,6 +7,7 @@
 - Add support for multiple API endpoints:
     - `base_url` replaced with `endpoints`
     - `has_public_api` replaced with `endpoint`
+    - Supports a `default` endpoint that doesnt require custom domain settings
 - Add option to override Terraform provider versions
 - Improved dependencies between components and MACH-managed commercetools configurations
 - Improved git log parsing
@@ -39,6 +40,7 @@
 - The `FRONTDOOR_ID` value is removed from the `var.variables` of a component. Replaced with `var.frontdoor_id`
 - The `front_door` configuration block has been renamed to `frontdoor`
 - The `deploy_role` setting has been renamed to `deploy_role_arn`
+- The AWS `route53_zone_name` setting has been removed in favour of multiple endpoint support
 - Components with a `commercetools` integration require a new variable `ct_stores`:
   ```terraform
   variable "ct_stores" {

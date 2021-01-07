@@ -265,10 +265,10 @@
           "backend_pool_health_probe": [
             {
               "name": [
-                "payment-hpSettings"
+                "us-payment-hpSettings"
               ],
               "path": [
-                "/payment/healthchecks"
+                "/us-payment/healthchecks"
               ],
               "protocol": [
                 "Https"
@@ -315,7 +315,7 @@
             },
             {
               "name": [
-                "payment-routing-rule"
+                "us-payment-routing-rule"
               ],
               "accepted_protocols": [
                 [
@@ -324,7 +324,7 @@
               ],
               "patterns_to_match": [
                 [
-                  "/payment/*"
+                  "/us-payment/*"
                 ]
               ],
               "frontend_endpoints": [
@@ -339,7 +339,7 @@
                     "MatchRequest"
                   ],
                   "backend_pool_name": [
-                    "payment"
+                    "us-payment"
                   ]
                 }
               ]
@@ -348,15 +348,15 @@
           "backend_pool": [
             {
               "name": [
-                "payment"
+                "us-payment"
               ],
               "backend": [
                 {
                   "host_header": [
-                    "${local.name_prefix}-func-payment.azurewebsites.net"
+                    "${local.name_prefix}-func-us-payment.azurewebsites.net"
                   ],
                   "address": [
-                    "${local.name_prefix}-func-payment.azurewebsites.net"
+                    "${local.name_prefix}-func-us-payment.azurewebsites.net"
                   ],
                   "http_port": [
                     80
@@ -370,7 +370,7 @@
                 "lbSettings"
               ],
               "health_probe_name": [
-                "payment-hpSettings"
+                "us-payment-hpSettings"
               ]
             }
           ]
@@ -546,17 +546,17 @@
     },
     {
       "external": {
-        "sync_triggers_payment": {
+        "sync_triggers_us-payment": {
           "program": [
             [
               "bash",
               "-c",
-              "az rest --method post --uri 'https://management.azure.com/subscriptions/${local.subscription_id}/resourceGroups/${local.resource_group_name}/providers/Microsoft.Web/sites/${module.payment.app_service_name}/syncfunctiontriggers?api-version=2016-08-01'"
+              "az rest --method post --uri 'https://management.azure.com/subscriptions/${local.subscription_id}/resourceGroups/${local.resource_group_name}/providers/Microsoft.Web/sites/${module.us-payment.app_service_name}/syncfunctiontriggers?api-version=2016-08-01'"
             ]
           ],
           "depends_on": [
             [
-              "${module.payment.app_service_name}"
+              "${module.us-payment.app_service_name}"
             ]
           ]
         }
@@ -598,7 +598,7 @@
       }
     },
     {
-      "payment": {
+      "us-payment": {
         "source": [
           "git::https://github.com/some-organisation/mach-component-payment.git//terraform?ref=0a9a0b5"
         ],
@@ -618,7 +618,7 @@
           {}
         ],
         "short_name": [
-          "payment"
+          "us-payment"
         ],
         "name_prefix": [
           "${local.name_prefix}"

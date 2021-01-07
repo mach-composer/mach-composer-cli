@@ -154,41 +154,6 @@
       }
     },
     {
-      "aws_acm_certificate": {
-        "main": {
-          "domain_name": [
-            "api.eu-tst.mach-example.net"
-          ],
-          "validation_method": [
-            "DNS"
-          ]
-        }
-      }
-    },
-    {
-      "aws_route53_record": {
-        "main_acm_validation": {
-          "zone_id": [
-            "${data.aws_route53_zone.main.zone_id}"
-          ],
-          "name": [
-            "${tolist(aws_acm_certificate.main.domain_validation_options)[0].resource_record_name}"
-          ],
-          "type": [
-            "${tolist(aws_acm_certificate.main.domain_validation_options)[0].resource_record_type}"
-          ],
-          "ttl": [
-            60
-          ],
-          "records": [
-            [
-              "${tolist(aws_acm_certificate.main.domain_validation_options)[0].resource_record_value}"
-            ]
-          ]
-        }
-      }
-    },
-    {
       "aws_apigatewayv2_api": {
         "main_gateway": {
           "name": [
@@ -236,6 +201,41 @@
       }
     },
     {
+      "aws_acm_certificate": {
+        "main": {
+          "domain_name": [
+            "api.eu-tst.mach-example.net"
+          ],
+          "validation_method": [
+            "DNS"
+          ]
+        }
+      }
+    },
+    {
+      "aws_route53_record": {
+        "main_acm_validation": {
+          "zone_id": [
+            "${data.aws_route53_zone.eu_tstmach_examplenet.zone_id}"
+          ],
+          "name": [
+            "${tolist(aws_acm_certificate.main.domain_validation_options)[0].resource_record_name}"
+          ],
+          "type": [
+            "${tolist(aws_acm_certificate.main.domain_validation_options)[0].resource_record_type}"
+          ],
+          "ttl": [
+            60
+          ],
+          "records": [
+            [
+              "${tolist(aws_acm_certificate.main.domain_validation_options)[0].resource_record_value}"
+            ]
+          ]
+        }
+      }
+    },
+    {
       "aws_apigatewayv2_domain_name": {
         "main": {
           "domain_name": [
@@ -267,7 +267,7 @@
             "A"
           ],
           "zone_id": [
-            "${data.aws_route53_zone.main.id}"
+            "${data.aws_route53_zone.eu_tstmach_examplenet.id}"
           ],
           "alias": [
             {
@@ -355,7 +355,7 @@
   "data": [
     {
       "aws_route53_zone": {
-        "main": {
+        "eu_tstmach_examplenet": {
           "name": [
             "eu-tst.mach-example.net"
           ]

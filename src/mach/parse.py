@@ -9,6 +9,7 @@ from mach import exceptions
 from mach.types import (
     CloudOption,
     ComponentConfig,
+    Endpoint,
     MachConfig,
     SentryDsn,
     Site,
@@ -96,6 +97,16 @@ def resolve_site_configs(config: MachConfig) -> MachConfig:
                     )
                 )
 
+        for endpoint in site.endpoints:
+            # Ensure all endpoints have a 'zone' set.
+            # This is a temporary solution; eventually we want to have
+            # the endpoints to determine their zone themselves.
+            if endpoint.zone:
+                continue
+
+            if site.azure and site.azure.frontdoor:
+                endpoint.zone = site.azure.frontdoor.dns_zone
+
         # Merge Contentful settings
         if config.general_config.contentful:
             for site in config.sites:
@@ -124,12 +135,34 @@ def resolve_site_configs(config: MachConfig) -> MachConfig:
 
 def resolve_endpoint_components(site: Site):
     endpoint_components = defaultdict(list)
-
     for c in site.components:
-        if not site.endpoints:
+        if not c.endpoint:
             continue
 
         endpoint_components[c.endpoint].append(c)
+
+    site_endpoint_keys = {e.key for e in site.endpoints}
+    # If one of the components has a 'default' endpoint defined,
+    # we'll include it to our site endpoints.
+    # A 'default' endpoint is one without a custom domain, so no further
+    # Route53 or DNS zone settings required.
+    if "default" in endpoint_components and not "default" in site_endpoint_keys:
+        click.echo(
+            click.style(
+                (
+                    "WARNING: 'default' endpoint used but not defined in the site endpoints.\n"
+                    "MACH will create a default endpoint without any custom domain attached to it.\n"
+                    "More info: https://docs.machcomposer.io/syntax.html#endpoints"
+                ),
+                fg="yellow",
+            )
+        )
+        site.endpoints.append(
+            Endpoint(
+                url="",
+                key="default",
+            )
+        )
 
     for endpoint in site.endpoints:
         endpoint.components = endpoint_components.get(endpoint.key, [])
