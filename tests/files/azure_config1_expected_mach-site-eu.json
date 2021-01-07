@@ -175,27 +175,6 @@
       }
     },
     {
-      "azurerm_dns_cname_record": {
-        "mach-site-eu": {
-          "name": [
-            "mach-site-eu"
-          ],
-          "zone_name": [
-            "${data.azurerm_dns_zone.domain.name}"
-          ],
-          "resource_group_name": [
-            "mach-shared-we-rg"
-          ],
-          "ttl": [
-            600
-          ],
-          "record": [
-            "${local.frontdoor_domain}"
-          ]
-        }
-      }
-    },
-    {
       "azurerm_frontdoor": {
         "app-service": {
           "name": [
@@ -224,62 +203,11 @@
               ],
               "host_name": [
                 "${local.frontdoor_domain}"
-              ],
-              "custom_https_provisioning_enabled": [
-                false
-              ]
-            },
-            {
-              "name": [
-                "${local.frontdoor_external_domain_identifier}"
-              ],
-              "host_name": [
-                "${local.frontdoor_external_domain}"
-              ],
-              "custom_https_provisioning_enabled": [
-                true
-              ],
-              "custom_https_configuration": [
-                {
-                  "certificate_source": [
-                    "AzureKeyVault"
-                  ],
-                  "azure_key_vault_certificate_vault_id": [
-                    "${data.azurerm_key_vault.ssl.id}"
-                  ],
-                  "azure_key_vault_certificate_secret_name": [
-                    "wildcard-mach-services-net"
-                  ],
-                  "azure_key_vault_certificate_secret_version": [
-                    "oIXGVSNdwVAX7i6uUcCl"
-                  ]
-                }
               ]
             }
           ],
           "depends_on": [
-            [
-              "${azurerm_dns_cname_record.mach-site-eu}"
-            ]
-          ],
-          "backend_pool_health_probe": [
-            {
-              "name": [
-                "us-payment-hpSettings"
-              ],
-              "path": [
-                "/us-payment/healthchecks"
-              ],
-              "protocol": [
-                "Https"
-              ],
-              "enabled": [
-                false
-              ],
-              "probe_method": [
-                "HEAD"
-              ]
-            }
+            []
           ],
           "routing_rule": [
             {
@@ -298,8 +226,7 @@
               ],
               "frontend_endpoints": [
                 [
-                  "${local.frontdoor_domain_identifier}",
-                  "${local.frontdoor_external_domain_identifier}"
+                  "${local.frontdoor_domain_identifier}"
                 ]
               ],
               "redirect_configuration": [
@@ -329,8 +256,7 @@
               ],
               "frontend_endpoints": [
                 [
-                  "${local.frontdoor_domain_identifier}",
-                  "${local.frontdoor_external_domain_identifier}"
+                  "${local.frontdoor_domain_identifier}"
                 ]
               ],
               "forwarding_configuration": [
@@ -342,6 +268,25 @@
                     "us-payment"
                   ]
                 }
+              ]
+            }
+          ],
+          "backend_pool_health_probe": [
+            {
+              "name": [
+                "us-payment-hpSettings"
+              ],
+              "path": [
+                "/us-payment/healthchecks"
+              ],
+              "protocol": [
+                "Https"
+              ],
+              "enabled": [
+                false
+              ],
+              "probe_method": [
+                "HEAD"
               ]
             }
           ],
@@ -509,76 +454,6 @@
       "frontdoor_domain_identifier": [
         "${replace(local.frontdoor_domain,\".\",\"-\")}"
       ]
-    },
-    {
-      "frontdoor_external_domain": [
-        "mach-site-eu.mach-services.net"
-      ],
-      "frontdoor_external_domain_identifier": [
-        "${replace(local.frontdoor_external_domain,\".\",\"-\")}"
-      ]
-    }
-  ],
-  "data": [
-    {
-      "azurerm_dns_zone": {
-        "domain": {
-          "name": [
-            "mach-services.net"
-          ],
-          "resource_group_name": [
-            "mach-shared-we-rg"
-          ]
-        }
-      }
-    },
-    {
-      "azurerm_key_vault": {
-        "ssl": {
-          "name": [
-            "machsharedwekvcdn"
-          ],
-          "resource_group_name": [
-            "mach-shared-we-rg"
-          ]
-        }
-      }
-    },
-    {
-      "external": {
-        "sync_triggers_us-payment": {
-          "program": [
-            [
-              "bash",
-              "-c",
-              "az rest --method post --uri 'https://management.azure.com/subscriptions/${local.subscription_id}/resourceGroups/${local.resource_group_name}/providers/Microsoft.Web/sites/${module.us-payment.app_service_name}/syncfunctiontriggers?api-version=2016-08-01'"
-            ]
-          ],
-          "depends_on": [
-            [
-              "${module.us-payment.app_service_name}"
-            ]
-          ]
-        }
-      }
-    },
-    {
-      "external": {
-        "sync_triggers_api-extensions": {
-          "program": [
-            [
-              "bash",
-              "-c",
-              "az rest --method post --uri 'https://management.azure.com/subscriptions/${local.subscription_id}/resourceGroups/${local.resource_group_name}/providers/Microsoft.Web/sites/${module.api-extensions.app_service_name}/syncfunctiontriggers?api-version=2016-08-01'"
-            ]
-          ],
-          "depends_on": [
-            [
-              "${module.api-extensions.app_service_name}"
-            ]
-          ]
-        }
-      }
     }
   ],
   "module": [
@@ -751,6 +626,44 @@
             "${null_resource.commercetools}"
           ]
         ]
+      }
+    }
+  ],
+  "data": [
+    {
+      "external": {
+        "sync_triggers_us-payment": {
+          "program": [
+            [
+              "bash",
+              "-c",
+              "az rest --method post --uri 'https://management.azure.com/subscriptions/${local.subscription_id}/resourceGroups/${local.resource_group_name}/providers/Microsoft.Web/sites/${module.us-payment.app_service_name}/syncfunctiontriggers?api-version=2016-08-01'"
+            ]
+          ],
+          "depends_on": [
+            [
+              "${module.us-payment.app_service_name}"
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "external": {
+        "sync_triggers_api-extensions": {
+          "program": [
+            [
+              "bash",
+              "-c",
+              "az rest --method post --uri 'https://management.azure.com/subscriptions/${local.subscription_id}/resourceGroups/${local.resource_group_name}/providers/Microsoft.Web/sites/${module.api-extensions.app_service_name}/syncfunctiontriggers?api-version=2016-08-01'"
+            ]
+          ],
+          "depends_on": [
+            [
+              "${module.api-extensions.app_service_name}"
+            ]
+          ]
+        }
       }
     }
   ]

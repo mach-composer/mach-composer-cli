@@ -14,10 +14,6 @@ general_config:
     region: westeurope
     frontdoor:
       resource_group: mach-shared-we-rg
-      dns_zone: mach-services.net
-      ssl_key_vault_name: machsharedwekvcdn
-      ssl_key_vault_secret_name: wildcard-mach-services-net
-      ssl_key_vault_secret_version: oIXGVSNdwVAX7i6uUcCl
   sentry:
     auth_token: JdOheW3IzlsXBOPNdaMZgXoMcHqyf8CJMjBnfVHD3laXPpN23oAZG8KOPAiYfeGr
     organization: labd

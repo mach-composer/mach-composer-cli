@@ -68,24 +68,6 @@ def validate_site(site: types.Site, *, config: types.MachConfig):
 
 
 def validate_endpoints(site: types.Site, cloud: types.CloudOption):
-    if (
-        cloud == types.CloudOption.AZURE
-        and site.endpoints
-        and any([e.url for e in site.endpoints])
-    ):
-        if not site.azure.frontdoor:
-            raise ValidationError(
-                f"Site {site.identifier} needs to have a Frontdoor dns_zone "
-                "defined before endpoints can be used."
-            )
-
-        dns_zone = site.azure.frontdoor.dns_zone
-        for endpoint in site.endpoints:
-            if not endpoint.url.endswith(dns_zone):
-                raise ValidationError(
-                    f"No match between endpoint {endpoint} and DNS zone {dns_zone}"
-                )
-
     # Construct lookup dictionary of all endpoints with the components that use them
     expected_endpoint_names = {c.endpoint for c in site.components if c.endpoint}
     endpoint_names = {e.key for e in site.endpoints}
