@@ -529,12 +529,8 @@
         ],
         "endpoint_public": [
           {
-            "url": [
-              "${local.endpoint_url_default}"
-            ],
-            "frontdoor_id": [
-              "${azurerm_frontdoor.app-service.header_frontdoor_id}"
-            ]
+            "url": "${local.endpoint_url_default}",
+            "frontdoor_id": "${azurerm_frontdoor.app-service.header_frontdoor_id}"
           }
         ],
         "ct_project_key": [

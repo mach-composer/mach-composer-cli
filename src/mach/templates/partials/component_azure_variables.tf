@@ -13,7 +13,7 @@ tags                    = local.tags
 monitor_action_group_id = azurerm_monitor_action_group.alert_action_group.id
 {% endif %}
 {% for component_endpoint, site_endpoint in component.endpoints.items() -%}
-endpoint_{{ component_endpoint|slugify }} {
+endpoint_{{ component_endpoint|slugify }} = {
   url = local.endpoint_url_{{ site_endpoint|slugify }}
   frontdoor_id = azurerm_frontdoor.app-service.header_frontdoor_id
 }{% endfor %}
