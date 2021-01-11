@@ -350,6 +350,15 @@
           "${commercetools_api_client.frontend_credentials.secret}"
         ]
       }
+    },
+    {
+      "endpoints": {
+        "value": [
+          {
+            "main": "${local.endpoint_url_main}"
+          }
+        ]
+      }
     }
   ],
   "data": [

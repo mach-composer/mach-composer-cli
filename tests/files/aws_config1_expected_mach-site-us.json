@@ -247,12 +247,21 @@
           "${commercetools_api_client.frontend_credentials.secret}"
         ]
       }
+    },
+    {
+      "endpoints": {
+        "value": [
+          {
+            "default": "${local.endpoint_url_default}"
+          }
+        ]
+      }
     }
   ],
   "locals": [
     {
       "endpoint_url_default": [
-        ""
+        "${aws_apigatewayv2_api.default_gateway.api_endpoint}"
       ]
     }
   ],
