@@ -38,7 +38,7 @@ This is done by providing the necessary Terraform module files in the component.
 
 MACH expects each component to have a certain set of variables defined.
 
-What variables it needs to have defined is controlled by the [integrations](../syntax.md#components) setting.
+What variables it needs to have defined is controlled by the [integrations](../syntax/components.md) setting.
 
 If `integrations` is set to an empty list `[]`, no variables will be needed.
 
@@ -48,7 +48,7 @@ If `integrations` is set to an empty list `[]`, no variables will be needed.
 
 ### Integrations
 
-By defining a set of `integrations` in the [component definitions](../syntax.md#components), MACH knows what variables need to be passed on to the components.
+By defining a set of `integrations` in the [component definitions](../syntax/components.md), MACH knows what variables need to be passed on to the components.
 
 This way the components don't need to define **all possible variables** a component might have.
 

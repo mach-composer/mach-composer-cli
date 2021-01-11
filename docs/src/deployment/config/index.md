@@ -73,7 +73,7 @@ When running the **MACH Docker image**, the necessary environment variables need
 
 The MACH composer comes with Terraform providers pre-installed in the Docker image.
 
-If you're overwriting these versions with in your [`terraform_config` block](../../syntax.md#terraform_config), these providers will be downloaded.
+If you're overwriting these versions with in your [`terraform_config` block](../../syntax/general_config.md#terraform_config), these providers will be downloaded.
 
 To avoid having to re-download it everytime you run MACH through the Docker image, make sure you mount the [plugin cache](https://www.terraform.io/docs/commands/cli-config.html#provider-plugin-cache) directory;
 

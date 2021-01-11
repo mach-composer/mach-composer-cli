@@ -22,7 +22,7 @@ Type: `map(string)`
 - `app_service_plan_id` - The [App service plan](../deployment/config/azure.md#app-service-plan) managed by MACH
 - `tags` - Azure tags to be used on resources<br>
   Type: `map(string)`
-- `monitor_action_group_id` - [action group](../deployment/config/azure.md#action-groups) ID when [alert_group](../syntax.md#azure) is configured.
+- `monitor_action_group_id` - [action group](../deployment/config/azure.md#action-groups) ID when [alert_group](../syntax/general_config.md#azure) is configured.
 
 ```terraform
 variable "short_name" {}
@@ -88,8 +88,8 @@ resource "azurerm_function_app" "your_component" {
 MACH will provide the correct HTTP routing for you.<br>
 To do so, the following has to be configured:
 
-- [Frontdoor](../syntax.md#frontdoor) settings in the Azure configuration
-- The component needs to have an [`endpoint`](../syntax.md#components) defined
+- [Frontdoor](../syntax/general_config.md#frontdoor) settings in the Azure configuration
+- The component needs to have [`endpoints`](../syntax/components.md) defined
 
 !!! tip "Default endpoint"
     If you assign `default` to one of your components endpoints, no additional Frontdoor settings are needed.
@@ -116,8 +116,8 @@ MACH creates a name prefix which can be used to name all other resources.
 
 This prefix is built up using
 
-- The configured [resources prefix](../syntax.md#azure)
-- The [site identifier](../#syntax.md#sites)
+- The configured [resources prefix](../syntax/general_config.md#azure)
+- The [site identifier](../#syntax/sites.md)
 - Region
 
 So for example, when creating a function app, we can define this as:

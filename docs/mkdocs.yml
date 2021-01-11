@@ -17,7 +17,11 @@ nav:
   - Azure: prerequisites/azure.md
   - AWS: prerequisites/aws.md
 - gettingstarted.md
-- syntax.md
+- Syntax:
+  - Overview: syntax/index.md
+  - General config: syntax/general_config.md
+  - Sites: syntax/sites.md
+  - Component definitions: syntax/components.md
 - Components:
   - Introduction: components/index.md
   - components/structure.md

@@ -31,7 +31,7 @@ Required scopes:
 !!! note ""
     This client is used the MACH composer to create other necessary commercetools clients for each individual component.
 
-Use the credentials for this client to configure each site's [commercetools settings](../syntax.md#commercetools).
+Use the credentials for this client to configure each site's [commercetools settings](../syntax/sites.md#commercetools).
 
 ## Cloud environment
 

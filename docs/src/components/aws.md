@@ -44,8 +44,8 @@ resource "aws_lambda_function" "example" {
 MACH will provide the correct HTTP routing for you.<br>
 To do so, the following has to be configured:
 
-- [endpoints](../syntax.md#sites) settings in the Site configuration
-- The component needs to have a [`endpoint`](../syntax.md#components) defined
+- [endpoints](../syntax/sites.md) settings in the Site configuration
+- The component needs to have [`endpoints`](../syntax/components.md) defined
 
 !!! tip "Default endpoint"
     If you assign `default` to one of your components endpoints, no additional Route53 settings are needed.

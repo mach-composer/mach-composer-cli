@@ -159,7 +159,7 @@ An example:
           version: e638e57
       ```
 
-See [Syntax](./syntax.md) for all configuration options.
+See [Syntax](./syntax/index.md) for all configuration options.
 
 ## 6. Deploy
 

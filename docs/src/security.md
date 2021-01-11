@@ -1,7 +1,7 @@
 # Security
 
 ## Component secrets
-The MACH configuration provides a [`secrets` attribute](./syntax.md#component-configurations) in which you can pass secret values to the components.
+The MACH configuration provides a [`secrets` attribute](./syntax/sites.md#component-configurations) in which you can pass secret values to the components.
 
 It is up to the component to use those secret values in a secure manner.
 

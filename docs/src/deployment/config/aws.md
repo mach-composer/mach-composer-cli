@@ -2,7 +2,7 @@
 
 ## HTTP routing
 
-If any component used in a MACH stack is defined with an [`endpoint`](../../syntax.md#components), MACH will create the necessary resources to be able to route traffic to that components.
+If any component used in a MACH stack is defined with an [`endpoint`](../../syntax/components.md), MACH will create the necessary resources to be able to route traffic to that components.
 
 The information needed for components to add custom routes to that API Gateway are provided through [Terraform variables](../../components/aws.md#terraform-variables).
 
@@ -20,11 +20,11 @@ components:
 ```
 
 !!! note ""
-    This `default` endpoint doesnt need to be defined in your [endpoints definition](../../syntax.md#endpoints).
+    This `default` endpoint doesnt need to be defined in your [endpoints definition](../../syntax/sites.md#endpoints).
 
 ### Custom endpoint
 
-A site might have a couple of [endpoints](../../syntax.md#endpoints) defined and for each endpoint MACH will create:
+A site might have a couple of [endpoints](../../syntax/sites.md#endpoints) defined and for each endpoint MACH will create:
 
 - API Gateway + default routing
 - ACM Certificate (with DNS validation)
