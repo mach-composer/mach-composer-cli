@@ -92,4 +92,5 @@ resource "azurerm_monitor_action_group" "alert_action_group" {
 }
 {% endif %}
 
-{% include 'partials/azure_frontdoor.tf' %}
+{% include 'partials/endpoints/azure_frontdoor.tf' %}
+{% include 'partials/endpoints/aws_url_locals.tf' %}

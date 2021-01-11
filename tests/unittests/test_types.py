@@ -26,7 +26,9 @@ def test_site(config: types.MachConfig):
     site = config.sites[0]
 
     assert site.used_endpoints == []
-    config.components[0].endpoint = "public"
+    config.components[0].endpoints = {
+        "main": "public",
+    }
     config = parse.parse_config(config)
     assert site.used_endpoints == [
         types.Endpoint(
@@ -34,7 +36,9 @@ def test_site(config: types.MachConfig):
         )
     ]
 
-    config.components[1].endpoint = "public"
+    config.components[1].endpoints = {
+        "main": "public",
+    }
     config = parse.parse_config(config)
     assert site.used_endpoints == [
         types.Endpoint(
@@ -44,7 +48,9 @@ def test_site(config: types.MachConfig):
         )
     ]
 
-    config.components[1].endpoint = "private"
+    config.components[1].endpoints = {
+        "main": "private",
+    }
     config = parse.parse_config(config)
     assert site.used_endpoints == [
         types.Endpoint(

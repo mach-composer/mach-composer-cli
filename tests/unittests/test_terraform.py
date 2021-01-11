@@ -101,7 +101,9 @@ def test_generate_aws_w_endpoints(config: types.MachConfig, tf_mock):
     # 'public' endpoint not used in component yet; no resources created
     assert "resource" not in data
 
-    config.components[0].endpoint = "public"
+    config.components[0].endpoints = {
+        "main": "public",
+    }
     data = _generate(parse.parse_config(config))
 
     # API gateway items need to be created since a component now uses it
@@ -136,7 +138,9 @@ def test_generate_aws_w_endpoints(config: types.MachConfig, tf_mock):
             name="logger",
             source="some-source//terraform",
             version="1.0",
-            endpoint="private",
+            endpoints={
+                "main": "private",
+            },
         )
     )
     config.sites[0].components.append(
@@ -182,7 +186,9 @@ def test_generate_azure_w_endpoints(azure_config: types.MachConfig, tf_mock):
         "azurerm_resource_group.main",
     ]
 
-    config.components[0].endpoint = "public"
+    config.components[0].endpoints = {
+        "main": "public",
+    }
     data = _generate(parse.parse_config(config))
 
     # Frontdoor instance need to be created since a component now uses it
@@ -208,7 +214,9 @@ def test_generate_azure_w_endpoints(azure_config: types.MachConfig, tf_mock):
             name="logger",
             source="some-source//terraform",
             version="1.0",
-            endpoint="private",
+            endpoints={
+                "main": "private",
+            },
         )
     )
     config.sites[0].components.append(
@@ -233,7 +241,9 @@ def test_generate_aws_w_default_endpoint(config: types.MachConfig, tf_mock):
     # 'public' endpoint not used in component yet; no resources created
     assert "resource" not in data
 
-    config.components[0].endpoint = "default"
+    config.components[0].endpoints = {
+        "main": "default",
+    }
     data = _generate(parse.parse_config(config))
 
     # API gateway items need to be created since a component now uses it
@@ -256,7 +266,9 @@ def test_generate_azure_w_default_endpoint(azure_config: types.MachConfig, tf_mo
         "azurerm_resource_group.main",
     ]
 
-    config.components[0].endpoint = "default"
+    config.components[0].endpoints = {
+        "main": "default",
+    }
     data = _generate(parse.parse_config(config))
 
     assert _get_resource_ids(data) == [
