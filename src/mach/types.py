@@ -538,6 +538,13 @@ class MachConfig(JsonSchemaMixin):
     general_config: GeneralConfig
     sites: List[Site]
     components: List[ComponentConfig] = _list()
+
+    # Not used during a mach update or apply, but MACH
+    # must be able to accept this attribute when parsing
+    # encrypted configurations
+    sops: Optional[any] = _none()
+
+    # Items that are not used in the configuration itself by set by the parser
     output_path: str = "deployments"
     file: Optional[str] = _none()
 
