@@ -47,11 +47,27 @@ variable "monitor_action_group_id" {
 ```
 
 
-### With `endpoint`
+### With `endpoints`
 
-In order to support the [`endpoint`](../deployment/config/azure.md#http-routing) attribute on the component, the component needs to have the following variables defined:
+In order to support the [`endpoints`](../deployment/config/azure.md#http-routing) attribute on the component, the component needs to define what endpoints it expects.
 
-- `frontdoor_id` - Frontdoor ID on which routing is created for that component
+For example, if the component requires two endpoints (`main` and `webhooks`) to be set, the following variables needs to be defined:
+
+```terraform
+variable "endpoint_main" {
+  type = object({
+    url          = string
+    frontdoor_id = string
+  })
+}
+
+variable "endpoint_webhooks" {
+  type = object({
+    url          = string
+    frontdoor_id = string
+  })
+}
+```
 
 
 ## Packaging and deploying

@@ -10,17 +10,28 @@ In addition to this, the component itself is responsible for [packaging and depl
 
 In addition to the [base variables](./index.md#required-variables) AWS components don't require additional variables, unless an `endpoint` is expected (and set in the configuration).
 
-### With `endpoint`
+### With `endpoints`
 
-In order to support the [`endpoint`](../deployment/config/aws.md#http-routing) attribute on the component, the component needs to have the following variables defined:
+In order to support the [`endpoints`](../deployment/config/aws.md#http-routing) attribute on the component, the component needs to define what endpoints it expects.
 
-- `api_gateway` - API Gateway ID to publish in (only if component has an `endpoint` defined)
-- `api_gateway_execution_arn` API Gateway API Execution ARN (only if component is has an `endpoint` defined)
-
+For example, if the component requires two endpoints (`main` and `webhooks`) to be set, the following variables needs to be defined:
 
 ```terraform
-variable "api_gateway" {}
-variable "api_gateway_execution_arn" {}
+variable "endpoint_main" {
+  type = object({
+    url                       = string
+    api_gateway_id            = string
+    api_gateway_execution_arn = string
+  })
+}
+
+variable "endpoint_webhooks" {
+  type = object({
+    url                       = string
+    api_gateway_id            = string
+    api_gateway_execution_arn = string
+  })
+}
 ```
 
 ## Packaging and deploying
