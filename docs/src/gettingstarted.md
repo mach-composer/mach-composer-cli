@@ -107,7 +107,8 @@ An example:
       components:
         - name: payment
           source: git::ssh://git@github.com/your-project/components/payment-component.git//terraform
-          endpoint: main
+          endpoints: 
+            main: main
           version: e638e57
       ```
 === "Azure"
@@ -128,20 +129,22 @@ An example:
           region: westeurope
       sites:
         - identifier: my-site
+          endpoints:
+            main: api.tst.mach-example.net
           commercetools:
-          project_key: my-site-tst
-          client_id: ...
-          client_secret: ...
-          scopes: manage_project:my-site-tst manage_api_clients:my-site-tst view_api_clients:my-site-tst
-          languages:
-            - en-GB
-            - nl-NL
-          currencies:
-            - GBP
-            - EUR
-          countries:
-            - GB
-            - NL
+            project_key: my-site-tst
+            client_id: ...
+            client_secret: ...
+            scopes: manage_project:my-site-tst manage_api_clients:my-site-tst view_api_clients:my-site-tst
+            languages:
+              - en-GB
+              - nl-NL
+            currencies:
+              - GBP
+              - EUR
+            countries:
+              - GB
+              - NL
           components:
             - name: payment
               variables:
@@ -151,7 +154,8 @@ An example:
       components:
         - name: payment
           source: git::ssh://git@github.com/your-project/components/payment-component.git//terraform
-          endpoint: main
+          endpoints: 
+            main: main
           version: e638e57
       ```
 

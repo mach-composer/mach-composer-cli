@@ -467,7 +467,8 @@ components:
     short_name: apiexts
     source: git::ssh://git@git.labdigital.nl/mach-components/api-extensions-component.git//terraform
     version: 3b8ab91
-    endpoint: main
+    endpoints: 
+      main: default
   - name: ct-products-types
     source: git::ssh://git@git.labdigital.nl/mach-components/ct-product-types.git//terraform
     version: 1.4.0
@@ -486,7 +487,7 @@ components:
     - `aws`
     - `commercetools`
     - `contentful`<br>
-- `endpoint` - Defines the endpoint that needs to connect to this component.<br>
+- `endpoints` - Defines the endpoint that needs to connect to this component.<br>
   Will setup Frontdoor routing or pass API Gateway information when set.
 - `health_check_path` - Defines a custom healthcheck path.<br>
   Defaults to `/<name>/healthchecks`
