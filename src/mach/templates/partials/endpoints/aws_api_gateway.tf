@@ -15,6 +15,16 @@ resource "aws_apigatewayv2_stage" "{{ endpoint.key|slugify }}_default" {
   api_id                = aws_apigatewayv2_api.{{ endpoint.key|slugify }}_gateway.id
   auto_deploy           = true
 
+  {% if endpoint.throttling_burst_limit or endpoint.throttling_burst_limit -%}
+  default_route_settings {
+    {% if endpoint.throttling_burst_limit %}
+    throttling_burst_limit = {{ endpoint.throttling_burst_limit }}
+    {% endif %}
+    {% if endpoint.throttling_rate_limit %}
+    throttling_rate_limit = {{ endpoint.throttling_rate_limit }}
+    {% endif %}
+  }{% endif %}
+
   depends_on = [
     {% for component in endpoint.components %}
     module.{{ component.name }},

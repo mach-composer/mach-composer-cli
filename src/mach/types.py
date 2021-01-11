@@ -42,6 +42,10 @@ class Endpoint:
     url: str
     key: str = field(metadata=config(exclude=lambda x: True))
     zone: Optional[str] = _none()
+    throttling_burst_limit: Optional[int] = _none()
+    throttling_rate_limit: Optional[int] = _none()
+
+    # To be set by the parser
     components: Optional[List["Component"]] = _list()
 
     @property
