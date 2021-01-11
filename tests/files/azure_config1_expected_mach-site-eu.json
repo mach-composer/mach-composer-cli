@@ -406,6 +406,15 @@
           "${commercetools_api_client.frontend_credentials.secret}"
         ]
       }
+    },
+    {
+      "endpoints": {
+        "value": [
+          {
+            "default": "${local.endpoint_url_default}"
+          }
+        ]
+      }
     }
   ],
   "locals": [
@@ -453,6 +462,11 @@
       ],
       "frontdoor_domain_identifier": [
         "${replace(local.frontdoor_domain,\".\",\"-\")}"
+      ]
+    },
+    {
+      "endpoint_url_default": [
+        "${aws_apigatewayv2_api.default_gateway.api_endpoint}"
       ]
     }
   ],
@@ -522,8 +536,11 @@
         "tags": [
           "${local.tags}"
         ],
-        "frontdoor_id": [
-          "${azurerm_frontdoor.app-service.header_frontdoor_id}"
+        "endpoint_public": [
+          {
+            "url": "${local.endpoint_url_default}",
+            "frontdoor_id": "${azurerm_frontdoor.app-service.header_frontdoor_id}"
+          }
         ],
         "ct_project_key": [
           "mach-site-eu"

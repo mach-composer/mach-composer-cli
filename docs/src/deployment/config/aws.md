@@ -14,7 +14,8 @@ If you have defined your component with a `default` endpoint, MACH will create a
 components:
   - name: payment
     source: git::ssh://git@github.com/your-project/components/payment-component.git//terraform
-    endpoint: default
+    endpoints: 
+      public: default
     version: ....
 ```
 

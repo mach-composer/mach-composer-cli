@@ -19,12 +19,13 @@ If you have defined your component with a `default` endpoint, MACH will create a
 components:
   - name: payment
     source: git::ssh://git@github.com/your-project/components/payment-component.git//terraform
-    endpoint: default
+    endpoints:
+      public: default
     version: ....
 ```
 
 !!! note ""
-    This `default` endpoint doesnt need to be defined in your [endpoints definition](../../syntax.md#endpoints).
+    This `default` endpoint doesn't need to be defined in your [endpoints definition](../../syntax.md#endpoints).
 
 ### Custom endpoint
 
@@ -42,14 +43,16 @@ So when having the following components defined:
 components:
   - name: payment
     source: git::ssh://git@github.com/your-project/components/payment-component.git//terraform
-    endpoint: main
+    endpoints: 
+      public: main
     version: ....
   - name: api-extensions
     source: git::ssh://git@github.com/your-project/components/api-extensions-component.git//terraform
     version: ....
   - name: graphql
     source: git::ssh://git@github.com/your-project/components/graphql-component.git//terraform
-    endpoint: main
+    endpoints: 
+      public: main
     version: ....
 ```
 

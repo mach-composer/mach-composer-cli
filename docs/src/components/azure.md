@@ -92,7 +92,7 @@ To do so, the following has to be configured:
 - The component needs to have an [`endpoint`](../syntax.md#components) defined
 
 !!! tip "Default endpoint"
-    If you define `endpoint: default` in your component definition, no additional Frontdoor settings are needed.
+    If you assign `default` to one of your components endpoints, no additional Frontdoor settings are needed.
 
     MACH will create a Frontdoor instance for you without any custom domain.
 

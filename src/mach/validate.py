@@ -1,4 +1,5 @@
 import re
+from itertools import chain
 from typing import List
 
 import click
@@ -69,7 +70,9 @@ def validate_site(site: types.Site, *, config: types.MachConfig):
 
 def validate_endpoints(site: types.Site, cloud: types.CloudOption):
     # Construct lookup dictionary of all endpoints with the components that use them
-    expected_endpoint_names = {c.endpoint for c in site.components if c.endpoint}
+    expected_endpoint_names = set(
+        chain.from_iterable(c.endpoints.values() for c in site.components)
+    )
     endpoint_names = {e.key for e in site.endpoints}
 
     missing = expected_endpoint_names - endpoint_names
