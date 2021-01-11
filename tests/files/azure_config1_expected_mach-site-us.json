@@ -443,6 +443,15 @@
           "${commercetools_api_client.frontend_credentials.secret}"
         ]
       }
+    },
+    {
+      "endpoints": {
+        "value": [
+          {
+            "public": "${local.endpoint_url_public}"
+          }
+        ]
+      }
     }
   ],
   "locals": [
