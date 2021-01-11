@@ -38,7 +38,7 @@ sites:
       account_id: 1234567890
       region: eu-central-1
     endpoints:
-      main: api.tst.mach-example.net
+      public: api.tst.mach-example.net
     commercetools:
       project_key: my-site-tst
       client_id: ...
@@ -62,7 +62,8 @@ sites:
 components:
   - name: payment
     source: git::ssh://git@github.com/your-project/components/payment-component.git//terraform
-    endpoint: main
+    endpoints: 
+      main: public
     version: e638e57
 ```
 
