@@ -9,6 +9,8 @@ from mach.types import ComponentConfig, MachConfig
 NAME_RE = re.compile(r".* name: [\"']?(.*)[\"']?")
 VERSION_RE = re.compile(r"(\s*version: )([\"']?.*[\"']?)")
 
+ROOT_BLOCK_START = re.compile(r"^\w+")
+
 
 Updates = typing.List[typing.Tuple[ComponentConfig, str]]
 
@@ -115,6 +117,8 @@ class FileUpdater:
         for line in lines:
             if line.startswith("components:"):
                 self.in_components = True
+            elif ROOT_BLOCK_START.match(line):
+                self.in_components = False
             elif self.in_components:
                 line = self.process_component_line(line)
             newlines.append(line)
