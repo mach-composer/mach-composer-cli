@@ -126,10 +126,8 @@ def resolve_site_configs(config: MachConfig) -> MachConfig:
 def resolve_endpoint_components(site: Site):
     endpoint_components = defaultdict(list)
     for c in site.components:
-        if not c.endpoint:
-            continue
-
-        endpoint_components[c.endpoint].append(c)
+        for endpoint in c.endpoints.values():
+            endpoint_components[endpoint].append(c)
 
     site_endpoint_keys = {e.key for e in site.endpoints}
     # If one of the components has a 'default' endpoint defined,

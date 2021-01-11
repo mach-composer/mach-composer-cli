@@ -33,6 +33,85 @@ _default = lambda value: field(
     default_factory=lambda: value, metadata=config(exclude=lambda x: x == value)
 )
 _list = lambda: field(default_factory=list, metadata=config(exclude=lambda x: not x))
+_dict = lambda: field(default_factory=dict, metadata=config(exclude=lambda x: not x))
+
+
+@dataclass_json
+@dataclass
+class Endpoint:
+    url: str
+    key: str = field(metadata=config(exclude=lambda x: True))
+    zone: Optional[str] = _none()
+    throttling_burst_limit: Optional[int] = _none()
+    throttling_rate_limit: Optional[int] = _none()
+
+    # To be set by the parser
+    components: Optional[List["Component"]] = _list()
+
+    @property
+    def contains_defaults(self):
+        """Indicate if this endpoint contains just default values.
+
+        Other then the `url` attribute.
+        If only defaults, we can serialize the endpoints by just
+        rendering the url, not the entire object.
+
+        At this moment, we don't have any additional options, so it's always default.
+        This can be extended in the future.
+        """
+        return True
+
+    @property
+    def subdomain(self) -> str:
+        if not self.url:
+            return ""
+
+        return utils.subdomain_from_url(self.url)
+
+    def __post_init__(self):
+        """Ensure endpoints have protocol stripped."""
+        self.url = utils.strip_protocol(self.url)
+
+        if not self.zone and self.url:
+            try:
+                self.zone = utils.dns_zone_from_url(self.url)
+            except ValueError as e:
+                raise ValidationError(f"Could not determine DNS zone: {e}")
+
+
+class EndpointsField(fields.Dict):
+    def _serialize(self, value, attr, obj, **kwargs):
+        result = {}
+        for endpoint in value:
+            if endpoint.contains_defaults:
+                result[endpoint.key] = endpoint.url
+            else:
+                result[endpoint.key] = endpoint.to_dict()
+
+        return super()._deserialize(result, attr, obj, **kwargs)
+
+    def _deserialize(self, value, attr, data, **kwargs):
+        value = super()._deserialize(value, attr, data, **kwargs)
+        result = []
+        for k, v in value.items():
+            if isinstance(v, str):
+                result.append(Endpoint(key=k, url=v))
+            elif isinstance(v, dict):
+                v["key"] = k
+                result.append(Endpoint.schema(infer_missing=True).load(v))
+            else:
+                raise ValidationError(f"Unexpected value found for endpoint {k}")
+
+        return result
+
+
+class EndpointEncoder(FieldEncoder):
+    @property
+    def json_schema(self):
+        return {"type": "string"}
+
+
+JsonSchemaMixin.register_field_encoders({Endpoint: EndpointEncoder()})
 
 
 @dataclass_json
@@ -197,7 +276,7 @@ class ComponentConfig(JsonSchemaMixin):
     version: str
     short_name: Optional[str] = _none()
     integrations: List[str] = _list()
-    endpoint: Optional[str] = _none()
+    endpoints: Dict[str, str] = _dict()
     health_check_path: Optional[str] = _none()
     branch: Optional[str] = _none()
 
@@ -335,10 +414,10 @@ class Component(JsonSchemaMixin):
     """Component configuration."""
 
     name: str
-    variables: Optional[TerraformVariables] = field(default_factory=dict)
-    secrets: Optional[TerraformVariables] = field(default_factory=dict)
-    store_variables: Optional[StoreVariables] = field(default_factory=dict)
-    store_secrets: Optional[StoreVariables] = field(default_factory=dict)
+    variables: Optional[TerraformVariables] = _dict()
+    secrets: Optional[TerraformVariables] = _dict()
+    store_variables: Optional[StoreVariables] = _dict()
+    store_secrets: Optional[StoreVariables] = _dict()
     short_name: Optional[str] = _none()
     health_check_path: Optional[str] = _none()
     sentry: Optional[SentryDsn] = _none()
@@ -361,8 +440,8 @@ class Component(JsonSchemaMixin):
         return "aws" in self.integrations or "azure" in self.integrations
 
     @property
-    def endpoint(self) -> str:
-        return self.definition.endpoint
+    def endpoints(self) -> Dict[str, str]:
+        return self.definition.endpoints
 
 
 @dataclass_json
@@ -405,80 +484,6 @@ class SiteAzureSettings(JsonSchemaMixin):
         self.subscription_id = self.subscription_id or config.subscription_id
         self.region = self.region or config.region
         self.service_object_ids = self.service_object_ids or config.service_object_ids
-
-
-@dataclass_json
-@dataclass
-class Endpoint:
-    url: str
-    key: str = field(metadata=config(exclude=lambda x: True))
-    zone: Optional[str] = _none()
-    components: Optional[List["Component"]] = _list()
-
-    @property
-    def contains_defaults(self):
-        """Indicate if this endpoint contains just default values.
-
-        Other then the `url` attribute.
-        If only defaults, we can serialize the endpoints by just
-        rendering the url, not the entire object.
-
-        At this moment, we don't have any additional options, so it's always default.
-        This can be extended in the future.
-        """
-        return True
-
-    @property
-    def subdomain(self) -> str:
-        if not self.url:
-            return ""
-
-        return utils.subdomain_from_url(self.url)
-
-    def __post_init__(self):
-        """Ensure endpoints have protocol stripped."""
-        self.url = utils.strip_protocol(self.url)
-
-        if not self.zone and self.url:
-            try:
-                self.zone = utils.dns_zone_from_url(self.url)
-            except ValueError as e:
-                raise ValidationError(f"Could not determine DNS zone: {e}")
-
-
-class EndpointsField(fields.Dict):
-    def _serialize(self, value, attr, obj, **kwargs):
-        result = {}
-        for endpoint in value:
-            if endpoint.contains_defaults:
-                result[endpoint.key] = endpoint.url
-            else:
-                result[endpoint.key] = endpoint.to_dict()
-
-        return super()._deserialize(result, attr, obj, **kwargs)
-
-    def _deserialize(self, value, attr, data, **kwargs):
-        value = super()._deserialize(value, attr, data, **kwargs)
-        result = []
-        for k, v in value.items():
-            if isinstance(v, str):
-                result.append(Endpoint(key=k, url=v))
-            elif isinstance(v, dict):
-                v["key"] = k
-                result.append(Endpoint.schema(infer_missing=True).load(v))
-            else:
-                raise ValidationError(f"Unexpected value found for endpoint {k}")
-
-        return result
-
-
-class EndpointEncoder(FieldEncoder):
-    @property
-    def json_schema(self):
-        return {"type": "string"}
-
-
-JsonSchemaMixin.register_field_encoders({Endpoint: EndpointEncoder()})
 
 
 @dataclass_json

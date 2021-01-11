@@ -152,7 +152,7 @@
           "type": "string"
         }
       },
-      "description": "TerraformProviders(aws: Union[str, NoneType] = None, azure: Union[str, NoneType] = None, commercetools: Union[str, NoneType] = None, sentry: Union[str, NoneType] = None, contentful: Union[str, NoneType] = None)"
+      "description": "Terraform provider version overwrites."
     },
     "SentryConfig": {
       "type": "object",
@@ -218,26 +218,10 @@
     "FrontDoorSettings": {
       "type": "object",
       "required": [
-        "resource_group",
-        "dns_zone",
-        "ssl_key_vault_name",
-        "ssl_key_vault_secret_name",
-        "ssl_key_vault_secret_version"
+        "resource_group"
       ],
       "properties": {
         "resource_group": {
-          "type": "string"
-        },
-        "dns_zone": {
-          "type": "string"
-        },
-        "ssl_key_vault_name": {
-          "type": "string"
-        },
-        "ssl_key_vault_secret_name": {
-          "type": "string"
-        },
-        "ssl_key_vault_secret_version": {
           "type": "string"
         }
       },
@@ -618,9 +602,6 @@
             "$ref": "#/definitions/AWSProvider"
           },
           "default": []
-        },
-        "route53_zone_name": {
-          "type": "string"
         }
       },
       "description": "Site-specific AWS settings."
@@ -726,8 +707,12 @@
           },
           "default": []
         },
-        "endpoint": {
-          "type": "string"
+        "endpoints": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "default": {}
         },
         "health_check_path": {
           "type": "string"

@@ -70,12 +70,14 @@ components:
     integrations: [""]
   - name: payment
     source: git::https://github.com/some-organisation/mach-component-payment.git//terraform
-    endpoint: public
+    endpoints: 
+      public: public
     version: 0a9a0b5
     integrations: ["azure", "commercetools"]
   - name: us-payment
     source: git::https://github.com/some-organisation/mach-component-payment.git//terraform
-    endpoint: default
+    endpoints: 
+      public: default
     version: 0a9a0b5
     integrations: ["azure", "commercetools"]
   - name: api-extensions
