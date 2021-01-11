@@ -249,6 +249,13 @@
       }
     }
   ],
+  "locals": [
+    {
+      "endpoint_url_default": [
+        ""
+      ]
+    }
+  ],
   "module": [
     {
       "commercetools-config": {
@@ -285,11 +292,18 @@
         "secrets": [
           {}
         ],
-        "api_gateway": [
-          "${aws_apigatewayv2_api.default_gateway.id}"
-        ],
-        "api_gateway_execution_arn": [
-          "${aws_apigatewayv2_api.default_gateway.execution_arn}"
+        "endpoint_public": [
+          {
+            "url": [
+              "${local.endpoint_url_default}"
+            ],
+            "api_gateway_id": [
+              "${aws_apigatewayv2_api.default_gateway.id}"
+            ],
+            "api_gateway_execution_arn": [
+              "${aws_apigatewayv2_api.default_gateway.execution_arn}"
+            ]
+          }
         ],
         "ct_project_key": [
           "mach-site-us"
@@ -310,7 +324,6 @@
         ],
         "depends_on": [
           [
-            "${aws_apigatewayv2_api.default_gateway}",
             "${null_resource.commercetools}"
           ]
         ]
