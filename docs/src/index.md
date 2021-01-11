@@ -22,7 +22,7 @@ With combining (and requiring) these practises, using the framework has signific
 
 ## How does it work?
 
-The MACH composer takes a [YAML configuration](./syntax.md) as input, and will translate this into a Terraform configuration. It will then execute the terraform configuration, which will deploy all resources for the site architecture.
+The MACH composer takes a [YAML configuration](./syntax/index.md) as input, and will translate this into a Terraform configuration. It will then execute the terraform configuration, which will deploy all resources for the site architecture.
 
 [![MACH diagram](./_img/mach.png)](./_img/mach.png)
 

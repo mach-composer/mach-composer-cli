@@ -4,7 +4,7 @@ Each integration brings it's own set of managed resources that gets created by M
 
 ### commercetools
 
-The commercetools integration will manage all resources that can be [configured](../../integrations/commercetools.md#configuration) in the [commercetools settings](../../syntax.md#commercetools).
+The commercetools integration will manage all resources that can be [configured](../../integrations/commercetools.md#configuration) in the [commercetools settings](../../syntax/sites.md#commercetools).
 
 It uses the [Terraform commercetools provider](https://registry.terraform.io/providers/labd/commercetools/latest/docs) for this.
 
@@ -30,7 +30,7 @@ It uses the [Terraform contentful provider](https://registry.terraform.io/provid
 
 ### Amplience
 
-It will use the information from the [amplience settings](../../syntax.md#amplience) to pass to the components that have `amplience` included in their integrations.
+It will use the information from the [amplience settings](../../syntax/general_config.md#amplience) to pass to the components that have `amplience` included in their integrations.
 
 !!! note ""
     [more info](../../integrations/amplience.md) about the Ampience integration

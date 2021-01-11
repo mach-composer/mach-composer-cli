@@ -45,7 +45,7 @@ A component can be added to your MACH stack by including it in your MACH configu
 
 It should be present in your:
 
-1. [Component definitions](../syntax.md#components) so that MACH knows where to find your component
+1. [Component definitions](../syntax/components.md) so that MACH knows where to find your component
 2. [Site component configuration](../syntax#component-configurations.md) to include it in your MACH stack add site-specific configuration
 
 The [getting started guide](../gettingstarted.md) includes an example of a configuration file with a component implemented.

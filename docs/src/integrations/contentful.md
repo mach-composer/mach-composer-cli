@@ -2,13 +2,13 @@
 
 When configured, MACH can create and manage a [space](https://www.contentful.com/help/spaces-and-organizations/) per site.
 
-For this you need to define a **organization ID** and **CMA token** in your [general config](../syntax.md#contentful).
+For this you need to define a **organization ID** and **CMA token** in your [general config](../syntax/general_config.md#contentful).
 
 ## Space configuration
 
 Each site can have their own Contentful Space.
 
-You can define the name of the space that needs to be created in your [site configuration](../syntax.md#contentful_1) by giving it a **name** and optionally set a custom **default locale**.
+You can define the name of the space that needs to be created in your [site configuration](../syntax/sites.md#contentful) by giving it a **name** and optionally set a custom **default locale**.
 
 ## Expose Space ID to components
 
