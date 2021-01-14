@@ -278,7 +278,7 @@
             },
             {
               "name": [
-                "payment-routing-rule"
+                "public-payment-routing"
               ],
               "accepted_protocols": [
                 [
@@ -302,7 +302,7 @@
                     "MatchRequest"
                   ],
                   "backend_pool_name": [
-                    "payment"
+                    "public-payment"
                   ]
                 }
               ]
@@ -311,7 +311,7 @@
           "backend_pool_health_probe": [
             {
               "name": [
-                "payment-hpSettings"
+                "public-payment-hpSettings"
               ],
               "path": [
                 "/payment/healthchecks"
@@ -330,7 +330,7 @@
           "backend_pool": [
             {
               "name": [
-                "payment"
+                "public-payment"
               ],
               "backend": [
                 {
@@ -352,7 +352,7 @@
                 "lbSettings"
               ],
               "health_probe_name": [
-                "payment-hpSettings"
+                "public-payment-hpSettings"
               ]
             }
           ]
