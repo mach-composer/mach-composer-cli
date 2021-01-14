@@ -101,6 +101,13 @@ def validate_site_components(components: List[types.Component], *, site: types.S
                     f"Store {store} is not defined in your commercetools stores definition"
                 )
 
+        if len(component.endpoints) > 1 and site.azure:
+            raise ValidationError(
+                f"The '{component.name}' component has multiple endpoints defined. "
+                "This is not supported on Azure yet.\n"
+                "See https://github.com/labd/mach-composer/issues/64 for more information."
+            )
+
 
 def validate_commercetools(site: types.Site):
     if site.commercetools:
