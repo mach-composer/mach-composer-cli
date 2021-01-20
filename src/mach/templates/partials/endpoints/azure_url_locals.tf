@@ -4,3 +4,11 @@ endpoint_url_{{ endpoint.key|slugify }} = {% if endpoint.url %}"{{ endpoint.url 
 {% endfor %}
 
 }
+
+output "endpoints" {
+  value = {
+  {% for endpoint in site.used_endpoints -%}
+    {{ endpoint.key|slugify }}: local.endpoint_url_{{ endpoint.key|slugify }}
+  {% endfor %}
+  }
+}
