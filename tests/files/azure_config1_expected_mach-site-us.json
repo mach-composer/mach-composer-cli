@@ -229,13 +229,6 @@
               ],
               "host_name": [
                 "api.us-tst.mach-services.net"
-              ],
-              "custom_https_configuration": [
-                {
-                  "certificate_source": [
-                    "FrontDoor"
-                  ]
-                }
               ]
             }
           ],
@@ -360,6 +353,25 @@
       }
     },
     {
+      "azurerm_frontdoor_custom_https_configuration": {
+        "public_https": {
+          "frontend_endpoint_id": [
+            "${azurerm_frontdoor.app-service.frontend_endpoint[1].id}"
+          ],
+          "custom_https_provisioning_enabled": [
+            true
+          ],
+          "custom_https_configuration": [
+            {
+              "certificate_source": [
+                "FrontDoor"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
       "azurerm_app_service_plan": {
         "functionapps": {
           "name": [
@@ -441,15 +453,6 @@
       "frontend_client_secret": {
         "value": [
           "${commercetools_api_client.frontend_credentials.secret}"
-        ]
-      }
-    },
-    {
-      "endpoints": {
-        "value": [
-          {
-            "public": "${local.endpoint_url_public}"
-          }
         ]
       }
     }
