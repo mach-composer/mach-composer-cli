@@ -1,3 +1,9 @@
+
+0.2.3 (2021-01-20)
+==================
+- Install SOPS in Docker container (backport)
+
+
 0.2.2 (2020-10-15)
 ==================
 - Fixed Azure config merge: not all generic settings where merged with site-specific ones

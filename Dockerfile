@@ -1,4 +1,12 @@
+FROM golang:1.15.6 AS go-builder
+# RUN go get -d -v golang.org/x/net/html  
+RUN GO111MODULE=on go get -u go.mozilla.org/sops/v3/cmd/sops@v3.6.1 && \
+    cd $GOPATH/pkg/mod/go.mozilla.org/sops/v3@v3.6.1 && \
+    make install
+
+
 FROM python:3.8.5-alpine
+COPY --from=go-builder /go/bin/sops /usr/bin/
 
 ENV AZURE_CLI_VERSION=2.5.1
 ENV TERRAFORM_VERSION=0.13.4
