@@ -2,7 +2,6 @@
 
 This documentation describes the workings of the MACH composer. Intended to setup and manage a **M**icroservices based, **A**PI-first, **C**loud-native SaaS and **H**eadless platform.
 
-
 ## What is it?
 
 MACH composer is a framework that you use to orchestrate and extend modern digital commerce & experience platforms, based on MACH technologies and cloud native services. It provides a standards-based, future-proof tool-set and methodology to hand to your teams when building these types of platforms.
