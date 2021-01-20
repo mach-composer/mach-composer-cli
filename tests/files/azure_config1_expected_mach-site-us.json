@@ -358,6 +358,9 @@
           "frontend_endpoint_id": [
             "${azurerm_frontdoor.app-service.frontend_endpoint[1].id}"
           ],
+          "resource_group_name": [
+            "${local.resource_group_name}"
+          ],
           "custom_https_provisioning_enabled": [
             true
           ],
@@ -453,6 +456,15 @@
       "frontend_client_secret": {
         "value": [
           "${commercetools_api_client.frontend_credentials.secret}"
+        ]
+      }
+    },
+    {
+      "endpoints": {
+        "value": [
+          {
+            "public": "${local.endpoint_url_public}"
+          }
         ]
       }
     }
