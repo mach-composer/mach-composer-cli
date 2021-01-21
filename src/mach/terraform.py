@@ -10,17 +10,20 @@ from mach.templates import setup_jinja
 from mach.types import MachConfig
 
 
-def generate_terraform(config: MachConfig):
+def generate_terraform(config: MachConfig, *, site: str = None):
     """Generate Terraform file from template and reformat it."""
+    sites = config.sites if not site else [s for s in config.sites if s.identifier == site]
     env = setup_jinja()
     template = env.get_template("site.tf")
-    for site in config.sites:
+    for site in sites:
         site_dir = config.deployment_path / Path(site.identifier)
         site_dir.mkdir(exist_ok=True)
         output_file = site_dir / Path("site.tf")
         content = _clean_tf(
             template.render(
-                config=config, general_config=config.general_config, site=site
+                config=config,
+                general_config=config.general_config,
+                site=site,
             )
         )
         with open(output_file, "w+") as fh:
@@ -39,9 +42,12 @@ def _clean_tf(content: str) -> str:
     return re.sub(r"\{(\s*)\}", "{}", content)
 
 
-def plan_terraform(config: MachConfig, *, with_sp_login: bool = False):
+def plan_terraform(
+    config: MachConfig, *, site: str = None, with_sp_login: bool = False
+):
     """Terraform init and plan for all generated sites."""
-    for site in config.sites:
+    sites = config.sites if not site else [s for s in config.sites if s.identifier == site]
+    for site in sites:
         site_dir = config.deployment_path / Path(site.identifier)
         if not site_dir.is_dir():
             click.echo(f"Could not find site directory {site_dir}")
@@ -59,11 +65,13 @@ def plan_terraform(config: MachConfig, *, with_sp_login: bool = False):
 def apply_terraform(
     config: MachConfig,
     *,
+    site: str = None,
     with_sp_login: bool = False,
     auto_approve: bool = False,
 ):
     """Terraform apply for all generated sites."""
-    for site in config.sites:
+    sites = config.sites if not site else [s for s in config.sites if s.identifier == site]
+    for site in sites:
         site_dir = config.deployment_path / Path(site.identifier)
         if not site_dir.is_dir():
             click.echo(f"Could not find site directory {site_dir}")
