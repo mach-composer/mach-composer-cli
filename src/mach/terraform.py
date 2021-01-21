@@ -3,18 +3,18 @@ import re
 import subprocess
 import sys
 from pathlib import Path
-from typing import List, Union
+from typing import List, Optional, Union
 
 import click
 from mach.templates import setup_jinja
-from mach.types import MachConfig
+from mach.types import MachConfig, Site
 
 
 def generate_terraform(config: MachConfig, *, site: str = None):
     """Generate Terraform file from template and reformat it."""
-    sites = config.sites if not site else [s for s in config.sites if s.identifier == site]
     env = setup_jinja()
     template = env.get_template("site.tf")
+    sites = _filter_sites(config.sites, site)
     for site in sites:
         site_dir = config.deployment_path / Path(site.identifier)
         site_dir.mkdir(exist_ok=True)
@@ -46,7 +46,7 @@ def plan_terraform(
     config: MachConfig, *, site: str = None, with_sp_login: bool = False
 ):
     """Terraform init and plan for all generated sites."""
-    sites = config.sites if not site else [s for s in config.sites if s.identifier == site]
+    sites = _filter_sites(config.sites, site)
     for site in sites:
         site_dir = config.deployment_path / Path(site.identifier)
         if not site_dir.is_dir():
@@ -70,7 +70,7 @@ def apply_terraform(
     auto_approve: bool = False,
 ):
     """Terraform apply for all generated sites."""
-    sites = config.sites if not site else [s for s in config.sites if s.identifier == site]
+    sites = _filter_sites(config.sites, site)
     for site in sites:
         site_dir = config.deployment_path / Path(site.identifier)
         if not site_dir.is_dir():
@@ -117,3 +117,10 @@ def run_terraform(command: Union[List[str], str], cwd):
         ["terraform", *command], cwd=cwd, stdout=sys.stdout, stderr=sys.stderr
     )
     p.check_returncode()
+
+
+def _filter_sites(sites: List[Site], site_identifier: Optional[str]):
+    if not site_identifier:
+        return sites
+
+    return [s for s in sites if s.identifier == site_identifier]
