@@ -187,6 +187,10 @@ class FrontDoorSettings(JsonSchemaMixin):
 
     resource_group: str
 
+    # Undocumented option to workaround some tenacious issues
+    # with using Frontdoor in the Azure Terraform provider
+    suppress_changes: bool = _default(False)
+
 
 @dataclass_json
 @dataclass

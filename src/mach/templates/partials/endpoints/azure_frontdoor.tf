@@ -108,5 +108,15 @@ resource "azurerm_frontdoor" "app-service" {
   }
   {% endfor %}
   {% endfor %}
+
+  {% if site.azure.frontdoor.suppress_changes %}
+  # Work-around for a very annoying bug in the Azure Frontdoor API
+  # causing unwanted changes in Frontdoor and raising errors.
+  lifecycle {
+    ignore_changes = [
+      routing_rule
+    ]
+  }
+  {% endif %}
 }
 {% endif %}
