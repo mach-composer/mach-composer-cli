@@ -24,11 +24,17 @@ def terraform_command(f):
         help="YAML file to parse. If not set parse all *.yml files.",
     )
     @click.option(
+        "-s",
+        "--site",
+        default=None,
+        help="Site to parse. If not set parse all sites.",
+    )
+    @click.option(
         "--output-path",
         default="deployments",
         help="Output path, defaults to `cwd`/deployments.",
     )
-    def new_func(file, output_path: str, **kwargs):
+    def new_func(file, site, output_path: str, **kwargs):
         files = get_input_files(file)
 
         try:
@@ -39,6 +45,7 @@ def terraform_command(f):
         try:
             result = f(
                 file=file,
+                site=site,
                 configs=configs,
                 **kwargs,
             )
@@ -54,10 +61,10 @@ def terraform_command(f):
 
 @mach.command()
 @terraform_command
-def generate(file, configs, *args, **kwargs):
+def generate(file, site, configs, *args, **kwargs):
     """Generate the Terraform files."""
     for config in configs:
-        generate_terraform(config)
+        generate_terraform(config, site=site)
 
 
 @mach.command()
@@ -69,12 +76,13 @@ def generate(file, configs, *args, **kwargs):
     "(ARM_CLIENT_ID, ARM_CLIENT_SECRET, ARM_TENANT_ID) should be done.",
 )
 @terraform_command
-def plan(file, configs, with_sp_login, *args, **kwargs):
+def plan(file, site, configs, with_sp_login, *args, **kwargs):
     """Output the deploy plan."""
     for config in configs:
-        generate_terraform(config)
+        generate_terraform(config, site=site)
         plan_terraform(
             config,
+            site=site,
             with_sp_login=with_sp_login,
         )
 
@@ -94,12 +102,13 @@ def plan(file, configs, with_sp_login, *args, **kwargs):
     help="",
 )
 @terraform_command
-def apply(file, configs, with_sp_login, auto_approve, *args, **kwargs):
+def apply(file, site, configs, with_sp_login, auto_approve, *args, **kwargs):
     """Apply the configuration."""
     for config in configs:
-        generate_terraform(config)
+        generate_terraform(config, site=site)
         apply_terraform(
             config,
+            site=site,
             with_sp_login=with_sp_login,
             auto_approve=auto_approve,
         )
