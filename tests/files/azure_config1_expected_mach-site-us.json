@@ -229,6 +229,16 @@
               ],
               "host_name": [
                 "api.us-tst.mach-services.net"
+              ],
+              "custom_https_provisioning_enabled": [
+                true
+              ],
+              "custom_https_configuration": [
+                {
+                  "certificate_source": [
+                    "FrontDoor"
+                  ]
+                }
               ]
             }
           ],
@@ -346,28 +356,6 @@
               ],
               "health_probe_name": [
                 "public-payment-hpSettings"
-              ]
-            }
-          ]
-        }
-      }
-    },
-    {
-      "azurerm_frontdoor_custom_https_configuration": {
-        "public_https": {
-          "frontend_endpoint_id": [
-            "${azurerm_frontdoor.app-service.frontend_endpoint[1].id}"
-          ],
-          "resource_group_name": [
-            "${local.resource_group_name}"
-          ],
-          "custom_https_provisioning_enabled": [
-            true
-          ],
-          "custom_https_configuration": [
-            {
-              "certificate_source": [
-                "FrontDoor"
               ]
             }
           ]
