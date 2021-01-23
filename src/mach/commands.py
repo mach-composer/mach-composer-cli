@@ -117,8 +117,13 @@ def plan(file, site, configs, with_sp_login, component, *args, **kwargs):
     default=False,
     help="",
 )
+@click.option(
+    "--reuse",
+    default=False,
+    help="Reuse a previous deployment output (not recommended for production usage)",
+)
 @terraform_command
-def apply(file, site, configs, with_sp_login, auto_approve, component, *args, **kwargs):
+def apply(file, site, configs, with_sp_login, auto_approve, component, reuse=False, *args, **kwargs):
     """Apply the configuration."""
     for config in configs:
         build_packages(config)
@@ -129,6 +134,7 @@ def apply(file, site, configs, with_sp_login, auto_approve, component, *args, **
             components=component,
             with_sp_login=with_sp_login,
             auto_approve=auto_approve,
+            reuse=reuse,
         )
 
 
