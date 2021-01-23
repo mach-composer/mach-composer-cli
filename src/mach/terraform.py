@@ -77,6 +77,7 @@ def apply_terraform(
     components: List[str] = [],
     with_sp_login: bool = False,
     auto_approve: bool = False,
+    reuse=False,
 ):
     """Terraform apply for all generated sites."""
     sites = _filter_sites(config.sites, site)
@@ -86,8 +87,9 @@ def apply_terraform(
             click.echo(f"Could not find site directory {site_dir}")
             continue
 
-        click.echo(f"Applying Terraform for {site.identifier}")
-        run_terraform("init", site_dir)
+        if not reuse:
+            click.echo(f"Applying Terraform for {site.identifier}")
+            run_terraform("init", site_dir)
 
         if with_sp_login:
             azure_sp_login()
