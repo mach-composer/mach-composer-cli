@@ -68,6 +68,7 @@ def apply_terraform(
     site: str = None,
     with_sp_login: bool = False,
     auto_approve: bool = False,
+    component: List[str] = [],
 ):
     """Terraform apply for all generated sites."""
     sites = _filter_sites(config.sites, site)
@@ -86,6 +87,9 @@ def apply_terraform(
         cmd = ["apply"]
         if auto_approve:
             cmd += ["-auto-approve"]
+
+        for component_name in component:
+            cmd.append(f"-target=module.{component_name}")
         run_terraform(cmd, site_dir)
 
 

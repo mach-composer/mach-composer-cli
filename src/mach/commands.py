@@ -101,8 +101,14 @@ def plan(file, site, configs, with_sp_login, *args, **kwargs):
     default=False,
     help="",
 )
+@click.option(
+    "--component",
+    multiple=True,
+    default=False,
+    help="",
+)
 @terraform_command
-def apply(file, site, configs, with_sp_login, auto_approve, *args, **kwargs):
+def apply(file, site, configs, with_sp_login, auto_approve, component, *args, **kwargs):
     """Apply the configuration."""
     for config in configs:
         generate_terraform(config, site=site)
@@ -111,6 +117,7 @@ def apply(file, site, configs, with_sp_login, auto_approve, *args, **kwargs):
             site=site,
             with_sp_login=with_sp_login,
             auto_approve=auto_approve,
+            component=component,
         )
 
 
