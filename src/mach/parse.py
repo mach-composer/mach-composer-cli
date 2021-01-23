@@ -1,5 +1,5 @@
 from collections import defaultdict
-from os.path import basename, splitext
+from os.path import basename, splitext, abspath
 from pathlib import Path
 from typing import Dict, List
 
@@ -188,6 +188,11 @@ def resolve_site_components(config: MachConfig) -> MachConfig:
 
 def resolve_component_definitions(config: MachConfig) -> MachConfig:
     for comp in config.components:
+
+        # Terraform needs absolute paths to modules
+        if comp.source.startswith("."):
+            comp.source = abspath(comp.source)
+
         if comp.integrations:
             continue
 
