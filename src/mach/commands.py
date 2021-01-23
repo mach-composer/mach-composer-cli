@@ -7,6 +7,7 @@ from typing import List, Optional
 import click
 from mach import bootstrap as _bootstrap
 from mach import git, parse, updater
+from mach.build import build_packages
 from mach.exceptions import MachError
 from mach.terraform import apply_terraform, generate_terraform, plan_terraform
 
@@ -120,6 +121,7 @@ def plan(file, site, configs, with_sp_login, component, *args, **kwargs):
 def apply(file, site, configs, with_sp_login, auto_approve, component, *args, **kwargs):
     """Apply the configuration."""
     for config in configs:
+        build_packages(config)
         generate_terraform(config, site=site)
         apply_terraform(
             config,
