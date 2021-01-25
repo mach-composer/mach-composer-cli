@@ -82,8 +82,14 @@ def generate(file, site, configs, *args, **kwargs):
     default=False,
     help="",
 )
+@click.option(
+    "--reuse",
+    default=False,
+    is_flag=True,
+    help="Supress a terraform init for improved speed (not recommended for production usage)",
+)
 @terraform_command
-def plan(file, site, configs, with_sp_login, component, *args, **kwargs):
+def plan(file, site, configs, with_sp_login, component, reuse, *args, **kwargs):
     """Output the deploy plan."""
     for config in configs:
         generate_terraform(config, site=site)
@@ -92,6 +98,7 @@ def plan(file, site, configs, with_sp_login, component, *args, **kwargs):
             site=site,
             components=component,
             with_sp_login=with_sp_login,
+            reuse=reuse,
         )
 
 
@@ -116,8 +123,24 @@ def plan(file, site, configs, with_sp_login, component, *args, **kwargs):
     default=False,
     help="",
 )
+@click.option(
+    "--reuse",
+    is_flag=True,
+    default=False,
+    help="Supress a terraform init for improved speed (not recommended for production usage)",
+)
 @terraform_command
-def apply(file, site, configs, with_sp_login, auto_approve, component, *args, **kwargs):
+def apply(
+    file,
+    site,
+    configs,
+    with_sp_login,
+    auto_approve,
+    component,
+    reuse,
+    *args,
+    **kwargs,
+):
     """Apply the configuration."""
     for config in configs:
         generate_terraform(config, site=site)
@@ -127,6 +150,7 @@ def apply(file, site, configs, with_sp_login, auto_approve, component, *args, **
             components=component,
             with_sp_login=with_sp_login,
             auto_approve=auto_approve,
+            reuse=reuse,
         )
 
 
