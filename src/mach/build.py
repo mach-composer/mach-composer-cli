@@ -11,11 +11,11 @@ def build_packages(config: MachConfig):
             run_package_script(component.package_script)
             component.package_filename = os.path.abspath(component.package_filename)
             if not os.path.exists(component.package_filename):
-                raise ValueError(f"The package_filename on {component.name} doesn't exist")
+                raise ValueError(
+                    f"The package_filename on {component.name} doesn't exist"
+                )
 
 
 def run_package_script(package_script: str):
-    p = subprocess.run(
-        package_script, stdout=sys.stdout, stderr=sys.stderr, shell=True
-    )
+    p = subprocess.run(package_script, stdout=sys.stdout, stderr=sys.stderr, shell=True)
     p.check_returncode()
