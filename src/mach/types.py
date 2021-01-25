@@ -283,6 +283,8 @@ class ComponentConfig(JsonSchemaMixin):
     endpoints: Dict[str, str] = _dict()
     health_check_path: Optional[str] = _none()
     branch: Optional[str] = _none()
+    package_script: Optional[str] = _none()
+    package_filename: Optional[str] = _none()
 
     def __post_init__(self):
         """Ensure short_name is set."""

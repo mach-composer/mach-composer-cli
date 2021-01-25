@@ -47,6 +47,10 @@ module "{{ component.name }}" {
   sentry_dsn              = {% if general_config.sentry.managed %}sentry_key.{{ component.name }}.dsn_secret{% else %}"{{ component.sentry.dsn }}"{% endif %}
   {% endif %}
 
+  {% if definition.package_filename %}
+  lambda_package_local_filename = "{{ definition.package_filename }}"
+  {% endif %}
+
   {% if "commercetools" in component.integrations %}
     ct_project_key    = "{{ site.commercetools.project_key }}"
     ct_api_url        = "{{ site.commercetools.api_url }}"
