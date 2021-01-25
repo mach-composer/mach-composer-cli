@@ -75,14 +75,22 @@ def generate(file, site, configs, *args, **kwargs):
     help="If az login with service principal environment variables "
     "(ARM_CLIENT_ID, ARM_CLIENT_SECRET, ARM_TENANT_ID) should be done.",
 )
+@click.option(
+    "-c",
+    "--component",
+    multiple=True,
+    default=False,
+    help="",
+)
 @terraform_command
-def plan(file, site, configs, with_sp_login, *args, **kwargs):
+def plan(file, site, configs, with_sp_login, component, *args, **kwargs):
     """Output the deploy plan."""
     for config in configs:
         generate_terraform(config, site=site)
         plan_terraform(
             config,
             site=site,
+            components=component,
             with_sp_login=with_sp_login,
         )
 
@@ -102,6 +110,7 @@ def plan(file, site, configs, with_sp_login, *args, **kwargs):
     help="",
 )
 @click.option(
+    "-c",
     "--component",
     multiple=True,
     default=False,
@@ -115,9 +124,9 @@ def apply(file, site, configs, with_sp_login, auto_approve, component, *args, **
         apply_terraform(
             config,
             site=site,
+            components=component,
             with_sp_login=with_sp_login,
             auto_approve=auto_approve,
-            component=component,
         )
 
 
