@@ -282,6 +282,8 @@ class ComponentConfig(JsonSchemaMixin):
     integrations: List[str] = _list()
     endpoints: Dict[str, str] = _dict()
     health_check_path: Optional[str] = _none()
+
+    # Development options
     branch: Optional[str] = _none()
     package_script: Optional[str] = _none()
     package_filename: Optional[str] = _none()
