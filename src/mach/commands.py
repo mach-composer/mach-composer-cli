@@ -86,7 +86,7 @@ def generate(file, site, configs, *args, **kwargs):
     "--reuse",
     default=False,
     is_flag=True,
-    help="Reuse a previous deployment output (not recommended for production usage)",
+    help="Supress a terraform init for improved speed (not recommended for production usage)",
 )
 @terraform_command
 def plan(file, site, configs, with_sp_login, component, reuse, *args, **kwargs):
@@ -127,7 +127,7 @@ def plan(file, site, configs, with_sp_login, component, reuse, *args, **kwargs):
     "--reuse",
     is_flag=True,
     default=False,
-    help="Reuse a previous deployment output (not recommended for production usage)",
+    help="Supress a terraform init for improved speed (not recommended for production usage)",
 )
 @terraform_command
 def apply(
