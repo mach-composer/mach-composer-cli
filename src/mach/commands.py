@@ -83,8 +83,14 @@ def generate(file, site, configs, *args, **kwargs):
     default=False,
     help="",
 )
+@click.option(
+    "--reuse",
+    default=False,
+    is_flag=True,
+    help="Reuse a previous deployment output (not recommended for production usage)",
+)
 @terraform_command
-def plan(file, site, configs, with_sp_login, component, *args, **kwargs):
+def plan(file, site, configs, with_sp_login, component, reuse, *args, **kwargs):
     """Output the deploy plan."""
     for config in configs:
         generate_terraform(config, site=site)
@@ -93,6 +99,7 @@ def plan(file, site, configs, with_sp_login, component, *args, **kwargs):
             site=site,
             components=component,
             with_sp_login=with_sp_login,
+            reuse=reuse,
         )
 
 
@@ -119,6 +126,7 @@ def plan(file, site, configs, with_sp_login, component, *args, **kwargs):
 )
 @click.option(
     "--reuse",
+    is_flag=True,
     default=False,
     help="Reuse a previous deployment output (not recommended for production usage)",
 )
@@ -130,7 +138,7 @@ def apply(
     with_sp_login,
     auto_approve,
     component,
-    reuse=False,
+    reuse,
     *args,
     **kwargs,
 ):
