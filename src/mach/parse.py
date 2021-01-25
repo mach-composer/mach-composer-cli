@@ -1,5 +1,5 @@
 from collections import defaultdict
-from os.path import basename, splitext, abspath
+from os.path import abspath, basename, splitext
 from pathlib import Path
 from typing import Dict, List
 
