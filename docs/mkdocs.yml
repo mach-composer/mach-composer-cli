@@ -60,6 +60,7 @@ extra_javascript:
   - _js/mermaid-init.js
 
 extra_css:
+  - _css/custom.css
   - _css/tasklist.css
   - _css/mermaid.css
   - _css/tabbed.css
@@ -75,12 +76,13 @@ theme:
     primary: 'indigo'
     accent: 'indigo'
   font:
-    text: 'Roboto'
+    text: 'Catamaran'
     code: 'Roboto Mono'
 
 extra:
   social:
     - type: 'link'
+      icon: fontawesome/brands/github-alt
       link: 'https://labdigital.nl/'
 
 markdown_extensions:

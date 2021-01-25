@@ -250,8 +250,8 @@ components:
 - **`name`** - (Required) Reference to a [component](./components.md) definition
 - `variables` - Variables for this component
 - `secrets` - Variables for this component that should be stored in a encrypted key-value store
-- `store_variables` - Store-specific variables for this component
-- `store_secrets` - Store-specific variables for this component that should be stored in a encrypted key-value store
+- `store_variables` - [commercetools store](#stores)-specific variables for this component
+- `store_secrets` - [commercetools store](#stores)-specific variables for this component that should be stored in a encrypted key-value store
 - `health_check_path` - Defines a custom healthcheck path.<br>
   Overwrites the default `health_check_path` defined in the component definition
 - `sentry` - [Sentry configuration](#sentry_1) block
