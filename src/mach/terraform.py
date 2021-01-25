@@ -43,7 +43,11 @@ def _clean_tf(content: str) -> str:
 
 
 def plan_terraform(
-    config: MachConfig, *, site: str = None, with_sp_login: bool = False
+    config: MachConfig,
+    *,
+    site: str = None,
+    components: List[str] = [],
+    with_sp_login: bool = False,
 ):
     """Terraform init and plan for all generated sites."""
     sites = _filter_sites(config.sites, site)
@@ -59,16 +63,20 @@ def plan_terraform(
         if with_sp_login:
             azure_sp_login()
 
-        run_terraform("plan", site_dir)
+        cmd = ["plan"]
+        for component in components:
+            cmd.append(f"-target=module.{component}")
+
+        run_terraform(cmd, site_dir)
 
 
 def apply_terraform(
     config: MachConfig,
     *,
     site: str = None,
+    components: List[str] = [],
     with_sp_login: bool = False,
     auto_approve: bool = False,
-    component: List[str] = [],
 ):
     """Terraform apply for all generated sites."""
     sites = _filter_sites(config.sites, site)
@@ -88,8 +96,8 @@ def apply_terraform(
         if auto_approve:
             cmd += ["-auto-approve"]
 
-        for component_name in component:
-            cmd.append(f"-target=module.{component_name}")
+        for component in components:
+            cmd.append(f"-target=module.{component}")
         run_terraform(cmd, site_dir)
 
 
