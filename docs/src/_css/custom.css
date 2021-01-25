@@ -1,0 +1,19 @@
+:root {
+    --color-mach-blue: #4d4f8c;
+}
+
+:root>* {
+    --md-default-fg-color--light: var(--color-mach-blue);
+}
+
+.md-header {
+    --md-primary-fg-color: #1f2256;
+}
+
+h2, h3 {
+    color: var(--color-mach-blue);
+}
+
+h2 {
+    border-bottom: 1px solid #e7e7ff;
+}
