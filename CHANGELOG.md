@@ -14,8 +14,9 @@
       - `mach bootstrap config` for creating a new MACH configuration
       - `mach bootstrap component` for creating a new MACH component
   - Add `--site` option to the `generate`, `plan` and `apply` commands
-  - Add support for relative paths to components
   - Add `--component` option to the `plan` and `apply` commands
+  - Add `--reuse` flag to the `plan` and `apply` commands to supress a `terraform init` call
+  - Add support for relative paths to components
 - Add option to override Terraform provider versions
 - Improved dependencies between components and MACH-managed commercetools configurations
 - Updated Terraform commercetools provider to `0.25.3`

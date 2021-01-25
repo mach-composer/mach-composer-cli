@@ -36,6 +36,7 @@ mach apply --auto-approve -f main.yml
 - `--site` or `-s TEXT` Site to apply. If not set apply all sites.
 - `--component` or `-c TEXT` Specific component to target.
 - `--output-path TEXT` Output path, defaults to `cwd`/deployments`.
+- `--reuse` Supress a terraform init for improved speed (not recommended for production usage)
 
 
 ## `bootstrap`
@@ -96,6 +97,7 @@ mach plan -f main.yml
 - `--site` or `-s TEXT` Site to generate plan of. If not set generate plans for all sites.
 - `--component` or `-c TEXT` Specific component to target.
 - `--output-path TEXT` Output path, defaults to `cwd`/deployments.
+- `--reuse` Supress a terraform init for improved speed (not recommended for production usage)
 
 
 ## `sites`

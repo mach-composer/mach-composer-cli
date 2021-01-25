@@ -48,6 +48,7 @@ def plan_terraform(
     site: str = None,
     components: List[str] = [],
     with_sp_login: bool = False,
+    reuse=False,
 ):
     """Terraform init and plan for all generated sites."""
     sites = _filter_sites(config.sites, site)
@@ -58,7 +59,9 @@ def plan_terraform(
             continue
 
         click.echo(f"Terraform plan for {site_dir.name}")
-        run_terraform("init", site_dir)
+
+        if not reuse:
+            run_terraform("init", site_dir)
 
         if with_sp_login:
             azure_sp_login()
@@ -77,6 +80,7 @@ def apply_terraform(
     components: List[str] = [],
     with_sp_login: bool = False,
     auto_approve: bool = False,
+    reuse=False,
 ):
     """Terraform apply for all generated sites."""
     sites = _filter_sites(config.sites, site)
@@ -87,7 +91,9 @@ def apply_terraform(
             continue
 
         click.echo(f"Applying Terraform for {site.identifier}")
-        run_terraform("init", site_dir)
+
+        if not reuse:
+            run_terraform("init", site_dir)
 
         if with_sp_login:
             azure_sp_login()
