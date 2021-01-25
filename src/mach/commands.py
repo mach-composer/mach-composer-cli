@@ -123,7 +123,17 @@ def plan(file, site, configs, with_sp_login, component, *args, **kwargs):
     help="Reuse a previous deployment output (not recommended for production usage)",
 )
 @terraform_command
-def apply(file, site, configs, with_sp_login, auto_approve, component, reuse=False, *args, **kwargs):
+def apply(
+    file,
+    site,
+    configs,
+    with_sp_login,
+    auto_approve,
+    component,
+    reuse=False,
+    *args,
+    **kwargs,
+):
     """Apply the configuration."""
     for config in configs:
         build_packages(config)
