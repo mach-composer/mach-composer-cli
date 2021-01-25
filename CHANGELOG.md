@@ -15,6 +15,7 @@
     - `mach bootstrap config` for creating a new MACH configuration
     - `mach bootstrap component` for creating a new MACH component
 - Add `--site` option to the `generate`, `plan` and `apply` commands
+- Add `--component` option to the `plan` and `apply` commands
 - Updated Terraform commercetools provider to `0.25.3`
 - AWS: Set `auto-deploy` on API gateway stage
 - Azure: Add new required `frontdoor_id` Terraform variable for components with `endpoint` defined
