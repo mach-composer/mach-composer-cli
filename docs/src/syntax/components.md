@@ -36,12 +36,3 @@ components:
 - `health_check_path` - Defines a custom healthcheck path.<br>
   Defaults to `/<name>/healthchecks`
 - `branch` - Configure the git branch of the component. Only used to facilitate the `mach update` CLI command.
-
-
-[^1]: commercetools uses [Localized strings](https://docs.commercetools.com/http-api-types#localizedstring) to be able to define strings in mulitple languages.<br>
-Whenever a localized string needs to be defined, this can be done in the following format:
-```yaml
-some-string:
-  - en-GB: My value
-  - nl-NL:  Mijn waarde
-```
