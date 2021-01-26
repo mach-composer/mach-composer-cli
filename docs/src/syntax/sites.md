@@ -263,3 +263,12 @@ Overwrites any value specified in the site configs [Sentry block](#sentry)
 - `dsn` - DSN to use in the components
 - `rate_limit_window` - The rate limit window that applies to a generated key
 - `rate_limit_count` - The rate limit count that applies to a generated key
+
+
+[^1]: commercetools uses [Localized strings](https://docs.commercetools.com/http-api-types#localizedstring) to be able to define strings in mulitple languages.<br>
+Whenever a localized string needs to be defined, this can be done in the following format:
+```yaml
+some-string:
+  - en-GB: My value
+  - nl-NL:  Mijn waarde
+```
