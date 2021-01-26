@@ -58,12 +58,10 @@ def _get_component_context(cloud: str) -> dict:
     )
 
     short_name = None
-    function_name = None
     if cloud == "azure":
         short_name = click.prompt(
             "Short name", default=name.replace("_", "").replace("-", "")
         )
-        function_name = click.prompt("Function name", default=utils.slugify(name))
 
     dirname = click.prompt(
         "Directory name", default=f"{utils.slugify(name, sep='-')}-component"
@@ -75,7 +73,7 @@ def _get_component_context(cloud: str) -> dict:
         "description": description,
         "short_name": short_name,
         "component_identifier": dirname,
-        "function_name": function_name,
+        "function_name": "",
         "use_public_api": 0,
         "include_graphql_server": 0,
         "use_commercetools": 0,
@@ -86,6 +84,10 @@ def _get_component_context(cloud: str) -> dict:
 
     if click.confirm("Uses an HTTP endpoint?", default=True):
         context["use_public_api"] = 1
+        if cloud == "azure":
+            context["function_name"] = click.prompt(
+                "Function name", default=utils.slugify(name)
+            )
         context["include_graphql_server"] = int(
             click.confirm("Include GraphQL support?", default=True)
         )
