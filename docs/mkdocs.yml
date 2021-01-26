@@ -51,8 +51,9 @@ nav:
   - Terraform: guidance/terraform.md
   - Tenancy: guidance/tenancy.md
 - Development:
-  - workflow/cli.md
-  - workflow/environment.md
+  - development/cli.md
+  - Workflow: development/workflow.md
+  - development/environment.md
 - changelog.md
 
 extra_javascript:

@@ -5,3 +5,6 @@ endpoint_{{ component_endpoint|slugify }} = {
   api_gateway_execution_arn = aws_apigatewayv2_api.{{ site_endpoint|slugify }}_gateway.execution_arn
 }
 {% endfor %}
+{% if definition.package_filename %}
+lambda_package_local_filename = "{{ definition.package_filename }}"
+{% endif %}
