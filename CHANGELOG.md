@@ -17,6 +17,7 @@
   - Add `--component` option to the `plan` and `apply` commands
   - Add `--reuse` flag to the `plan` and `apply` commands to supress a `terraform init` call
   - Add support for relative paths to components
+  - Add extra component definition settings `package_script` and `package_filename` to facilitate local deployments
 - Add option to override Terraform provider versions
 - Improved dependencies between components and MACH-managed commercetools configurations
 - Updated Terraform commercetools provider to `0.25.3`
