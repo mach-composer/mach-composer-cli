@@ -1,11 +1,13 @@
 import os.path
 import subprocess
 import sys
+from typing import TYPE_CHECKING
 
-from mach.types import MachConfig
+if TYPE_CHECKING:
+    from mach.types import MachConfig
 
 
-def build_packages(config: MachConfig):
+def build_packages(config: "MachConfig"):
     for component in config.components:
         if not component.package_script:
             continue

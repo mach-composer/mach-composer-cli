@@ -35,4 +35,24 @@ components:
   Will setup Frontdoor routing or pass API Gateway information when set.
 - `health_check_path` - Defines a custom healthcheck path.<br>
   Defaults to `/<name>/healthchecks`
-- `branch` - Configure the git branch of the component. Only used to facilitate the `mach update` CLI command.
+
+!!! tip "Development settings"
+    In addition to the default set of component settings, a couple of settings can be defined during development.<br>
+    These are not intendend to be used for a production deployment, but can facilitate local development:
+
+    - `branch` - Configure the git branch of the component. Only used to facilitate the `mach update` CLI command.
+    - `package_script` - Script file to build and package the component, relative from where MACH is run. **AWS only**
+    - `package_filename` - Filename to be used for deployment, relative from where MACH is run. **AWS only**
+
+    Example:
+    ```yaml
+    components:
+    - name: my-component
+      source: ../mach-component-my-component/terraform
+      integrations: ["aws", "commercetools", "sentry"]
+      version: latest
+      package_filename: ../mach-component-my-component/.serverless/my-component.zip
+      package_script: cd ../mach-component-my-component/ && yarn package
+    ```
+
+    More info on [using MACH during development](../development/workflow.md)
