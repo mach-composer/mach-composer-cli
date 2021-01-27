@@ -114,7 +114,9 @@ resource "azurerm_frontdoor" "app-service" {
   # causing unwanted changes in Frontdoor and raising errors.
   lifecycle {
     ignore_changes = [
-      routing_rule
+      routing_rule,
+      backend_pool,
+      backend_pool_health_probe,
     ]
   }
   {% endif %}
