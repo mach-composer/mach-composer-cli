@@ -57,12 +57,6 @@ def _get_component_context(cloud: str) -> dict:
         "Description", default=f"{utils.humanize_str(name)} component"
     )
 
-    short_name = None
-    if cloud == "azure":
-        short_name = click.prompt(
-            "Short name", default=name.replace("_", "").replace("-", "")
-        )
-
     dirname = click.prompt(
         "Directory name", default=f"{utils.slugify(name, sep='-')}-component"
     )
@@ -71,7 +65,6 @@ def _get_component_context(cloud: str) -> dict:
         "language": language,
         "name": name,
         "description": description,
-        "short_name": short_name,
         "component_identifier": dirname,
         "function_name": utils.slugify(name),
         "use_public_api": 0,
