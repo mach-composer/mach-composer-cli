@@ -73,7 +73,6 @@ def test_component(cookiecutter, click_runner, click_dir, language, cloud):
 
     elif cloud == "azure":
         input_values += [
-            "apiext",  # Short name
             "api-extensions-component",  # Directory name
             "y",  # use an HTTP endpoint?
             "api-extensions",  # Function name
