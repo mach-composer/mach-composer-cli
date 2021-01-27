@@ -73,7 +73,7 @@ def _get_component_context(cloud: str) -> dict:
         "description": description,
         "short_name": short_name,
         "component_identifier": dirname,
-        "function_name": "",
+        "function_name": utils.slugify(name),
         "use_public_api": 0,
         "include_graphql_server": 0,
         "use_commercetools": 0,
