@@ -57,9 +57,9 @@ This will be a S3 bucket should be created where the **packaged lambda** functio
 
 ### 3. Setup Route53 zone
 
-!!! todo
-    Describe setup
+If a custom domain is going to be used for the API components a common practise is to have one (or more) top-level domain configured on the service account that can link to the site-specific Route53 zones using their NS records.
 
+In the [example given below](#2-setup-route53-zone) a `my-company.com` and `internal-services.net` is needed on which other subdomains can be registrered on.
 ## Setup the site-specific account
 
 These steps must be repeated **per site**
@@ -82,11 +82,24 @@ Create a S3 bucket which will be used as Terraform state backend as well as the 
 
 In case you are planning to deploy APIs that need custom routing, one or more Route53 zones needs to be configured.
 
-The full URL of this hosted zone can be configured in the MACH configuration.
+If, for example, you need to have three differend endpoints in your MACH stack, say;
+
+```yaml
+ public: api.site-a.my-company.com
+ management: manage.site-a.my-company.com
+ internal: my-brand.internal-services.net
+```
+
+You'll need to setup two Route53 zones:
+
+- `site-a.my-company.com`
+- `my-brand.internal-services.net`
 
 !!! note "API routings"
     MACH will make sure the API Gateway is created and a SSL certificate is created.<br>
     Each component is responsible for creating the correct routing to the Lambda endpoints.
+
+    More on that in the [deployment section](../deployment/config/aws.md#custom-endpoint)
 
 ### 3. Create IAM deploy role
 

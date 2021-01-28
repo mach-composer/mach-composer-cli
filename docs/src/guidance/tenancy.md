@@ -80,19 +80,24 @@ In short:
 2. Create **one AWS account per commercetools project** that you create, which hosts all of the AWS resources tied to that commercetools project.
 3. Create one dedicated '*service*' or '*shared*' account that hosts shared resources like component artifacts and centralized routing.
 
+!!! tip ""
+      See the instructions on [how to setup AWS](../prerequisites/aws.md) to get a good overview of the way a typical MACH-ready AWS environment is set up
 
 ### Azure tenancy
 
-how to structure an Azure environment?
+How to structure an Azure environment?
 
 In short:
 
 1. Follow [Azure Resource Group best-practices](https://docs.microsoft.com/en-us/azure/cloud-adoption-framework/ready/azure-setup-guide/organize-resources?tabs=AzureManagementGroupsAndHierarchy).
-2. Create an Azure Resource Group for each additional commercetools project that you create, which hosts all of the Azure resources tied to that commercetools project.
-3. Most likely there will be 'shared' Resource Groups that host shared resources (i.e. CDN, front-ends)
+2. Create a 'shared' Resource Groups that host shared resources (i.e. CDN, front-ends, encryption keys and the components repository)
+3. Have all resources per site be created in their own separate Azure Resource Group. MACH composer will do this for you automatically. [^1]
 
-
+!!! tip ""
+      See the instructions on [how to setup Azure](../prerequisites/azure.md) to get a good overview of the way a typical MACH-ready Azure environment is set up
 ## Building 'context aware' components
 
 !!! TODO
     Describe how to build components (microservices) that are able to work across tenancy contexts; i.e. they should be parameterised with context-settings, as well as able to 'detect' what store is currently active, for example.
+
+[^1]: You can overwrite this behaviour by creating a Resource Group yourself and define them using the [`resource_group`](../syntax/sites.md#azure) option

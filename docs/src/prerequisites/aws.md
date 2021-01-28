@@ -22,12 +22,12 @@ These account contain at least the following resources:
 ## Service account setup
 
 !!! todo
-    Describe setup
+    Describe setup using Terraform
 
 ## Site-specific account setup
 
 !!! todo
-    Describe setup
+    Describe setup using Terraform
 
 ## Example
 
