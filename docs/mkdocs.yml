@@ -14,9 +14,11 @@ nav:
 - concepts.md
 - Prequisites:
   - prerequisites/index.md
-  - Azure: prerequisites/azure.md
   - AWS: prerequisites/aws.md
+  - Azure: prerequisites/azure.md
   - GCP: prerequisites/gcp.md
+  # - Manual cloud setup:
+  #   - Azure: prerequisites/azure_manual.md
 - gettingstarted.md
 - Syntax:
   - Overview: syntax/index.md
