@@ -16,6 +16,7 @@ nav:
   - prerequisites/index.md
   - Azure: prerequisites/azure.md
   - AWS: prerequisites/aws.md
+  - GCP: prerequisites/gcp.md
 - gettingstarted.md
 - Syntax:
   - Overview: syntax/index.md
