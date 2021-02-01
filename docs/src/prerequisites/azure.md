@@ -6,25 +6,49 @@ An Azure environment should have the following;
 2. Storage account for [function app code packages](#create-function-app-storage)
 3. [Registered providers](#register-providers) needed for various services
 
-Setup can be done using [Terraform](#using-terraform) or [manually](#manual-setup).
+This section will demonstrate how to setup Azure using Terraform.
 
-## Using Terraform
+## 1. Prepare
 
-1. Login to your Azure subscription through the CLI.
+Login to your Azure subscription through the CLI.
+
 ```bash
 $ az login
 ```
 Follow the prompts. On success, the CLI will respond with a JSON object of the subscriptions available to you.<br>
-Make sure the subscription you want to work in is set to default. If it is not, you can run<br>
-`az account set --subscription <name or id>`
-2. Setup your Terraform configuration.
+Make sure the subscription you want to work in is set to default. If it is not, you can run
+
+```bash
+$ az account set --subscription <name or id>
+```
+
+## 2. Register providers
+
+Make sure the following providers are registered on the subscription.
+
+```bash
+$ az provider register --namespace Microsoft.Web
+$ az provider register --namespace Microsoft.KeyVault
+$ az provider register --namespace Microsoft.Storage
+$ az provider register --namespace Microsoft.Insights
+```
+
+!!! info "More info"
+    [https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/error-register-resource-provider](https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/error-register-resource-provider#solution-2---azure-cli)
+
+## 3. Terraform configuration
+Setup your Terraform configuration.
+
 In main.tf:
+
 ```terraform
 terraform {
   required_version = ">= 0.13.0"
 }
 ```
+
 In modules.tf:
+
 ```terraform
 module "shared_infra" {
   source         = "git@github.com:labd/terraform-azure-mach-shared.git"
@@ -36,14 +60,16 @@ module "shared_infra" {
   ]
 }
 ```
+
 [More info](https://github.com/labd/terraform-azure-mach-shared) about the shared infra module.
 
-3. Run the following commands:
+## 4. Apply Terraform
+1. Run the following commands:
 ```bash
 $ terraform init
 $ terraform apply
 ```
-4. For a new Terraform setup, initially it will store the Terraform state locally and should be named `terraform.tfstate`.<br>
+2. For a new Terraform setup, initially it will store the Terraform state locally and should be named `terraform.tfstate`.<br>
    We'll move this state to the Storage Account that has been created by the shared infra module.<br>
    To do this, add a backend setting to project like below
 ```terraform
@@ -53,66 +79,21 @@ terraform {
  }
 }
 ```
-5. Now run:
+3. Now run:
 ```bash
 $ terraform init -reconfigure 
 ```
 Terraform will detect that you're trying to move your state into Azure and ask; "*Do you want to copy existing state to the new backend?*".<br>
 Enter **"yes"**.<br>
 Now the state is stored in the Storage Account and the DynamoDB table will be used to lock the state to prevent concurrent modifications.
-6. Check if `terraform.tfstate` is empty and remove it.<br>
+4. Check if `terraform.tfstate` is empty and remove it.<br>
    Repeat the above three steps for all other environments
 
-!!! tip "Example"
-      See the [examples directory](https://github.com/labd/mach-composer/tree/master/examples/azure/infra/) for an example of a Terraform setup
+## Example
+
+See the [examples directory](https://github.com/labd/mach-composer/tree/master/examples/azure/infra/) for an example of a Terraform setup
 
 
 ## Manual setup
 
-### Create Terraform storage
-
-#### Storage account
-Create a storage account which will be used as Terraform state backend.
-
-![Create storage account](../_img/azure/terraform_storage_account.png)
-
-
-!!! tip
-    A good convention is to place the Terraform state backend storage account in a 'shared' resource group which can be used for various shared resources accross all your environments and sites.<br>
-    For example:<br>
-    **Resource group**: `my-shared-we-rg`<br>
-    **Storage account** `mysharedwesaterra`<br>
-    Where 'my' is replaced by a prefix of your choosing.
-
-#### Create container
-Create a container in the storage account. Name it for example `tfstate`.
-
-### Create function app storage
-All packaged function app code should be stored on the shared environment from where all other envirnoment can access those assets.
-
-#### Storage account
-
-Create a new `BlockBlobStorage` with a Premium account tier for improved performace.
-
-!!! tip
-    Again, like the Terraform state, place this in a 'shared' resource group
-    For example:<br>
-    **Resource group**: `my-shared-we-rg`<br>
-    **Storage account** `mysharedwesacomponents`<br>
-    Where 'my' is replaced by a prefix of your choosing.
-
-#### Create container
-
-Create a blob container called `code`. Make this private.
-
-### Register providers
-
-Make sure the following providers are registered on the subscription:
-
-- `Microsoft.Web`
-- `Microsoft.KeyVault`
-- `Microsoft.Storage`
-- `Microsoft.Insights`
-
-More info:<br>
-[https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/error-register-resource-provider](https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/error-register-resource-provider)
+See instructions on how to [setup Azure manually](./azure_manual.md).
