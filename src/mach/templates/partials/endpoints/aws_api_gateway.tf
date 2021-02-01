@@ -39,11 +39,20 @@ resource "aws_acm_certificate" "{{ endpoint.key|slugify }}" {
 }
 
 resource "aws_route53_record" "{{ endpoint.key|slugify }}_acm_validation" {
-  zone_id = data.aws_route53_zone.{{ endpoint.zone|slugify }}.zone_id
-  name    = tolist(aws_acm_certificate.{{ endpoint.key|slugify }}.domain_validation_options)[0].resource_record_name
-  type    = tolist(aws_acm_certificate.{{ endpoint.key|slugify }}.domain_validation_options)[0].resource_record_type
-  ttl     = 60
-  records = [tolist(aws_acm_certificate.{{ endpoint.key|slugify }}.domain_validation_options)[0].resource_record_value]
+  for_each = {
+    for dvo in aws_acm_certificate.{{ endpoint.key|slugify }}.domain_validation_options : dvo.domain_name => {
+      name   = dvo.resource_record_name
+      record = dvo.resource_record_value
+      type   = dvo.resource_record_type
+    }
+  }
+
+  allow_overwrite = true
+  name            = each.value.name
+  records         = [each.value.record]
+  ttl             = 60
+  type            = each.value.type
+  zone_id         = data.aws_route53_zone.{{ endpoint.zone|slugify }}.zone_id
 }
 
 # Route53 mappings
