@@ -215,22 +215,28 @@
     {
       "aws_route53_record": {
         "main_acm_validation": {
-          "zone_id": [
-            "${data.aws_route53_zone.eu_tstmach_examplenet.zone_id}"
+          "for_each": [
+            "${{for dvo in aws_acm_certificate.main.domain_validation_options : dvo.domain_name => {'name': '${dvo.resource_record_name}', 'record': '${dvo.resource_record_value}', 'type': '${dvo.resource_record_type}'}}}"
+          ],
+          "allow_overwrite": [
+            true
           ],
           "name": [
-            "${tolist(aws_acm_certificate.main.domain_validation_options)[0].resource_record_name}"
+            "${each.value.name}"
           ],
-          "type": [
-            "${tolist(aws_acm_certificate.main.domain_validation_options)[0].resource_record_type}"
+          "records": [
+            [
+              "${each.value.record}"
+            ]
           ],
           "ttl": [
             60
           ],
-          "records": [
-            [
-              "${tolist(aws_acm_certificate.main.domain_validation_options)[0].resource_record_value}"
-            ]
+          "type": [
+            "${each.value.type}"
+          ],
+          "zone_id": [
+            "${data.aws_route53_zone.eu_tstmach_examplenet.zone_id}"
           ]
         }
       }
