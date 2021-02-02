@@ -29,8 +29,8 @@ nav:
 - Components:
   - Introduction: components/index.md
   - components/structure.md
-  - components/azure.md
   - components/aws.md
+  - components/azure.md
   - components/public.md
 - Integrations:
   - integrations/commercetools.md

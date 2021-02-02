@@ -2,16 +2,14 @@
 
 A MACH component is in it's bare minimum a [*Terraform module*](https://www.terraform.io/docs/configuration/modules.html).
 
-Other then the [Terraform configuration](#terraform-component), a component might include a:
-
-- [Serverless function](#serverless-function)
+Other then the [Terraform configuration](#terraform-component), a component might include a [serverless function](#serverless-function) for custom logic to be executed runtime.
 
 ## Deployment process
 
 The deployment of a full-fledged component typically flows through the following steps:
 
-1. Serverless function is built, packaged up and uploaded to a shared resources all environments and sites can access.<br>
-   **Note** at this point, no actual deployment is made; the function doesn't run yet.
+1. In case of a **serverless function** it is **built**, **packaged** and **uploaded** to a shared resources all environments and sites can access.<br>
+   **Note:** at this point, no actual deployment is made; the function doesn't run yet.
 2. At the moment the MACH composer deploys a site's Terraform configuration, it uses the component's Terraform configuration to make the necessary modifications to the resources.<br>
    For example: create the function app instance, necessary routing, etc.
 3. MACH composer will use the packaged function (from step 1) to deploy the function itself

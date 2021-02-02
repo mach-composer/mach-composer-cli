@@ -9,7 +9,7 @@ Terraform is the infrastructure-as-code engine underneath MACH composer. Read mo
 
 ##[Designing your tenancy model](./tenancy.md)
 
-MACH composer is intended to facilitate multi-tenancy on top of a range of MACH services, micro services and integrations. This page describes what to look at when designing your tenancy model, from different perspectives.
+MACH composer is intended to facilitate multi-tenancy on top of a range of MACH services, micro-services and integrations. This page describes what to look at when designing your tenancy model, from different perspectives.
 
 
 ## Resposibilities
