@@ -75,8 +75,8 @@ An example:
         terraform_config:
           aws_remote_state:
             bucket: mach-tfstate-tst
-              key_prefix: mach-composer-tst
-              region: eu-central-1
+            key_prefix: mach-composer-tst
+            region: eu-central-1
       sites:
         - identifier: my-site
           aws:
