@@ -69,7 +69,7 @@ components:
 
 ### Installation
 
-- Make sure you have Terraform 0.13 installed 
+- Make sure you have Terraform 0.14 installed 
 tip: Use [tfenv](https://github.com/tfutils/tfenv) to support multiple versions of Terraform)
 - Create a new virtualenv with Python 3.8
 - Run the following commands:
