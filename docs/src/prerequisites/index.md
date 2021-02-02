@@ -13,7 +13,7 @@ The machine MACH runs on needs to have [Docker](https://www.docker.com) installe
     In order to do so, the following needs to be installed on the system:
 
     - Python 3.8
-    - Terraform 0.13
+    - Terraform 0.14
 
 ## commercetools
 

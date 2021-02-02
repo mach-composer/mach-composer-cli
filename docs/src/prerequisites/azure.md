@@ -43,7 +43,7 @@ In main.tf:
 
 ```terraform
 terraform {
-  required_version = ">= 0.13.0"
+  required_version = ">= 0.14.0"
 }
 ```
 
@@ -74,7 +74,7 @@ $ terraform apply
    To do this, add a backend setting to project like below
 ```terraform
 terraform {
- required_version = ">= 0.13.0"
+ required_version = ">= 0.14.0"
  backend "azurerm" {
  }
 }
