@@ -18,11 +18,15 @@ The framework is intended as the 'center piece' of your MACH architecture and in
 
 With combining (and requiring) these practises, using the framework has significant impact on your engineering methodology and organisation. On the other hand, by combining those practises we believe it offers an accelerated 'way in' in terms of embracing modern engineering practises in your organisation.
 
+## Documentation structure
 
-## How does it work?
+- [Tutorials](./tutorial/intro.md) introduces you to the MACH composer and lets you setup your MACH stack in a couple of steps
+- [Topic guides](./topics/index.md) discuss key topics and concepts at a fairly high level and provide useful background information and explanation
+- [Reference guides](./reference/index.md) contain technical reference for the MACH syntax and usage of the CLI.
+- [How-to guides](./howtos/index.md) contain practical descriptions on how to solve certain problems. They are more advanced than tutorials and assume some knowledge of how MACH works.
 
-The MACH composer takes a [YAML configuration](./syntax/index.md) as input, and will translate this into a Terraform configuration. It will then execute the terraform configuration, which will deploy all resources for the site architecture.
+## Where from here?
 
-[![MACH diagram](./_img/mach.png)](./_img/mach.png)
-
-The MACH composer is intended for managing multiple instances of the architecture.
+- Start by setting up your [first MACH stack](./tutorial/intro.md)
+- Read more about the [MACH concepts](./concepts.md)
+- Wonder how to reason about your MACH stack? Read our [Architectural Guidance](./guidance/index.md)

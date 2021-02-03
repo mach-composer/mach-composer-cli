@@ -1,4 +1,4 @@
-# Setting up AWS
+# Step 3. Prepare your AWS environment
 
 As described in the [tenenacy model](../guidance/tenancy.md#aws-tenancy), we advice to setup your MACH environment by creating **one service AWS account** containing shared resources and create an **AWS account per stack**.
 

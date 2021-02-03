@@ -1,4 +1,4 @@
-# Setting up GCP
+# Step 3. Prepare your GCP environment
 
 !!! todo
     GCP is not yet supported by MACH composer, unfortunately.

@@ -12,30 +12,45 @@ docs_dir: src
 nav:
 - Overview: index.md
 - Tutorial:
-  - gettingstarted.md
-  - Prequisites:
-    - prerequisites/index.md
-    - AWS: prerequisites/aws.md
-    - Azure: prerequisites/azure.md
-    - GCP: prerequisites/gcp.md
-    - Manual cloud setup:
-      - AWS: prerequisites/aws_manual.md
-      - Azure: prerequisites/azure_manual.md
+  - tutorial/intro.md
+  - Setup using AWS:
+    - tutorial/aws/step-1-installation.md
+    - tutorial/aws/step-2-setup-ct.md
+    - tutorial/aws/step-3-setup-aws.md
+    - tutorial/aws/step-4-create-component.md
+    - tutorial/aws/step-5-create-mach-stack.md
+  - Setup using Azure:
+    - tutorial/azure/step-1-installation.md
+    - tutorial/azure/step-2-setup-ct.md
+    - tutorial/azure/step-3-setup-azure.md
+    - tutorial/azure/step-4-create-component.md
+    - tutorial/azure/step-5-create-mach-stack.md
+  - Setup using GCP:
+    - tutorial/gcp/step-1-installation.md
+    - tutorial/gcp/step-2-setup-ct.md
+    - tutorial/gcp/step-3-setup-gcp.md
+  - Manual cloud setup:
+    - AWS: tutorial/manual/aws_manual.md
+    - Azure: tutorial/manual/azure_manual.md
 - Topics:
-  - concepts.md
+  - topics/concepts.md
   - Deployment:
-    - Components: deployment/components.md
+    - Components: topics/deployment/components.md
     - MACH stack: 
-      - Overview: deployment/config/index.md
-      - deployment/config/aws.md
-      - deployment/config/azure.md
-      - deployment/config/integrations.md
-      - Components: deployment/config/components.md
-    - CI/CD: 
-      - GitLab: deployment/ci/gitlab.md
-      - GitHub actions: deployment/ci/github.md
-      - Azure DevOps: deployment/ci/devops.md
-  - security.md
+      - Overview: topics/deployment/config/index.md
+      - topics/deployment/config/aws.md
+      - topics/deployment/config/azure.md
+      - topics/deployment/config/integrations.md
+      - Components: topics/deployment/config/components.md
+  - Components:
+    - Introduction: topics/components/index.md
+    - topics/components/public.md
+  - Integrations:
+    - topics/integrations/commercetools.md
+    - topics/integrations/contentful.md
+    - topics/integrations/amplience.md
+    - topics/integrations/sentry.md
+  - topics/security.md
   - Architecture guidance:
     - Overview: guidance/index.md
     - Terraform: guidance/terraform.md
@@ -45,23 +60,24 @@ nav:
     - development/environment.md
 - Reference:
   - Syntax:
-    - Overview: syntax/index.md
-    - General config: syntax/general_config.md
-    - Sites: syntax/sites.md
-    - Component definitions: syntax/components.md
+    - Overview: reference/syntax/index.md
+    - General config: reference/syntax/general_config.md
+    - Sites: reference/syntax/sites.md
+    - Component definitions: reference/syntax/components.md
   - Components:
-    - Introduction: components/index.md
-    - components/structure.md
-    - components/aws.md
-    - components/azure.md
-    - components/public.md
-  - Integrations:
-    - integrations/commercetools.md
-    - integrations/contentful.md
-    - integrations/amplience.md
-    - integrations/sentry.md
-  - development/cli.md
-  - changelog.md
+    - reference/components/structure.md
+    - reference/components/aws.md
+    - reference/components/azure.md
+  - reference/cli.md
+  - reference/changelog.md
+- How-to:
+  - howto/index.md
+  - howto/security.md
+  - howto/create-component.md
+  - CI/CD: 
+    - GitLab: howto/ci/gitlab.md
+    - GitHub actions: howto/ci/github.md
+    - Azure DevOps: howto/ci/devops.md
 
 
 extra_javascript:

@@ -1,4 +1,4 @@
-# Setting up Azure
+# Step 3. Prepare your Azure environment
 
 An Azure environment should have the following;
 
