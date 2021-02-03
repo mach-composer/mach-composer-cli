@@ -24,6 +24,12 @@ These account contain at least the following resources:
 !!! todo
     Describe setup using Terraform
 
+
+!!! tip
+    Keep your created component repository information at hand for later: you'll need it when creating a new component.
+
+    This means; the resource group, storage account and container name in Azure or the AWS S3 bucket name.
+
 ## Site-specific account setup
 
 !!! todo

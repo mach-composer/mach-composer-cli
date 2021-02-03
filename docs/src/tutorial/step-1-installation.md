@@ -1,24 +1,23 @@
 # Step 1. Installation
 
-The easiest way to get started is by installing the MACH composer locally to be able to perform a MACH deploy.
+## Install Terraform
+
+Make sure you have Terraform installed on your machine.
+
+We recommend using [tfenv](https://github.com/tfutils/tfenv) to easily switch between Terraform versions when needed.
+
+1. Install [tfenv](https://github.com/tfutils/tfenv): Follow the instructions on [https://github.com/tfutils/tfenv](https://github.com/tfutils/tfenv)
+2. Make sure you have Terraform 0.14.5 installed
+   ```bash
+   $ tfenv install 0.14.5
+   ```
+
+## Install MACH
+The easiest way to get started is by installing the MACH composer locally to be able to perform a MACH deploy and make use of the [developer tools](../topics/../development/workflow.md).
 
 ```bash
-pipx install mach-composer
+$ pipx install mach-composer
 ```
 
-[More information](./workflow/environment.md#installing-the-cli) about installation.
-
-
-## Next steps
-
-Before you can deploy a MACH stack, you have to;
-
-1. Setup the basics in your cloud provider, and
-2. Create a commercetools project
-
-Instructions can be found in the [prerequisites section](./prerequisites/index.md).
-
-!!! tip
-    Keep your created component repository information at hand for later: you'll need it when creating a new component.
-
-    This means; the resource group, storage account and container name in Azure or the AWS S3 bucket name.
+!!! tip "Next: step 2"
+    Next we'll [setup our commercetools project](./step-2-setup-ct.md)

@@ -13,25 +13,20 @@ nav:
 - Overview: index.md
 - Tutorial:
   - tutorial/intro.md
-  - Setup using AWS:
-    - tutorial/aws/step-1-installation.md
-    - tutorial/aws/step-2-setup-ct.md
+  - tutorial/step-1-installation.md
+  - tutorial/step-2-setup-ct.md
+  - AWS:
     - tutorial/aws/step-3-setup-aws.md
     - tutorial/aws/step-4-create-component.md
     - tutorial/aws/step-5-create-mach-stack.md
-  - Setup using Azure:
-    - tutorial/azure/step-1-installation.md
-    - tutorial/azure/step-2-setup-ct.md
+    - tutorial/manual/aws_manual.md
+  - Azure:
     - tutorial/azure/step-3-setup-azure.md
     - tutorial/azure/step-4-create-component.md
     - tutorial/azure/step-5-create-mach-stack.md
-  - Setup using GCP:
-    - tutorial/gcp/step-1-installation.md
-    - tutorial/gcp/step-2-setup-ct.md
+    - tutorial/manual/azure_manual.md
+  - GCP:
     - tutorial/gcp/step-3-setup-gcp.md
-  - Manual cloud setup:
-    - AWS: tutorial/manual/aws_manual.md
-    - Azure: tutorial/manual/azure_manual.md
 - Topics:
   - topics/concepts.md
   - Deployment:

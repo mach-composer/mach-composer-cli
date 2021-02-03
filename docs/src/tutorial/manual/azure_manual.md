@@ -36,6 +36,12 @@ Create a new `BlockBlobStorage` with a Premium account tier for improved perform
 
 Create a blob container called `code`. Make this private.
 
+
+!!! tip
+    Keep your created component repository information at hand for later: you'll need it when creating a new component.
+
+    This means; the resource group, storage account and container name.
+
 ## Register providers
 
 Make sure the following providers are registered on the subscription:

@@ -55,6 +55,9 @@ This will be a S3 bucket should be created where the **packaged lambda** functio
    Along the way, as new sites gets added, extra deploy roles need to be added as well, see [IAM deploy roles](#iam-deploy-role).
 
 
+!!! tip
+    Keep your created component repository information (The S3 bucket name) at hand for later: you'll need it when creating a new component.
+
 ### 3. Setup Route53 zone
 
 If a custom domain is going to be used for the API components a common practise is to have one (or more) top-level domain configured on the service account that can link to the site-specific Route53 zones using their NS records.
