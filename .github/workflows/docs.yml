@@ -1,12 +1,6 @@
 name: Build documentation
 
-on:
-  push:
-    branches:
-    - "*"
-    paths:
-    - 'docs/**/*'
-    - '*.md'
+on: push
 
 defaults:
   run:
