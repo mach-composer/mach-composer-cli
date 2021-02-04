@@ -71,7 +71,7 @@ terraform_config:
 
 
 !!! tip "Cache your providers"
-    If you're overwriting the provider versions, make sure you [mount the plugins cache](../deployment/config/index.md#cache-terraform-providers)
+    If you're overwriting the provider versions, make sure you [mount the plugins cache](../../topics/deployment/config/index.md#cache-terraform-providers)
 
 ## sentry
 Defines a Sentry configuration.

@@ -22,11 +22,11 @@ With combining (and requiring) these practises, using the framework has signific
 
 - [Tutorials](./tutorial/intro.md) introduces you to the MACH composer and lets you setup your MACH stack in a couple of steps
 - [Topic guides](./topics/concepts.md) discuss key topics and concepts at a fairly high level and provide useful background information and explanation
-- [Reference guides](./reference/syntax/index.md) contain technical reference for the MACH syntax and usage of the CLI.
+- [Reference guides](./reference/index.md) contain technical reference for the MACH syntax and usage of the CLI.
 - [How-to guides](./howto/index.md) contain practical descriptions on how to solve certain problems. They are more advanced than tutorials and assume some knowledge of how MACH works.
 
 ## Where from here?
 
 - Start by setting up your [first MACH stack](./tutorial/intro.md)
-- Read more about the [MACH concepts](../topics/concepts.md)
-- Wonder how to reason about your MACH stack? Read our [Architectural Guidance](..topics/guidance/index.md)
+- Read more about the [MACH concepts](./topics/concepts.md)
+- Wonder how to reason about your MACH stack? Read our [Architectural Guidance](./topics/architecture/index.md)

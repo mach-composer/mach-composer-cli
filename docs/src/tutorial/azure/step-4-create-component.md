@@ -28,4 +28,4 @@ For a component created with the `mach bootstrap` command or one of the provided
 
 !!! info "Component deployment"
     The deployment process of a component can vary.<br>
-    [Read more](./deployment/components.md) about component deployments.
+    [Read more](../../topics/deployment/components.md) about component deployments.

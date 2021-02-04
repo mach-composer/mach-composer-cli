@@ -11,7 +11,7 @@ From a MACH configuration file, you can configure the following items in commerc
 - taxes
 - stores
 
-For more information about these configuration options, see the [syntax](../syntax/sites.md#commercetools).
+For more information about these configuration options, see the [syntax](../../reference/syntax/sites.md#commercetools).
 
 !!! tip "More fine-grained control"
     MACH provides a couple of basic configuration options which in most cases are sufficient and is setup very quickly.<br>
@@ -78,7 +78,7 @@ The component can use the correct variables based on the context that is decided
 
 ## Example configuration block
 
-An example [commercetools configuration block](../syntax/sites.md#commercetools):
+An example [commercetools configuration block](../../reference/syntax/sites.md#commercetools):
 
 ```yaml
 commercetools:

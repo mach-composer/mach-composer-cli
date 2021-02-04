@@ -1,4 +1,4 @@
-# Concepts
+# MACH concepts
 
 The MACH composer is built around the following concepts
 
@@ -18,5 +18,5 @@ Easy to integrate the MACH composer into your (existing) CI/CD pipeline.
 
 !!! tip "Further reading"
     - [What makes a component](./components/index.md)
-    - [Architectural Guidance](./guidance/index.md)
-    - [Getting started](./gettingstarted.md)
+    - [Architectural Guidance](./architecture/index.md)
+    - [Getting started](../tutorial/step-1-installation.md)

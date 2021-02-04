@@ -55,7 +55,7 @@ components:
     version: e638e57
 ```
 
-See [Syntax](./syntax/index.md) for all configuration options.
+See [Syntax](../../reference/syntax/index.md) for all configuration options.
 
 ## 6. Deploy
 
@@ -75,7 +75,7 @@ $ mach plan
     You can invoke MACH by running the Docker image:<br>
     `$ docker run --rm --volume $(pwd):/code docker.pkg.github.com/labd/mach-composer/mach apply`
 
-    You do need to provide the docker container with the necessary environment variables to be able to authenticate with the cloud provider. More info on that in the [deployment section](./deployment/config/index.md#providing-credentials)
+    You do need to provide the docker container with the necessary environment variables to be able to authenticate with the cloud provider. More info on that in the [deployment section](../../topics/deployment/config/index.md#providing-credentials)
 
 
 ## Example files
@@ -84,9 +84,9 @@ You can find example files needed for preparing the infrastructure and a configu
 
 ## Further reading
 
-- See the [CLI reference](./workflow/cli.md#apply) for more deployment options.
-- Setup your CI/CD pipeline on [GitLab](./deployment/ci/gitlab.md), [GitHub](./deployment/ci/github.md) or [Azure DevOps](./deployment/ci/devops.md)
-- [Encrypting your configuration](./security.md#encrypt-your-mach-configuration) with SOPS
-- How to create a [new MACH component](./components/index.md)
-- [Architectural Guidance](./guidance/index.md)
+- See the [CLI reference](../../reference/cli.md#apply) for more deployment options.
+- Setup your CI/CD pipeline on [GitLab](../../howto/ci/gitlab.md), [GitHub](../../howto/ci/github.md) or [Azure DevOps](../../howto/ci/devops.md)
+- [Encrypting your configuration](../../howto/encrypt.md) with SOPS
+- How to create a [new MACH component](../../howto/create-component.md)
+- [Architectural Guidance](../../topics/architecture/index.md)
 

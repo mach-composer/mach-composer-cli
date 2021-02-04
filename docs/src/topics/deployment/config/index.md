@@ -15,7 +15,7 @@ Resources needed for the integrations such as
 - [contentful](./integrations.md#contentful)
 
 #### 3. Components
-Since components are loaded into the configuration as [Terraform modules](../../components/structure.md#terraform-module), during a MACH deployment the resources defined in the component will get created.
+Since components are loaded into the configuration as [Terraform modules](../../../reference/components/structure.md#terraform-module), during a MACH deployment the resources defined in the component will get created.
 
 1. The [**first stage**](../components.md) of a component deployment (uploading the assets to a component repository) is done before a component is deployed as part of a MACH stack.
 
@@ -66,14 +66,14 @@ When running the **MACH Docker image**, the necessary environment variables need
     ```
 
     For Azure you'll need to run it with the `--with-sp-login` option let the MACH composer perform an `az login` command.<br>
-    [More info](./../../workflow/cli.md#apply).
+    [More info](../../../reference/cli.md#apply).
 
 
 ## Cache Terraform providers
 
 The MACH composer comes with Terraform providers pre-installed in the Docker image.
 
-If you're overwriting these versions with in your [`terraform_config` block](../../syntax/general_config.md#terraform_config), these providers will be downloaded.
+If you're overwriting these versions with in your [`terraform_config` block](../../../reference/syntax/general_config.md#terraform_config), these providers will be downloaded.
 
 To avoid having to re-download it everytime you run MACH through the Docker image, make sure you mount the [plugin cache](https://www.terraform.io/docs/commands/cli-config.html#provider-plugin-cache) directory;
 

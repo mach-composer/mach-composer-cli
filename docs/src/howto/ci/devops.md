@@ -140,7 +140,7 @@ The *Service connection name* will be used later in the pipeline.
 
 Example DevOps CI configuration.
 
-See the [Components deployment](../components.md#package-upload-script) section for examples of the package/upload script used here.
+See the [Components deployment](../../topics/deployment/components.md#package-upload-script) section for examples of the package/upload script used here.
 
 === "Python"
   ```yaml

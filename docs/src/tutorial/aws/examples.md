@@ -11,7 +11,7 @@ Rather curious on how to setup the AWS account manually? Follow the steps below
     Move this part to the How-to's section
 
 
-As described in the [tenenacy model](../guidance/tenancy.md#aws-tenancy), we advice to setup your MACH environment by creating **one service AWS account** containing shared resources and create an **AWS account per stack**.
+As described in the [tenenacy model](../../topics/architecture/tenancy.md#aws-tenancy), we advice to setup your MACH environment by creating **one service AWS account** containing shared resources and create an **AWS account per stack**.
 
 This way, all resources are strictly seperated from eachother.
 
@@ -113,7 +113,7 @@ You'll need to setup two Route53 zones:
     MACH will make sure the API Gateway is created and a SSL certificate is created.<br>
     Each component is responsible for creating the correct routing to the Lambda endpoints.
 
-    More on that in the [deployment section](../deployment/config/aws.md#custom-endpoint)
+    More on that in the [deployment section](../../topics/deployment/config/aws.md#custom-endpoint)
 
 ### 3. Create IAM deploy role
 

@@ -1,6 +1,6 @@
 # Component deployment - first stage
 
-As described in the [components section](../components/structure.md#deployment-process), whenever a component contains a **serverless function** that needs to be uploaded to a registry, it needs a '*first stage*' deployment.
+As described in the [components section](../../reference/components/structure.md#deployment-process), whenever a component contains a **serverless function** that needs to be uploaded to a registry, it needs a '*first stage*' deployment.
 
 In that case, the component itself is responsible for the following steps:
 
@@ -139,9 +139,9 @@ $ ./build.sh upload
 
 Refer to the CI/CD section for instructions on how to setup your Continuous Integration pipeline for component deployments:
 
-- [GitLab](./ci/gitlab.md#components)
-- [GitHub actions](./ci/github.md#components)
-- [Azure DevOps](./ci/devops.md#components)
+- [GitLab](../../howto/ci/gitlab.md#components)
+- [GitHub actions](../../howto/ci/github.md#components)
+- [Azure DevOps](../../howto/ci/devops.md#components)
 
 
 ## Second stage - MACH deployment

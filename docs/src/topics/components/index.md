@@ -49,7 +49,7 @@ The deployment of a full-fledged component typically flows through the following
       Not all components need to be a serverless function. A component might be just a set of Terraform instructions to, for example, create a custom product type in commercetools.<br>
       In that case, step 1 and 3 will be skipped.
 
-Zooming in on the [main diagram](../index.md#how-does-it-work), you'll see the steps illustrated.
+Zooming in on the [main diagram](../../tutorial/intro.md#how-does-it-work), you'll see the steps illustrated.
 
 ![Component diagram](../../_img/component-diagram.png){: style="max-width:600px"}
 

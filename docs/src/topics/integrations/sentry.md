@@ -12,7 +12,7 @@ To let MACH manage your DSN values, you need to define a **auth token**, **proje
 Create a new internal integration and choose **Project: Admin** as permissions.<br>
 The rest can be left empty.
 
-![Azure connection step 2](../_img/sentry.png)
+![Sentry config](../../_img/sentry.png)
 
 ## Configure MACH
 
@@ -32,13 +32,13 @@ general_config:
   ...
 ```
 
-The rate limits can also be defined/overwritten on [`site`](../syntax/sites.md) and [`component`](../syntax/sites.md#component-configurations) level
+The rate limits can also be defined/overwritten on [`site`](../../reference/syntax/sites.md) and [`component`](../../reference/syntax/sites.md#component-configurations) level
 
 ## Expose DSN to components
 
 MACH needs to know what components want to use the Sentry DSN.<br>
 For this you need to include `sentry` to the list of integrations.<br>
-When doing so, MACH expects the component to have one variable `sentry_dsn` defined ([more info](../components/structure.md#sentry))
+When doing so, MACH expects the component to have one variable `sentry_dsn` defined ([more info](../../reference/components/structure.md#sentry))
 
 If the integration is set, MACH will;
 

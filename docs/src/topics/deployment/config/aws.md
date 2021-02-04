@@ -2,9 +2,9 @@
 
 ## HTTP routing
 
-If any component used in a MACH stack is defined with an [`endpoint`](../../syntax/components.md), MACH will create the necessary resources to be able to route traffic to that components.
+If any component used in a MACH stack is defined with an [`endpoint`](../../../reference/syntax/components.md), MACH will create the necessary resources to be able to route traffic to that components.
 
-The information needed for components to add custom routes to that API Gateway are provided through [Terraform variables](../../components/aws.md#terraform-variables).
+The information needed for components to add custom routes to that API Gateway are provided through [Terraform variables](../../../reference/components/aws.md#terraform-variables).
 
 ### Default endpoint
 
@@ -20,11 +20,11 @@ components:
 ```
 
 !!! note ""
-    This `default` endpoint doesnt need to be defined in your [endpoints definition](../../syntax/sites.md#endpoints).
+    This `default` endpoint doesnt need to be defined in your [endpoints definition](../../../reference/syntax/sites.md#endpoints).
 
 ### Custom endpoint
 
-A site might have a couple of [endpoints](../../syntax/sites.md#endpoints) defined and for each endpoint MACH will create:
+A site might have a couple of [endpoints](../../../reference/syntax/sites.md#endpoints) defined and for each endpoint MACH will create:
 
 - API Gateway + default routing
 - ACM Certificate (with DNS validation)
@@ -32,5 +32,5 @@ A site might have a couple of [endpoints](../../syntax/sites.md#endpoints) defin
 
 
 !!! info "Route53 zone"
-    MACH will not create and manage the Route53 zone itself but expects it to be created already as described in the [prerequisites](../../prerequisites/aws.md#route53-zone) section.<br>
+    MACH will not create and manage the Route53 zone itself but expects it to be created already as described in the [prerequisites](../../../tutorial/aws/step-4-setup-aws-site.md) section.<br>
     It will try to lookup that zone using the `route53_zone_name` setting.

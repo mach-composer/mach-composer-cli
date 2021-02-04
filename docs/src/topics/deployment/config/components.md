@@ -1,6 +1,6 @@
 # Component deployment - second stage
 
-The '*second stage*' deployment of a component is the process of creating and managing the resources that are defined in the [Terraform configuration](../../components/structure.md#terraform-module) of that component.
+The '*second stage*' deployment of a component is the process of creating and managing the resources that are defined in the [Terraform configuration](../../../reference/components/structure.md#terraform-module) of that component.
 
 In case a component contains one or more serverless functions, the necessary Lambda Function or Azure Function App needs to be created and configured with the correct artifact.<br>
 This artifact will need to be built, packaged and uploaded in the ['*first stage*' deployment](../components.md).
@@ -30,7 +30,7 @@ Where the `var.api_gateway` references the [Gateway created by MACH](./aws.md#ht
 
 ### Serverless framework
 
-As described in the [AWS](../../components/aws.md#lambda-function) and [Azure](../../components/azure.md#function-app) instructions of the component structure, we recommend taking full control in managing the necessary resources for a serverless function.
+As described in the [AWS](../../../reference/components/aws.md#lambda-function) and [Azure](../../../reference/components/azure.md#function-app) instructions of the component structure, we recommend taking full control in managing the necessary resources for a serverless function.
 
 Although we recommend [using the Serverless framework](../../components/index.md#using-serverless-framework) for local development, we do not recommend using it for the actual deployment.
 

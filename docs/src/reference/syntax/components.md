@@ -55,4 +55,4 @@ components:
       package_script: cd ../mach-component-my-component/ && yarn package
     ```
 
-    More info on [using MACH during development](../development/workflow.md)
+    More info on [using MACH during development](../../topics/development/workflow.md)

@@ -96,4 +96,4 @@ See the [examples directory](https://github.com/labd/mach-composer/tree/master/e
 
 ## Manual setup
 
-See instructions on how to [setup Azure manually](./azure_manual.md).
+See instructions on how to [setup Azure manually](./manual.md).

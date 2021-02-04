@@ -8,7 +8,7 @@ In addition to this, the component itself is responsible for [packaging and depl
 
 ## Terraform variables
 
-In addition to the [base variables](./index.md#required-variables), an Azure component expects the following:
+In addition to the [base variables](./structure.md#required-variables), an Azure component expects the following:
 
 - `short_name` - Short name; will not be more than 10 characters to prevent Azure naming limits
 - `name_prefix` - Name prefix to be used for all Azure resources. See [naming conventions](#nmaing-conventions)
@@ -19,10 +19,10 @@ Type: `map(string)`
 - `region` - Azure region
 - `resource_group_name` - Name of the resource group the component should be created in
 - `resource_group_location` - The resource group location
-- `app_service_plan_id` - The [App service plan](../deployment/config/azure.md#app-service-plan) managed by MACH
+- `app_service_plan_id` - The [App service plan](../../topics/deployment/config/azure.md#app-service-plan) managed by MACH
 - `tags` - Azure tags to be used on resources<br>
   Type: `map(string)`
-- `monitor_action_group_id` - [action group](../deployment/config/azure.md#action-groups) ID when [alert_group](../syntax/general_config.md#azure) is configured.
+- `monitor_action_group_id` - [action group](../../topics/deployment/config/azure.md#action-groups) ID when [alert_group](../syntax/general_config.md#azure) is configured.
 
 ```terraform
 variable "short_name" {}
@@ -49,7 +49,7 @@ variable "monitor_action_group_id" {
 
 ### With `endpoints`
 
-In order to support the [`endpoints`](../deployment/config/azure.md#http-routing) attribute on the component, the component needs to define what endpoints it expects.
+In order to support the [`endpoints`](../../topics/deployment/config/azure.md#http-routing) attribute on the component, the component needs to define what endpoints it expects.
 
 For example, if the component requires two endpoints (`main` and `webhooks`) to be set, the following variables needs to be defined:
 
@@ -75,9 +75,9 @@ variable "endpoint_webhooks" {
 For Azure functions, the deployment process constist of two steps:
 
 - Packaging the function
-- Deploying it to the [function app storage](../prerequisites/azure.md#create-function-app-storage)
+- Deploying it to the [function app storage](../../tutorial/azure/step-3-setup-azure.md)
 
-[Read more](../deployment/components.md) about Azure component deployments.
+[Read more](../../topics/deployment/components.md) about Azure component deployments.
 
 ### Configure runtime
 When defining your Azure function app resource, you can reference back to the asset that is deployed:
@@ -112,7 +112,7 @@ To do so, the following has to be configured:
 
     MACH will create a Frontdoor instance for you without any custom domain.
 
-More information in the [deployment section](../deployment/config/azure.md#http-routing).
+More information in the [deployment section](../../topics/deployment/config/azure.md#http-routing).
 
 ## Naming conventions
 
@@ -200,4 +200,4 @@ resource "azurerm_function_app" "example_component" {
 }
 ```
 
-See also [notes on using the serverless framework](../deployment/config/components.md#serverless-framework)
+See also [notes on using the serverless framework](../../topics/deployment/config/components.md#serverless-framework)

@@ -25,11 +25,14 @@ nav:
     - tutorial/azure/step-3-setup-azure.md
     - tutorial/azure/step-4-create-component.md
     - tutorial/azure/step-5-create-mach-stack.md
-    - tutorial/manual/azure_manual.md
+    - tutorial/azure/manual.md
   - GCP:
     - tutorial/gcp/step-3-setup-gcp.md
 - Topics:
   - topics/concepts.md
+  - Components:
+    - Introduction: topics/components/index.md
+    - topics/components/public.md
   - Deployment:
     - Components: topics/deployment/components.md
     - MACH stack: 
@@ -38,9 +41,6 @@ nav:
       - topics/deployment/config/azure.md
       - topics/deployment/config/integrations.md
       - Components: topics/deployment/config/components.md
-  - Components:
-    - Introduction: topics/components/index.md
-    - topics/components/public.md
   - Integrations:
     - topics/integrations/commercetools.md
     - topics/integrations/contentful.md
@@ -52,8 +52,8 @@ nav:
     - Terraform: topics/architecture/terraform.md
     - Tenancy: topics/architecture/tenancy.md
   - Development:
-    - Workflow: development/workflow.md
-    - development/environment.md
+    - Workflow: topics/development/workflow.md
+    - topics/development/environment.md
 - Reference:
   - Overview: reference/index.md
   - Syntax:

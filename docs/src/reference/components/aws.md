@@ -8,11 +8,11 @@ In addition to this, the component itself is responsible for [packaging and depl
 
 ## Terraform variables
 
-In addition to the [base variables](./index.md#required-variables) AWS components don't require additional variables, unless an `endpoint` is expected (and set in the configuration).
+In addition to the [base variables](./structure.md#required-variables) AWS components don't require additional variables, unless an `endpoint` is expected (and set in the configuration).
 
 ### With `endpoints`
 
-In order to support the [`endpoints`](../deployment/config/aws.md#http-routing) attribute on the component, the component needs to define what endpoints it expects.
+In order to support the [`endpoints`](../../topics/deployment/config/aws.md#http-routing) attribute on the component, the component needs to define what endpoints it expects.
 
 For example, if the component requires two endpoints (`main` and `webhooks`) to be set, the following variables needs to be defined:
 
@@ -38,7 +38,7 @@ variable "endpoint_webhooks" {
 
 AWS Lambda functions need to be uploaded to a S3 bucket. From there AWS Lambda will run the functions for you once instructed by the Terraform deployment.
 
-[Read more](../deployment/components.md#on-aws) about AWS component deployments.
+[Read more](../../topics/deployment/components.md#on-aws) about AWS component deployments.
 
 ### Configure runtime
 When defining your AWS Lambda function resource, you can reference back to the asset that is deployed:
@@ -63,7 +63,7 @@ To do so, the following has to be configured:
 
     MACH will create an API Gateway for you without any custom domain.
 
-More information in the [deployment section](../deployment/config/aws.md#http-routing).
+More information in the [deployment section](../../topics/deployment/config/aws.md#http-routing).
 
 ## Lambda function
 
@@ -88,4 +88,4 @@ module "lambda_function" {
 }
 ```
 
-See also [notes on using the serverless framework](../deployment/config/components.md#serverless-framework)
+See also [notes on using the serverless framework](../../topics/deployment/config/components.md#serverless-framework)

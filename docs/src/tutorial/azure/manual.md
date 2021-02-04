@@ -5,7 +5,7 @@
 ### Storage account
 Create a storage account which will be used as Terraform state backend.
 
-![Create storage account](../_img/azure/terraform_storage_account.png)
+![Create storage account](../../_img/azure/terraform_storage_account.png)
 
 
 !!! tip

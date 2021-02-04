@@ -30,7 +30,7 @@ endpoints:
 !!! info "Azure support"
     At the moment, this option is not supported when using Azure and simply ignored.
 
-    For Azure, the endpoints that are created for the APIs are constructed by using the commercetools project key as DNS record. More on that in the [Azure routing](../deployment/config/azure.md#http-routing) section
+    For Azure, the endpoints that are created for the APIs are constructed by using the commercetools project key as DNS record. More on that in the [Azure routing](../../topics/deployment/config/azure.md#http-routing) section
 
 ## commercetools
 

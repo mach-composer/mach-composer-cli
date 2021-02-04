@@ -19,7 +19,7 @@ If you don't have an account yet, you can [signup for a free trail](https://ok.c
 
 Create a new project in the commercetools Merchant Center
 
-![New project](../../_img/tutorial/ct-new-project.png){: style="max-width: 500px"}
+![New project](../_img/tutorial/ct-new-project.png){: style="max-width: 500px"}
 
 
 ## Create API client
@@ -37,10 +37,10 @@ Required scopes:
 
 We will use these credentials later when configuring our MACH stack.
 
-![New project](../../_img/tutorial/ct-new-client.png){: style="max-width: 800px"}
+![New project](../_img/tutorial/ct-new-client.png){: style="max-width: 800px"}
 
 !!! tip "Next: step 3"
     Next we'll setup our cloud environment:
 
     - [AWS](./aws/step-3-setup-aws-services.md)
-    - [Azure](./aws/step-3-setup-azure.md)
+    - [Azure](./azure/step-3-setup-azure.md)

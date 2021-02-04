@@ -5,11 +5,11 @@
 MACH will create a **[resource group](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/resource_group) per site**.
 
 !!! info ""
-    Only when a [`resource_group`](../../syntax/sites.md#azure) is explicitly set, it won't be managed by MACH.
+    Only when a [`resource_group`](../../../reference/syntax/sites.md#azure) is explicitly set, it won't be managed by MACH.
 
 ## HTTP routing
 
-Only when a MACH stack contains components that have an [`endpoint`](../../syntax/components.md) defined, MACH will setup a **Frontdoor instance** to be able to route traffic to that component.
+Only when a MACH stack contains components that have an [`endpoint`](../../../reference/syntax/components.md) defined, MACH will setup a **Frontdoor instance** to be able to route traffic to that component.
 
 ### Default endpoint
 
@@ -25,11 +25,11 @@ components:
 ```
 
 !!! note ""
-    This `default` endpoint doesn't need to be defined in your [endpoints definition](../../syntax/sites.md#endpoints).
+    This `default` endpoint doesn't need to be defined in your [endpoints definition](../../../reference/syntax/sites.md#endpoints).
 
 ### Custom endpoint
 
-Whenever a custom endpoint from your [endpoints definition](../../syntax/sites.md#endpoints) is used, MACH will require that you have configured [`frontdoor`](../../syntax/general_config.md#frontdoor) for additional DNS information that it needs to setup your Frontdoor instance.
+Whenever a custom endpoint from your [endpoints definition](../../../reference/syntax/sites.md#endpoints) is used, MACH will require that you have configured [`frontdoor`](../../../reference/syntax/general_config.md#frontdoor) for additional DNS information that it needs to setup your Frontdoor instance.
 
 In addition to that it will also setup the necessary DNS record.
 
@@ -58,7 +58,7 @@ components:
 
 The routing in Frontdoor that will be created:
 
-![Frontdoor routes](../../_img/azure/frontdoor_routes.png)
+![Frontdoor routes](../../../_img/azure/frontdoor_routes.png)
 
 ## App service plan
 
@@ -66,6 +66,6 @@ MACH will create an [App service plan](https://registry.terraform.io/providers/h
 
 ## Action groups
 
-When an [Alert group](../../syntax/sites.md#alert_group) is configured, an [Action group](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/monitor_action_group) will be created.
+When an [Alert group](../../../reference/syntax/sites.md#alert_group) is configured, an [Action group](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/monitor_action_group) will be created.
 
 Components can use that action group to attach alert rules to.
