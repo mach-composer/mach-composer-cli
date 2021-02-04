@@ -1,10 +1,10 @@
 # Step 3. Prepare your Azure environment
 
-An Azure environment should have the following;
+In this step we will set up the following in Azure:
 
-1. Storage account for [Terraform states](#create-terraform-storage)
-2. Storage account for [function app code packages](#create-function-app-storage)
-3. [Registered providers](#register-providers) needed for various services
+1. Storage account for Terraform states
+2. Storage account for function app code packages
+3. Registered providers needed for various services
 
 This section will demonstrate how to setup Azure using Terraform.
 

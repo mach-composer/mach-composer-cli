@@ -1,4 +1,15 @@
-# Manual AWS setup
+# Example files
+
+See the [examples directory](https://github.com/labd/mach-composer/tree/master/examples/aws/infra/) for an example of a Terraform setup
+
+Rather curious on how to setup the AWS account manually? Follow the steps below
+
+## Manual AWS setup
+
+
+!!! Todo
+    Move this part to the How-to's section
+
 
 As described in the [tenenacy model](../guidance/tenancy.md#aws-tenancy), we advice to setup your MACH environment by creating **one service AWS account** containing shared resources and create an **AWS account per stack**.
 

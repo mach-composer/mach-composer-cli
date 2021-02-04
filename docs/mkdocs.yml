@@ -16,10 +16,11 @@ nav:
   - tutorial/step-1-installation.md
   - tutorial/step-2-setup-ct.md
   - AWS:
-    - tutorial/aws/step-3-setup-aws.md
-    - tutorial/aws/step-4-create-component.md
-    - tutorial/aws/step-5-create-mach-stack.md
-    - tutorial/manual/aws_manual.md
+    - tutorial/aws/step-3-setup-aws-services.md
+    - tutorial/aws/step-4-setup-aws-site.md
+    - tutorial/aws/step-5-create-component.md
+    - tutorial/aws/step-6-create-mach-stack.md
+    - tutorial/aws/examples.md
   - Azure:
     - tutorial/azure/step-3-setup-azure.md
     - tutorial/azure/step-4-create-component.md
@@ -47,9 +48,9 @@ nav:
     - topics/integrations/sentry.md
   - topics/security.md
   - Architecture guidance:
-    - Overview: guidance/index.md
-    - Terraform: guidance/terraform.md
-    - Tenancy: guidance/tenancy.md
+    - Overview: topics/architecture/index.md
+    - Terraform: topics/architecture/terraform.md
+    - Tenancy: topics/architecture/tenancy.md
   - Development:
     - Workflow: development/workflow.md
     - development/environment.md

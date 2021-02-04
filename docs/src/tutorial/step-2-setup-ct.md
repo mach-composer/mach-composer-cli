@@ -42,5 +42,5 @@ We will use these credentials later when configuring our MACH stack.
 !!! tip "Next: step 3"
     Next we'll setup our cloud environment:
 
-    - [AWS](./aws/step-3-setup-aws.md)
+    - [AWS](./aws/step-3-setup-aws-services.md)
     - [Azure](./aws/step-3-setup-azure.md)
