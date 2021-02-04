@@ -1,4 +1,4 @@
-# DevOps pipelines
+# Deploy using Azure DevOps pipelines
 
 This section will describe how to setup your CI/CD pipeline using DevOps including some examples.
 

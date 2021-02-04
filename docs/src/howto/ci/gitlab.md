@@ -1,4 +1,4 @@
-# GitLab CI/CD
+# Deploy using GitLab CI/CD
 
 This section will describe how to setup your CI/CD pipeline using GitLab including some examples.
 

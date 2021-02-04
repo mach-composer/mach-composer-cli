@@ -1,33 +1,4 @@
-# Security
-
-## Component secrets
-The MACH configuration provides a [`secrets` attribute](./syntax/sites.md#component-configurations) in which you can pass secret values to the components.
-
-It is up to the component to use those secret values in a secure manner.
-
-=== "Azure"
-    ```terraform
-    resource "azurerm_key_vault_secret" "secrets" {
-        for_each     = var.secrets
-
-        name         = replace(each.key, "_", "-")
-        value        = each.value
-        key_vault_id = azurerm_key_vault.main.id
-    }
-    ```
-=== "AWS"
-    ```terraform
-    resource "aws_secretsmanager_secret" "mail_client_secret" {
-        name = "my_component/mail-client-secret"
-    }
-
-    resource "aws_secretsmanager_secret_version" "mail_client_secret" {
-        secret_id     = aws_secretsmanager_secret.mail_client_secret.id
-        secret_string = var.secrets["MAIL_CLIENT_SECRET"]
-    }
-    ```
-
-## Encrypt your MACH configuration
+# Encrypt MACH configuration
 
 A MACH configuration typically contains secrets that are configured on the components as well as secrets used to configure the integrations.
 

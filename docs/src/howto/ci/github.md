@@ -1,4 +1,4 @@
-# GitHub Actions
+# Deploy using GitHub Actions
 
 This section will describe how to setup your CI/CD pipeline using GitHub Actions including some examples.
 

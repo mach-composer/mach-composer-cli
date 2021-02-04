@@ -1,4 +1,4 @@
-# How to create a MACH component
+# Create a MACH component
 
 ## Creating a component
 

@@ -55,6 +55,7 @@ nav:
     - Workflow: development/workflow.md
     - development/environment.md
 - Reference:
+  - Overview: reference/index.md
   - Syntax:
     - Overview: reference/syntax/index.md
     - General config: reference/syntax/general_config.md
@@ -68,12 +69,12 @@ nav:
   - reference/changelog.md
 - How-to:
   - howto/index.md
-  - howto/security.md
   - howto/create-component.md
-  - CI/CD: 
-    - GitLab: howto/ci/gitlab.md
-    - GitHub actions: howto/ci/github.md
-    - Azure DevOps: howto/ci/devops.md
+  - howto/handle-secrets.md
+  - howto/encrypt.md
+  - Deploy using GitLab: howto/ci/gitlab.md
+  - Deploy using GitHub actions: howto/ci/github.md
+  - Deploy using Azure DevOps: howto/ci/devops.md
 
 
 extra_javascript:
