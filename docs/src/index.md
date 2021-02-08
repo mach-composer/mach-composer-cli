@@ -21,7 +21,7 @@ With combining (and requiring) these practises, using the framework has signific
 ## Documentation structure
 
 - [Tutorials](./tutorial/intro.md) introduces you to the MACH composer and lets you setup your MACH stack in a couple of steps
-- [Topic guides](./topics/concepts.md) discuss key topics and concepts at a fairly high level and provide useful background information and explanation
+- [Explanations](./topics/concepts.md) explanations of concepts, best practises and techniques
 - [Reference guides](./reference/index.md) contain technical reference for the MACH syntax and usage of the CLI.
 - [How-to guides](./howto/index.md) contain practical descriptions on how to solve certain problems. They are more advanced than tutorials and assume some knowledge of how MACH works.
 

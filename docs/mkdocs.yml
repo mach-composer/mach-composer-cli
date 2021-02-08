@@ -28,7 +28,7 @@ nav:
     - tutorial/azure/manual.md
   - GCP:
     - tutorial/gcp/step-3-setup-gcp.md
-- Topics:
+- Explanations:
   - topics/concepts.md
   - Components:
     - Introduction: topics/components/index.md
@@ -70,11 +70,13 @@ nav:
 - How-to:
   - howto/index.md
   - howto/create-component.md
-  - howto/handle-secrets.md
-  - howto/encrypt.md
-  - Deploy using GitLab: howto/ci/gitlab.md
-  - Deploy using GitHub actions: howto/ci/github.md
-  - Deploy using Azure DevOps: howto/ci/devops.md
+  - Security:
+    - howto/security/handle-secrets.md
+    - howto/security/encrypt.md
+  - CI/CD:
+    - Setup GitLab: howto/ci/gitlab.md
+    - Setup GitHub actions: howto/ci/github.md
+    - Setup Azure DevOps: howto/ci/devops.md
 
 
 extra_javascript:
