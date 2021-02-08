@@ -10,6 +10,7 @@ Luckily, adding GCP should not be a lot of work. Most of the implementation boil
 
 - [ ] Add support in MACH yaml to support GCP cloud
 - [ ] Add terraform templates to MACH composer, to support GCP resources
+- [ ] Implement DNS record management via Google Cloud DNS (?)
 - [ ] Implement routing using Google API Gateway
 - [ ] Reference implementation of a CloudRun/CloudFunctions serverless function
 - [ ] Base Google Cloud account setup where the architecture runs in
