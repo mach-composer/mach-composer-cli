@@ -1,5 +1,5 @@
 # Generated content
-/src/mach.egg-info
+*.egg-info
 deployments
 build/
 dist/

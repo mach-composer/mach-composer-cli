@@ -39,6 +39,12 @@ release: login
 login:
 	echo "TODO"
 
+release-pypi:
+	pip install twine wheel
+	rm -rf build/* dist/*
+	python setup.py sdist bdist_wheel
+	twine upload dist/*
+
 #
 # Testing
 #
