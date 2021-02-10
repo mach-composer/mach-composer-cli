@@ -11,54 +11,73 @@ docs_dir: src
 
 nav:
 - Overview: index.md
-- concepts.md
-- Prequisites:
-  - prerequisites/index.md
-  - AWS: prerequisites/aws.md
-  - Azure: prerequisites/azure.md
-  - GCP: prerequisites/gcp.md
-  - Manual cloud setup:
-    - AWS: prerequisites/aws_manual.md
-    - Azure: prerequisites/azure_manual.md
-- gettingstarted.md
-- Syntax:
-  - Overview: syntax/index.md
-  - General config: syntax/general_config.md
-  - Sites: syntax/sites.md
-  - Component definitions: syntax/components.md
-- Components:
-  - Introduction: components/index.md
-  - components/structure.md
-  - components/aws.md
-  - components/azure.md
-  - components/public.md
-- Integrations:
-  - integrations/commercetools.md
-  - integrations/contentful.md
-  - integrations/amplience.md
-  - integrations/sentry.md
-- Deployment:
-  - Components: deployment/components.md
-  - MACH stack: 
-    - Overview: deployment/config/index.md
-    - deployment/config/aws.md
-    - deployment/config/azure.md
-    - deployment/config/integrations.md
-    - Components: deployment/config/components.md
-  - CI/CD: 
-    - GitLab: deployment/ci/gitlab.md
-    - GitHub actions: deployment/ci/github.md
-    - Azure DevOps: deployment/ci/devops.md
-- security.md
-- Architecture guidance:
-  - Overview: guidance/index.md
-  - Terraform: guidance/terraform.md
-  - Tenancy: guidance/tenancy.md
-- Development:
-  - development/cli.md
-  - Workflow: development/workflow.md
-  - development/environment.md
-- changelog.md
+- Tutorial:
+  - tutorial/intro.md
+  - tutorial/step-1-installation.md
+  - tutorial/step-2-setup-ct.md
+  - AWS:
+    - tutorial/aws/step-3-setup-aws-services.md
+    - tutorial/aws/step-4-setup-aws-site.md
+    - tutorial/aws/step-5-create-component.md
+    - tutorial/aws/step-6-create-mach-stack.md
+    - tutorial/aws/examples.md
+  - Azure:
+    - tutorial/azure/step-3-setup-azure.md
+    - tutorial/azure/step-4-create-component.md
+    - tutorial/azure/step-5-create-mach-stack.md
+    - tutorial/azure/manual.md
+  - GCP:
+    - tutorial/gcp/step-3-setup-gcp.md
+- Explanations:
+  - topics/concepts.md
+  - Components:
+    - Introduction: topics/components/index.md
+    - topics/components/public.md
+  - Deployment:
+    - Components: topics/deployment/components.md
+    - MACH stack: 
+      - Overview: topics/deployment/config/index.md
+      - topics/deployment/config/aws.md
+      - topics/deployment/config/azure.md
+      - topics/deployment/config/integrations.md
+      - Components: topics/deployment/config/components.md
+  - Integrations:
+    - topics/integrations/commercetools.md
+    - topics/integrations/contentful.md
+    - topics/integrations/amplience.md
+    - topics/integrations/sentry.md
+  - topics/security.md
+  - Architecture guidance:
+    - Overview: topics/architecture/index.md
+    - Terraform: topics/architecture/terraform.md
+    - Tenancy: topics/architecture/tenancy.md
+  - Development:
+    - Workflow: topics/development/workflow.md
+    - topics/development/environment.md
+- Reference:
+  - Overview: reference/index.md
+  - Syntax:
+    - Overview: reference/syntax/index.md
+    - General config: reference/syntax/general_config.md
+    - Sites: reference/syntax/sites.md
+    - Component definitions: reference/syntax/components.md
+  - Components:
+    - reference/components/structure.md
+    - reference/components/aws.md
+    - reference/components/azure.md
+  - reference/cli.md
+  - reference/changelog.md
+- How-to:
+  - howto/index.md
+  - howto/create-component.md
+  - Security:
+    - howto/security/handle-secrets.md
+    - howto/security/encrypt.md
+  - CI/CD:
+    - Setup GitLab: howto/ci/gitlab.md
+    - Setup GitHub actions: howto/ci/github.md
+    - Setup Azure DevOps: howto/ci/devops.md
+
 
 extra_javascript:
   - _js/mermaid.min.js
@@ -83,6 +102,8 @@ theme:
   font:
     text: 'Catamaran'
     code: 'Roboto Mono'
+  features:
+    - navigation.tabs
 
 extra:
   social:

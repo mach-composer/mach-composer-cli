@@ -18,7 +18,7 @@ With combining (and requiring) these practises, using the framework has signific
 
 ## Getting started
 
-Read our [getting started guide](https://docs.machcomposer.io/gettingstarted.html) on how to deploy your MACH stack with the MACH composer.
+Read our [getting started guide](https://docs.machcomposer.io/gettingstarted.html) on how to deploy your MACH stack with MACH composer.
 
 ## Example yaml file
 
