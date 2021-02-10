@@ -140,7 +140,7 @@ def resolve_endpoint_components(site: Site):
                 (
                     "WARNING: 'default' endpoint used but not defined in the site endpoints.\n"
                     "MACH will create a default endpoint without any custom domain attached to it.\n"
-                    "More info: https://docs.machcomposer.io/syntax.html#endpoints"
+                    "More info: https://docs.machcomposer.io/reference/syntax/sites.html#endpoints"
                 ),
                 fg="yellow",
             )
