@@ -59,7 +59,7 @@ We do this by creating a service connection, and using that service connection l
 
 #### 5. Provide SP credentials
 
-The MACH composer needs to be able to login to Azure to manage the resources.<br>
+MACH composer needs to be able to login to Azure to manage the resources.<br>
 We need to be able to provide the following environment variables:
 
 - `ARM_CLIENT_ID`

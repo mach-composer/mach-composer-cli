@@ -6,7 +6,7 @@ To create a new MACH configuration file, run
 mach bootstrap config
 ```
 
-A configuration will be created and can be used as input for the MACH composer.
+A configuration will be created and can be used as input for MACH composer.
 
 An example:
 

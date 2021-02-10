@@ -7,7 +7,7 @@ This artifact will need to be built, packaged and uploaded in the ['*first stage
 
 ## Creating resources
 
-On top of the resources that are [created by the MACH composer](./index.md) by providing the correct Terraform configuration in the component any resource can be created.
+On top of the resources that are [created by MACH composer](./index.md) by providing the correct Terraform configuration in the component any resource can be created.
 
 Some of the components are referenced through the Terraform variables and can be used within the component to link them with the new component resources. For example when creating an route to an API endpoint in AWS:
 

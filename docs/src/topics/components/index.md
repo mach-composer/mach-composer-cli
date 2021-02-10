@@ -41,7 +41,7 @@ The deployment of a full-fledged component typically flows through the following
 
 1. In case of a **serverless function** it is **built**, **packaged** and **uploaded** to a shared resources all environments and sites can access.<br>
    **Note:** at this point, no actual deployment is made; the function doesn't run yet.
-2. At the moment the MACH composer deploys a site's Terraform configuration, it uses the component's Terraform configuration to make the necessary modifications to the resources.<br>
+2. At the moment MACH composer deploys a site's Terraform configuration, it uses the component's Terraform configuration to make the necessary modifications to the resources.<br>
    For example: create the function app instance, necessary routing, etc.
 3. MACH composer will use the packaged function (from step 1) to deploy the function itself
 

@@ -1,6 +1,6 @@
 # MACH concepts
 
-The MACH composer is built around the following concepts
+MACH composer is built around the following concepts
 
 **Compositable serverless microservices architecture**<br>
 With first-class support for MACH services.
@@ -14,7 +14,7 @@ One YAML configuration file to manage your commercetools configuration, cloud-ba
 Simply by copy/pasting an existing configuration, make the necessary adjustments and have MACH rollout your new environment.
 
 **Integration with CI/CD process**<br>
-Easy to integrate the MACH composer into your (existing) CI/CD pipeline.
+Easy to integrate MACH composer into your (existing) CI/CD pipeline.
 
 !!! tip "Further reading"
     - [What makes a component](./components/index.md)

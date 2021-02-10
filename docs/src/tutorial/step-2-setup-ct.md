@@ -33,7 +33,7 @@ Required scopes:
 - `view_api_clients`
 
 !!! info "One client to rule them all"
-    This client is used the MACH composer to create other necessary commercetools clients for each individual component.
+    This client is used MACH composer to create other necessary commercetools clients for each individual component.
 
 We will use these credentials later when configuring our MACH stack.
 

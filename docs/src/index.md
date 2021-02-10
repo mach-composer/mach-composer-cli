@@ -1,6 +1,6 @@
 # ![MACH composer](./_img/logo.png)
 
-This documentation describes the workings of the MACH composer. Intended to setup and manage a **M**icroservices based, **A**PI-first, **C**loud-native SaaS and **H**eadless platform.
+This documentation describes the workings of MACH composer. Intended to setup and manage a **M**icroservices based, **A**PI-first, **C**loud-native SaaS and **H**eadless platform.
 
 ## What is it?
 
@@ -20,7 +20,7 @@ With combining (and requiring) these practises, using the framework has signific
 
 ## Documentation structure
 
-- [Tutorials](./tutorial/intro.md) introduces you to the MACH composer and lets you setup your MACH stack in a couple of steps
+- [Tutorials](./tutorial/intro.md) introduces you to MACH composer and lets you setup your MACH stack in a couple of steps
 - [Explanations](./topics/concepts.md) explanations of concepts, best practises and techniques
 - [Reference guides](./reference/index.md) contain technical reference for the MACH syntax and usage of the CLI.
 - [How-to guides](./howto/index.md) contain practical descriptions on how to solve certain problems. They are more advanced than tutorials and assume some knowledge of how MACH works.

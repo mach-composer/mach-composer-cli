@@ -1,6 +1,6 @@
 # CLI Reference
 
-The MACH composer's command line interface allows you to peform the following actions:
+MACH composer's command line interface allows you to peform the following actions:
 
 ```bash
 $ mach

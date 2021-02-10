@@ -35,7 +35,7 @@ In addition to that it will also setup the necessary DNS record.
 
 ### Routes to the component
 
-For each component with an `endpoint` the MACH composer will add a route to the Frontdoor instance using the name of the component.
+For each component with an `endpoint` MACH composer will add a route to the Frontdoor instance using the name of the component.
 
 So when having the following components defined:
 
