@@ -1,5 +1,6 @@
+.. start-no-pypi
 [![MACH composer](https://github.com/labd/mach-composer/blob/master/docs/src/_img/logo.png?raw=true)](https://docs.machcomposer.io)
-
+.. end-no-pypi
 **Documentation:** [docs.machcomposer.io](https://docs.machcomposer.io)
 
 MACH composer is a framework that you use to orchestrate and extend modern digital commerce & experience platforms, based on MACH technologies and cloud native services. It provides a standards-based, future-proof tool-set and methodology to hand to your teams when building these types of platforms.
