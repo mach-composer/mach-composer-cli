@@ -1,6 +1,12 @@
 name: Build documentation
 
-on: push
+on:
+  push:
+    branches:
+    - master
+    paths:
+    - 'docs/**/*'
+    - '*.md'
 
 defaults:
   run:
@@ -29,7 +35,6 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: eu-central-1
           SOURCE_DIR: docs/build
-          DEST_DIR: v2
       - name: invalidate
         uses: chetan/invalidate-cloudfront-action@master
         env:
