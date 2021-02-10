@@ -32,7 +32,7 @@ def test_generate_terraform(parsed_config: types.MachConfig, tf_mock):
                         "s3": {
                             "bucket": ["unittest"],
                             "key": ["test/unittest-nl"],
-                            "region": ["eu-west-1"],
+                            "region": ["eu-central-1"],
                             "encrypt": [True],
                         }
                     }

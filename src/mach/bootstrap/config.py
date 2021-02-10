@@ -52,6 +52,7 @@ def _create_config() -> types.MachConfig:  # noqa: C901
             aws_remote_state=types.AWSTFState(
                 bucket="<your bucket>",
                 key_prefix="mach",
+                region="eu-central-1",
             )
         )
     else:
