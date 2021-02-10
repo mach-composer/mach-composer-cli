@@ -13,6 +13,7 @@ def config():
                 aws_remote_state=types.AWSTFState(
                     bucket="unittest",
                     key_prefix="test",
+                    region="eu-central-1",
                 )
             ),
             cloud="aws",

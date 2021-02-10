@@ -132,8 +132,8 @@ class AWSTFState(JsonSchemaMixin):
 
     bucket: str
     key_prefix: str
+    region: str
     role_arn: Optional[str] = _none()
-    region: str = _default("eu-west-1")
     lock_table: Optional[str] = _none()
     encrypt = True
 
