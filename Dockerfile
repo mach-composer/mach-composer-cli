@@ -99,7 +99,7 @@ COPY src /code/src/
 ADD MANIFEST.in .
 ADD setup.cfg .
 ADD setup.py .
-RUN python setup.py bdist_wheel && pip install dist/mach-0.0.0-py3-none-any.whl
+RUN python setup.py bdist_wheel && pip install dist/mach_composer-$(python setup.py --version)-py3-none-any.whl
 
 RUN apk del .build-deps
 
