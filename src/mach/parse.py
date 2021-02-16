@@ -12,6 +12,7 @@ from mach.types import (
     Endpoint,
     MachConfig,
     SentryDsn,
+    ServicePlan,
     Site,
     SiteAzureSettings,
 )
@@ -61,9 +62,18 @@ def parse_config_from_file(file: str) -> MachConfig:
 
 
 def parse_config(config: MachConfig) -> MachConfig:
-    config = resolve_component_definitions(config)
-    config = resolve_site_configs(config)
+    parse_general_config(config)
+    resolve_component_definitions(config)
+    resolve_site_configs(config)
     return config
+
+
+def parse_general_config(config: MachConfig):
+    if config.general_config.cloud == CloudOption.AZURE:
+        if "default" not in config.general_config.azure.service_plans:
+            config.general_config.azure.service_plans["default"] = ServicePlan(
+                kind="FunctionApp", tier="Dynamic", size="Y1"
+            )
 
 
 # flake8: noqa: C901
@@ -115,12 +125,10 @@ def resolve_site_configs(config: MachConfig) -> MachConfig:
             else:
                 site.sentry.merge(config.general_config.sentry)
 
-    config = resolve_site_components(config)
+    resolve_site_components(config)
 
     for site in config.sites:
         resolve_endpoint_components(site)
-
-    return config
 
 
 def resolve_endpoint_components(site: Site):
@@ -188,18 +196,16 @@ def resolve_site_components(config: MachConfig) -> MachConfig:
 
 def resolve_component_definitions(config: MachConfig) -> MachConfig:
     for comp in config.components:
-
         # Terraform needs absolute paths to modules
         if comp.source.startswith("."):
             comp.source = abspath(comp.source)
 
-        if comp.integrations:
-            continue
+        if not comp.integrations:
+            # If no integrations are given, set the Cloud integrations as default
+            if config.general_config.cloud == CloudOption.AWS:
+                comp.integrations = ["aws"]
+            elif config.general_config.cloud == CloudOption.AZURE:
+                comp.integrations = ["azure"]
 
-        # If no integrations are given, set the Cloud integrations as default
-        if config.general_config.cloud == CloudOption.AWS:
-            comp.integrations = ["aws"]
-        elif config.general_config.cloud == CloudOption.AZURE:
-            comp.integrations = ["azure"]
-
-    return config
+        if "azure" in comp.integrations and not comp.service_plan:
+            comp.service_plan = "default"

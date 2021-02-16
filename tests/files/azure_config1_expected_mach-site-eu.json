@@ -326,7 +326,7 @@
       "azurerm_app_service_plan": {
         "functionapps": {
           "name": [
-            "${format(\"%s-plan\",local.name_prefix)}"
+            "${local.name_prefix}-plan"
           ],
           "resource_group_name": [
             "${local.resource_group_name}"
@@ -533,6 +533,9 @@
         "app_service_plan_id": [
           "${azurerm_app_service_plan.functionapps.id}"
         ],
+        "app_service_plan_name": [
+          "${azurerm_app_service_plan.functionapps.name}"
+        ],
         "tags": [
           "${local.tags}"
         ],
@@ -614,6 +617,9 @@
         ],
         "app_service_plan_id": [
           "${azurerm_app_service_plan.functionapps.id}"
+        ],
+        "app_service_plan_name": [
+          "${azurerm_app_service_plan.functionapps.name}"
         ],
         "tags": [
           "${local.tags}"

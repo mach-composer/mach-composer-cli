@@ -94,3 +94,5 @@ resource "azurerm_monitor_action_group" "alert_action_group" {
 
 {% include 'partials/endpoints/azure_frontdoor.tf' %}
 {% include 'partials/endpoints/azure_url_locals.tf' %}
+
+{% include 'partials/azure_app_service_plans.tf' %}

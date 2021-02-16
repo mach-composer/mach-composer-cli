@@ -38,6 +38,14 @@ _dict = lambda: field(default_factory=dict, metadata=config(exclude=lambda x: no
 
 @dataclass_json
 @dataclass
+class ServicePlan:
+    kind: str
+    tier: str
+    size: str
+
+
+@dataclass_json
+@dataclass
 class Endpoint:
     url: str
     key: str = field(metadata=config(exclude=lambda x: True))
@@ -222,6 +230,7 @@ class AzureConfig(JsonSchemaMixin):
     frontdoor: Optional[FrontDoorSettings] = _none()
     resources_prefix: Optional[str] = ""
     service_object_ids: Dict[str, str] = field(default_factory=dict)
+    service_plans: Optional[Dict[str, ServicePlan]] = _dict()
 
 
 @dataclass_json
@@ -282,6 +291,9 @@ class ComponentConfig(JsonSchemaMixin):
     integrations: List[str] = _list()
     endpoints: Dict[str, str] = _dict()
     health_check_path: Optional[str] = _none()
+
+    # Azure-specific options
+    service_plan: Optional[str] = _none()
 
     # Development options
     branch: Optional[str] = _none()
@@ -451,6 +463,10 @@ class Component(JsonSchemaMixin):
     def endpoints(self) -> Dict[str, str]:
         return self.definition.endpoints
 
+    @property
+    def service_plan(self) -> Optional[str]:
+        return self.definition.service_plan
+
 
 @dataclass_json
 @dataclass
@@ -511,6 +527,11 @@ class Site(JsonSchemaMixin):
     aws: Optional[SiteAWSSettings] = _none()
     components: List[Component] = _list()
     sentry: Optional[SentryDsn] = _none()
+
+    @property
+    def cloud_components(self) -> List[Component]:
+        """Return components with cloud platform integration"""
+        return [c for c in self.components if c.has_cloud_integration]
 
     @property
     def used_endpoints(self) -> List[Endpoint]:
