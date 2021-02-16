@@ -96,6 +96,11 @@ module "{{ component.name }}" {
     {% if site.aws and component.endpoint %}
     aws_apigatewayv2_api.{{ component.endpoint|slugify }}_gateway,
     {% endif %}
+    {% if site.azure and component.has_cloud_integration %}
+    {% if component.azure.service_plan == 'default' %}
+    azurerm_app_service_plan.functionapps,{% else %}
+    azurerm_app_service_plan.functionapps_{{ component.azure.service_plan }},{% endif %}
+    {% endif %}
     {% if site.commercetools %}
     null_resource.commercetools,
     {% endif %}

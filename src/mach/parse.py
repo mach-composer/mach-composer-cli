@@ -8,6 +8,7 @@ import yaml
 from mach import exceptions
 from mach.types import (
     CloudOption,
+    ComponentAzureConfig,
     ComponentConfig,
     Endpoint,
     MachConfig,
@@ -207,5 +208,9 @@ def resolve_component_definitions(config: MachConfig) -> MachConfig:
             elif config.general_config.cloud == CloudOption.AZURE:
                 comp.integrations = ["azure"]
 
-        if "azure" in comp.integrations and not comp.service_plan:
-            comp.service_plan = "default"
+        if config.general_config.cloud == CloudOption.AZURE:
+            if not comp.azure:
+                comp.azure = ComponentAzureConfig()
+
+            if "azure" in comp.integrations and not comp.azure.service_plan:
+                comp.azure.service_plan = "default"

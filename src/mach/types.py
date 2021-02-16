@@ -42,6 +42,7 @@ class ServicePlan:
     kind: str
     tier: str
     size: str
+    capacity: Optional[int] = _none()
 
 
 @dataclass_json
@@ -281,6 +282,12 @@ class GeneralConfig(JsonSchemaMixin):
 
 @dataclass_json
 @dataclass
+class ComponentAzureConfig(JsonSchemaMixin):
+    service_plan: Optional[str] = _none()
+
+
+@dataclass_json
+@dataclass
 class ComponentConfig(JsonSchemaMixin):
     """Component definition."""
 
@@ -293,7 +300,7 @@ class ComponentConfig(JsonSchemaMixin):
     health_check_path: Optional[str] = _none()
 
     # Azure-specific options
-    service_plan: Optional[str] = _none()
+    azure: Optional[ComponentAzureConfig] = _none()
 
     # Development options
     branch: Optional[str] = _none()
@@ -464,8 +471,8 @@ class Component(JsonSchemaMixin):
         return self.definition.endpoints
 
     @property
-    def service_plan(self) -> Optional[str]:
-        return self.definition.service_plan
+    def azure(self) -> Optional[ComponentAzureConfig]:
+        return self.definition.azure
 
 
 @dataclass_json
@@ -530,7 +537,7 @@ class Site(JsonSchemaMixin):
 
     @property
     def cloud_components(self) -> List[Component]:
-        """Return components with cloud platform integration"""
+        """Return components with cloud platform integration."""
         return [c for c in self.components if c.has_cloud_integration]
 
     @property

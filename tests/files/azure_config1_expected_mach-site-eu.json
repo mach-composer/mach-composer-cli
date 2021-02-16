@@ -338,7 +338,7 @@
             "FunctionApp"
           ],
           "reserved": [
-            true
+            false
           ],
           "sku": [
             {
@@ -564,6 +564,7 @@
         ],
         "depends_on": [
           [
+            "${azurerm_app_service_plan.functionapps}",
             "${null_resource.commercetools}"
           ]
         ]
@@ -646,6 +647,7 @@
         ],
         "depends_on": [
           [
+            "${azurerm_app_service_plan.functionapps}",
             "${null_resource.commercetools}"
           ]
         ]
