@@ -12,6 +12,8 @@ Luckily, adding GCP should not be a lot of work. Most of the implementation boil
 - [ ] Add terraform templates to MACH composer, to support GCP resources
 - [ ] Implement DNS record management via Google Cloud DNS (?)
 - [ ] Implement routing using Google API Gateway
+- [ ] Implement GCP Secrets Manager as 'native' secrets management solution
 - [ ] Reference implementation of a CloudRun/CloudFunctions serverless function
 - [ ] Base Google Cloud account setup where the architecture runs in
 - [ ] Ideally: extend component bootstrapper and component cookiecutter to include Google Cloud setup
+- [ ] Expand documentation with GCP
