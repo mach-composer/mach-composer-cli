@@ -23,12 +23,11 @@ Can be used to configure the state backend and Terraform provider versions.
 An Azure state backend can be defined as:
 
 ```yaml
-terraform_config:
-  azure_remote_state:
-    resource_group: <your resource group>
-    storage_account: <storage account name>
-    container_name: <container name>
-    state_folder: <state folder>
+azure_remote_state:
+  resource_group: <your resource group>
+  storage_account: <storage account name>
+  container_name: <container name>
+  state_folder: <state folder>
 ```
 
 !!! tip ""
@@ -38,11 +37,10 @@ terraform_config:
 An AWS S3 state backend can be defined as:
 
 ```yaml
-terraform_config:
-  aws_remote_state:
-    bucket: mach-statefiles
-    key_prefix: test-statefiles
-    role_arn: arn:aws:iam::1234567890:roldeploy
+aws_remote_state:
+  bucket: mach-statefiles
+  key_prefix: test-statefiles
+  role_arn: arn:aws:iam::1234567890:roldeploy
 ```
 
 - **`bucket`** - (Required) S3 bucket name
@@ -58,9 +56,8 @@ Can be used to overwrite the MACH defaults for the Terraform provider versions.
 Example:
 
 ```yaml
-terraform_config:
-  providers:
-    aws: 3.21.0
+providers:
+  aws: 3.21.0
 ```
 
 - `aws` [aws provider](https://registry.terraform.io/providers/hashicorp/aws) version overwrite
@@ -120,6 +117,13 @@ azure:
   service_object_ids:
     gitlab-sp: d1114ea6-88f9-45b2-9de4-031291090380 # gitlab-sp
     developers: 3d280212-934f-4d32-876d-1b541a7697ba # developers tst group
+  frontdoor:
+    resource_group: my-shared-rg
+  service_plans:
+    premium:
+      kind: "Linux"
+      tier: "PremiumV2"
+      size: "P2v2"
 ```
 
 - **`tenant_id`** - (Required)
@@ -133,6 +137,40 @@ azure:
 !!! tip "Don't lock yourself out"
     Make sure that, as a minimum, you set the `service_object_ids` to the objects IDs of the users or groups that perform the `mach apply`
 
+### service_plans
+
+Map of service plan definitions if you want to define additional service plans your components should run on, or if you want to overwrite the default.
+
+Example:
+=== "Additional plan"
+    ```yaml
+    # Here we add an additional service plan 'premium'
+    service_plans:
+      premium:
+        kind: "Linux"
+        tier: "PremiumV2"
+        size: "P2v2"
+        capacity: 2
+    ```
+=== "Default overwrite"
+    ```yaml
+    # Here we configure the default service plan to run Premium 
+    # and also offer a service plan running Windows
+    service_plans:
+      default:
+        kind: "Linux"
+        tier: "PremiumV2"
+        size: "P2v2"
+      windows:
+        kind: "Windows"
+        tier: "PremiumV2"
+        size: "P2v2"
+    ```
+
+- **`kind`** - (Required) The kind of the App Service Plan to create. `Windows`, `Linux`, `elastic` or `FunctionApp`.
+- **`tier`** - (Required) Specifies the plan's pricing tier.
+- **`size`** - (Required) Specifies the plan's instance size.
+- `capacity` - Specifies the number of workers associated with this App Service Plan.
 
 ### frontdoor
 
@@ -143,6 +181,7 @@ frontdoor:
 ```
 
 - **`resource_group`** - (Required)
+- `suppress_changes` - Suppress changes to the Frontdoor instance. This is a temporary work-around for some issues in the Azure Terraform provider.
 
 ## contentful
 Defines global Contentful credentials to manage the spaces

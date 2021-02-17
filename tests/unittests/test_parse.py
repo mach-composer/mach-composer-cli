@@ -54,3 +54,30 @@ def test_parse_endpoints(config: types.MachConfig):
     config = parse.parse_config(config)
     for endpoint in config.sites[0].endpoints:
         assert endpoint.zone == "mach-example.com"
+
+
+def test_parse_azure_service_plans(azure_config: types.MachConfig):
+    config = azure_config
+    # Sanity check
+    assert not config.general_config.azure.service_plans
+    for c in config.components:
+        assert not (c.azure and c.azure.service_plan)
+    for c in config.sites[0].components:
+        assert not (c.azure and c.azure.service_plan)
+
+    config = parse.parse_config(config)
+    assert "default" in config.general_config.azure.service_plans
+    assert config.general_config.azure.service_plans["default"] == types.ServicePlan(
+        kind="FunctionApp", tier="Dynamic", size="Y1"
+    )
+    for c in config.components:
+        if "azure" in c.integrations:
+            assert c.azure and c.azure.service_plan == "default"
+        else:
+            assert not c.azure or not c.azure.service_plan
+
+    for c in config.sites[0].components:
+        if "azure" in c.integrations:
+            assert c.azure and c.azure.service_plan == "default"
+        else:
+            assert not c.azure or not c.azure.service_plan

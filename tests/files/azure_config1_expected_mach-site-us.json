@@ -364,9 +364,43 @@
     },
     {
       "azurerm_app_service_plan": {
+        "functionapps_premium": {
+          "name": [
+            "${local.name_prefix}-premium-plan"
+          ],
+          "resource_group_name": [
+            "${local.resource_group_name}"
+          ],
+          "location": [
+            "${local.resource_group_location}"
+          ],
+          "kind": [
+            "Linux"
+          ],
+          "reserved": [
+            true
+          ],
+          "sku": [
+            {
+              "tier": [
+                "PremiumV2"
+              ],
+              "size": [
+                "P2v2"
+              ]
+            }
+          ],
+          "tags": [
+            "${local.tags}"
+          ]
+        }
+      }
+    },
+    {
+      "azurerm_app_service_plan": {
         "functionapps": {
           "name": [
-            "${format(\"%s-plan\",local.name_prefix)}"
+            "${local.name_prefix}-plan"
           ],
           "resource_group_name": [
             "${local.resource_group_name}"
@@ -378,7 +412,7 @@
             "FunctionApp"
           ],
           "reserved": [
-            true
+            false
           ],
           "sku": [
             {
@@ -584,8 +618,11 @@
         "resource_group_location": [
           "${local.resource_group_location}"
         ],
-        "app_service_plan_id": [
-          "${azurerm_app_service_plan.functionapps.id}"
+        "app_service_plan": [
+          {
+            "id": "${azurerm_app_service_plan.functionapps_premium.id}",
+            "name": "${azurerm_app_service_plan.functionapps_premium.name}"
+          }
         ],
         "tags": [
           "${local.tags}"
@@ -615,6 +652,7 @@
         ],
         "depends_on": [
           [
+            "${azurerm_app_service_plan.functionapps_premium}",
             "${null_resource.commercetools}"
           ]
         ]
@@ -666,8 +704,11 @@
         "resource_group_location": [
           "${local.resource_group_location}"
         ],
-        "app_service_plan_id": [
-          "${azurerm_app_service_plan.functionapps.id}"
+        "app_service_plan": [
+          {
+            "id": "${azurerm_app_service_plan.functionapps.id}",
+            "name": "${azurerm_app_service_plan.functionapps.name}"
+          }
         ],
         "tags": [
           "${local.tags}"
@@ -694,6 +735,7 @@
         ],
         "depends_on": [
           [
+            "${azurerm_app_service_plan.functionapps}",
             "${null_resource.commercetools}"
           ]
         ]
