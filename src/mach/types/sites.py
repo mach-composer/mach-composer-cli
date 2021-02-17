@@ -14,13 +14,14 @@ from .general_config import (
     FrontDoorSettings,
     SentryConfig,
 )
+from .shared import ComponentAzureConfig
 
 TerraformVariables = Dict[str, Any]
 StoreVariables = Dict[str, TerraformVariables]
 LocalizedString = Dict[str, str]
 
 if TYPE_CHECKING:
-    from .components import ComponentAzureConfig, ComponentConfig
+    from .components import ComponentConfig
 
 __all__ = [
     "AlertGroup",
@@ -248,6 +249,7 @@ class Component(JsonSchemaMixin):
     short_name: Optional[str] = fields.none()
     health_check_path: Optional[str] = fields.none()
     sentry: Optional[SentryDsn] = fields.none()
+    azure: Optional[ComponentAzureConfig] = fields.none()
 
     @property
     def definition(self) -> "ComponentConfig":
@@ -269,10 +271,6 @@ class Component(JsonSchemaMixin):
     @property
     def endpoints(self) -> Dict[str, str]:
         return self.definition.endpoints
-
-    @property
-    def azure(self) -> Optional["ComponentAzureConfig"]:
-        return self.definition.azure
 
 
 @dataclass_json

@@ -255,6 +255,7 @@ components:
 - `health_check_path` - Defines a custom healthcheck path.<br>
   Overwrites the default `health_check_path` defined in the component definition
 - `sentry` - [Sentry configuration](#sentry_1) block
+- `azure` - [Azure configuration](#azure_1) block
 
 ### sentry
 
@@ -272,3 +273,15 @@ some-string:
   - en-GB: My value
   - nl-NL:  Mijn waarde
 ```
+
+### azure
+Overwrites any value specified in the [component definition](./components.md#azure).
+
+Example:
+
+```yaml
+azure:
+  service_plan: premium
+```
+
+- `service_plan` - The service plan (defined in [`service_plans`](./general_config.md#service_plans)) to use for this component. Defaults to `default`

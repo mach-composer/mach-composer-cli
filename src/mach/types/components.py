@@ -5,17 +5,11 @@ from dataclasses_json import dataclass_json
 from dataclasses_jsonschema import JsonSchemaMixin
 
 from . import fields
+from .shared import ComponentAzureConfig
 
 __all__ = [
-    "ComponentAzureConfig",
     "ComponentConfig",
 ]
-
-
-@dataclass_json
-@dataclass
-class ComponentAzureConfig(JsonSchemaMixin):
-    service_plan: Optional[str] = fields.none()
 
 
 @dataclass_json

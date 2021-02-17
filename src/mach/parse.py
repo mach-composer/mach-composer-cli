@@ -192,6 +192,9 @@ def resolve_site_components(config: MachConfig) -> MachConfig:
                 else:
                     component.sentry.merge(site.sentry)
 
+            if not component.azure:
+                component.azure = info.azure
+
     return config
 
 

@@ -62,6 +62,8 @@ def test_parse_azure_service_plans(azure_config: types.MachConfig):
     assert not config.general_config.azure.service_plans
     for c in config.components:
         assert not (c.azure and c.azure.service_plan)
+    for c in config.sites[0].components:
+        assert not (c.azure and c.azure.service_plan)
 
     config = parse.parse_config(config)
     assert "default" in config.general_config.azure.service_plans
@@ -69,6 +71,12 @@ def test_parse_azure_service_plans(azure_config: types.MachConfig):
         kind="FunctionApp", tier="Dynamic", size="Y1"
     )
     for c in config.components:
+        if "azure" in c.integrations:
+            assert c.azure and c.azure.service_plan == "default"
+        else:
+            assert not c.azure or not c.azure.service_plan
+
+    for c in config.sites[0].components:
         if "azure" in c.integrations:
             assert c.azure and c.azure.service_plan == "default"
         else:
