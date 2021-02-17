@@ -178,6 +178,13 @@ def validate_azure_components(config: types.MachConfig):
         # azure naming length is limited, so verify it doesn't get too long.
         if len(comp.short_name) > 10:
             raise ValidationError(
-                f"Component ({comp.name}) short name '{comp.short_name}' "
+                f"Component {comp.name} short_name '{comp.short_name}' "
                 "cannot be more than 10 characters."
+            )
+
+        service_plans = config.general_config.azure.service_plans
+        if comp.azure and comp.azure.service_plan and comp.azure.service_plan not in service_plans:
+            raise ValidationError(
+                f"Component {comp.name} requires service plan {comp.azure.service_plan} which"
+                " is not defined in the Azure configuration."
             )

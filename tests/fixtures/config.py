@@ -81,6 +81,12 @@ def azure_config():
                 source="some-source//terraform",
                 short_name="apiexts",
                 version="1.0",
+            ),
+            types.ComponentConfig(
+                name="product-types",
+                source="product-types//terraform",
+                version="v0.1.0",
+                integrations=[""],
             )
         ],
         output_path=tempfile.gettempdir(),
