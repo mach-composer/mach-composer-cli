@@ -35,6 +35,7 @@ components:
   Will setup Frontdoor routing or pass API Gateway information when set.
 - `health_check_path` - Defines a custom healthcheck path.<br>
   Defaults to `/<name>/healthchecks`
+- `azure` - Configuration block for [Azure-specific settings](#azure)
 
 !!! tip "Development settings"
     In addition to the default set of component settings, a couple of settings can be defined during development.<br>
@@ -56,3 +57,13 @@ components:
     ```
 
     More info on [using MACH during development](../../topics/development/workflow.md)
+
+## azure
+Example:
+
+```yaml
+azure:
+  service_plan: premium
+```
+
+- `service_plan` - The service plan (defined in [`service_plans`](./general_config.md#service_plans)) to use for this component. Defaults to `default`

@@ -8,6 +8,7 @@
     - `base_url` replaced with `endpoints`
     - `has_public_api` replaced with `endpoints`
     - Supports a `default` endpoint that doesn't require custom domain settings
+- Add configuration options for Azure service plans
 - Improved development workflow:
   - Improved git log parsing
   - Add `mach bootstrap` commands:
@@ -29,9 +30,11 @@
 - Azure: Remove function app sync bash command: this is now the responsibility of the component
 
 
-**Breaking changes**
+### Breaking changes
 
-- `base_url` has been replaced by the `endpoints` settings:<br>
+**Generic**
+
+- **config**: `base_url` has been replaced by the `endpoints` settings:<br>
   ```yaml
   sites:
   - identifier: mach-site-eu
@@ -45,17 +48,7 @@
       main: https://api.eu-tst.mach-example.net
   ```
   When you name the endpoint that replaces `base_url` "main", it will have the least effect on your existing Terraform state.
-- The AWS `route53_zone_name` setting has been removed in favour of multiple endpoint support
-- The `front_door` configuration block has been renamed to `frontdoor`
-- The Azure frontdoor settings `dns_zone` and `ssl_key_*` settings have been removed;<br>
-  Certificates are now managed by Frontdoor and dns_zone is auto-detected.
-- The Terraform `azurerm_dns_cname_record` resources have been renamed; they now take the name of the associated endpoint key. For the smoothest transition, rename them in your Terraform state:<br>
-  ```bash
-  terraform state mv azurerm_dns_cname_record.<project-key> azurerm_dns_cname_record.<endpoint-key>
-  ```
-- The `FRONTDOOR_ID` value is removed from the `var.variables` of a component. Replaced with `var.frontdoor_id`
-- The `deploy_role` setting has been renamed to `deploy_role_arn`
-- Components with a `commercetools` integration require a new variable `ct_stores`:
+- **component**: Components with a `commercetools` integration require a new variable `ct_stores`:
   ```terraform
   variable "ct_stores" {
     type = map(object({
@@ -66,15 +59,32 @@
     default = {}
   }
   ```
-- The folowing deprecated values in the `var.variables` are removed:
+- **component**: The folowing deprecated values in the `var.variables` are removed:
   ```terraform
   var.variables["CT_PROJECT_KEY"]
   var.variables["CT_API_URL"]
   var.variables["CT_AUTH_URL"]
   ```
   See [0.5.0 release notes](#050-2020-11-09)
-- The `var.environment_variables` won't be set by MACH anymore. Use `var.variables` for this
-  
+- **component**: The `var.environment_variables` won't be set by MACH anymore. Use `var.variables` for this
+
+
+**AWS**
+
+- **config**: The AWS `route53_zone_name` setting has been removed in favour of multiple endpoint support
+- **config**: The `deploy_role` setting has been renamed to `deploy_role_arn`
+
+**Azure**
+
+- **config**: The `front_door` configuration block has been renamed to `frontdoor`
+- **config**: The Azure frontdoor settings `dns_zone` and `ssl_key_*` settings have been removed;<br>
+  Certificates are now managed by Frontdoor and dns_zone is auto-detected.
+- **state**: The Terraform `azurerm_dns_cname_record` resources have been renamed; they now take the name of the associated endpoint key. For the smoothest transition, rename them in your Terraform state:<br>
+  ```bash
+  terraform state mv azurerm_dns_cname_record.<project-key> azurerm_dns_cname_record.<endpoint-key>
+  ```
+- **component**: The `FRONTDOOR_ID` value is removed from the `var.variables` of a component. Replaced with `var.frontdoor_id`  
+- **component**: `app_service_plan_name` has been added so the [azurerm_app_service_plan](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/app_service_plan) data source can be used in a component.
 
 ## 0.5.1 (2020-11-10)
 - Removed `aws` block in general_config
@@ -93,11 +103,11 @@
 - Remove unused `api_gateway` attribute on AWS config
 - Remove restriction from `environment` value; can now be any. Fixes #9
 
-**Breaking changes**
+### Breaking changes
 
 - Require `ct_api_url` and `ct_auth_url` for components with `commercetools` integration
 
-**Deprecations**
+### Deprecations
 
 In a component, the use of the following variables have been deprecated;
 
@@ -132,7 +142,7 @@ var.ct_auth_url
 ## 0.4.0 (2020-10-27)
 - Add Contentful support
 
-**Breaking changes**
+### Breaking changes
 
 - `is_software_component` has been replaced by the `integrations` settings
 
@@ -160,7 +170,7 @@ or `integrations: []` if no integrations are needed at all.
 ## 0.3.0 (2020-10-21)
 - Add option to specify custom resource group per site
   
-**Breaking changes**
+### Breaking changes
 
 - All `resource_group_name` attributes is renamed to `resource_group`
 - The `storage_account_name` attribute is renamed to `storage_account`
