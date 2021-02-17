@@ -1,4 +1,4 @@
-{% for key, plan in general_config.azure.service_plans.items() %}
+{% for key, plan in site.azure.service_plans.items() %}
 
 {% if key == "default" %}
 {% set resource_name = "functionapps" %}

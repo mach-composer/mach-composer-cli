@@ -6,9 +6,9 @@ from dataclasses_json import dataclass_json
 from dataclasses_jsonschema import JsonSchemaMixin
 
 from . import fields
+from .shared import ServicePlan
 
 __all__ = [
-    "ServicePlan",
     "AzureTFState",
     "AWSTFState",
     "TerraformProviders",
@@ -21,15 +21,6 @@ __all__ = [
     "CloudOption",
     "GeneralConfig",
 ]
-
-
-@dataclass_json
-@dataclass
-class ServicePlan:
-    kind: str
-    tier: str
-    size: str
-    capacity: Optional[int] = fields.none()
 
 
 class StringEnum(str, Enum):

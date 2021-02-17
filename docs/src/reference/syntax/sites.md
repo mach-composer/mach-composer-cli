@@ -174,6 +174,7 @@ Can overwrite any value from the generic [Azure settings](#azure):
 - `frontdoor`
 - `subscription_id`
 - `region`
+- `service_plans`
 
 And adds the following exta attributes:
 

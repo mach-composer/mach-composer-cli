@@ -14,7 +14,7 @@ from .general_config import (
     FrontDoorSettings,
     SentryConfig,
 )
-from .shared import ComponentAzureConfig
+from .shared import ComponentAzureConfig, ServicePlan
 
 TerraformVariables = Dict[str, Any]
 StoreVariables = Dict[str, TerraformVariables]
@@ -296,6 +296,7 @@ class SiteAzureSettings(JsonSchemaMixin):
     tenant_id: Optional[str] = ""  # Can overwrite values from AzureConfig
     subscription_id: Optional[str] = ""  # Can overwrite values from AzureConfig
     region: Optional[str] = ""  # Can overwrite values from AzureConfig
+    service_plans: Optional[Dict[str, ServicePlan]] = fields.dict_()
 
     @classmethod
     def from_config(cls, config: AzureConfig):
@@ -305,6 +306,7 @@ class SiteAzureSettings(JsonSchemaMixin):
             subscription_id=config.subscription_id,
             region=config.region,
             service_object_ids=config.service_object_ids,
+            service_plans=config.service_plans,
         )
 
     def merge(self, config: AzureConfig):
@@ -313,6 +315,7 @@ class SiteAzureSettings(JsonSchemaMixin):
         self.subscription_id = self.subscription_id or config.subscription_id
         self.region = self.region or config.region
         self.service_object_ids = self.service_object_ids or config.service_object_ids
+        self.service_plans.update(config.service_plans)
 
 
 @dataclass_json
