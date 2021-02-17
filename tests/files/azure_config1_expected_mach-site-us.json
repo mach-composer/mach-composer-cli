@@ -618,11 +618,11 @@
         "resource_group_location": [
           "${local.resource_group_location}"
         ],
-        "app_service_plan_id": [
-          "${azurerm_app_service_plan.functionapps_premium.id}"
-        ],
-        "app_service_plan_name": [
-          "${azurerm_app_service_plan.functionapps_premium.name}"
+        "app_service_plan": [
+          {
+            "id": "${azurerm_app_service_plan.functionapps_premium.id}",
+            "name": "${azurerm_app_service_plan.functionapps_premium.name}"
+          }
         ],
         "tags": [
           "${local.tags}"
@@ -704,11 +704,11 @@
         "resource_group_location": [
           "${local.resource_group_location}"
         ],
-        "app_service_plan_id": [
-          "${azurerm_app_service_plan.functionapps.id}"
-        ],
-        "app_service_plan_name": [
-          "${azurerm_app_service_plan.functionapps.name}"
+        "app_service_plan": [
+          {
+            "id": "${azurerm_app_service_plan.functionapps.id}",
+            "name": "${azurerm_app_service_plan.functionapps.name}"
+          }
         ],
         "tags": [
           "${local.tags}"
