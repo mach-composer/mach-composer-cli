@@ -14,6 +14,11 @@ general_config:
     region: westeurope
     frontdoor:
       resource_group: mach-shared-we-rg
+    service_plans:
+      premium:
+        kind: "Linux"
+        tier: "PremiumV2"
+        size: "P2v2"
   sentry:
     auth_token: JdOheW3IzlsXBOPNdaMZgXoMcHqyf8CJMjBnfVHD3laXPpN23oAZG8KOPAiYfeGr
     organization: labd
@@ -74,6 +79,8 @@ components:
       public: public
     version: 0a9a0b5
     integrations: ["azure", "commercetools"]
+    azure:
+      service_plan: premium
   - name: us-payment
     source: git::https://github.com/some-organisation/mach-component-payment.git//terraform
     endpoints: 

@@ -195,3 +195,21 @@ def test_validate_stores(parsed_config: types.MachConfig):
     )
 
     validate.validate_config(config)
+
+
+def test_validate_azure_service_plans(parsed_azure_config: types.MachConfig):
+    config = parsed_azure_config
+    config.components[0].azure.service_plan = "premium"
+
+    with pytest.raises(ValidationError) as e:
+        validate.validate_config(config)
+    assert str(e.value) == (
+        "Component api-extensions requires service plan premium which is not defined in the "
+        "Azure configuration."
+    )
+
+    config.general_config.azure.service_plans["premium"] = types.ServicePlan(
+        kind="Linux",
+        tier="PremiumV2",
+        size="P2v2",
+    )

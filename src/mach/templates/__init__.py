@@ -22,6 +22,7 @@ def load_filters(env: Environment):
             "azure_region_short": azure_region_short,
             "zone_name": zone_name,
             "slugify": utils.slugify,
+            "service_plan_resource_name": service_plan_resource_name,
         }
     )
 
@@ -122,3 +123,15 @@ def azure_region_short(value):
 def zone_name(value: str) -> str:
     value = utils.strip_protocol(value)
     return ".".join(value.split(".")[1:])
+
+
+# Azure specific filters
+def service_plan_resource_name(value: str) -> str:
+    """Retreive the resource name for a Azure app service plan.
+
+    The reason to make this conditional is because of backwards compatability;
+    existing environments already have a `functionapp` resource. We want to keep that intact.
+    """
+    if value == "default":
+        return "functionapps"
+    return f"functionapps_{value}"
