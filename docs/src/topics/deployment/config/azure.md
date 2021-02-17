@@ -62,7 +62,7 @@ The routing in Frontdoor that will be created:
 
 ## App service plans
 
-MACH will create a [App service plan](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/app_service_plan) that can be used for any MACH component that implements an Azure function.
+MACH will create an [App service plan](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/app_service_plan) that can be used for any MACH component that implements an Azure function.
 
 By default this is a Consumption plan.
 
