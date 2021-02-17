@@ -201,7 +201,6 @@ def test_validate_azure_service_plans(parsed_azure_config: types.MachConfig):
     config = parsed_azure_config
     config.components[0].azure.service_plan = "premium"
 
-    # It should fail because we refer a store that hasnt been defined yet
     with pytest.raises(ValidationError) as e:
         validate.validate_config(config)
     assert str(e.value) == (
