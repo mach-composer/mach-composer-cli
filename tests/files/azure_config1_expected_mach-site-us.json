@@ -364,6 +364,40 @@
     },
     {
       "azurerm_app_service_plan": {
+        "functionapps_premium": {
+          "name": [
+            "${local.name_prefix}-premium-plan"
+          ],
+          "resource_group_name": [
+            "${local.resource_group_name}"
+          ],
+          "location": [
+            "${local.resource_group_location}"
+          ],
+          "kind": [
+            "Linux"
+          ],
+          "reserved": [
+            true
+          ],
+          "sku": [
+            {
+              "tier": [
+                "PremiumV2"
+              ],
+              "size": [
+                "P2v2"
+              ]
+            }
+          ],
+          "tags": [
+            "${local.tags}"
+          ]
+        }
+      }
+    },
+    {
+      "azurerm_app_service_plan": {
         "functionapps": {
           "name": [
             "${local.name_prefix}-plan"
@@ -585,10 +619,10 @@
           "${local.resource_group_location}"
         ],
         "app_service_plan_id": [
-          "${azurerm_app_service_plan.functionapps.id}"
+          "${azurerm_app_service_plan.functionapps_premium.id}"
         ],
         "app_service_plan_name": [
-          "${azurerm_app_service_plan.functionapps.name}"
+          "${azurerm_app_service_plan.functionapps_premium.name}"
         ],
         "tags": [
           "${local.tags}"
@@ -618,7 +652,7 @@
         ],
         "depends_on": [
           [
-            "${azurerm_app_service_plan.functionapps}",
+            "${azurerm_app_service_plan.functionapps_premium}",
             "${null_resource.commercetools}"
           ]
         ]

@@ -13,7 +13,7 @@ resource "azurerm_app_service_plan" "{{ resource_name }}" {
   resource_group_name = local.resource_group_name
   location            = local.resource_group_location
   kind                = "{{ plan.kind }}"
-  reserved            = {% if plan.kind|lower == 'windows' %}false{% else %}true{% endif %}
+  reserved            = {% if plan.kind|lower == 'linux' %}true{% else %}false{% endif %}
 
   sku {
     tier = "{{ plan.tier }}"
