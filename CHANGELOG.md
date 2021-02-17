@@ -84,7 +84,15 @@
   terraform state mv azurerm_dns_cname_record.<project-key> azurerm_dns_cname_record.<endpoint-key>
   ```
 - **component**: The `FRONTDOOR_ID` value is removed from the `var.variables` of a component. Replaced with `var.frontdoor_id`  
-- **component**: `app_service_plan_name` has been added so the [azurerm_app_service_plan](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/app_service_plan) data source can be used in a component.
+- **component**: `app_service_plan_id` has been replaced with `app_service_plan` containing both an `id` and `name` so the [azurerm_app_service_plan](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/app_service_plan) data source can be used in a component.
+  ```terraform
+  variable "app_service_plan" {
+    type = object({
+      id   = string
+      name = string
+    })
+  }
+  ```
 
 ## 0.5.1 (2020-11-10)
 - Removed `aws` block in general_config

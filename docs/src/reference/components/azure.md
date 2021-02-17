@@ -19,8 +19,7 @@ Type: `map(string)`
 - `region` - Azure region
 - `resource_group_name` - Name of the resource group the component should be created in
 - `resource_group_location` - The resource group location
-- `app_service_plan_id` - The [App service plan](../../topics/deployment/config/azure.md#app-service-plans) managed by MACH
-- `app_service_plan_name` - The [App service plan](../../topics/deployment/config/azure.md#app-service-plans) name managed by MACH
+- `app_service_plan` - The [App service plan](../../topics/deployment/config/azure.md#app-service-plans) managed by MACH
 - `tags` - Azure tags to be used on resources<br>
   Type: `map(string)`
 - `monitor_action_group_id` - [action group](../../topics/deployment/config/azure.md#action-groups) ID when [alert_group](../syntax/general_config.md#azure) is configured.
@@ -37,8 +36,12 @@ variable "service_object_ids" {
 variable "region" {}
 variable "resource_group_name" {}
 variable "resource_group_location" {}
-variable "app_service_plan_id" {}
-variable "app_service_plan_name" {}
+variable "app_service_plan" {
+  type = object({
+    id   = string
+    name = string
+  })
+}
 variable "tags" {
   type        = map(string)
 }
@@ -182,7 +185,7 @@ resource "azurerm_function_app" "example_component" {
   name                       = lower(format("%s-func-%s", var.name_prefix, var.short_name))
   location                   = var.resource_group_location
   resource_group_name        = var.resource_group_name
-  app_service_plan_id        = var.app_service_plan_id
+  app_service_plan_id        = var.app_service_plan.id
   storage_account_name       = azurerm_storage_account.main.name
   storage_account_access_key = azurerm_storage_account.main.primary_access_key
   app_settings               = local.environment_variables

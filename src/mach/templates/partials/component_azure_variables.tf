@@ -7,13 +7,15 @@ service_object_ids      = local.service_object_ids
 region                  = local.region
 resource_group_name     = local.resource_group_name
 resource_group_location = local.resource_group_location
+app_service_plan        = {
 {% if component.azure.service_plan == 'default' %}
-app_service_plan_id     = azurerm_app_service_plan.functionapps.id
-app_service_plan_name   = azurerm_app_service_plan.functionapps.name
+  id = azurerm_app_service_plan.functionapps.id
+  name = azurerm_app_service_plan.functionapps.name
 {% else %}
-app_service_plan_id     = azurerm_app_service_plan.functionapps_{{ component.azure.service_plan }}.id
-app_service_plan_name   = azurerm_app_service_plan.functionapps_{{ component.azure.service_plan }}.name
+  id = azurerm_app_service_plan.functionapps_{{ component.azure.service_plan }}.id
+  name = azurerm_app_service_plan.functionapps_{{ component.azure.service_plan }}.name
 {% endif %}
+}
 tags                    = local.tags
 {% if site.azure.alert_group %}
 monitor_action_group_id = azurerm_monitor_action_group.alert_action_group.id
