@@ -183,7 +183,11 @@ def validate_azure_components(config: types.MachConfig):
             )
 
         service_plans = config.general_config.azure.service_plans
-        if comp.azure and comp.azure.service_plan and comp.azure.service_plan not in service_plans:
+        if (
+            comp.azure
+            and comp.azure.service_plan
+            and comp.azure.service_plan not in service_plans
+        ):
             raise ValidationError(
                 f"Component {comp.name} requires service plan {comp.azure.service_plan} which"
                 " is not defined in the Azure configuration."

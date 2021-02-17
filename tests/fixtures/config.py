@@ -87,7 +87,7 @@ def azure_config():
                 source="product-types//terraform",
                 version="v0.1.0",
                 integrations=[""],
-            )
+            ),
         ],
         output_path=tempfile.gettempdir(),
     )
