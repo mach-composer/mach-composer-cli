@@ -23,6 +23,7 @@
 - Add option to override Terraform provider versions
 - Upgraded Terraform to `0.14.5`
 - Upgraded Terraform commercetools provider to `0.25.3`
+- Upgraded Terraform AWS provider to `3.28.0`
 - Upgraded Terraform Azure provider to `2.47.0`
 - AWS: Set `auto-deploy` on API gateway stage
 - Azure: Add new required `frontdoor_id` Terraform variable for components with `endpoint` defined
