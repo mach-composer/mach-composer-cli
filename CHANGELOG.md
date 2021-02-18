@@ -19,10 +19,11 @@
   - Add `--reuse` flag to the `plan` and `apply` commands to supress a `terraform init` call
   - Add support for relative paths to components
   - Add extra component definition settings `package_script` and `package_filename` to facilitate local deployments
-- Add option to override Terraform provider versions
 - Improved dependencies between components and MACH-managed commercetools configurations
+- Add option to override Terraform provider versions
 - Upgraded Terraform to `0.14.5`
 - Upgraded Terraform commercetools provider to `0.25.3`
+- Upgraded Terraform Azure provider to `2.47.0`
 - AWS: Set `auto-deploy` on API gateway stage
 - Azure: Add new required `frontdoor_id` Terraform variable for components with `endpoint` defined
 - Azure: Add `--with-sp-login` option to `mach plan` command
