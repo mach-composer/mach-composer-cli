@@ -2,7 +2,7 @@
 
 !!! todo
     GCP is not yet supported by MACH composer, unfortunately.
-    We are happy to accept contributions to add this! And think with you if you plan to work on it. Feel free to reach out to us via [opensource@labdigital.nl](opensource@labdigital.nl).
+    We are happy to accept contributions to add this! And think with you if you plan to work on it. Feel free to reach out to us via [opensource@labdigital.nl](mailto:opensource@labdigital.nl).
 
 ## What needs to happen to support GCP?
 

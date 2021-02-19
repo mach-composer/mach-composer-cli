@@ -64,6 +64,27 @@ MACH systems (such as commercetools, contentful or Amplience) are usually multi-
 !!! TODO
     describe/link to how Amplience is structured and how that relates to MACH composer projects.
 
+*What to look at when deciding on your Amplience tenancy model:*
+
+1. Consider when to create a new Amplience `hub`. Often `hub` are mapped against a commercetools `projects`
+2. Consider when to create a new Amplience `repositories`.
+3. Consider how to use `repositories` to support your use cases
+4. Consider how multi-lingual `content types` can help when building multi-lingual content and sites?
+
+<br/>
+*Relevant Amplience resources:*
+
+- [Amplience documentation](https://amplience.com/docs/index.html)
+- [Hubs and repositories documentation](https://amplience.com/docs/intro/hubsandrepositories.html)
+
+<br/>
+*Things to be aware of:*
+
+1. Content can be shared across repositories, but not across hubs.
+    - If you have multiple brands and want to share the content across brands and possibly across channels and locales, you may choose to have one hub and several repositories.
+    - If you have multiple brands and do not wish share content between them, or simply wish to keep the content entirely separate, then the multiple hub approach is one to consider.
+2. Extra costs might be incurred for extra `hubs` that are created.
+
 
 ## Cloud provider tenancy
 
