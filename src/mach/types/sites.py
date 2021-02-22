@@ -315,7 +315,10 @@ class SiteAzureSettings(JsonSchemaMixin):
         self.subscription_id = self.subscription_id or config.subscription_id
         self.region = self.region or config.region
         self.service_object_ids = self.service_object_ids or config.service_object_ids
-        self.service_plans.update(config.service_plans)
+        self.service_plans = {
+            **config.service_plans,
+            **self.service_plans,
+        }
 
 
 @dataclass_json
