@@ -21,7 +21,7 @@ except IOError:
 
 setup(
     name="mach-composer",
-    version="1.0.0-rc.8",
+    version="1.0.0-rc.9",
     author="Lab Digital B.V.",
     author_email="info@labdigital.nl",
     url="https://github.com/labd/mach-composer",
