@@ -16,7 +16,7 @@ def config():
                     region="eu-central-1",
                 )
             ),
-            cloud="aws",
+            cloud=types.CloudOption.AWS,
             sentry=types.SentryConfig(dsn="sentry-dsn"),
         ),
         sites=[
@@ -62,7 +62,7 @@ def azure_config():
                 subscription_id="5f34d95d-4dd8-40b3-9d18-f9007e2ce6ac",
                 region="westeurope",
             ),
-            cloud="azure",
+            cloud=types.CloudOption.AZURE,
             sentry=types.SentryConfig(dsn="sentry-dsn"),
         ),
         sites=[

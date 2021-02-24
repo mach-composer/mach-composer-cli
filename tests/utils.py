@@ -1,6 +1,6 @@
 import json
 import os
-from typing import Any, Dict
+from typing import Any
 
 import hcl2
 
@@ -46,7 +46,7 @@ class HclWrapper(dict):
         return value
 
 
-def load_hcl(path: str) -> Dict:
+def load_hcl(path: str) -> HclWrapper:
     with open(path) as f:
         return HclWrapper(hcl2.load(f))
 
