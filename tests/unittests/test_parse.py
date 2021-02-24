@@ -81,3 +81,9 @@ def test_parse_azure_service_plans(azure_config: types.MachConfig):
             assert c.azure and c.azure.service_plan == "default"
         else:
             assert not c.azure or not c.azure.service_plan
+
+
+def test_apollo_federation_integration_set(apollo_config: types.MachConfig):
+    config = apollo_config
+    for c in config.components:
+        assert "apollo_federation" in c.integrations

@@ -46,6 +46,7 @@ nav:
     - topics/integrations/contentful.md
     - topics/integrations/amplience.md
     - topics/integrations/sentry.md
+    - topics/integrations/apollo_federation.md
   - topics/security.md
   - Architecture guidance:
     - Overview: topics/architecture/index.md
