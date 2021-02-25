@@ -153,7 +153,7 @@ class CloudOption(StringEnum):
 @dataclass_json
 @dataclass
 class GeneralConfig(JsonSchemaMixin):
-    """Config this is shared across sites."""
+    """Config that is shared across sites."""
 
     environment: str
     terraform_config: TerraformConfig

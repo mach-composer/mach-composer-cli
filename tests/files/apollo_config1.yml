@@ -1,0 +1,33 @@
+---
+general_config:
+  environment: site
+  terraform_config:
+    aws_remote_state:
+      bucket: aws-bucket
+      key_prefix: mach-composer-tst
+      lock_table: tfstate-lock
+      region: eu-central-1
+  cloud: aws
+
+sites:
+  - identifier: mach-site-eu
+    aws:
+      account_id: 940853598232
+      region: eu-central-1
+    apollo_federation:
+      api_key: some_key
+      graph: some-graph-123
+      graph_variant: current
+    components:
+      - name: federated-gateway
+      - name: federated-commercetools-proxy
+
+components:
+  - name: federated-gateway
+    source: git::https://github.com/some-organisation/mach-component-federated-gateway.git//terraform
+    version: 0a9a0b5
+    integrations: ["apollo_federation"]
+  - name: federated-commercetools-proxy
+    source: git::https://github.com/some-organisation/mach-component-federated-commercetools-proxy.git//terraform
+    version: 0a9a0b5
+    integrations: ["apollo_federation"]

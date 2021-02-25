@@ -28,10 +28,10 @@ def test_configuration(click_runner, click_dir, cloud):
     config = parse_config_from_file(file_path)
     validate_config(config)
 
-    config.general_config.environment == "test"
+    assert config.general_config.environment == "test"
     assert not config.general_config.sentry
-    config.sites[0].identifier == "unittest-nl"
-    config.sites[0].commercetools.project_key == "ct-unittest"
+    assert config.sites[0].identifier == "unittest-nl"
+    assert config.sites[0].commercetools.project_key == "ct-unittest"
 
     if cloud == "aws":
         assert not config.general_config.azure

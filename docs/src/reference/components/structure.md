@@ -26,6 +26,7 @@ Available integrations are:
 - `sentry`
 - `contentful`
 - `amplience`
+- `apollo_federation`
 
 By default, integrations are set on the given cloud provider. So when no `integrations` defintion is given, it defaults to `['aws']` in case of an AWS deployment.
 
@@ -139,6 +140,20 @@ variable "amplience_client_secret" {
 variable "amplience_hub_id" {
   type        = string
   description = "Amplience hub id"
+}
+```
+
+### apollo federation
+
+The following variable is given when `apollo_federation` integration is defined.
+
+```terraform
+variable "apollo_federation" {
+  type = object({
+    api_key       = string
+    graph         = string
+    graph_variant = string
+  })
 }
 ```
 
