@@ -32,7 +32,7 @@ general_config:
   ...
 ```
 
-The rate limits can also be defined/overwritten on [`site`](../../reference/syntax/sites.md) and [`component`](../../reference/syntax/sites.md#component-configurations) level
+The rate limits can also be defined/overwritten on [`site`](../../reference/syntax/sites.md) and [`component`](../../reference/syntax/sites.md#components) level
 
 ## Expose DSN to components
 
