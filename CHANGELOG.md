@@ -3,6 +3,7 @@
 ## 1.0.0 (unreleased)
 - Add Sentry DSN management options
 - Add Amplience support
+- Add Apollo Federation support
 - Add support for commercetools Store-specific variables and secrets on components: `store_variables` and `store_secrets`
 - Add support for multiple API endpoints:
     - `base_url` replaced with `endpoints`
