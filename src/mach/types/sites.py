@@ -243,8 +243,8 @@ class ApolloFederationSettings(JsonSchemaMixin):
     """Apollo Federation settings."""
 
     api_key: str
-    graph: str = ""
-    graph_variant: str = ""
+    graph: str
+    graph_variant: str
 
 
 @dataclass_json

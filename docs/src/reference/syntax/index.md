@@ -22,7 +22,7 @@ The configuration file has the following structure:
     - [azure](./sites.md#azure)
     - [aws](./sites.md#aws)
     - [stores](./sites.md#stores)
-    - [components](./sites.md#component-configurations)
+    - [components](./sites.md#components)
 - [components](./components.md)
 
 

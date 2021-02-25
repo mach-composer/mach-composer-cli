@@ -9,9 +9,10 @@ All site definitions.
 - `commercetools` - [commercetools configuration](#commercetools) block
 - `sentry` - [Sentry configuration](#sentry) block
 - `contentful` - [Contentful configuration](#contentful) block
+- `apollo_federation` - [Apollo Federation configuration](#apollo-federation) block
 - `azure` - [Azure](#azure) settings
 - `aws` - [AWS](#aws) settings
-- `components` - [Component configurations](#component-configurations)
+- `components` - [Component configurations](#components)
 
 ## endpoints
 
@@ -160,9 +161,27 @@ Amplience configuration.
 
 Example:
 
-- `client_id` - Overrides default `client_id` settings (site-specific)
-- `client_secret` - Override default `client_secret` setting (site-specific)
-- `hub_id` - Override default `hub_id` setting (site-specific)
+- **`client_id`** - (Required) Overrides default `client_id` settings (site-specific)
+- **`client_secret`** - (Required) Override default `client_secret` setting (site-specific)
+- **`hub_id`** - (Required) Override default `hub_id` setting (site-specific)
+
+
+## apollo_federation
+
+Apollo Federation configuration.
+
+Example:
+
+```yaml
+apollo_federation:
+  api_key: service:mach-poc-123:Abc00kHbB89h
+  graph: mach-poc-123
+  graph_variant: current
+```
+
+- `api_key` - Apollo Studio API key
+- `graph` - Graph name to use for this site
+- `graph_variant` - Graph variant
 
 
 ## azure
@@ -225,7 +244,7 @@ aws:
 - `extra_providers`
 
 
-## Component configurations
+## components
 
 Configures the components for the site. The must reference a defined component (defined in the [component definitions](#components))
 
