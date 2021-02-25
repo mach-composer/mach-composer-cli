@@ -78,6 +78,7 @@ nav:
     - Setup GitLab: howto/ci/gitlab.md
     - Setup GitHub actions: howto/ci/github.md
     - Setup Azure DevOps: howto/ci/devops.md
+  - howto/apollo-federation.md
 
 
 extra_javascript:
