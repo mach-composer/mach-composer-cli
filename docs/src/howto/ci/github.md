@@ -86,13 +86,6 @@ For an deployment we have to make sure the following variables set in the GitLab
 
 For the component CI pipeline we need to be able to test, package and upload the function app ZIP file.
 
-### Setup Azure service connection
-
-Just as in the [step for setting up the MACH stack](#2-azure-service-connection), we need to add an Azure service connection so that the pipeline can upload the function apps to the storage account.
-
-The *Service connection name* will be used later in the pipeline.
-
-
 ### Example
 
 Example GitHub action to package and deploy a component on AWS.
