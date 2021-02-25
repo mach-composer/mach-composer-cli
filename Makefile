@@ -27,18 +27,6 @@ requirements:
 schema:
 	python generate_schema.py
 
-# Docker building
-build:
-	docker build -t $(NAME) .
-
-
-release: login
-	docker tag $(NAME) $(REPOSITORY)/$(NAME)
-	docker push $(REPOSITORY)/$(NAME)
-
-login:
-	echo "TODO"
-
 release-pypi:
 	pip install twine wheel
 	rm -rf build/* dist/*
