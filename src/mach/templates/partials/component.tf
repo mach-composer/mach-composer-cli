@@ -82,6 +82,14 @@ module "{{ component.name }}" {
     amplience_hub_id = "{{ site.amplience.hub_id }}"
   {% endif %}
 
+  {% if "apollo_federation" in component.integrations %}
+    apollo_federation = {
+      api_key       = "{{ site.apollo_federation.api_key }}"
+      graph         = "{{ site.apollo_federation.graph }}"
+      graph_variant = "{{ site.apollo_federation.graph_variant }}"
+    }
+  {% endif %}
+
   providers = {
     {% if "azure" in component.integrations %}azurerm = azurerm{% endif %}
     {% if "aws" in component.integrations %}

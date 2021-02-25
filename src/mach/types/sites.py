@@ -25,6 +25,7 @@ if TYPE_CHECKING:
 
 __all__ = [
     "AlertGroup",
+    "ApolloFederationSettings",
     "AWSProvider",
     "Endpoint",
     "EndpointEncoder",
@@ -238,6 +239,16 @@ class SentryDsn(JsonSchemaMixin):
 
 @dataclass_json
 @dataclass
+class ApolloFederationSettings(JsonSchemaMixin):
+    """Apollo Federation settings."""
+
+    api_key: str
+    graph: str = ""
+    graph_variant: str = ""
+
+
+@dataclass_json
+@dataclass
 class Component(JsonSchemaMixin):
     """Component configuration."""
 
@@ -334,6 +345,7 @@ class Site(JsonSchemaMixin):
     commercetools: Optional[CommercetoolsSettings] = fields.none()
     contentful: Optional[ContentfulSettings] = fields.none()
     amplience: Optional[AmplienceSettings] = fields.none()
+    apollo_federation: Optional[ApolloFederationSettings] = fields.none()
     azure: Optional[SiteAzureSettings] = fields.none()
     aws: Optional[SiteAWSSettings] = fields.none()
     components: List[Component] = fields.list_()

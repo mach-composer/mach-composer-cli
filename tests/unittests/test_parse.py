@@ -14,7 +14,7 @@ def test_resolve_sentry_configs(config: types.MachConfig):
     parse.resolve_site_configs(config)
 
     # In order for a correct Terraform file, the parser ensures
-    # the basic sentry setttings are passed on to the lowest level (the component)
+    # the basic sentry settings are passed on to the lowest level (the component)
     assert config.sites[0].sentry.dsn == sentry_dsn
     assert config.sites[0].components[0].sentry.dsn == sentry_dsn
 
@@ -81,3 +81,9 @@ def test_parse_azure_service_plans(azure_config: types.MachConfig):
             assert c.azure and c.azure.service_plan == "default"
         else:
             assert not c.azure or not c.azure.service_plan
+
+
+def test_apollo_federation_integration_set(apollo_config: types.MachConfig):
+    config = apollo_config
+    for c in config.components:
+        assert "apollo_federation" in c.integrations

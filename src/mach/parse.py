@@ -78,7 +78,7 @@ def parse_general_config(config: MachConfig):
 
 
 # flake8: noqa: C901
-def resolve_site_configs(config: MachConfig) -> MachConfig:
+def resolve_site_configs(config: MachConfig):
     """Use and merge site-specific configurations with general config."""
     for site in config.sites:
         if config.general_config.cloud == CloudOption.AZURE:

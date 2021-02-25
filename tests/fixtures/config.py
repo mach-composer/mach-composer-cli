@@ -16,7 +16,7 @@ def config():
                     region="eu-central-1",
                 )
             ),
-            cloud="aws",
+            cloud=types.CloudOption.AWS,
             sentry=types.SentryConfig(dsn="sentry-dsn"),
         ),
         sites=[
@@ -62,7 +62,7 @@ def azure_config():
                 subscription_id="5f34d95d-4dd8-40b3-9d18-f9007e2ce6ac",
                 region="westeurope",
             ),
-            cloud="azure",
+            cloud=types.CloudOption.AZURE,
             sentry=types.SentryConfig(dsn="sentry-dsn"),
         ),
         sites=[
@@ -101,3 +101,62 @@ def parsed_config(config):
 @pytest.fixture
 def parsed_azure_config(azure_config):
     return parse.parse_config(azure_config)
+
+
+@pytest.fixture
+def apollo_config():
+    return types.MachConfig(
+        general_config=types.GeneralConfig(
+            environment="test",
+            terraform_config=types.TerraformConfig(
+                azure_remote_state=types.AzureTFState(
+                    resource_group="shared-rg",
+                    storage_account="machsaterra",
+                    container_name="tfstate",
+                    state_folder="test",
+                )
+            ),
+            azure=types.AzureConfig(
+                tenant_id="6f10659d-4227-43e6-95ab-80d12a18acf9",
+                subscription_id="5f34d95d-4dd8-40b3-9d18-f9007e2ce6ac",
+                region="westeurope",
+            ),
+            cloud=types.CloudOption.AZURE,
+            sentry=types.SentryConfig(dsn="sentry-dsn"),
+        ),
+        sites=[
+            types.Site(
+                identifier="unittest-nl",
+                apollo_federation=types.ApolloFederationSettings(
+                    api_key="some_api_key",
+                    graph="some-graph-123",
+                    graph_variant="current",
+                ),
+                components=[
+                    types.Component(
+                        name="federated-gateway",
+                    ),
+                    types.Component(
+                        name="commercetools-proxy",
+                    )
+                ],
+            ),
+        ],
+        components=[
+            types.ComponentConfig(
+                name="federated-gateway",
+                source="federated-gateway//terraform",
+                short_name="gqlfedgw",
+                version="1.0",
+                integrations=["azure", "apollo_federation"]
+            ),
+            types.ComponentConfig(
+                name="commercetools-proxy",
+                source="commercetools-proxy//terraform",
+                short_name="gqlctproxy",
+                version="v0.1.0",
+                integrations=["azure", "apollo_federation"]
+            ),
+        ],
+        output_path=tempfile.gettempdir(),
+    )

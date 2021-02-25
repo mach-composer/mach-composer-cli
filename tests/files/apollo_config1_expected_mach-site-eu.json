@@ -1,0 +1,89 @@
+{
+  "module": [
+    {
+      "federated-gateway": {
+        "apollo_federation": [
+          {
+            "api_key": "some_key",
+            "graph": "some-graph-123",
+            "graph_variant": "current"
+          }
+        ],
+        "depends_on": [
+          []
+        ],
+        "providers": [
+          {}
+        ],
+        "source": [
+          "git::https://github.com/some-organisation/mach-component-federated-gateway.git//terraform?ref=0a9a0b5"
+        ]
+      }
+    },
+    {
+      "federated-commercetools-proxy": {
+        "apollo_federation": [
+          {
+            "api_key": "some_key",
+            "graph": "some-graph-123",
+            "graph_variant": "current"
+          }
+        ],
+        "depends_on": [
+          []
+        ],
+        "providers": [
+          {}
+        ],
+        "source": [
+          "git::https://github.com/some-organisation/mach-component-federated-commercetools-proxy.git//terraform?ref=0a9a0b5"
+        ]
+      }
+    }
+  ],
+  "provider": [
+    {
+      "aws": {
+        "region": [
+          "eu-central-1"
+        ]
+      }
+    }
+  ],
+  "terraform": [
+    {
+      "backend": [
+        {
+          "s3": {
+            "bucket": [
+              "aws-bucket"
+            ],
+            "dynamodb_table": [
+              "tfstate-lock"
+            ],
+            "encrypt": [
+              true
+            ],
+            "key": [
+              "mach-composer-tst/mach-site-eu"
+            ],
+            "region": [
+              "eu-central-1"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "required_providers": [
+        {
+          "aws": [
+            {
+              "version": "~> 3.28.0"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
