@@ -21,6 +21,7 @@
       },
       "default": []
     },
+    "sops": {},
     "output_path": {
       "type": "string",
       "default": "deployments"
@@ -66,7 +67,7 @@
           "$ref": "#/definitions/AmplienceConfig"
         }
       },
-      "description": "Config this is shared across sites."
+      "description": "Config that is shared across sites."
     },
     "TerraformConfig": {
       "type": "object",
@@ -111,7 +112,8 @@
       "type": "object",
       "required": [
         "bucket",
-        "key_prefix"
+        "key_prefix",
+        "region"
       ],
       "properties": {
         "bucket": {
@@ -120,12 +122,11 @@
         "key_prefix": {
           "type": "string"
         },
-        "role_arn": {
+        "region": {
           "type": "string"
         },
-        "region": {
-          "type": "string",
-          "default": "eu-west-1"
+        "role_arn": {
+          "type": "string"
         },
         "lock_table": {
           "type": "string"
@@ -211,6 +212,11 @@
             "type": "string"
           },
           "default": {}
+        },
+        "service_plans": {
+          "type": "object",
+          "additionalProperties": {},
+          "default": {}
         }
       },
       "description": "Azure configuration."
@@ -223,6 +229,10 @@
       "properties": {
         "resource_group": {
           "type": "string"
+        },
+        "suppress_changes": {
+          "type": "boolean",
+          "default": false
         }
       },
       "description": "Frontdoor settings."
@@ -283,6 +293,9 @@
         },
         "amplience": {
           "$ref": "#/definitions/AmplienceSettings"
+        },
+        "apollo_federation": {
+          "$ref": "#/definitions/ApolloFederationSettings"
         },
         "azure": {
           "$ref": "#/definitions/SiteAzureSettings"
@@ -520,6 +533,26 @@
       },
       "description": "Amplience settings."
     },
+    "ApolloFederationSettings": {
+      "type": "object",
+      "required": [
+        "api_key"
+      ],
+      "properties": {
+        "api_key": {
+          "type": "string"
+        },
+        "graph": {
+          "type": "string",
+          "default": ""
+        },
+        "graph_variant": {
+          "type": "string",
+          "default": ""
+        }
+      },
+      "description": "Apollo Federation settings."
+    },
     "SiteAzureSettings": {
       "type": "object",
       "properties": {
@@ -551,6 +584,11 @@
         "region": {
           "type": "string",
           "default": ""
+        },
+        "service_plans": {
+          "type": "object",
+          "additionalProperties": {},
+          "default": {}
         }
       },
       "description": "Site-specific Azure settings."
@@ -661,6 +699,9 @@
         },
         "sentry": {
           "$ref": "#/definitions/SentryDsn"
+        },
+        "azure": {
+          "$ref": "#/definitions/ComponentAzureConfig"
         }
       },
       "description": "Component configuration."
@@ -679,6 +720,15 @@
         }
       },
       "description": "Specific sentry DSN settings."
+    },
+    "ComponentAzureConfig": {
+      "type": "object",
+      "properties": {
+        "service_plan": {
+          "type": "string"
+        }
+      },
+      "description": "ComponentAzureConfig(service_plan: Union[str, NoneType] = None)"
     },
     "ComponentConfig": {
       "type": "object",
@@ -717,7 +767,16 @@
         "health_check_path": {
           "type": "string"
         },
+        "azure": {
+          "$ref": "#/definitions/ComponentAzureConfig"
+        },
         "branch": {
+          "type": "string"
+        },
+        "package_script": {
+          "type": "string"
+        },
+        "package_filename": {
           "type": "string"
         }
       },
