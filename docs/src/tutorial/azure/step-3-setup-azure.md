@@ -85,9 +85,8 @@ $ terraform init -reconfigure
 ```
 Terraform will detect that you're trying to move your state into Azure and ask; "*Do you want to copy existing state to the new backend?*".<br>
 Enter **"yes"**.<br>
-Now the state is stored in the Storage Account and the DynamoDB table will be used to lock the state to prevent concurrent modifications.
-4. Check if `terraform.tfstate` is empty and remove it.<br>
-   Repeat the above three steps for all other environments
+Now the state is stored in the Storage Account.
+4. Check if `terraform.tfstate` is empty and remove it
 
 ## Example
 

@@ -19,7 +19,6 @@ For this account we will create a;
 
 1. **Terraform state backend** to store the infrastructure state
 2. **Component registry** to deploy all MACH components to
-3. **Route53 zone** to route all other site-specific accounts from
 
 ### 1. Create AWS account
 
@@ -31,4 +30,67 @@ For this account we will create a;
 
 ### 2. Setup your Terraform configuration
 
+Create a directory / Git repository with two subdirectories:
+
+- `service`
+- `mach-account`
+
+!!! info "Directory structure"
+    We will use `mach-account` later when [setting up our AWS site account](step-4-setup-aws-site.md).
+
+    For now, we'll work in the `service` directory
+
+In `services/variables.tf`:
+
+```terraform
+variable "aws_account_id" {
+  default = "<your-account-id>"
+}
+```
+
+In `service/main.tf`:
+
+```terraform
+terraform {
+  required_version = ">= 0.14.0"
+}
+
+provider "aws" {
+  region  = "eu-central-1"
+
+  assume_role {
+    role_arn = "arn:aws:iam::${var.aws_account_id}:role/sudo"
+  }
+}
+```
+
+In `service/modules.tf`:
+
+```terraform
+module "tfstate-backend" {
+  source  = "cloudposse/tfstate-backend/aws"
+  version = "0.33.0"
+}
+
+module "shared-config" {
+  source = "git::https://github.com/labd/terraform-aws-mach-shared.git"
+  code_repo_name = "your-project-lambdas"
+}
+```
+
+!!! warning ""
+    You should replace "your-project-lambdas" with a unique name for your project
+
 ### 3. Terraform infra Roll-out
+
+1. Within your `service` directory, run the following commands:
+```bash
+$ terraform init
+$ terraform apply
+```
+2. Terraform has now createsd a `backend.tf` file which instructs Terraform to store the state on a S3 bucket.<br>
+In order to move the current (local) state file to the bucket, perform this one-time command:
+```bash
+$ terraform init -force-copy
+```
+Now the state is stored in the S3 bucket, and the DynamoDB table will be used to lock the state to prevent concurrent modification.
