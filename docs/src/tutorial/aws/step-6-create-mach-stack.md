@@ -13,45 +13,43 @@ An example:
 ```yaml
 ---
 general_config:
-environment: test
-cloud: aws
-terraform_config:
+  environment: test
+  cloud: aws
+  terraform_config:
     aws_remote_state:
     bucket: mach-tfstate-tst
     key_prefix: mach-composer-tst
     region: eu-central-1
 sites:
-- identifier: my-site
+  - identifier: my-site
     aws:
-    account_id: 1234567890
-    region: eu-central-1
-    endpoints:
-    main: api.tst.mach-example.net
+      account_id: 1234567890
+      region: eu-central-1
     commercetools:
-    project_key: my-site-tst
-    client_id: ...
-    client_secret: ...
-    scopes: manage_project:my-site-tst manage_api_clients:my-site-tst view_api_clients:my-site-tst
-    languages:
+      project_key: my-site-tst
+      client_id: ...
+      client_secret: ...
+      scopes: manage_project:my-site-tst manage_api_clients:my-site-tst view_api_clients:my-site-tst
+      languages:
         - en-GB
         - nl-NL
-    currencies:
+      currencies:
         - GBP
         - EUR
-    countries:
+      countries:
         - GB
         - NL
     components:
-    - name: payment
+      - name: payment
         variables:
-        STRIPE_ACCOUNT_ID: 0123456789
+          STRIPE_ACCOUNT_ID: 0123456789
         secrets:
-        STRIPE_SECRET_KEY: secret-value
+          STRIPE_SECRET_KEY: secret-value
 components:
-- name: payment
+  - name: payment
     source: git::ssh://git@github.com/your-project/components/payment-component.git//terraform
-    endpoints: 
-    main: main
+    endpoints:
+      main: default
     version: e638e57
 ```
 
