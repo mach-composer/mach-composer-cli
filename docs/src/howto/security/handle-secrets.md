@@ -11,9 +11,19 @@ In AWS we recommend storing the secret values in the [Secrets Manager](https://a
 ### Store secrets
 
 ```terraform
+# Having a random_id in the secrets name avoids issues when a component gets removed
+# and added again. No need to import secrets into the state and recover them
+resource "random_id" "main" {
+  byte_length = 5
+  keepers = {
+    # Generate a new id each time set of secrets change
+    secrets = join("", tolist(keys(var.secrets)))
+  }
+}
+
 resource "aws_secretsmanager_secret" "component_secret" {
   for_each = var.secrets
-  name     = "my-component/${replace(each.key, "_", "-")}-secret"
+  name     = "my-component/${replace(each.key, "_", "-")}-secret-${random_id.main.hex}"
 
   tags = {
     lambda = "my-component"
