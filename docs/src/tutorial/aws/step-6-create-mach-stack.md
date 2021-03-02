@@ -1,4 +1,6 @@
-# Step 5. Create your MACH stack
+# Step 6. Create your MACH stack
+
+## 1. Create MACH configuration file
 
 To create a new MACH configuration file, run
 
@@ -8,7 +10,7 @@ mach bootstrap config
 
 A configuration will be created and can be used as input for MACH composer.
 
-An example:
+Edit your configuration so that it looks like the following example
 
 ```yaml
 ---
@@ -17,13 +19,13 @@ general_config:
   cloud: aws
   terraform_config:
     aws_remote_state:
-    bucket: mach-tfstate-tst
-    key_prefix: mach-composer-tst
+    bucket: your-project-tst-tfstate
+    key_prefix: mach
     region: eu-central-1
 sites:
-  - identifier: my-site
+  - identifier: my-site-tst
     aws:
-      account_id: 1234567890
+      account_id: ...
       region: eu-central-1
     commercetools:
       project_key: my-site-tst
@@ -40,22 +42,48 @@ sites:
         - GB
         - NL
     components:
-      - name: payment
-        variables:
-          STRIPE_ACCOUNT_ID: 0123456789
-        secrets:
-          STRIPE_SECRET_KEY: secret-value
+      - name: api
 components:
-  - name: payment
-    source: git::ssh://git@github.com/your-project/components/payment-component.git//terraform
+  - name: api
+    source: ../components/api-component/terraform
     endpoints:
       main: default
-    version: e638e57
+    version: dev
 ```
+
+!!! note "Component source"
+    We defined our component source as `source: ../components/api-component/terraform`.<br>
+    This is a path relative to the MACH configuration file itself. Edit your path so that it fits your current setup.
+
+    During actual development and deployment this will usually point to a Git repository.
 
 See [Syntax](../../reference/syntax/index.md) for all configuration options.
 
-## 6. Deploy
+## 2. Configure credentials
+
+In [step 4](./step-4-setup-aws-site.md) we've used the [`terraform-aws-mach-account` module](https://github.com/labd/terraform-aws-mach-account) to setup the AWS account for us.
+
+This also created an IAM **user** called `mach` and a **role** `mach` that we can use to perform MACH deployments with.
+
+In this tutorial, we'll be using the `mach` role so we can configure the credentials in the same fashion we did for the [component upload](./step-5-create-component.md#upload):
+
+Make sure the following is added to your `~/.aws/config` file:
+
+```conf
+[profile your-project-tst]
+source_profile = default
+role_arn = arn:aws:iam::<service-account-id>:role/mach
+```
+
+!!! tip "Using the `mach` user"
+    In order to use this user, go to your AWS console and open the **Systems Manager Parameter Store** to view the credentials.
+
+    ![New account](../../_img/tutorial/aws-mach-user-credentials.png)
+
+    These credentials can be used directly in your local AWS setup or in your CI/CD pipeline.
+
+
+## 3. Deploy
 
 You can deploy your current configuration by running
 
@@ -63,22 +91,39 @@ You can deploy your current configuration by running
 $ mach apply
 ```
 
-If you wish to review the changes before applying them, run
+!!! tip "Providing AWS credentials"
+    How you provide the AWS credentials is dependent on your local setup. 
+    
+    For example; you could invoke this with `AWS_DEFAULT_PROFILE=your-project-tst mach apply` or with [aws-vault](https://github.com/99designs/aws-vault):
+
+    ```bash
+    aws-vault exec your-project-tst -- mach apply
+    ```
+
+
+After confirming the changes, you will see a success output like this:
 
 ```bash
-$ mach plan
+Apply complete! Resources: 6 added, 0 changed, 0 destroyed.
+
+Outputs:
+
+endpoints = {
+  "default" = "https://cytbsqhtp5.execute-api.eu-central-1.amazonaws.com"
+}
+Done 👍
 ```
 
-!!! tip "Using Docker image"
-    You can invoke MACH by running the Docker image:<br>
-    `$ docker run --rm --volume $(pwd):/code docker.pkg.github.com/labd/mach-composer/mach apply`
+If you now append the endpoint with `/api/healthcheck` you have the URL of the API endpoint we created in our component:
 
-    You do need to provide the docker container with the necessary environment variables to be able to authenticate with the cloud provider. More info on that in the [deployment section](../../topics/deployment/config/index.md#providing-credentials)
-
+```bash
+$ curl https://cytbsqhtp5.execute-api.eu-central-1.amazonaws.com/api/healthcheck
+> {"ok":true,"version":"dev","environment":"test"}
+```
 
 ## Example files
 
-You can find example files needed for preparing the infrastructure and a configuration file [on GitHub](https://github.com/labd/mach-composer/tree/master/examples/) in the [/examples](https://github.com/labd/mach-composer/tree/master/examples/) directory
+You can find example files needed for preparing the infrastructure and a configuration file [on GitHub](https://github.com/labd/mach-composer/tree/master/examples/aws) in the [/examples](https://github.com/labd/mach-composer/tree/master/examples/aws) directory
 
 ## Further reading
 

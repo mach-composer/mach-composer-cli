@@ -12,7 +12,8 @@ For this account we will create:
 ### 1. Create AWS account
 
 - In your AWS console, go to **My Organization** and choose **Add accounts**
-- For your new account choose a name like `yourproject-tst`.
+- For your new account choose a name like `your-project-tst`
+- As **IAM role name** enter `admin`
   
 ### 2. Setup your Terraform configuration
 
@@ -21,9 +22,13 @@ Within your `mach-account` directory [^1] create the following files:
 #### `variables.tf`
 
 ```terraform
-variable "aws_account_id" {}
+variable "aws_account_id" {
+    type = string
+}
 
-variable "site_name" {}
+variable "name" {
+    type = string
+}
 
 variable "region" {
   default = "eu-central-1"
@@ -33,30 +38,48 @@ variable "region" {
 #### `main.tf`
 
 ```terraform
+locals {
+  role_arn            = "arn:aws:iam::${var.aws_account_id}:role/admin"
+  tfstate_bucket_name = "${var.name}-tfstate"
+}
+
+terraform {
+  # We will uncomment this later
+  # backend "s3" {}
+}
+
 provider "aws" {
   region = var.region
 
   assume_role {
-    role_arn = "arn:aws:iam::${var.aws_account_id}:role/sudo"
+    role_arn = local.role_arn
   }
 }
 ```
 
 #### `modules.tf`
 
-```terraform
+```
 module "tfstate-backend" {
   source  = "cloudposse/tfstate-backend/aws"
   version = "0.33.0"
+
+  s3_bucket_name = local.tfstate_bucket_name
+  role_arn       = local.role_arn
 }
 
 module "mach_account" {
-  source = "git::https://github.com/labd/terraform-aws-mach-account.git"
+  source               = "git::https://github.com/labd/terraform-aws-mach-account.git"
+  aws_account_alias    = var.name
   code_repository_name = "your-project-lambdas"  # Replace with the actual name given to the S3 bucket
+  deploy_principle_identifiers = [
+    "arn:aws:iam::000000000000:user/admin" # Specify your root account here
+  ]
 }
 ```
 
-[^1]: Refer to the [previous step](./step-3-setup-aws-services.md#2-setup-your-terraform-configuration) to see how we organize the two different AWS accounts
+!!! info "`deploy_principle_identifiers`"
+    We specify our root account here so it makes it easier for this tutorial to setup credentials to be able to deploy using MACH.
 
 ### 3. Create the first environment configuration
 
@@ -64,24 +87,40 @@ Create a directory called `mach-account/envs/` and create a new file `tst.tfvars
 
 ```terraform
 aws_account_id = "<your-account-id>"
-site_name      = "tst"
+name           = "your-project-tst"
 ```
 
 ### 4. Terraform roll-out
 
-1. Within your `mach-account` directory, run the following commands:
+Within your `mach-account` directory, run the following commands:
 ```bash
 $ terraform init -var-file=envs/tst.tfvars 
 $ terraform apply -var-file=envs/tst.tfvars 
 ```
-2. Terraform has now createsd a `backend.tf` file which instructs Terraform to store the state on a S3 bucket.<br>
-In order to move the current (local) state file to the bucket, perform this one-time command:
+
+### 5. Configure state backend
+
+Terraform has now created the Terraform state backend.
+
+We are going to store that information in a site-specific backend configuration file. This way, several backends for multiple sites can live side-by-side in the same infra repo.
+
+1. Create a new directory `mach-account/backend-configs` and create a new file `tst.conf`:
+```
+region         = "eu-central-1"
+bucket         = "your-project-tst-tfstate"
+key            = "terraform.tfstate"
+dynamodb_table = "lock"
+role_arn       = "arn:aws:iam::<account-id>:role/admin"
+encrypt        = "true"
+```
+2. Uncomment the `# backend "s3" {}` line in `main.tf`
+3. Perform the following command:
 ```bash
-$ terraform init -force-copy -var-file=envs/tst.tfvars 
+$ terraform init -force-copy -var-file=envs/tst.tfvars  -backend-config=backend-configs/tst.conf 
 ```
 Now the state is stored in the S3 bucket, and the DynamoDB table will be used to lock the state to prevent concurrent modification.
 
-### 5. Grant access to service account
+### 6. Grant access to service account
 
 The last step is to allow the new AWS account to access resources from the service account.
 
@@ -91,7 +130,8 @@ In `service/modules.tf` add the `allow_code_repo_read_access` variable to the `s
 module "shared-config" {
   source = "git::https://github.com/labd/terraform-aws-mach-shared.git"
   allow_code_repo_read_access = [
-      "arn:aws:iam::<test-aws-account-id>:user/mach-user", # MACH Test env
+      "arn:aws:iam::<test-aws-account-id>:user/mach", # test env
+      "arn:aws:iam::<test-aws-account-id>:role/mach", # test env
   ]
 ```
 
@@ -99,3 +139,9 @@ module "shared-config" {
     This will make sure that this AWS account is able to read the contents of the component repository bucket.
 
 Run `terraform apply` to apply these changes.
+
+!!! tip "Next: step 5"
+    Next we'll create our first [MACH component](./step-5-create-component.md).
+
+
+[^1]: Refer to the [previous step](./step-3-setup-aws-services.md#2-setup-your-terraform-configuration) to see how we organize the two different AWS accounts

@@ -84,6 +84,7 @@ nav:
 extra_javascript:
   - _js/mermaid.min.js
   - _js/mermaid-init.js
+  - https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js
 
 extra_css:
   - _css/custom.css
@@ -91,6 +92,7 @@ extra_css:
   - _css/mermaid.css
   - _css/tabbed.css
   - _css/font-awesome.min.css
+  - https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/default.min.css
 
 use_directory_urls: false
 
@@ -126,6 +128,7 @@ markdown_extensions:
       custom_checkbox: true
   - toc:
       permalink: true
+  - pymdownx.highlight
   - pymdownx.superfences:
       custom_fences:
         - name: mermaid
