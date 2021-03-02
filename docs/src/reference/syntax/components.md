@@ -11,7 +11,7 @@ components:
     short_name: apiexts
     source: git::ssh://git@git.labdigital.nl/mach-components/api-extensions-component.git//terraform
     version: 3b8ab91
-    endpoints: 
+    endpoints:
       main: default
   - name: ct-products-types
     source: git::ssh://git@git.labdigital.nl/mach-components/ct-product-types.git//terraform
@@ -42,8 +42,10 @@ components:
     These are not intendend to be used for a production deployment, but can facilitate local development:
 
     - `branch` - Configure the git branch of the component. Only used to facilitate the `mach update` CLI command.
-    - `package_script` - Script file to build and package the component, relative from where MACH is run. **AWS only**
-    - `package_filename` - Filename to be used for deployment, relative from where MACH is run. **AWS only**
+    - `artifacts` - Mapping of additional artifacts **AWS only**
+      - `script` - Script file to build and package the component, relative to the workdir.
+      - `filename` - Filename to be used for deployment, relative to the workdir
+      - `workdir` - Work directory for the script/filename, relative to current work dir (default)
 
     Example:
     ```yaml
@@ -52,8 +54,11 @@ components:
       source: ../mach-component-my-component/terraform
       integrations: ["aws", "commercetools", "sentry"]
       version: latest
-      package_filename: ../mach-component-my-component/.serverless/my-component.zip
-      package_script: cd ../mach-component-my-component/ && yarn package
+      artifacts:
+        service:
+          filename: .serverless/my-component.zip
+          script: yarn package
+          workdir: ../mach-component-my-component/
     ```
 
     More info on [using MACH during development](../../topics/development/workflow.md)

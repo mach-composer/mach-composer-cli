@@ -19,7 +19,7 @@
   - Add `--component` option to the `plan` and `apply` commands
   - Add `--reuse` flag to the `plan` and `apply` commands to supress a `terraform init` call
   - Add support for relative paths to components
-  - Add extra component definition settings `package_script` and `package_filename` to facilitate local deployments
+  - Add extra component definition settings `artifacts` to facilitate local deployments
 - Improved dependencies between components and MACH-managed commercetools configurations
 - Add option to override Terraform provider versions
 - Upgraded Terraform to `0.14.5`
@@ -47,7 +47,7 @@
   ```yaml
   sites:
   - identifier: mach-site-eu
-    endpoints: 
+    endpoints:
       main: https://api.eu-tst.mach-example.net
   ```
   When you name the endpoint that replaces `base_url` "main", it will have the least effect on your existing Terraform state.
@@ -86,7 +86,7 @@
   ```bash
   terraform state mv azurerm_dns_cname_record.<project-key> azurerm_dns_cname_record.<endpoint-key>
   ```
-- **component**: The `FRONTDOOR_ID` value is removed from the `var.variables` of a component. Replaced with `var.frontdoor_id`  
+- **component**: The `FRONTDOOR_ID` value is removed from the `var.variables` of a component. Replaced with `var.frontdoor_id`
 - **component**: `app_service_plan_id` has been replaced with `app_service_plan` containing both an `id` and `name` so the [azurerm_app_service_plan](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/app_service_plan) data source can be used in a component.
   ```terraform
   variable "app_service_plan" {
@@ -100,7 +100,7 @@
 ## 0.5.1 (2020-11-10)
 - Removed `aws` block in general_config
 - Add `branch` option to component definitions to be able to perform a `mach update` and stay within a certain branch (during development)
-  
+
 
 ## 0.5.0 (2020-11-09)
 - Add new CLI options:
@@ -144,7 +144,7 @@ var.ct_auth_url
 - Add 'encrypt' option to AWS state backend
 - Correctly depend component modules to the commercetools project settings resource
 - Extend Azure regions mapping
-  
+
 
 ## 0.4.1 (2020-10-27)
 - Fixed TypeError when using `resource_group` on site Azure configuration
@@ -180,7 +180,7 @@ or `integrations: []` if no integrations are needed at all.
 
 ## 0.3.0 (2020-10-21)
 - Add option to specify custom resource group per site
-  
+
 ### Breaking changes
 
 - All `resource_group_name` attributes is renamed to `resource_group`
@@ -203,7 +203,7 @@ or `integrations: []` if no integrations are needed at all.
 =================
 - Add AWS support
 - Add new required attribute `cloud` in general config
-  
+
 
 ## 0.1.0 (2020-10-01)
 - Initial release
