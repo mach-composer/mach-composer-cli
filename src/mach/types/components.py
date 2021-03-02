@@ -9,7 +9,16 @@ from .shared import ComponentAzureConfig
 
 __all__ = [
     "ComponentConfig",
+    "LocalArtifact",
 ]
+
+
+@dataclass_json
+@dataclass
+class LocalArtifact(JsonSchemaMixin):
+    script: str
+    filename: str
+    workdir: str = fields.none()
 
 
 @dataclass_json
@@ -30,8 +39,8 @@ class ComponentConfig(JsonSchemaMixin):
 
     # Development options
     branch: Optional[str] = fields.none()
-    package_script: Optional[str] = fields.none()
-    package_filename: Optional[str] = fields.none()
+
+    artifacts: Dict[str, LocalArtifact] = fields.dict_()
 
     def __post_init__(self):
         """Ensure short_name is set."""

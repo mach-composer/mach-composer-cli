@@ -773,11 +773,24 @@
         "branch": {
           "type": "string"
         },
-        "package_script": {
-          "type": "string"
-        },
-        "package_filename": {
-          "type": "string"
+        "artifacts": {
+          "type": "object",
+          "patternProperties": {
+            "^[A-Za-z_-][A-Za-z0-9_-]*$": {
+              "type": "object",
+              "properties": {
+                "script": {
+                  "type": "string"
+                },
+                "filename": {
+                  "type": "string"
+                },
+                "workdir": {
+                  "type": "string"
+                }
+              }
+            }
+          }
         }
       },
       "description": "Component definition."

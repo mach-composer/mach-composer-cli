@@ -166,9 +166,9 @@ def validate_azure_components(config: types.MachConfig):
     for example Storage Accounts names have a limited length.
     """
     for comp in config.components:
-        if comp.package_filename or comp.package_script:
+        if comp.artifacts:
             raise ValidationError(
-                f"The package_filename or package_script options on the '{comp.name}' component "
+                f"The artifacts options on the '{comp.name}' component "
                 "are not supported when targetting Azure"
             )
 
