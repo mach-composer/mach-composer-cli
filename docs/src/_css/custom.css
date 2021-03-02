@@ -4,6 +4,7 @@
 
 :root>* {
     --md-default-fg-color--light: var(--color-mach-blue);
+    --md-code-hl-comment-color: #aaa
 }
 
 .md-header {
