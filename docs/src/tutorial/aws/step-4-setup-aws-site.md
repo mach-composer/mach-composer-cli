@@ -59,7 +59,7 @@ provider "aws" {
 
 #### `modules.tf`
 
-```
+```terraform
 module "tfstate-backend" {
   source  = "cloudposse/tfstate-backend/aws"
   version = "0.33.0"
@@ -81,6 +81,67 @@ module "mach_account" {
 !!! info "`deploy_principle_identifiers`"
     We specify our root account here so it makes it easier for this tutorial to setup credentials to be able to deploy using MACH.
 
+#### `policies.tf`
+
+The `terraform-aws-mach-account` module will create the necessary IAM policies that allows the mach deploy user to deploy the necessary resources.
+
+The Terraform state backend must also be used by mach, so we need to create the necessary policies that allows the mach user to read/write to that state backend:
+
+```terraform
+data "aws_iam_policy_document" "terraform_state" {
+    
+  statement {
+    actions = [
+      "s3:ListBucket"
+    ]
+    resources = [
+      "${module.tfstate-backend.s3_bucket_arn}"
+    ]
+  }
+  statement {
+    actions = [
+      "s3:GetObject",
+      "s3:PutObject"
+
+    ]
+    resources = [
+      "${module.tfstate-backend.s3_bucket_arn}/mach/*"
+    ]
+  }
+
+  statement {
+    actions = [
+      "dynamodb:GetItem",
+      "dynamodb:PutItem",
+      "dynamodb:DeleteItem"
+
+    ]
+    resources = [
+      "arn:aws:dynamodb:${var.region}:${var.aws_account_id}:table/${local.tfstate_bucket_name}-lock"
+    ]
+  }
+}
+
+
+resource "aws_iam_policy" "terraform_state" {
+  name        = "terraform-state-policy"
+  path        = "/"
+  description = "Policy to access terraform state"
+
+  policy = data.aws_iam_policy_document.terraform_state.json
+}
+
+resource "aws_iam_role_policy" "apigateway" {
+  name   = "terraform-state-policy"
+  role   = module.mach_account.mach_role_id
+  policy = data.aws_iam_policy_document.terraform_state.json
+}
+
+resource "aws_iam_user_policy_attachment" "mach_user_terraform_state" {
+  user       = module.mach_account.mach_user_name
+  policy_arn = aws_iam_policy.terraform_state.arn
+}
+```
 ### 3. Create the first environment configuration
 
 Create a directory called `mach-account/envs/` and create a new file `tst.tfvars`:

@@ -36,7 +36,7 @@ data "aws_iam_policy_document" "terraform_state" {
 resource "aws_iam_policy" "terraform_state" {
   name        = "terraform-state-policy"
   path        = "/"
-  description = "Policy to access terraform satte"
+  description = "Policy to access terraform state"
 
   policy = data.aws_iam_policy_document.terraform_state.json
 }
