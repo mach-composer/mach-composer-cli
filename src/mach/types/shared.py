@@ -22,3 +22,4 @@ class ServicePlan:
     tier: str
     size: str
     capacity: Optional[int] = fields.none()
+    dedicated_resource_group: bool = fields.default(False)
