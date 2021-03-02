@@ -4,20 +4,30 @@ import sys
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from mach.types import MachConfig
+    from mach.types import LocalArtifact, MachConfig
 
 
 def build_packages(config: "MachConfig"):
     for component in config.components:
-        if not component.package_script:
-            continue
-
-        run_package_script(component.package_script)
-        component.package_filename = os.path.abspath(component.package_filename)
-        if not os.path.exists(component.package_filename):
-            raise ValueError(f"The package_filename on {component.name} doesn't exist")
+        for artifact, artifact_cfg in component.artifacts.items():
+            build_artifact(artifact_cfg)
 
 
-def run_package_script(package_script: str):
-    p = subprocess.run(package_script, stdout=sys.stdout, stderr=sys.stderr, shell=True)
+def build_artifact(artifact: "LocalArtifact"):
+    run_script(artifact.script, artifact.workdir)
+
+    if artifact.workdir:
+        artifact.filename = os.path.abspath(
+            os.path.join(artifact.workdir, artifact.filename))
+    else:
+        artifact.filename = os.path.abspath(artifact.filename)
+
+    if not os.path.exists(artifact.filename):
+        raise ValueError(f"The file {artifact.filename} doesn't exist")
+
+
+def run_script(script: str, workdir: str):
+    p = subprocess.run(
+        script, stdout=sys.stdout, stderr=sys.stderr, shell=True,
+        cwd=workdir)
     p.check_returncode()
