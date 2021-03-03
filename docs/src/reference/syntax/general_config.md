@@ -171,6 +171,7 @@ Example:
 - **`tier`** - (Required) Specifies the plan's pricing tier.
 - **`size`** - (Required) Specifies the plan's instance size.
 - `capacity` - Specifies the number of workers associated with this App Service Plan.
+- `dedicated_resource_group` - Indicates of the service plan should run on a dedicated resource group. This might be useful when, due to Azure hosting restrictions, a service plan cannot run on the same resource group as an existing one. Defaults to `false`.
 
 ### frontdoor
 
