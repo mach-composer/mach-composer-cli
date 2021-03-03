@@ -14,7 +14,10 @@ with open("requirements.txt") as r:
 try:
     with open("README.md", "r") as fh:
         readme = re.sub(
-            "^.. start-no-pypi.*^.. end-no-pypi", "", fh.read(), flags=re.M | re.S
+            "<!-- start-no-pypi -->.*<!-- end-no-pypi -->\n",
+            "",
+            fh.read(),
+            flags=re.M | re.S,
         )
 except IOError:
     readme = ""
