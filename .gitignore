@@ -29,3 +29,9 @@ __pycache__
 .cache
 .version
 /.python-version
+
+# CDK
+
+# TODO: Eventually, imports needs to be checked in, but we need to
+# clean out resources (esp from aws and azure) that we actually need in MACH
+/src/mach/cdk/imports/

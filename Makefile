@@ -63,3 +63,9 @@ isort:
 
 flake8:
 	flake8 src/ tests/
+
+#
+# CDK targets
+#
+cdk:
+	cdktf get

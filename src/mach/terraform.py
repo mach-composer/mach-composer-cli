@@ -6,8 +6,17 @@ from pathlib import Path
 from typing import List, Optional, Union
 
 import click
+from mach import cdk
 from mach.templates import setup_jinja
 from mach.types import MachConfig, Site
+
+
+def generate_terraform_cdk(config: MachConfig, *, site: str = None):
+    sites = _filter_sites(config.sites, site)
+    for site in sites:
+        site_dir = config.deployment_path / Path(site.identifier)
+        site_dir.mkdir(exist_ok=True)
+        cdk.generate(config, site, str(site_dir))
 
 
 def generate_terraform(config: MachConfig, *, site: str = None):
@@ -19,6 +28,7 @@ def generate_terraform(config: MachConfig, *, site: str = None):
         site_dir = config.deployment_path / Path(s.identifier)
         site_dir.mkdir(exist_ok=True)
         output_file = site_dir / Path("site.tf")
+
         content = _clean_tf(
             template.render(
                 config=config,
