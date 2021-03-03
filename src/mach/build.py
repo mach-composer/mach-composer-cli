@@ -18,7 +18,8 @@ def build_artifact(artifact: "LocalArtifact"):
 
     if artifact.workdir:
         artifact.filename = os.path.abspath(
-            os.path.join(artifact.workdir, artifact.filename))
+            os.path.join(artifact.workdir, artifact.filename)
+        )
     else:
         artifact.filename = os.path.abspath(artifact.filename)
 
@@ -28,6 +29,6 @@ def build_artifact(artifact: "LocalArtifact"):
 
 def run_script(script: str, workdir: str):
     p = subprocess.run(
-        script, stdout=sys.stdout, stderr=sys.stderr, shell=True,
-        cwd=workdir)
+        script, stdout=sys.stdout, stderr=sys.stderr, shell=True, cwd=workdir
+    )
     p.check_returncode()

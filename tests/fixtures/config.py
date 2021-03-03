@@ -138,7 +138,7 @@ def apollo_config():
                     ),
                     types.Component(
                         name="commercetools-proxy",
-                    )
+                    ),
                 ],
             ),
         ],
@@ -148,14 +148,14 @@ def apollo_config():
                 source="federated-gateway//terraform",
                 short_name="gqlfedgw",
                 version="1.0",
-                integrations=["azure", "apollo_federation"]
+                integrations=["azure", "apollo_federation"],
             ),
             types.ComponentConfig(
                 name="commercetools-proxy",
                 source="commercetools-proxy//terraform",
                 short_name="gqlctproxy",
                 version="v0.1.0",
-                integrations=["azure", "apollo_federation"]
+                integrations=["azure", "apollo_federation"],
             ),
         ],
         output_path=tempfile.gettempdir(),
