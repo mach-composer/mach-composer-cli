@@ -9,7 +9,12 @@ from mach import bootstrap as _bootstrap
 from mach import git, parse, updater
 from mach.build import build_packages
 from mach.exceptions import MachError
-from mach.terraform import apply_terraform, generate_terraform, plan_terraform
+from mach.terraform import (
+    apply_terraform,
+    generate_terraform,
+    generate_terraform_cdk,
+    plan_terraform,
+)
 
 
 @click.group()
@@ -74,6 +79,23 @@ def generate(file, site, configs, *args, **kwargs):
     """Generate the Terraform files."""
     for config in configs:
         generate_terraform(config, site=site)
+
+
+@mach.command()
+@terraform_command
+def cdk(file, site, configs, *args, **kwargs):
+    """Generate the Terraform files using the Terraform CDK."""
+    click.echo("This will render a Terraform JSON configuration using the CDK")
+    click.echo(
+        click.style(
+            "Note: this is all very much work in production and an experimental feature!",
+            fg="yellow",
+            bold=True,
+        )
+    )
+
+    for config in configs:
+        generate_terraform_cdk(config, site=site)
 
 
 @mach.command()

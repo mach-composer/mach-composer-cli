@@ -1,0 +1,12 @@
+{
+    "language": "python",
+    "terraformProviders": [
+      "aws@~> 3.28",
+      "azurerm@~> 2.47.0",
+      "jianyuan/sentry@~> 0.6.0",
+      "labd/commercetools@~> 0.25.3",
+      "labd/contentful@~> 0.1.0"
+    ],
+    "codeMakerOutput": "src/mach/cdk/imports"
+  }
+  
