@@ -188,12 +188,12 @@ apollo_federation:
 Site-specific Azure settings.<br>
 Can overwrite any value from the generic [Azure settings](#azure):
 
-- `tenant_id`
+- `tenant_id` - Tenant to deploy in
 - `service_object_ids`
-- `frontdoor`
-- `subscription_id`
-- `region`
-- `service_plans`
+- `frontdoor` - [Front-door](#frontdoor) settings
+- `subscription_id` - Subscription to deploy in
+- `region` - Azure region to deploy in
+- `service_plans` - Map of custom [service plan configurations](#service_plans)
 
 And adds the following exta attributes:
 
@@ -204,6 +204,54 @@ And adds the following exta attributes:
     Use `resource_group` with care.<br>
     By default, MACH will manage the site resource groups for you. If you add this option later, the managed resource group will get **deleted**.<br>
     So only use for new site definitions
+
+### frontdoor
+
+Example:
+```yaml
+frontdoor:
+  resource_group: my-shared-rg
+```
+
+- **`resource_group`** - (Required)
+- `suppress_changes` - Suppress changes to the Frontdoor instance. This is a temporary work-around for some issues in the Azure Terraform provider.
+
+### service_plans
+
+Map of service plan definitions if you want to define additional service plans your components should run on, or if you want to overwrite the default.
+
+Example:
+=== "Additional plan"
+    ```yaml
+    # Here we add an additional service plan 'premium'
+    service_plans:
+      premium:
+        kind: "Linux"
+        tier: "PremiumV2"
+        size: "P2v2"
+        capacity: 2
+    ```
+=== "Default overwrite"
+    ```yaml
+    # Here we configure the default service plan to run Premium 
+    # and also offer a service plan running Windows
+    service_plans:
+      default:
+        kind: "Linux"
+        tier: "PremiumV2"
+        size: "P2v2"
+      windows:
+        kind: "Windows"
+        tier: "PremiumV2"
+        size: "P2v2"
+    ```
+
+- **`kind`** - (Required) The kind of the App Service Plan to create. `Windows`, `Linux`, `elastic` or `FunctionApp`.
+- **`tier`** - (Required) Specifies the plan's pricing tier.
+- **`size`** - (Required) Specifies the plan's instance size.
+- `capacity` - Specifies the number of workers associated with this App Service Plan.
+- `dedicated_resource_group` - Indicates of the service plan should run on a dedicated resource group. This might be useful when, due to Azure hosting restrictions, a service plan cannot run on the same resource group as an existing one. Defaults to `false`.
+
 
 ### alert_group
 Example:
@@ -304,4 +352,4 @@ azure:
   service_plan: premium
 ```
 
-- `service_plan` - The service plan (defined in [`service_plans`](./general_config.md#service_plans)) to use for this component. Defaults to `default`
+- `service_plan` - The service plan (defined in [`service_plans`](./general_config.md#service_plans)) to use for this component

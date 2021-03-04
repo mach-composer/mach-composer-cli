@@ -71,4 +71,4 @@ azure:
   service_plan: premium
 ```
 
-- `service_plan` - The service plan (defined in [`service_plans`](./general_config.md#service_plans)) to use for this component. Defaults to `default`
+- `service_plan` - The service plan (defined in [`service_plans`](./general_config.md#service_plans)) to use for this component.
