@@ -126,12 +126,13 @@ azure:
       size: "P2v2"
 ```
 
-- **`tenant_id`** - (Required)
-- **`subscription_id`** - (Required)
-- **`region`** - (Required)
+- **`tenant_id`** - (Required) Tenant to deploy in
+- **`subscription_id`** - (Required) Subscription to deploy in
+- **`region`** - (Required) Azure region to deploy in
 - `resources_prefix` - Prefix to be used for all Azure resources, for example `my-`
 - `frontdoor` - [Front-door](#frontdoor) settings
 - `service_object_ids` - Map of objects IDs that should have access to things like KeyVaults created for components
+- `service_plans` - Map of custom [service plan configurations](#service_plans)
 
 
 !!! tip "Don't lock yourself out"

@@ -14,6 +14,9 @@ __all__ = ["ComponentAzureConfig", "ServicePlan"]
 class ComponentAzureConfig(JsonSchemaMixin):
     service_plan: Optional[str] = fields.none()
 
+    def merge(self, config: "ComponentAzureConfig"):
+        self.service_plan = self.service_plan or config.service_plan
+
 
 @dataclass_json
 @dataclass

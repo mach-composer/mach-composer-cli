@@ -91,4 +91,6 @@ components:
     source: git::https://github.com/some-organisation/mach-component-api-extensions.git//terraform
     version: a4bbb28
     short_name: apiexts
+    azure:
+      service_plan: default
     integrations: ["azure", "commercetools", "sentry"]

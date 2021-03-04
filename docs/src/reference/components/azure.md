@@ -19,7 +19,6 @@ Type: `map(string)`
 - `region` - Azure region
 - `resource_group_name` - Name of the resource group the component should be created in
 - `resource_group_location` - The resource group location
-- `app_service_plan` - The [App service plan](../../topics/deployment/config/azure.md#app-service-plans) managed by MACH
 - `tags` - Azure tags to be used on resources<br>
   Type: `map(string)`
 - `monitor_action_group_id` - [action group](../../topics/deployment/config/azure.md#action-groups) ID when [alert_group](../syntax/general_config.md#azure) is configured.
@@ -36,12 +35,6 @@ variable "service_object_ids" {
 variable "region" {}
 variable "resource_group_name" {}
 variable "resource_group_location" {}
-variable "app_service_plan" {
-  type = object({
-    id   = string
-    name = string
-  })
-}
 variable "tags" {
   type        = map(string)
 }
@@ -74,6 +67,18 @@ variable "endpoint_webhooks" {
 }
 ```
 
+### With `service_plan`
+
+When a component has been configured with a [`service_plan`](../syntax/sites.md#azure_1), MACH manages the service plan for you and passes the information to the component with a `app_service_plan` variable:
+
+```terraform
+variable "app_service_plan" {
+  type = object({
+    id   = string
+    name = string
+  })
+}
+```
 
 ## Packaging and deploying
 
