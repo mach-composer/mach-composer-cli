@@ -11,7 +11,8 @@ resource_group_location = local.resource_group_location
 app_service_plan        = {
   id = azurerm_app_service_plan.{{ component.azure.service_plan|service_plan_resource_name }}.id
   name = azurerm_app_service_plan.{{ component.azure.service_plan|service_plan_resource_name }}.name
-}{% endif %}
+}
+{% endif %}
 tags                    = local.tags
 {% if site.azure.alert_group %}
 monitor_action_group_id = azurerm_monitor_action_group.alert_action_group.id
