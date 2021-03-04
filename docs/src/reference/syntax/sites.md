@@ -349,7 +349,7 @@ Example:
 
 ```yaml
 azure:
-  service_plan: premium
+  service_plan: default
 ```
 
-- `service_plan` - The service plan (defined in [`service_plans`](./general_config.md#service_plans)) to use for this component
+- `service_plan` - The service plan (defined in [`service_plans`](./general_config.md#service_plans)) to use for this component. Set this to `default` if you want to use the MACH-managed Consumption plan.
