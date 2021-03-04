@@ -62,12 +62,21 @@ The routing in Frontdoor that will be created:
 
 ## App service plans
 
-MACH will create an [App service plan](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/app_service_plan) that can be used for any MACH component that implements an Azure function.
+MACH can create an [App service plan](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/app_service_plan) that can be used for any MACH component that uses the `service_plan` configuration option (either in the [component definition](../../../reference/syntax/components.md#azure) or the [site-specific configuration](../../../reference/syntax/sites.md#azure_1)).
 
-By default this is a Consumption plan.
+What kind and how many service plans it will create depends on what service plans are needed by the components, and how the [`service_plans`](../../../reference/syntax/general_config.md#service_plans) configuration looks like.
 
-The default can be overridden, or extra service plans can be added by defining them in the [`service_plans`](../../../reference/syntax/general_config.md#service_plans) block
+By default, MACH will create a `default` service plan which is a Consumption plan, if any of the components have `service_plan: default` set in their configuration.
 
+In this case, you don't need to define the service plan yourself, MACH automatically creates this default for you:
+
+```yaml
+service_plans:
+  default:
+    kind: "FunctionApp"
+    tier: "Dynamic"
+    size: "Y1"
+```
 
 ## Action groups
 

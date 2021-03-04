@@ -130,6 +130,20 @@ def resolve_site_configs(config: MachConfig):
 
     for site in config.sites:
         resolve_endpoint_components(site)
+        if site.azure:
+            resolve_used_service_plans(site)
+
+
+def resolve_used_service_plans(site: Site):
+    "Azure-specific method to find out which service plans are actually being used by components"
+    used = [
+        c.azure.service_plan
+        for c in site.components
+        if c.azure and c.azure.service_plan
+    ]
+    site.azure.service_plans = {
+        key: sp for key, sp in site.azure.service_plans.items() if key in used
+    }
 
 
 def resolve_endpoint_components(site: Site):
@@ -192,8 +206,11 @@ def resolve_site_components(config: MachConfig) -> MachConfig:
                 else:
                     component.sentry.merge(site.sentry)
 
-            if not component.azure:
-                component.azure = info.azure
+            if site.azure:
+                if not component.azure:
+                    component.azure = info.azure
+                else:
+                    component.azure.merge(info.azure)
 
     return config
 
@@ -214,6 +231,3 @@ def resolve_component_definitions(config: MachConfig) -> MachConfig:
         if config.general_config.cloud == CloudOption.AZURE:
             if not comp.azure:
                 comp.azure = ComponentAzureConfig()
-
-            if "azure" in comp.integrations and not comp.azure.service_plan:
-                comp.azure.service_plan = "default"
