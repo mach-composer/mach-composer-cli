@@ -7,6 +7,7 @@ from mach import parse, types
 @pytest.fixture
 def config():
     return types.MachConfig(
+        mach_composer=types.MachComposerConfig(version="1.0.0"),
         general_config=types.GlobalConfig(
             environment="test",
             terraform_config=types.TerraformConfig(
@@ -47,6 +48,7 @@ def config():
 @pytest.fixture
 def azure_config():
     return types.MachConfig(
+        mach_composer=types.MachComposerConfig(version="1.0.0"),
         general_config=types.GlobalConfig(
             environment="test",
             terraform_config=types.TerraformConfig(
@@ -114,6 +116,7 @@ def parsed_azure_config(azure_config):
 @pytest.fixture
 def apollo_config():
     return types.MachConfig(
+        mach_composer=types.MachComposerConfig(version="1.0.0"),
         general_config=types.GlobalConfig(
             environment="test",
             terraform_config=types.TerraformConfig(

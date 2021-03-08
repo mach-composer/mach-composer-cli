@@ -14,6 +14,8 @@ Edit your configuration so that it looks like the following example
 
 ```yaml
 ---
+mach_composer:
+  version: 1.0.0
 global:
   environment: test
   cloud: aws
