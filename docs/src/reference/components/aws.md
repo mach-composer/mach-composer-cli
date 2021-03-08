@@ -12,25 +12,37 @@ In addition to the [base variables](./structure.md#required-variables) AWS compo
 
 ### With `endpoints`
 
-In order to support the [`endpoints`](../../topics/deployment/config/aws.md#http-routing) attribute on the component, the component needs to define what endpoints it expects.
-
-For example, if the component requires two endpoints (`main` and `webhooks`) to be set, the following variables needs to be defined:
+In order to support the [`endpoints`](../../topics/deployment/config/aws.md#http-routing) attribute on the component, the component needs to define a `aws_endpoints` variable:
 
 ```terraform
-variable "aws_endpoint_main" {
-  type = object({
+variable "aws_endpoints" {
+  type = map(object({
     url                       = string
     api_gateway_id            = string
     api_gateway_execution_arn = string
-  })
+  }))
 }
+```
 
-variable "aws_endpoint_webhooks" {
-  type = object({
+For example, if the component requires two endpoints (`main` and `webhooks`) to be set, the necessary information can be used by using `var.aws_endpoints.main` and `var.aws_endpoints.webhooks`.
+
+We could also enforce these values to be defined on variable level:
+
+```terraform
+variable "aws_endpoints" {
+  type = map(object({
     url                       = string
     api_gateway_id            = string
     api_gateway_execution_arn = string
-  })
+  }))
+
+  validation {
+    condition = length(setsubtract(
+      ["main", "webhooks"], 
+      keys(var.azure_endpoints))
+    ) == 0
+    error_message = "Endpoints should have 'main' and 'webhooks' defined."
+  }
 }
 ```
 

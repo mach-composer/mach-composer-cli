@@ -60,25 +60,37 @@ variable "azure_monitor_action_group_id" {
 
 ### With `endpoints`
 
-In order to support the [`endpoints`](../../topics/deployment/config/azure.md#http-routing) attribute on the component, the component needs to define what endpoints it expects.
-
-For example, if the component requires two endpoints (`main` and `webhooks`) to be set, the following variables needs to be defined:
+In order to support the [`endpoints`](../../topics/deployment/config/azure.md#http-routing) attribute on the component, the component needs to define a `azure_endpoints` variable:
 
 ```terraform
-variable "azure_endpoint_main" {
-  type = object({
+variable "azure_endpoints" {
+  type = map(object({
     url          = string
     frontdoor_id = string
-  })
-}
-
-variable "azure_endpoint_webhooks" {
-  type = object({
-    url          = string
-    frontdoor_id = string
-  })
+  }))
 }
 ```
+
+For example, if the component requires two endpoints (`main` and `webhooks`) to be set, the necessary information can be used by using `var.azure_endpoints.main` and `var.azure_endpoints.webhooks`.
+
+We could also enforce these values to be defined on variable level:
+
+```terraform
+variable "azure_endpoints" {
+  type = map(object({
+    url          = string
+    frontdoor_id = string
+  }))
+
+  validation {
+    condition = length(setsubtract(
+      ["main", "webhooks"], 
+      keys(var.azure_endpoints))
+    ) == 0
+    error_message = "Endpoints should have 'main' and 'webhooks' defined."
+  }
+}
+``` 
 
 ### With `service_plan`
 

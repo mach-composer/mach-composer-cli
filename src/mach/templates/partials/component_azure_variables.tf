@@ -18,9 +18,13 @@ azure_app_service_plan        = {
 {% if site.azure.alert_group %}
 azure_monitor_action_group_id = azurerm_monitor_action_group.alert_action_group.id
 {% endif %}
-{% for component_endpoint, site_endpoint in component.endpoints.items() -%}
-azure_endpoint_{{ component_endpoint|slugify }} = {
-  url = local.endpoint_url_{{ site_endpoint|slugify }}
-  frontdoor_id = azurerm_frontdoor.app-service.header_frontdoor_id
+{% if component.endpoints %}
+azure_endpoints = {
+  {% for component_endpoint, site_endpoint in component.endpoints.items() -%}
+  {{ component_endpoint|slugify }} = {
+    url = local.endpoint_url_{{ site_endpoint|slugify }}
+    frontdoor_id = azurerm_frontdoor.app-service.header_frontdoor_id
+  }
+  {% endfor %}
 }
-{% endfor %}
+{% endif %}

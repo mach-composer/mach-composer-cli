@@ -84,7 +84,7 @@
     description = "Tags to be used on resources."
   }
   ```
-- **component**: Add `aws_endpoint_*` variable when the `endpoints` configuration option is used. [More information](https://docs.machcomposer.io/reference/components/aws.html#with-endpoints) on defining and using endpoints in AWS.
+- **component**: Add `aws_endpoints` variable when the `endpoints` configuration option is used. [More information](https://docs.machcomposer.io/reference/components/aws.html#with-endpoints) on defining and using endpoints in AWS.
 
 **Azure**
 
@@ -97,7 +97,7 @@
   terraform state mv azurerm_dns_cname_record.<project-key> azurerm_dns_cname_record.<endpoint-key>
   ```
 - **component**: Prefixed **all** Azure-specific variables with `azure_`
-- **component**: The `FRONTDOOR_ID` value is removed from the `var.variables` of a component. Replaced with `var.azure_endpoint_*`. [More information](https://docs.machcomposer.io/reference/components/azure.html#with-endpoints) on defining and using endpoints in Azure.
+- **component**: The `FRONTDOOR_ID` value is removed from the `var.variables` of a component. Replaced with `var.azure_endpoints`. [More information](https://docs.machcomposer.io/reference/components/azure.html#with-endpoints) on defining and using endpoints in Azure.
 - **component**: `app_service_plan_id` has been replaced with `azure_app_service_plan` containing both an `id` and `name` so the [azurerm_app_service_plan](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/app_service_plan) data source can be used in a component.<br>
   It will *only be set* when `service_plan` is configured in the component [definition](https://docs.machcomposer.io/reference/syntax/components.html#azure) or [site configuration](https://docs.machcomposer.io/reference/syntax/sites.html#azure_1)
   ```terraform

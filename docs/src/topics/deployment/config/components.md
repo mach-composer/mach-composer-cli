@@ -13,13 +13,13 @@ Some of the components are referenced through the Terraform variables and can be
 
 ```terraform
 resource "aws_apigatewayv2_integration" "gateway" {
-    api_id           = var.aws_endpoint_main.api_gateway_id
+    api_id           = var.aws_endpoints.main.api_gateway_id
     integration_type = "AWS_PROXY"
     integration_uri  = local.lambda_function_arn
 }
 
 resource "aws_apigatewayv2_route" "app_route" {
-    api_id    = var.aws_endpoint_main.api_gateway_id
+    api_id    = var.aws_endpoints.main.api_gateway_id
     route_key = "ANY /graphql/{proxy+}"
     target    = "integrations/${aws_apigatewayv2_integration.gateway.id}"
 }

@@ -626,10 +626,12 @@
             "name": "${azurerm_app_service_plan.functionapps_premium.name}"
           }
         ],
-        "azure_endpoint_public": [
+        "azure_endpoints": [
           {
-            "url": "${local.endpoint_url_public}",
-            "frontdoor_id": "${azurerm_frontdoor.app-service.header_frontdoor_id}"
+            "public": {
+              "url": "${local.endpoint_url_public}",
+              "frontdoor_id": "${azurerm_frontdoor.app-service.header_frontdoor_id}"
+            }
           }
         ],
         "ct_project_key": [

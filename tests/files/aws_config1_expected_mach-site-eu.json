@@ -432,11 +432,13 @@
         "secrets": [
           {}
         ],
-        "aws_endpoint_public": [
+        "aws_endpoints": [
           {
-            "url": "${local.endpoint_url_main}",
-            "api_gateway_id": "${aws_apigatewayv2_api.main_gateway.id}",
-            "api_gateway_execution_arn": "${aws_apigatewayv2_api.main_gateway.execution_arn}"
+            "public": {
+              "url": "${local.endpoint_url_main}",
+              "api_gateway_id": "${aws_apigatewayv2_api.main_gateway.id}",
+              "api_gateway_execution_arn": "${aws_apigatewayv2_api.main_gateway.execution_arn}"
+            }
           }
         ],
         "ct_project_key": [

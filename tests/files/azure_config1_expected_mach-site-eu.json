@@ -532,10 +532,12 @@
             "location": "${local.resource_group_location}"
           }
         ],
-        "azure_endpoint_public": [
+        "azure_endpoints": [
           {
-            "url": "${local.endpoint_url_default}",
-            "frontdoor_id": "${azurerm_frontdoor.app-service.header_frontdoor_id}"
+            "public": {
+              "url": "${local.endpoint_url_default}",
+              "frontdoor_id": "${azurerm_frontdoor.app-service.header_frontdoor_id}"
+            }
           }
         ],
         "ct_project_key": [
