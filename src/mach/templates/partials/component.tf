@@ -21,6 +21,7 @@ module "{{ component.name }}" {
   component_version       = "{{ definition.version }}"
   environment             = "{{ general_config.environment }}"
   site                    = "{{ site.identifier }}"
+  tags                    = local.tags
 
   variables = {
     {% for key, value in component.variables.items() %}

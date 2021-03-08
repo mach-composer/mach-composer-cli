@@ -10,40 +10,53 @@ In addition to this, the component itself is responsible for [packaging and depl
 
 In addition to the [base variables](./structure.md#required-variables), an Azure component expects the following:
 
-- `short_name` - Short name; will not be more than 10 characters to prevent Azure naming limits
-- `name_prefix` - Name prefix to be used for all Azure resources. See [naming conventions](#nmaing-conventions)
-- `subscription_id` - The current subscription ID
-- `tenant_id` - The current tenant ID
-- `service_object_ids` - User/Group/Principle IDs that should be able to access for example a KeyVault.<br>
-Type: `map(string)`
-- `region` - Azure region
-- `resource_group_name` - Name of the resource group the component should be created in
-- `resource_group_location` - The resource group location
-- `tags` - Azure tags to be used on resources<br>
-  Type: `map(string)`
-- `monitor_action_group_id` - [action group](../../topics/deployment/config/azure.md#action-groups) ID when [alert_group](../syntax/general_config.md#azure) is configured.
-
 ```terraform
-variable "short_name" {}
-variable "name_prefix" {}
-variable "subscription_id" {}
-variable "tenant_id" {}
-variable "service_object_ids" {
-  type        = map(string)
-  default     = {}
-}
-variable "region" {}
-variable "resource_group_name" {}
-variable "resource_group_location" {}
-variable "tags" {
-  type        = map(string)
-}
-variable "monitor_action_group_id" {
+variable "azure_short_name" {
   type        = string
-  default     = ""
+  description = "Short name; will not be more than 10 characters to prevent Azure naming limits"
+}
+
+variable "azure_name_prefix" {
+  type        = string
+  description = "Name prefix to be used for all Azure resources"
+}
+
+variable "azure_subscription_id" {
+  type        = string
+  description = "The current subscription ID"
+}
+
+variable "azure_tenant_id" {
+  type        = string
+  description = "The current tenant ID"
+}
+
+variable "azure_service_object_ids" {
+  type        = map(string)
+  description = "User/Group/Principle IDs that should be able to access for example a KeyVault."
+}
+
+variable "azure_region" {
+  type        = string
+  description = "Azure region"
+}
+
+variable "azure_resource_group" {
+  type = object({
+    name     = string
+    location = string
+  })
+  description = "Information of the resource group the component should be created in"
+}
+
+variable "azure_monitor_action_group_id" {
+  type        = string
+  default     = "Action group ID when alert group is configured.
 }
 ```
 
+!!! info "Monitor action group"
+    `monitor_action_group_id` is set to the [action group](../../topics/deployment/config/azure.md#action-groups) ID when a [alert_group](../syntax/general_config.md#azure) is configured.
 
 ### With `endpoints`
 
@@ -52,14 +65,14 @@ In order to support the [`endpoints`](../../topics/deployment/config/azure.md#ht
 For example, if the component requires two endpoints (`main` and `webhooks`) to be set, the following variables needs to be defined:
 
 ```terraform
-variable "endpoint_main" {
+variable "azure_endpoint_main" {
   type = object({
     url          = string
     frontdoor_id = string
   })
 }
 
-variable "endpoint_webhooks" {
+variable "azure_endpoint_webhooks" {
   type = object({
     url          = string
     frontdoor_id = string
@@ -72,7 +85,7 @@ variable "endpoint_webhooks" {
 When a component has been configured with a [`service_plan`](../syntax/sites.md#azure_1), MACH manages the service plan for you and passes the information to the component with a `app_service_plan` variable:
 
 ```terraform
-variable "app_service_plan" {
+variable "azure_app_service_plan" {
   type = object({
     id   = string
     name = string
@@ -150,7 +163,7 @@ So for example, when creating a function app, we can define this as:
 
 ```
 resource "azurerm_function_app" "example_component" {
-  name = lower(format("%s-func-%s", var.name_prefix, var.functionapp_name))
+  name = lower(format("%s-func-%s", var.azure_name_prefix, var.azure_short_name))
 }
 ```
 
@@ -172,7 +185,7 @@ For example, a Storage Account can be created using
 
 ```terraform
 resource "azurerm_storage_account" "main" {
-    name = replace(lower(format("%s-sa-%s", var.name_prefix, var.short_name)), "-", "")
+    name = replace(lower(format("%s-sa-%s", var.azure_name_prefix, var.azure_short_name)), "-", "")
     ...
 }
 ```
@@ -187,10 +200,10 @@ We recommend using the [`azurerm_function_app`](https://registry.terraform.io/pr
 
 ```terraform
 resource "azurerm_function_app" "example_component" {
-  name                       = lower(format("%s-func-%s", var.name_prefix, var.short_name))
-  location                   = var.resource_group_location
-  resource_group_name        = var.resource_group_name
-  app_service_plan_id        = var.app_service_plan.id
+  name                       = lower(format("%s-func-%s", var.azure_name_prefix, var.azure_short_name))
+  location                   = var.azure_resource_group.location
+  resource_group_name        = var.azure_resource_group.name
+  app_service_plan_id        = var.azure_app_service_plan.id
   storage_account_name       = azurerm_storage_account.main.name
   storage_account_access_key = azurerm_storage_account.main.primary_access_key
   app_settings               = local.environment_variables

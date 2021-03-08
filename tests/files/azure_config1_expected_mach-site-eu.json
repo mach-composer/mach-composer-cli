@@ -442,9 +442,8 @@
       ],
       "tags": [
         {
-          "site": "mach-site-eu",
-          "environment": "site",
-          "project_key": "mach-site-eu"
+          "Site": "mach-site-eu",
+          "Environment": "site"
         }
       ]
     },
@@ -500,40 +499,40 @@
         "site": [
           "mach-site-eu"
         ],
+        "tags": [
+          "${local.tags}"
+        ],
         "variables": [
           {}
         ],
         "secrets": [
           {}
         ],
-        "short_name": [
+        "azure_short_name": [
           "us-payment"
         ],
-        "name_prefix": [
+        "azure_name_prefix": [
           "${local.name_prefix}"
         ],
-        "subscription_id": [
+        "azure_subscription_id": [
           "${local.subscription_id}"
         ],
-        "tenant_id": [
+        "azure_tenant_id": [
           "${local.tenant_id}"
         ],
-        "service_object_ids": [
-          "${local.service_object_ids}"
-        ],
-        "region": [
+        "azure_region": [
           "${local.region}"
         ],
-        "resource_group_name": [
-          "${local.resource_group_name}"
+        "azure_service_object_ids": [
+          "${local.service_object_ids}"
         ],
-        "resource_group_location": [
-          "${local.resource_group_location}"
+        "azure_resource_group": [
+          {
+            "name": "${local.resource_group_name}",
+            "location": "${local.resource_group_location}"
+          }
         ],
-        "tags": [
-          "${local.tags}"
-        ],
-        "endpoint_public": [
+        "azure_endpoint_public": [
           {
             "url": "${local.endpoint_url_default}",
             "frontdoor_id": "${azurerm_frontdoor.app-service.header_frontdoor_id}"
@@ -577,6 +576,9 @@
         "site": [
           "mach-site-eu"
         ],
+        "tags": [
+          "${local.tags}"
+        ],
         "variables": [
           {
             "ORDER_PREFIX": "MACH-"
@@ -585,38 +587,35 @@
         "secrets": [
           {}
         ],
-        "short_name": [
+        "azure_short_name": [
           "apiexts"
         ],
-        "name_prefix": [
+        "azure_name_prefix": [
           "${local.name_prefix}"
         ],
-        "subscription_id": [
+        "azure_subscription_id": [
           "${local.subscription_id}"
         ],
-        "tenant_id": [
+        "azure_tenant_id": [
           "${local.tenant_id}"
         ],
-        "service_object_ids": [
-          "${local.service_object_ids}"
-        ],
-        "region": [
+        "azure_region": [
           "${local.region}"
         ],
-        "resource_group_name": [
-          "${local.resource_group_name}"
+        "azure_service_object_ids": [
+          "${local.service_object_ids}"
         ],
-        "resource_group_location": [
-          "${local.resource_group_location}"
+        "azure_resource_group": [
+          {
+            "name": "${local.resource_group_name}",
+            "location": "${local.resource_group_location}"
+          }
         ],
-        "app_service_plan": [
+        "azure_app_service_plan": [
           {
             "id": "${azurerm_app_service_plan.functionapps.id}",
             "name": "${azurerm_app_service_plan.functionapps.name}"
           }
-        ],
-        "tags": [
-          "${local.tags}"
         ],
         "sentry_dsn": [
           "${sentry_key.api-extensions.dsn_secret}"

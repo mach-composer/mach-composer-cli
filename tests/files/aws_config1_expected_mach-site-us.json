@@ -263,6 +263,14 @@
       "endpoint_url_default": [
         "${aws_apigatewayv2_api.default_gateway.api_endpoint}"
       ]
+    },
+    {
+      "tags": [
+        {
+          "Site": "mach-site-us",
+          "Environment": "site"
+        }
+      ]
     }
   ],
   "module": [
@@ -295,13 +303,16 @@
         "site": [
           "mach-site-us"
         ],
+        "tags": [
+          "${local.tags}"
+        ],
         "variables": [
           {}
         ],
         "secrets": [
           {}
         ],
-        "endpoint_public": [
+        "aws_endpoint_public": [
           {
             "url": "${local.endpoint_url_default}",
             "api_gateway_id": "${aws_apigatewayv2_api.default_gateway.id}",
@@ -345,6 +356,9 @@
         ],
         "site": [
           "mach-site-us"
+        ],
+        "tags": [
+          "${local.tags}"
         ],
         "variables": [
           {

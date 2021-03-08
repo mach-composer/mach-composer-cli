@@ -79,9 +79,10 @@ def azure_config():
             types.ComponentConfig(
                 name="api-extensions",
                 source="some-source//terraform",
-                short_name="apiexts",
                 version="1.0",
-                azure=types.ComponentAzureConfig(service_plan="default"),
+                azure=types.ComponentAzureConfig(
+                    short_name="apiexts", service_plan="default"
+                ),
             ),
             types.ComponentConfig(
                 name="product-types",
@@ -92,7 +93,7 @@ def azure_config():
             types.ComponentConfig(
                 name="payment",
                 source="payment//terraform",
-                short_name="payment",
+                azure=types.ComponentAzureConfig(short_name="payment"),
                 version="1.0",
             ),
         ],
@@ -153,14 +154,14 @@ def apollo_config():
             types.ComponentConfig(
                 name="federated-gateway",
                 source="federated-gateway//terraform",
-                short_name="gqlfedgw",
+                azure=types.ComponentAzureConfig(short_name="gqlfedgw"),
                 version="1.0",
                 integrations=["azure", "apollo_federation"],
             ),
             types.ComponentConfig(
                 name="commercetools-proxy",
                 source="commercetools-proxy//terraform",
-                short_name="gqlctproxy",
+                azure=types.ComponentAzureConfig(short_name="gqlctproxy"),
                 version="v0.1.0",
                 integrations=["azure", "apollo_federation"],
             ),

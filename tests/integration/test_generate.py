@@ -64,4 +64,5 @@ def test_generate_apollo_federation(click_runner, click_dir, tf_mock):
 
     with open(os.path.join(deployments_dir, "mach-site-eu", "site.tf")) as f:
         site_config = hcl2.load(f)
+    # write_json("apollo_config1_expected_mach-site-eu.json", site_config)
     assert site_config == get_json("apollo_config1_expected_mach-site-eu.json")

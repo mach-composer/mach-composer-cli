@@ -29,7 +29,6 @@ class ComponentConfig(JsonSchemaMixin):
     name: str
     source: str
     version: str
-    short_name: Optional[str] = fields.none()
     integrations: List[str] = fields.list_()
     endpoints: Dict[str, str] = fields.dict_()
     health_check_path: Optional[str] = fields.none()
@@ -41,10 +40,6 @@ class ComponentConfig(JsonSchemaMixin):
     branch: Optional[str] = fields.none()
 
     artifacts: Dict[str, LocalArtifact] = fields.dict_()
-
-    def __post_init__(self):
-        """Ensure short_name is set."""
-        self.short_name = self.short_name or self.name
 
     @property
     def use_version_reference(self):

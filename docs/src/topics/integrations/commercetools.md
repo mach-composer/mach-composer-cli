@@ -35,7 +35,7 @@ locals {
 }
 
 resource "commercetools_api_client" "client" {
-  name  = format("%s_api_extension", var.name_prefix)
+  name  = format("%s_api_extension", var.azure_name_prefix)
   scope = local.ct_scopes
 }
 ```

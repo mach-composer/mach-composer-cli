@@ -22,8 +22,6 @@ components:
 - `name` - Name of the component. To be used as reference in the site definitions.
 - `version` - A Git commit hash or tag
 - `source` - Source definition of the terraform module
-- `short_name` - Short name to be used in cloud resources. Should be at most 10 characters to avoid running into Resource naming limits.<br>
-  Defaults to the given components `name`
 - `integrations` - Defines a list of integrations for the given component. It controls what Terraform variables are passed on to the components [Terraform module](../components/structure.md#terraform-module).<br>
   Defaults to `["azure"]` or `["aws"]`, depending on your cloud provider.<br>
   Could be any of:
@@ -69,6 +67,9 @@ Example:
 ```yaml
 azure:
   service_plan: default
+  short_name: apiexts
 ```
 
 - `service_plan` - The service plan (defined in [`service_plans`](./general_config.md#service_plans)) to use for this component. Set this to `default` if you want to use the MACH-managed Consumption plan.
+- `short_name` - Short name to be used in cloud resources. Should be at most 10 characters to avoid running into Resource naming limits.<br>
+  Defaults to the given components `name`
