@@ -24,16 +24,16 @@ except IOError:
     readme = ""
 
 about = {}
-with open(os.path.join('src', 'mach', '__version__.py')) as f:
+with open(os.path.join("src", "mach", "__version__.py")) as f:
     exec(f.read(), about)
 
 setup(
-    name=about['__title__'],
-    version=about['__version__'],
-    author=about['__author__'],
-    author_email=about['__author_email__'],
-    url=about['__url__'],
-    description=about['__description__'],
+    name="mach-composer",
+    version=about["__version__"],
+    author="Lab Digital B.V.",
+    author_email="info@labdigital.nl",
+    url="https://github.com/labd/mach-composer",
+    description="MACH composer",
     long_description=readme,
     long_description_content_type="text/markdown",
     zip_safe=False,
@@ -46,7 +46,7 @@ setup(
         [console_scripts]
         mach=mach.commands:mach
     """,
-    license=about['__license__'],
+    license="MIT",
     classifiers=[
         "Development Status :: 5 - Production/Stable",
         "License :: OSI Approved :: MIT License",
