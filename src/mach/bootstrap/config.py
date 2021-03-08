@@ -139,7 +139,9 @@ def _create_config() -> types.MachConfig:  # noqa: C901
         integrations=integrations,
     )
     if cloud == "azure":
-        component_config.short_name = "yourcomp"
+        component_config.azure = types.ComponentAzureConfig(
+            short_name="yourcomp",
+        )
 
     return types.MachConfig(
         general_config=types.GeneralConfig(
@@ -156,8 +158,4 @@ def _clean_config_dump(data: dict) -> dict:
     TODO: These are actions that should be performed in the Marshmallow schema.
     """
     del data["output_path"]
-    for component in data["components"]:
-        if component["short_name"] == component["name"]:
-            del component["short_name"]
-
     return data
