@@ -7,8 +7,11 @@ if TYPE_CHECKING:
     from mach.types import LocalArtifact, MachConfig
 
 
-def build_packages(config: "MachConfig"):
+def build_packages(config: "MachConfig", restrict_components=None):
     for component in config.components:
+        if restrict_components and component.name not in restrict_components:
+            continue
+
         for artifact, artifact_cfg in component.artifacts.items():
             build_artifact(artifact_cfg)
 
