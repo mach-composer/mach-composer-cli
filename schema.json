@@ -1,12 +1,16 @@
 {
   "type": "object",
   "required": [
+    "mach_composer",
     "general_config",
     "sites"
   ],
   "properties": {
+    "mach_composer": {
+      "$ref": "#/definitions/MachComposerConfig"
+    },
     "general_config": {
-      "$ref": "#/definitions/GeneralConfig"
+      "$ref": "#/definitions/GlobalConfig"
     },
     "sites": {
       "type": "array",
@@ -33,7 +37,19 @@
   "description": "Main MACH configuration object.",
   "$schema": "http://json-schema.org/draft-06/schema#",
   "definitions": {
-    "GeneralConfig": {
+    "MachComposerConfig": {
+      "type": "object",
+      "required": [
+        "version"
+      ],
+      "properties": {
+        "version": {
+          "type": "string"
+        }
+      },
+      "description": "MachComposerConfig(version: str)"
+    },
+    "GlobalConfig": {
       "type": "object",
       "required": [
         "environment",
@@ -536,19 +552,19 @@
     "ApolloFederationSettings": {
       "type": "object",
       "required": [
-        "api_key"
+        "api_key",
+        "graph",
+        "graph_variant"
       ],
       "properties": {
         "api_key": {
           "type": "string"
         },
         "graph": {
-          "type": "string",
-          "default": ""
+          "type": "string"
         },
         "graph_variant": {
-          "type": "string",
-          "default": ""
+          "type": "string"
         }
       },
       "description": "Apollo Federation settings."
@@ -691,9 +707,6 @@
           },
           "default": {}
         },
-        "short_name": {
-          "type": "string"
-        },
         "health_check_path": {
           "type": "string"
         },
@@ -726,9 +739,12 @@
       "properties": {
         "service_plan": {
           "type": "string"
+        },
+        "short_name": {
+          "type": "string"
         }
       },
-      "description": "ComponentAzureConfig(service_plan: Union[str, NoneType] = None)"
+      "description": "ComponentAzureConfig(service_plan: Union[str, NoneType] = None, short_name: Union[str, NoneType] = None)"
     },
     "ComponentConfig": {
       "type": "object",
@@ -745,9 +761,6 @@
           "type": "string"
         },
         "version": {
-          "type": "string"
-        },
-        "short_name": {
           "type": "string"
         },
         "integrations": {
@@ -775,25 +788,32 @@
         },
         "artifacts": {
           "type": "object",
-          "patternProperties": {
-            "^[A-Za-z_-][A-Za-z0-9_-]*$": {
-              "type": "object",
-              "properties": {
-                "script": {
-                  "type": "string"
-                },
-                "filename": {
-                  "type": "string"
-                },
-                "workdir": {
-                  "type": "string"
-                }
-              }
-            }
-          }
+          "additionalProperties": {
+            "$ref": "#/definitions/LocalArtifact"
+          },
+          "default": {}
         }
       },
       "description": "Component definition."
+    },
+    "LocalArtifact": {
+      "type": "object",
+      "required": [
+        "script",
+        "filename"
+      ],
+      "properties": {
+        "script": {
+          "type": "string"
+        },
+        "filename": {
+          "type": "string"
+        },
+        "workdir": {
+          "type": "string"
+        }
+      },
+      "description": "LocalArtifact(script: str, filename: str, workdir: str = None)"
     }
   }
 }
