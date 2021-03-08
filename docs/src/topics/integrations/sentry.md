@@ -20,7 +20,7 @@ Use that token to configure your MACH environment:
 
 ```yaml
 ---
-general_config:
+global:
   environment: test
   cloud: aws
   sentry:

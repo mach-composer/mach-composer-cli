@@ -7,7 +7,7 @@ from mach import parse, types
 @pytest.fixture
 def config():
     return types.MachConfig(
-        general_config=types.GeneralConfig(
+        general_config=types.GlobalConfig(
             environment="test",
             terraform_config=types.TerraformConfig(
                 aws_remote_state=types.AWSTFState(
@@ -47,7 +47,7 @@ def config():
 @pytest.fixture
 def azure_config():
     return types.MachConfig(
-        general_config=types.GeneralConfig(
+        general_config=types.GlobalConfig(
             environment="test",
             terraform_config=types.TerraformConfig(
                 azure_remote_state=types.AzureTFState(
@@ -114,7 +114,7 @@ def parsed_azure_config(azure_config):
 @pytest.fixture
 def apollo_config():
     return types.MachConfig(
-        general_config=types.GeneralConfig(
+        general_config=types.GlobalConfig(
             environment="test",
             terraform_config=types.TerraformConfig(
                 azure_remote_state=types.AzureTFState(

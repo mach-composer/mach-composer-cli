@@ -12,7 +12,7 @@ An example:
 
   ```yaml
   ---
-  general_config:
+  global:
     environment: test
     cloud: azure
     terraform_config:

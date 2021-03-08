@@ -18,7 +18,7 @@ def validate_config(config: types.MachConfig):
         validate_site(site, config=config)
 
 
-def validate_general_config(config: types.GeneralConfig):
+def validate_general_config(config: types.GlobalConfig):
     if config.cloud == types.CloudOption.AZURE:
         if not config.azure:
             raise ValidationError("Missing azure configuration")

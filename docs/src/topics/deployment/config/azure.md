@@ -29,7 +29,7 @@ components:
 
 ### Custom endpoint
 
-Whenever a custom endpoint from your [endpoints definition](../../../reference/syntax/sites.md#endpoints) is used, MACH will require that you have configured [`frontdoor`](../../../reference/syntax/general_config.md#frontdoor) for additional DNS information that it needs to setup your Frontdoor instance.
+Whenever a custom endpoint from your [endpoints definition](../../../reference/syntax/sites.md#endpoints) is used, MACH will require that you have configured [`frontdoor`](../../../reference/syntax/global.md#frontdoor) for additional DNS information that it needs to setup your Frontdoor instance.
 
 In addition to that it will also setup the necessary DNS record.
 
@@ -64,7 +64,7 @@ The routing in Frontdoor that will be created:
 
 MACH can create an [App service plan](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/app_service_plan) that can be used for any MACH component that uses the `service_plan` configuration option (either in the [component definition](../../../reference/syntax/components.md#azure) or the [site-specific configuration](../../../reference/syntax/sites.md#azure_1)).
 
-What kind and how many service plans it will create depends on what service plans are needed by the components, and how the [`service_plans`](../../../reference/syntax/general_config.md#service_plans) configuration looks like.
+What kind and how many service plans it will create depends on what service plans are needed by the components, and how the [`service_plans`](../../../reference/syntax/global.md#service_plans) configuration looks like.
 
 By default, MACH will create a `default` service plan which is a Consumption plan, if any of the components have `service_plan: default` set in their configuration.
 

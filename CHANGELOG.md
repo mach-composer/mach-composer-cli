@@ -37,6 +37,7 @@
 
 **Generic**
 
+- **config**: Rename `general_config` to `global`
 - **config**: `base_url` has been replaced by the `endpoints` settings:<br>
   ```yaml
   sites:

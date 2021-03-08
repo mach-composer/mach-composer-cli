@@ -1,13 +1,13 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, List, Optional
 
-from dataclasses_json import dataclass_json
+from dataclasses_json import config, dataclass_json
 from dataclasses_jsonschema import JsonSchemaMixin
 
 from . import fields
 from .components import ComponentConfig
-from .general_config import GeneralConfig
+from .general_config import GlobalConfig
 from .sites import Site
 
 __all__ = ["MachConfig"]
@@ -18,7 +18,7 @@ __all__ = ["MachConfig"]
 class MachConfig(JsonSchemaMixin):
     """Main MACH configuration object."""
 
-    general_config: GeneralConfig
+    general_config: GlobalConfig = field(metadata=config(field_name="global"))
     sites: List[Site]
     components: List[ComponentConfig] = fields.list_()
 

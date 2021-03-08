@@ -70,6 +70,6 @@ azure:
   short_name: apiexts
 ```
 
-- `service_plan` - The service plan (defined in [`service_plans`](./general_config.md#service_plans)) to use for this component. Set this to `default` if you want to use the MACH-managed Consumption plan.
+- `service_plan` - The service plan (defined in [`service_plans`](./global.md#service_plans)) to use for this component. Set this to `default` if you want to use the MACH-managed Consumption plan.
 - `short_name` - Short name to be used in cloud resources. Should be at most 10 characters to avoid running into Resource naming limits.<br>
   Defaults to the given components `name`

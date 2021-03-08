@@ -1,4 +1,4 @@
-# general_config
+# global
 All 'shared' configuration that applies to all sites.
 
 - **`environment`** - (Required) [environment](#environment) Identifier for the environment. For example `development`, `test` or `production`.<br>

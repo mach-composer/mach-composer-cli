@@ -1,5 +1,5 @@
 ---
-general_config:
+global:
   environment: site
   terraform_config:
     aws_remote_state:

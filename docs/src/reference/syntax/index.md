@@ -6,14 +6,14 @@ It is common to have a single configuration file per environment since they usua
 
 The configuration file has the following structure:
 
-- **[general_config](./general_config.md)**
-    - **[environment](./general_config.md)**
-    - **[terraform_config](./general_config.md#terraform_config)**
-    - **[cloud](./general_config.md)**
-    - [azure](./general_config.md#azure)
-    - [sentry](./general_config.md#sentry)
-    - [contentful](./general_config.md#contentful)
-    - [amplience](./general_config.md#amplience)
+- **[global](./global.md)**
+    - **[environment](./global.md)**
+    - **[terraform_config](./global.md#terraform_config)**
+    - **[cloud](./global.md)**
+    - [azure](./global.md#azure)
+    - [sentry](./global.md#sentry)
+    - [contentful](./global.md#contentful)
+    - [amplience](./global.md#amplience)
 - **[sites](./sites.md)**
     - **[identifier](./sites.md)**
     - [commercetools](./sites.md#commercetools)

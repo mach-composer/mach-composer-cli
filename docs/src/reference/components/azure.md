@@ -56,7 +56,7 @@ variable "azure_monitor_action_group_id" {
 ```
 
 !!! info "Monitor action group"
-    `monitor_action_group_id` is set to the [action group](../../topics/deployment/config/azure.md#action-groups) ID when a [alert_group](../syntax/general_config.md#azure) is configured.
+    `monitor_action_group_id` is set to the [action group](../../topics/deployment/config/azure.md#action-groups) ID when a [alert_group](../syntax/global.md#azure) is configured.
 
 ### With `endpoints`
 
@@ -127,7 +127,7 @@ resource "azurerm_function_app" "your_component" {
 MACH will provide the correct HTTP routing for you.<br>
 To do so, the following has to be configured:
 
-- [Frontdoor](../syntax/general_config.md#frontdoor) settings in the Azure configuration
+- [Frontdoor](../syntax/global.md#frontdoor) settings in the Azure configuration
 - The component needs to have [`endpoints`](../syntax/components.md) defined
 
 !!! tip "Default endpoint"
@@ -155,7 +155,7 @@ MACH creates a name prefix which can be used to name all other resources.
 
 This prefix is built up using
 
-- The configured [resources prefix](../syntax/general_config.md#azure)
+- The configured [resources prefix](../syntax/global.md#azure)
 - The [site identifier](../#syntax/sites.md)
 - Region
 
