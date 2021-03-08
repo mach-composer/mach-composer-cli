@@ -98,10 +98,10 @@ In Azure we can store the secrets in a KeyVault and pass the KeyVaul references 
 
 ```terraform
 resource "azurerm_key_vault" "main" {
-  name                        = replace("${var.name_prefix}-kv-${var.short_name}", "-", "")
-  location                    = var.resource_group_location
-  resource_group_name         = var.resource_group_name
-  tenant_id                   = var.tenant_id
+  name                        = replace("${var.azure_name_prefix}-kv-${var.azure_short_name}", "-", "")
+  location                    = var.azure_resource_group.location
+  resource_group_name         = var.azure_resource_group.name
+  tenant_id                   = var.azure_tenant_id
   enabled_for_disk_encryption = true
   sku_name                    = "standard"
   soft_delete_enabled         = true

@@ -508,31 +508,31 @@
         "secrets": [
           {}
         ],
-        "short_name": [
+        "azure_short_name": [
           "us-payment"
         ],
-        "name_prefix": [
+        "azure_name_prefix": [
           "${local.name_prefix}"
         ],
-        "subscription_id": [
+        "azure_subscription_id": [
           "${local.subscription_id}"
         ],
-        "tenant_id": [
+        "azure_tenant_id": [
           "${local.tenant_id}"
         ],
-        "region": [
+        "azure_region": [
           "${local.region}"
         ],
-        "service_object_ids": [
+        "azure_service_object_ids": [
           "${local.service_object_ids}"
         ],
-        "resource_group": [
+        "azure_resource_group": [
           {
             "name": "${local.resource_group_name}",
             "location": "${local.resource_group_location}"
           }
         ],
-        "endpoint_public": [
+        "azure_endpoint_public": [
           {
             "url": "${local.endpoint_url_default}",
             "frontdoor_id": "${azurerm_frontdoor.app-service.header_frontdoor_id}"
@@ -587,31 +587,31 @@
         "secrets": [
           {}
         ],
-        "short_name": [
+        "azure_short_name": [
           "apiexts"
         ],
-        "name_prefix": [
+        "azure_name_prefix": [
           "${local.name_prefix}"
         ],
-        "subscription_id": [
+        "azure_subscription_id": [
           "${local.subscription_id}"
         ],
-        "tenant_id": [
+        "azure_tenant_id": [
           "${local.tenant_id}"
         ],
-        "region": [
+        "azure_region": [
           "${local.region}"
         ],
-        "service_object_ids": [
+        "azure_service_object_ids": [
           "${local.service_object_ids}"
         ],
-        "resource_group": [
+        "azure_resource_group": [
           {
             "name": "${local.resource_group_name}",
             "location": "${local.resource_group_location}"
           }
         ],
-        "app_service_plan": [
+        "azure_app_service_plan": [
           {
             "id": "${azurerm_app_service_plan.functionapps.id}",
             "name": "${azurerm_app_service_plan.functionapps.name}"

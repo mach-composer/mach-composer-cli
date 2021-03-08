@@ -432,7 +432,7 @@
         "secrets": [
           {}
         ],
-        "endpoint_public": [
+        "aws_endpoint_public": [
           {
             "url": "${local.endpoint_url_main}",
             "api_gateway_id": "${aws_apigatewayv2_api.main_gateway.id}",
