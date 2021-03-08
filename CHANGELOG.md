@@ -4,7 +4,7 @@
 - Add Sentry DSN management options
 - Add Amplience support
 - Add Apollo Federation support
-- Add support for commercetools Store-specific variables and secrets on components: `store_variables` and `store_secrets`
+- Add support for commercetools Store-specific variables and secrets on components included in new variable: `ct_stores`
 - Add support for multiple API endpoints:
     - `base_url` replaced with `endpoints`
     - `has_public_api` replaced with `endpoints`
@@ -27,9 +27,9 @@
 - Upgraded Terraform AWS provider to `3.28.0`
 - Upgraded Terraform Azure provider to `2.47.0`
 - AWS: Set `auto-deploy` on API gateway stage
-- Azure: Add new required `frontdoor_id` Terraform variable for components with `endpoint` defined
+- AWS: Add new component variable `tags`
+- Azure: Remove `project_key` from `var.tags` and add `Environment` and `Site`
 - Azure: Add `--with-sp-login` option to `mach plan` command
-- Azure: Add two extra tags to all resources: `environment` and `site`
 - Azure: Remove function app sync bash command: this is now the responsibility of the component
 
 
@@ -50,7 +50,8 @@
     endpoints:
       main: https://api.eu-tst.mach-example.net
   ```
-  When you name the endpoint that replaces `base_url` "main", it will have the least effect on your existing Terraform state.
+  When you name the endpoint that replaces `base_url` "main", it will have the least effect on your existing Terraform state.<br><br>
+  When endpoints are defined on a component, the component needs to define endpoint Terraform variables ([AWS](https://docs.machcomposer.io/reference/components/aws.html#with-endpoints) and [Azure](https://docs.machcomposer.io/reference/components/azure.html#with-endpoints))
 - **component**: Components with a `commercetools` integration require a new variable `ct_stores`:
   ```terraform
   variable "ct_stores" {
@@ -76,6 +77,14 @@
 
 - **config**: The AWS `route53_zone_name` setting has been removed in favour of multiple endpoint support
 - **config**: The `deploy_role` setting has been renamed to `deploy_role_arn`
+- **component**: Introduced new variable `tags`:
+  ```terraform
+  variable "tags" {
+    type        = map(string)
+    description = "Tags to be used on resources."
+  }
+  ```
+- **component**: Add `aws_endpoint_*` variable when the `endpoints` configuration option is used. [More information](https://docs.machcomposer.io/reference/components/aws.html#with-endpoints) on defining and using endpoints in AWS.
 
 **Azure**
 
@@ -86,14 +95,24 @@
   ```bash
   terraform state mv azurerm_dns_cname_record.<project-key> azurerm_dns_cname_record.<endpoint-key>
   ```
-- **component**: The `FRONTDOOR_ID` value is removed from the `var.variables` of a component. Replaced with `var.frontdoor_id`
-- **component**: `app_service_plan_id` has been replaced with `app_service_plan` containing both an `id` and `name` so the [azurerm_app_service_plan](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/app_service_plan) data source can be used in a component.<br>
+- **component**: Prefixed **all** Azure-specific variables with `azure_`
+- **component**: The `FRONTDOOR_ID` value is removed from the `var.variables` of a component. Replaced with `var.azure_endpoint_*`. [MOre information](https://docs.machcomposer.io/reference/components/azure.html#with-endpoints) on defining and using endpoints in Azure.
+- **component**: `app_service_plan_id` has been replaced with `azure_app_service_plan` containing both an `id` and `name` so the [azurerm_app_service_plan](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/app_service_plan) data source can be used in a component.<br>
   It will *only be set* when `service_plan` is configured in the component [definition](https://docs.machcomposer.io/reference/syntax/components.html#azure) or [site configuration](https://docs.machcomposer.io/reference/syntax/sites.html#azure_1)
   ```terraform
-  variable "app_service_plan" {
+  variable "azure_app_service_plan" {
     type = object({
       id   = string
       name = string
+    })
+  }
+  ```
+- **component**: Replaced `resource_group_name` and `resource_group_location` with `azure_resource_group`:
+  ```terraform
+  variable "azure_resource_group" {
+    type = object({
+      name     = string
+      location = string
     })
   }
   ```
