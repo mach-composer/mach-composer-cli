@@ -2,14 +2,14 @@
   "type": "object",
   "required": [
     "mach_composer",
-    "general_config",
+    "global",
     "sites"
   ],
   "properties": {
     "mach_composer": {
       "$ref": "#/definitions/MachComposerConfig"
     },
-    "general_config": {
+    "global": {
       "$ref": "#/definitions/GlobalConfig"
     },
     "sites": {
