@@ -144,7 +144,7 @@ def apply(
 ):
     """Apply the configuration."""
     for config in configs:
-        build_packages(config)
+        build_packages(config, restrict_components=component)
         generate_terraform(config, site=site)
         apply_terraform(
             config,
