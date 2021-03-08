@@ -1,4 +1,4 @@
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 from dataclasses_json import dataclass_json
 from dataclasses_jsonschema import JsonSchemaMixin
