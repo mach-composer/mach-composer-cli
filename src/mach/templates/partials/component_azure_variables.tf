@@ -1,5 +1,5 @@
 ### azure related
-azure_short_name              = "{{ component.short_name }}"
+azure_short_name              = "{{ component.azure.short_name }}"
 azure_name_prefix             = local.name_prefix
 azure_subscription_id         = local.subscription_id
 azure_tenant_id               = local.tenant_id
