@@ -17,7 +17,7 @@ In order to support the [`endpoints`](../../topics/deployment/config/aws.md#http
 For example, if the component requires two endpoints (`main` and `webhooks`) to be set, the following variables needs to be defined:
 
 ```terraform
-variable "endpoint_main" {
+variable "aws_endpoint_main" {
   type = object({
     url                       = string
     api_gateway_id            = string
@@ -25,7 +25,7 @@ variable "endpoint_main" {
   })
 }
 
-variable "endpoint_webhooks" {
+variable "aws_endpoint_webhooks" {
   type = object({
     url                       = string
     api_gateway_id            = string
@@ -73,7 +73,7 @@ We recommend using the [AWS Lambda Terraform module](https://registry.terraform.
 module "lambda_function" {
   source = "terraform-aws-modules/lambda/aws"
 
-  function_name = "${var.site}-${var.short_name}"
+  function_name = "${var.site}-${var.azure_short_name}"
   handler       = "src/index.handler"
   runtime       = "nodejs12.x"
   memory_size   = 512
