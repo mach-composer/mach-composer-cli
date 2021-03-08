@@ -17,10 +17,7 @@ In addition to the [base variables](./structure.md#required-variables), an Azure
 - `service_object_ids` - User/Group/Principle IDs that should be able to access for example a KeyVault.<br>
 Type: `map(string)`
 - `region` - Azure region
-- `resource_group_name` - Name of the resource group the component should be created in
-- `resource_group_location` - The resource group location
-- `tags` - Azure tags to be used on resources<br>
-  Type: `map(string)`
+- `resource_group` - Information of the resource group the component should be created in
 - `monitor_action_group_id` - [action group](../../topics/deployment/config/azure.md#action-groups) ID when [alert_group](../syntax/general_config.md#azure) is configured.
 
 ```terraform
@@ -33,10 +30,11 @@ variable "service_object_ids" {
   default     = {}
 }
 variable "region" {}
-variable "resource_group_name" {}
-variable "resource_group_location" {}
-variable "tags" {
-  type        = map(string)
+variable "resource_group" {
+  type = object({
+    name     = string
+    location = string
+  })
 }
 variable "monitor_action_group_id" {
   type        = string
