@@ -4,13 +4,20 @@ from typing import List
 
 import click
 from mach import types
+from mach.__version__ import __version__
 from mach.exceptions import ValidationError
 
 STORE_KEY_RE = re.compile(r"^[\w_-]*$")
 
 
-def validate_config(config: types.MachConfig):
+def validate_config(config: types.MachConfig, *, ignore_version=True):
     """Check the config for invalid configuration."""
+    if not ignore_version and config.mach_composer.version != __version__:
+        raise ValidationError(
+            f"MACH composer version defined in configuration ({config.mach_composer.version}) "
+            f"does not match current version {__version__}"
+        )
+
     validate_general_config(config.general_config)
     validate_components(config)
 

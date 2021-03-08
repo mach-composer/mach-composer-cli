@@ -1,0 +1,7 @@
+__title__ = "mach-composer"
+__description__ = "MACH composer"
+__url__ = "https://github.com/labd/mach-composer"
+__version__ = "1.0.0-rc.12"
+__author__ = "Lab Digital B.V."
+__author_email__ = "info@labdigital.nl"
+__license__ = "MIT"

@@ -31,15 +31,23 @@ def terraform_command(f):
         help="Site to parse. If not set parse all sites.",
     )
     @click.option(
+        "--ignore-version",
+        is_flag=True,
+        default=False,
+        help="Skip MACH composer version check",
+    )
+    @click.option(
         "--output-path",
         default="deployments",
         help="Output path, defaults to `cwd`/deployments.",
     )
-    def new_func(file, site, output_path: str, **kwargs):
+    def new_func(file, site, output_path: str, ignore_version: bool, **kwargs):
         files = get_input_files(file)
 
         try:
-            configs = parse.parse_configs(files, output_path)
+            configs = parse.parse_configs(
+                files, output_path, ignore_version=ignore_version
+            )
         except MachError as e:
             raise click.ClickException(str(e)) from e
 

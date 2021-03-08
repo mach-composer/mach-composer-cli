@@ -10,6 +10,8 @@
     - `has_public_api` replaced with `endpoints`
     - Supports a `default` endpoint that doesn't require custom domain settings
 - Add configuration options for Azure service plans
+- Add `mach_composer` configuration block to configure required MACH composer version
+- Add `--ignore-version` to disable the MACH composer version check
 - Improved development workflow:
   - Improved git log parsing
   - Add `mach bootstrap` commands:

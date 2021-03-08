@@ -10,52 +10,54 @@ A configuration will be created and can be used as input for MACH composer.
 
 An example:
 
-  ```yaml
-  ---
-  global:
-    environment: test
-    cloud: azure
-    terraform_config:
-      azure_remote_state:
-        resource_group: my-shared-rg
-        storage_account: mysharedsaterra
-        container_name: tfstate
-        state_folder: test
-    azure:
-      tenant_id: e180345a-b3e1-421f-b448-672ab50d8502
-      subscription_id: 086bd7e7-0755-44ab-a730-7a0b8ad4883f
-      region: westeurope
-  sites:
-    - identifier: my-site
-      endpoints:
-        main: api.tst.mach-example.net
-      commercetools:
-        project_key: my-site-tst
-        client_id: ...
-        client_secret: ...
-        scopes: manage_project:my-site-tst manage_api_clients:my-site-tst view_api_clients:my-site-tst
-        languages:
-          - en-GB
-          - nl-NL
-        currencies:
-          - GBP
-          - EUR
-        countries:
-          - GB
-          - NL
-      components:
-        - name: payment
-          variables:
-            STRIPE_ACCOUNT_ID: 0123456789
-          secrets:
-            STRIPE_SECRET_KEY: secret-value
-  components:
-    - name: payment
-      source: git::ssh://git@github.com/your-project/components/payment-component.git//terraform
-      endpoints: 
-        main: main
-      version: e638e57
-  ```
+```yaml
+---
+mach_composer:
+  version: 1.0.0
+global:
+  environment: test
+  cloud: azure
+  terraform_config:
+    azure_remote_state:
+      resource_group: my-shared-rg
+      storage_account: mysharedsaterra
+      container_name: tfstate
+      state_folder: test
+  azure:
+    tenant_id: e180345a-b3e1-421f-b448-672ab50d8502
+    subscription_id: 086bd7e7-0755-44ab-a730-7a0b8ad4883f
+    region: westeurope
+sites:
+  - identifier: my-site
+    endpoints:
+      main: api.tst.mach-example.net
+    commercetools:
+      project_key: my-site-tst
+      client_id: ...
+      client_secret: ...
+      scopes: manage_project:my-site-tst manage_api_clients:my-site-tst view_api_clients:my-site-tst
+      languages:
+        - en-GB
+        - nl-NL
+      currencies:
+        - GBP
+        - EUR
+      countries:
+        - GB
+        - NL
+    components:
+      - name: payment
+        variables:
+          STRIPE_ACCOUNT_ID: 0123456789
+        secrets:
+          STRIPE_SECRET_KEY: secret-value
+components:
+  - name: payment
+    source: git::ssh://git@github.com/your-project/components/payment-component.git//terraform
+    endpoints: 
+      main: main
+    version: e638e57
+```
 
 See [Syntax](../../reference/syntax/index.md) for all configuration options.
 

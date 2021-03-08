@@ -1,4 +1,7 @@
 ---
+mach_composer:
+  version: 1.0.0
+
 global:
   environment: site
   terraform_config:
