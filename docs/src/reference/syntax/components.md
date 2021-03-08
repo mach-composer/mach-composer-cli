@@ -1,4 +1,4 @@
-# components definitions
+# components
 
 All component definitions in this configuration file.<br>
 These components are used and configured separately [per site](./sites.md#components).

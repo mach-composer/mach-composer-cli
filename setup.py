@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import os
 import re
 
 import pkg_resources
@@ -22,9 +23,13 @@ try:
 except IOError:
     readme = ""
 
+about = {}
+with open(os.path.join("src", "mach", "__version__.py")) as f:
+    exec(f.read(), about)
+
 setup(
     name="mach-composer",
-    version="1.0.0-rc.12",
+    version=about["__version__"],
     author="Lab Digital B.V.",
     author_email="info@labdigital.nl",
     url="https://github.com/labd/mach-composer",
@@ -41,7 +46,7 @@ setup(
         [console_scripts]
         mach=mach.commands:mach
     """,
-    license="Proprietary",
+    license="MIT",
     classifiers=[
         "Development Status :: 5 - Production/Stable",
         "License :: OSI Approved :: MIT License",

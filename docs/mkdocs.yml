@@ -59,9 +59,10 @@ nav:
   - Overview: reference/index.md
   - Syntax:
     - Overview: reference/syntax/index.md
-    - General config: reference/syntax/general_config.md
-    - Sites: reference/syntax/sites.md
-    - Component definitions: reference/syntax/components.md
+    - reference/syntax/mach.md
+    - reference/syntax/global.md
+    - reference/syntax/sites.md
+    - reference/syntax/components.md
   - Components:
     - reference/components/structure.md
     - reference/components/aws.md

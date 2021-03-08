@@ -12,7 +12,7 @@ def tf_mock(mocker):
 def test_apply(click_runner, click_dir, tf_mock):
     orig_config = get_file("aws_config1.yml")
 
-    result = click_runner.invoke(apply, ["-f", orig_config])
+    result = click_runner.invoke(apply, ["-f", orig_config, "--ignore-version"])
     assert result.exit_code == 0, result.stdout_bytes
     assert call_args(tf_mock) == [
         "fmt",  # mach-site-eu

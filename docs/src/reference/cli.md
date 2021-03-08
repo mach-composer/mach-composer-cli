@@ -37,6 +37,7 @@ mach apply --auto-approve -f main.yml
 - `--component` or `-c TEXT` Specific component to target.
 - `--output-path TEXT` Output path, defaults to `cwd`/deployments`.
 - `--reuse` Supress a terraform init for improved speed (not recommended for production usage)
+- `--ignore-version` Skip MACH composer version check
 
 
 ## `bootstrap`
@@ -82,6 +83,7 @@ mach generate -f main.yml
 - `--file` or `-f TEXT` YAML file to parse. If not set parse all *.yml files.
 - `--site` or `-s TEXT` Site to parse. If not set parse all sites.
 - `--output-path TEXT` Output path, defaults to `cwd`/deployments.
+- `--ignore-version` Skip MACH composer version check
 
 
 ## `plan`
@@ -98,7 +100,8 @@ mach plan -f main.yml
 - `--component` or `-c TEXT` Specific component to target.
 - `--output-path TEXT` Output path, defaults to `cwd`/deployments.
 - `--reuse` Supress a terraform init for improved speed (not recommended for production usage)
-
+- `--ignore-version` Skip MACH composer version check
+  
 
 ## `sites`
 List all sites.

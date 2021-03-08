@@ -13,7 +13,9 @@ def tf_mock(mocker):
 
 
 def test_generate_aws(click_runner, click_dir, tf_mock):
-    result = click_runner.invoke(generate, ["-f", get_file("aws_config1.yml")])
+    result = click_runner.invoke(
+        generate, ["-f", get_file("aws_config1.yml"), "--ignore-version"]
+    )
     assert result.exit_code == 0, result.stdout_bytes
 
     deployments_dir = os.path.join(click_dir, "deployments", "aws_config1")
@@ -33,7 +35,9 @@ def test_generate_aws(click_runner, click_dir, tf_mock):
 
 
 def test_generate_azure(click_runner, click_dir, tf_mock):
-    result = click_runner.invoke(generate, ["-f", get_file("azure_config1.yml")])
+    result = click_runner.invoke(
+        generate, ["-f", get_file("azure_config1.yml"), "--ignore-version"]
+    )
     assert result.exit_code == 0, result.stdout_bytes
 
     deployments_dir = os.path.join(click_dir, "deployments", "azure_config1")
@@ -54,7 +58,9 @@ def test_generate_azure(click_runner, click_dir, tf_mock):
 
 def test_generate_apollo_federation(click_runner, click_dir, tf_mock):
     """Test minimum apollo federation config passes the right vars to the respective modules."""
-    result = click_runner.invoke(generate, ["-f", get_file("apollo_config1.yml")])
+    result = click_runner.invoke(
+        generate, ["-f", get_file("apollo_config1.yml"), "--ignore-version"]
+    )
     assert result.exit_code == 0, result.stdout_bytes
 
     deployments_dir = os.path.join(click_dir, "deployments", "apollo_config1")

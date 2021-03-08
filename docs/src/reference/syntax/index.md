@@ -6,6 +6,7 @@ It is common to have a single configuration file per environment since they usua
 
 The configuration file has the following structure:
 
+- **[mach_composer](./mach.md)**
 - **[global](./global.md)**
     - **[environment](./global.md)**
     - **[terraform_config](./global.md#terraform_config)**

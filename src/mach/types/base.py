@@ -8,6 +8,7 @@ from dataclasses_jsonschema import JsonSchemaMixin
 from . import fields
 from .components import ComponentConfig
 from .general_config import GlobalConfig
+from .mach import MachComposerConfig
 from .sites import Site
 
 __all__ = ["MachConfig"]
@@ -18,6 +19,7 @@ __all__ = ["MachConfig"]
 class MachConfig(JsonSchemaMixin):
     """Main MACH configuration object."""
 
+    mach_composer: MachComposerConfig
     general_config: GlobalConfig = field(metadata=config(field_name="global"))
     sites: List[Site]
     components: List[ComponentConfig] = fields.list_()

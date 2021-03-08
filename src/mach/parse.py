@@ -21,14 +21,16 @@ from mach.validate import validate_config
 from marshmallow.exceptions import ValidationError
 
 
-def parse_configs(files: List[str], output_path: str = None) -> List[MachConfig]:
+def parse_configs(
+    files: List[str], output_path: str = None, *, ignore_version=True
+) -> List[MachConfig]:
     """Parse and validate configurations."""
     valid_configs = []
     for file in files:
         config = parse_config_from_file(file)
         config.file = file
         click.echo(f"Parsed {file} into config")
-        validate_config(config)
+        validate_config(config, ignore_version=ignore_version)
 
         if output_path:
             full_output_path = Path(f"{output_path}/{splitext(basename(file))[0]}")

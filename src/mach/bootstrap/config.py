@@ -3,6 +3,7 @@ import os
 import click
 import yaml
 from mach import types
+from mach.__version__ import __version__
 
 
 def create_configuration(output_file: str):
@@ -144,6 +145,7 @@ def _create_config() -> types.MachConfig:  # noqa: C901
         )
 
     return types.MachConfig(
+        mach_composer=types.MachComposerConfig(version=__version__),
         general_config=types.GlobalConfig(
             **general_config_kwargs,
         ),
