@@ -263,6 +263,14 @@
       "endpoint_url_default": [
         "${aws_apigatewayv2_api.default_gateway.api_endpoint}"
       ]
+    },
+    {
+      "tags": [
+        {
+          "Site": "mach-site-us",
+          "Environment": "site"
+        }
+      ]
     }
   ],
   "module": [
@@ -294,6 +302,9 @@
         ],
         "site": [
           "mach-site-us"
+        ],
+        "tags": [
+          "${local.tags}"
         ],
         "variables": [
           {}
@@ -345,6 +356,9 @@
         ],
         "site": [
           "mach-site-us"
+        ],
+        "tags": [
+          "${local.tags}"
         ],
         "variables": [
           {

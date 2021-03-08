@@ -26,6 +26,7 @@ def test_generate_terraform(parsed_config: types.MachConfig, tf_mock):
             {"required_providers": [{"aws": [{"version": "~> 3.28.0"}]}]},
         ],
         "provider": [{"aws": {"region": ["eu-central-1"]}}],
+        "locals": [{"tags": [{"Environment": "test", "Site": "unittest-nl"}]}],
         "module": [
             {
                 "api-extensions": {
@@ -33,6 +34,7 @@ def test_generate_terraform(parsed_config: types.MachConfig, tf_mock):
                     "component_version": ["1.0"],
                     "environment": ["test"],
                     "site": ["unittest-nl"],
+                    "tags": ["${local.tags}"],
                     "variables": [{}],
                     "secrets": [{}],
                     "providers": [{"aws": "${aws}"}],

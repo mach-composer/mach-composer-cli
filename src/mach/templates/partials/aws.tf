@@ -33,3 +33,10 @@ provider "aws" {
   {% endfor %}
   {% include 'partials/endpoints/aws_url_locals.tf' %}
 {% endif %}
+
+locals {
+  tags = {
+    Site = "{{ site.identifier }}"
+    Environment = "{{ general_config.environment }}"
+  }
+}

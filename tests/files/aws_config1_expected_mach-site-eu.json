@@ -383,6 +383,14 @@
       "endpoint_url_main": [
         "api.eu-tst.mach-example.net"
       ]
+    },
+    {
+      "tags": [
+        {
+          "Site": "mach-site-eu",
+          "Environment": "site"
+        }
+      ]
     }
   ],
   "module": [
@@ -414,6 +422,9 @@
         ],
         "site": [
           "mach-site-eu"
+        ],
+        "tags": [
+          "${local.tags}"
         ],
         "variables": [
           {}
@@ -465,6 +476,9 @@
         ],
         "site": [
           "mach-site-eu"
+        ],
+        "tags": [
+          "${local.tags}"
         ],
         "variables": [
           {
