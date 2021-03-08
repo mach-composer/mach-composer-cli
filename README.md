@@ -25,7 +25,7 @@ Read our [getting started guide](https://docs.machcomposer.io/gettingstarted.htm
 
 ```yaml
 ---
-general_config:
+global:
   environment: test
   cloud: aws
   terraform_config:

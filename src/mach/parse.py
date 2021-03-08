@@ -63,13 +63,13 @@ def parse_config_from_file(file: str) -> MachConfig:
 
 
 def parse_config(config: MachConfig) -> MachConfig:
-    parse_general_config(config)
+    parse_global_config(config)
     resolve_component_definitions(config)
     resolve_site_configs(config)
     return config
 
 
-def parse_general_config(config: MachConfig):
+def parse_global_config(config: MachConfig):
     if config.general_config.cloud == CloudOption.AZURE:
         if "default" not in config.general_config.azure.service_plans:
             config.general_config.azure.service_plans["default"] = ServicePlan(

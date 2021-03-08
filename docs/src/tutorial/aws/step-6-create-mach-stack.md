@@ -14,7 +14,7 @@ Edit your configuration so that it looks like the following example
 
 ```yaml
 ---
-general_config:
+global:
   environment: test
   cloud: aws
   terraform_config:

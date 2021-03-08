@@ -144,7 +144,7 @@ def _create_config() -> types.MachConfig:  # noqa: C901
         )
 
     return types.MachConfig(
-        general_config=types.GeneralConfig(
+        general_config=types.GlobalConfig(
             **general_config_kwargs,
         ),
         sites=[site],

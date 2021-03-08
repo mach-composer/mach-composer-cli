@@ -2,7 +2,7 @@
 
 When configured, MACH can manage a [hub](https://amplience.com/docs/intro/hubsandrepositories.html) per site.
 
-For this you need to define a **client_id** and **client_secret** in your [general config](../../reference/syntax/general_config.md#amplience).
+For this you need to define a **client_id** and **client_secret** in your [general config](../../reference/syntax/global.md#amplience).
 
 ## site configuration
 

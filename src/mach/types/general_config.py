@@ -19,7 +19,7 @@ __all__ = [
     "ContentfulConfig",
     "AmplienceConfig",
     "CloudOption",
-    "GeneralConfig",
+    "GlobalConfig",
 ]
 
 
@@ -152,7 +152,7 @@ class CloudOption(StringEnum):
 
 @dataclass_json
 @dataclass
-class GeneralConfig(JsonSchemaMixin):
+class GlobalConfig(JsonSchemaMixin):
     """Config that is shared across sites."""
 
     environment: str
