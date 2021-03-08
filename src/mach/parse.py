@@ -1,3 +1,4 @@
+import warnings
 from collections import defaultdict
 from os.path import abspath, basename, splitext
 from pathlib import Path
@@ -48,7 +49,10 @@ def parse_config_from_file(file: str) -> MachConfig:
         dictionary_config = yaml.full_load(fh)
 
     try:
-        config = MachConfig.schema(infer_missing=True).load(dictionary_config)  # type: ignore
+        with warnings.catch_warnings():
+            # Suppress a 'Unknown type ForwardRef('Component')' warning from dataclasses_json
+            warnings.simplefilter("ignore")
+            config = MachConfig.schema(infer_missing=True).load(dictionary_config)  # type: ignore
     except KeyError as e:
         # Most probably a missing value in the configuration.
         # dataclasses_json doesn't really give a proper Exception for this.
