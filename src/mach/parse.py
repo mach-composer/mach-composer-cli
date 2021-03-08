@@ -197,9 +197,6 @@ def resolve_site_components(config: MachConfig) -> MachConfig:
                 )
             component.definition = info
 
-            if not component.short_name:
-                component.short_name = info.short_name
-
             if site.sentry:
                 if not component.sentry:
                     component.sentry = site.sentry
@@ -231,3 +228,5 @@ def resolve_component_definitions(config: MachConfig) -> MachConfig:
         if config.general_config.cloud == CloudOption.AZURE:
             if not comp.azure:
                 comp.azure = ComponentAzureConfig()
+            if not comp.azure.short_name:
+                comp.azure.short_name = comp.name

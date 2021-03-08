@@ -24,9 +24,8 @@ locals {
   }
 
   tags = {
-    site = "{{ site.identifier }}"
-    environment = "{{ general_config.environment }}"
-    {% if site.commercetools.project_key %}project_key = "{{ site.commercetools.project_key }}"{% endif %}
+    Site = "{{ site.identifier }}"
+    Environment = "{{ general_config.environment }}"
   }
 }
 

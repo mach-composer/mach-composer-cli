@@ -176,9 +176,9 @@ def validate_azure_components(config: types.MachConfig):
             continue
 
         # azure naming length is limited, so verify it doesn't get too long.
-        if len(comp.short_name) > 10:
+        if len(comp.azure.short_name) > 10:
             raise ValidationError(
-                f"Component {comp.name} short_name '{comp.short_name}' "
+                f"Component {comp.name} short_name '{comp.azure.short_name}' "
                 "cannot be more than 10 characters."
             )
 

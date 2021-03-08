@@ -63,6 +63,11 @@ variable "secrets" {
   type        = map(string)
   description = "Map of secret values. Can be placed in a key vault."
 }
+
+variable "tags" {
+  type        = map(string)
+  description = "Tags to be used on resources."
+}
 ```
 
 !!! info "Cloud specific variables"

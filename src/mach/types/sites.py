@@ -257,7 +257,6 @@ class Component(JsonSchemaMixin):
     secrets: Optional[TerraformVariables] = fields.dict_()
     store_variables: Optional[StoreVariables] = fields.dict_()
     store_secrets: Optional[StoreVariables] = fields.dict_()
-    short_name: Optional[str] = fields.none()
     health_check_path: Optional[str] = fields.none()
     sentry: Optional[SentryDsn] = fields.none()
     azure: Optional[ComponentAzureConfig] = fields.none()

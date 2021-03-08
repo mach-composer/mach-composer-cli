@@ -97,8 +97,8 @@ resource "azurerm_frontdoor" "app-service" {
   backend_pool {
     name = "{{ endpoint.key }}-{{ component.name }}"
     backend {
-        host_header = "${local.name_prefix}-func-{{ component.short_name }}.azurewebsites.net"
-        address     = "${local.name_prefix}-func-{{ component.short_name }}.azurewebsites.net"
+        host_header = "${local.name_prefix}-func-{{ component.azure.short_name }}.azurewebsites.net"
+        address     = "${local.name_prefix}-func-{{ component.azure.short_name }}.azurewebsites.net"
         http_port   = 80
         https_port  = 443
     }
