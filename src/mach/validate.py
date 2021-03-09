@@ -108,12 +108,25 @@ def validate_site_components(components: List[types.Component], *, site: types.S
                     f"Store {store} is not defined in your commercetools stores definition"
                 )
 
-        if len(component.endpoints) > 1 and site.azure:
-            raise ValidationError(
-                f"The '{component.name}' component has multiple endpoints defined. "
-                "This is not supported on Azure yet.\n"
-                "See https://github.com/labd/mach-composer/issues/64 for more information."
-            )
+        if site.azure:
+            if len(component.endpoints) > 1:
+                raise ValidationError(
+                    f"The '{component.name}' component has multiple endpoints defined. "
+                    "This is not supported on Azure yet.\n"
+                    "See https://github.com/labd/mach-composer/issues/64 for more information."
+                )
+
+            service_plans = site.azure.service_plans
+            if (
+                component.azure
+                and component.azure.service_plan
+                and component.azure.service_plan not in service_plans
+            ):
+                raise ValidationError(
+                    f"Component {component.name} requires service plan "
+                    f"{component.azure.service_plan} which is not defined in the "
+                    "Azure configuration."
+                )
 
 
 def validate_commercetools(site: types.Site):
@@ -187,15 +200,4 @@ def validate_azure_components(config: types.MachConfig):
             raise ValidationError(
                 f"Component {comp.name} short_name '{comp.azure.short_name}' "
                 "cannot be more than 10 characters."
-            )
-
-        service_plans = config.general_config.azure.service_plans
-        if (
-            comp.azure
-            and comp.azure.service_plan
-            and comp.azure.service_plan not in service_plans
-        ):
-            raise ValidationError(
-                f"Component {comp.name} requires service plan {comp.azure.service_plan} which"
-                " is not defined in the Azure configuration."
             )
