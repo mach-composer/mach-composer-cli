@@ -11,8 +11,9 @@ azure_resource_group          = {
 }
 {% if component.azure.service_plan -%}
 azure_app_service_plan        = {
-  id = azurerm_app_service_plan.{{ component.azure.service_plan|service_plan_resource_name }}.id
-  name = azurerm_app_service_plan.{{ component.azure.service_plan|service_plan_resource_name }}.name
+  id                  = azurerm_app_service_plan.{{ component.azure.service_plan|service_plan_resource_name }}.id
+  name                = azurerm_app_service_plan.{{ component.azure.service_plan|service_plan_resource_name }}.name
+  resource_group_name = azurerm_app_service_plan.{{ component.azure.service_plan|service_plan_resource_name }}.resource_group_name
 }
 {% endif %}
 {% if site.azure.alert_group %}

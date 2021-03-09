@@ -614,7 +614,8 @@
         "azure_app_service_plan": [
           {
             "id": "${azurerm_app_service_plan.functionapps.id}",
-            "name": "${azurerm_app_service_plan.functionapps.name}"
+            "name": "${azurerm_app_service_plan.functionapps.name}",
+            "resource_group_name": "${azurerm_app_service_plan.functionapps.resource_group_name}"
           }
         ],
         "sentry_dsn": [

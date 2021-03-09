@@ -623,7 +623,8 @@
         "azure_app_service_plan": [
           {
             "id": "${azurerm_app_service_plan.functionapps_premium.id}",
-            "name": "${azurerm_app_service_plan.functionapps_premium.name}"
+            "name": "${azurerm_app_service_plan.functionapps_premium.name}",
+            "resource_group_name": "${azurerm_app_service_plan.functionapps_premium.resource_group_name}"
           }
         ],
         "azure_endpoint_public": [
@@ -709,7 +710,8 @@
         "azure_app_service_plan": [
           {
             "id": "${azurerm_app_service_plan.functionapps.id}",
-            "name": "${azurerm_app_service_plan.functionapps.name}"
+            "name": "${azurerm_app_service_plan.functionapps.name}",
+            "resource_group_name": "${azurerm_app_service_plan.functionapps.resource_group_name}"
           }
         ],
         "sentry_dsn": [
