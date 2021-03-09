@@ -87,8 +87,9 @@ When a component has been configured with a [`service_plan`](../syntax/sites.md#
 ```terraform
 variable "azure_app_service_plan" {
   type = object({
-    id   = string
-    name = string
+    id                  = string
+    name                = string
+    resource_group_name = string
   })
 }
 ```
