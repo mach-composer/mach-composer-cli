@@ -20,7 +20,6 @@ nav:
     - tutorial/aws/step-4-setup-aws-site.md
     - tutorial/aws/step-5-create-component.md
     - tutorial/aws/step-6-create-mach-stack.md
-    - tutorial/aws/examples.md
   - Azure:
     - tutorial/azure/step-3-setup-azure.md
     - tutorial/azure/step-4-create-component.md
