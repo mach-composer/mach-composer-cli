@@ -79,6 +79,8 @@ nav:
     - Setup GitLab: howto/ci/gitlab.md
     - Setup GitHub actions: howto/ci/github.md
     - Setup Azure DevOps: howto/ci/devops.md
+  - commercetools:
+    - howto/commercetools/store-vars.md
   - howto/apollo-federation.md
 
 
