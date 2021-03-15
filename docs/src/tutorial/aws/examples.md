@@ -13,7 +13,7 @@ Rather curious on how to setup the AWS account manually? Follow the steps below
 
 As described in the [tenenacy model](../../topics/architecture/tenancy.md#aws-tenancy), we advice to setup your MACH environment by creating **one service AWS account** containing shared resources and create an **AWS account per stack**.
 
-This way, all resources are strictly seperated from eachother.
+This way, all resources are strictly separated from eachother.
 
 
 ## Setup the service account
