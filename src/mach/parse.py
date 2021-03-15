@@ -77,6 +77,7 @@ def parse_config(config: MachConfig) -> MachConfig:
 
 def parse_global_config(config: MachConfig):
     if config.general_config.cloud == CloudOption.AZURE:
+        assert config.general_config.azure
         if "default" not in config.general_config.azure.service_plans:
             config.general_config.azure.service_plans["default"] = ServicePlan(
                 kind="FunctionApp", tier="Dynamic", size="Y1"
@@ -88,10 +89,14 @@ def resolve_site_configs(config: MachConfig):
     """Use and merge site-specific configurations with general config."""
     for site in config.sites:
         if config.general_config.cloud == CloudOption.AZURE:
+            assert config.general_config.azure
+
             if site.azure:
                 site.azure.merge(config.general_config.azure)
             else:
                 site.azure = SiteAzureSettings.from_config(config.general_config.azure)
+
+            assert site.azure
 
             if site.azure.resource_group:
                 click.echo(
@@ -142,6 +147,8 @@ def resolve_site_configs(config: MachConfig):
 
 def resolve_used_service_plans(site: Site):
     "Azure-specific method to find out which service plans are actually being used by components"
+    assert site.azure
+
     used = [
         c.azure.service_plan
         for c in site.components
@@ -155,8 +162,8 @@ def resolve_used_service_plans(site: Site):
 def resolve_endpoint_components(site: Site):
     endpoint_components = defaultdict(list)
     for c in site.components:
-        for endpoint in c.endpoints.values():
-            endpoint_components[endpoint].append(c)
+        for endpoint_key in c.endpoints.values():
+            endpoint_components[endpoint_key].append(c)
 
     site_endpoint_keys = {e.key for e in site.endpoints}
     # If one of the components has a 'default' endpoint defined,
@@ -212,13 +219,13 @@ def resolve_site_components(config: MachConfig) -> MachConfig:
             if site.azure:
                 if not component.azure:
                     component.azure = info.azure
-                else:
+                elif info.azure:
                     component.azure.merge(info.azure)
 
     return config
 
 
-def resolve_component_definitions(config: MachConfig) -> MachConfig:
+def resolve_component_definitions(config: MachConfig):
     for comp in config.components:
         # Terraform needs absolute paths to modules
         if comp.source.startswith("."):

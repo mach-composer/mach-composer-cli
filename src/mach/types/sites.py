@@ -81,7 +81,7 @@ class Endpoint:
     throttling_rate_limit: Optional[int] = fields.none()
 
     # To be set by the parser
-    components: Optional[List["Component"]] = fields.list_()
+    components: List["Component"] = fields.list_()
 
     @property
     def contains_defaults(self):
@@ -253,10 +253,10 @@ class Component(JsonSchemaMixin):
     """Component configuration."""
 
     name: str
-    variables: Optional[TerraformVariables] = fields.dict_()
-    secrets: Optional[TerraformVariables] = fields.dict_()
-    store_variables: Optional[StoreVariables] = fields.dict_()
-    store_secrets: Optional[StoreVariables] = fields.dict_()
+    variables: TerraformVariables = fields.dict_()
+    secrets: TerraformVariables = fields.dict_()
+    store_variables: StoreVariables = fields.dict_()
+    store_secrets: StoreVariables = fields.dict_()
     health_check_path: Optional[str] = fields.none()
     sentry: Optional[SentryDsn] = fields.none()
     azure: Optional[ComponentAzureConfig] = fields.none()
@@ -299,14 +299,14 @@ class SiteAWSSettings(JsonSchemaMixin):
 class SiteAzureSettings(JsonSchemaMixin):
     """Site-specific Azure settings."""
 
-    service_object_ids: Dict[str, str] = field(default_factory=dict)
     frontdoor: Optional[FrontDoorSettings] = fields.none()
     alert_group: Optional[AlertGroup] = fields.none()
-    resource_group: Optional[str] = ""
-    tenant_id: Optional[str] = ""  # Can overwrite values from AzureConfig
-    subscription_id: Optional[str] = ""  # Can overwrite values from AzureConfig
-    region: Optional[str] = ""  # Can overwrite values from AzureConfig
-    service_plans: Optional[Dict[str, ServicePlan]] = fields.dict_()
+    resource_group: str = ""
+    tenant_id: str = ""  # Can overwrite values from AzureConfig
+    subscription_id: str = ""  # Can overwrite values from AzureConfig
+    region: str = ""  # Can overwrite values from AzureConfig
+    service_object_ids: Dict[str, str] = fields.dict_()
+    service_plans: Dict[str, ServicePlan] = fields.dict_()
 
     @classmethod
     def from_config(cls, config: AzureConfig):
@@ -326,8 +326,8 @@ class SiteAzureSettings(JsonSchemaMixin):
         self.region = self.region or config.region
         self.service_object_ids = self.service_object_ids or config.service_object_ids
         self.service_plans = {
-            **config.service_plans,
-            **self.service_plans,
+            **(config.service_plans or {}),
+            **(self.service_plans or {}),
         }
 
 
@@ -337,7 +337,7 @@ class Site(JsonSchemaMixin):
     """Site definition."""
 
     identifier: str
-    endpoints: Optional[List[Endpoint]] = field(
+    endpoints: List[Endpoint] = field(
         default_factory=list,
         metadata=config(mm_field=fields.EndpointsField(), exclude=lambda x: not x),
     )

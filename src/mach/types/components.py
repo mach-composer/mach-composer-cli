@@ -18,7 +18,7 @@ __all__ = [
 class LocalArtifact(JsonSchemaMixin):
     script: str
     filename: str
-    workdir: str = fields.none()
+    workdir: Optional[str] = fields.none()
 
 
 @dataclass_json

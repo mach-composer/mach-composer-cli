@@ -1,7 +1,7 @@
 import os
 import subprocess
 from dataclasses import dataclass
-from typing import List
+from typing import List, Optional
 
 import click
 from mach import exceptions
@@ -50,7 +50,7 @@ def clone(repo: str, dest: str):
     _run(["git", "clone", repo, dest])
 
 
-def history(dir: str, from_ref: str, *, branch: str = "") -> List[Commit]:
+def history(dir: str, from_ref: str, *, branch: Optional[str] = "") -> List[Commit]:
     if branch:
         _run(["git", "checkout", branch], cwd=dir)
 
@@ -82,7 +82,7 @@ def _clean_commit_id(commit_id: str) -> str:
     return commit_id[:7]
 
 
-def _run(cmd: List, *args, **kwargs) -> str:
+def _run(cmd: List, *args, **kwargs) -> bytes:
     kwargs["stderr"] = subprocess.DEVNULL
 
     try:
