@@ -13,12 +13,11 @@ pytest-timeout==1.4.2
 isort==5.5.3
 flake8==3.8.3
 flake8-debugger==3.2.1
-flake8-mypy==17.8.0
 flake8-isort==4.0.0
 flake8-blind-except==0.1.1
 flake8-docstrings==1.5.0
 mccabe==0.6.1
+mypy==0.812
 black
-mypy
 
 -e .

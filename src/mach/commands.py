@@ -222,6 +222,7 @@ def update(
                     config, verbose=verbose, check_only=check
                 )
             if commit:
+                assert config.file
                 git.add(config.file)
 
         if commit:

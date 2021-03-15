@@ -1,7 +1,7 @@
 import os.path
 import subprocess
 import sys
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 if TYPE_CHECKING:
     from mach.types import LocalArtifact, MachConfig
@@ -30,7 +30,7 @@ def build_artifact(artifact: "LocalArtifact"):
         raise ValueError(f"The file {artifact.filename} doesn't exist")
 
 
-def run_script(script: str, workdir: str):
+def run_script(script: str, workdir: Optional[str]):
     p = subprocess.run(
         script, stdout=sys.stdout, stderr=sys.stderr, shell=True, cwd=workdir
     )

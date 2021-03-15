@@ -29,6 +29,7 @@ def update_config_component(  # noqa: C901
 
     click.echo(f"Updating {component_name} to version {new_version}...")
 
+    assert config.file
     FileUpdater.apply_updates(config.file, [(component, new_version)])
 
 
@@ -52,6 +53,7 @@ def update_config_components(  # noqa: C901
     updates: Updates = _fetch_changes(config)
 
     if not check_only:
+        assert config.file
         FileUpdater.apply_updates(config.file, updates)
 
 

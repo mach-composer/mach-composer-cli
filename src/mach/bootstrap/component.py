@@ -1,4 +1,5 @@
 import os
+from typing import Any, Dict
 
 import click
 from cookiecutter.main import cookiecutter
@@ -9,7 +10,7 @@ DEFAULT_COOKIECUTTER = "git@github.com:labd/mach-component-cookiecutter.git"
 
 def create_component(output_dir: str, cookiecutter_location: str):
     """Create a component using the given cookiecutter template or the default one."""
-    cookiecutter_kwargs = {
+    cookiecutter_kwargs: Dict[str, Any] = {
         "output_dir": output_dir or ".",
     }
 

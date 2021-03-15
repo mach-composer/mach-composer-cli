@@ -5,12 +5,12 @@ from marshmallow import ValidationError, fields
 
 # Define a none value as a custom dataclasses field so that
 # null values get excluded in a dataclass dump
-none = lambda: field(default=None, metadata=config(exclude=lambda x: x is None))
+none = lambda: field(default=None, metadata=config(exclude=lambda x: x is None))  # type: ignore
 default = lambda value: field(
-    default_factory=lambda: value, metadata=config(exclude=lambda x: x == value)
+    default_factory=lambda: value, metadata=config(exclude=lambda x: x == value)  # type: ignore
 )
-list_ = lambda: field(default_factory=list, metadata=config(exclude=lambda x: not x))
-dict_ = lambda: field(default_factory=dict, metadata=config(exclude=lambda x: not x))
+list_ = lambda: field(default_factory=list, metadata=config(exclude=lambda x: not x))  # type: ignore # noqa
+dict_ = lambda: field(default_factory=dict, metadata=config(exclude=lambda x: not x))  # type: ignore # noqa
 
 
 class EndpointsField(fields.Dict):
@@ -34,7 +34,7 @@ class EndpointsField(fields.Dict):
                 result.append(Endpoint(key=k, url=v))
             elif isinstance(v, dict):
                 v["key"] = k
-                result.append(Endpoint.schema(infer_missing=True).load(v))
+                result.append(Endpoint.schema(infer_missing=True).load(v))  # type: ignore
             else:
                 raise ValidationError(f"Unexpected value found for endpoint {k}")
 

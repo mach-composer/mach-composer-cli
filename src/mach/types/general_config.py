@@ -1,4 +1,4 @@
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from enum import Enum
 from typing import Dict, Optional
 
@@ -122,9 +122,9 @@ class AzureConfig(JsonSchemaMixin):
     subscription_id: str
     region: str
     frontdoor: Optional[FrontDoorSettings] = fields.none()
-    resources_prefix: Optional[str] = ""
-    service_object_ids: Dict[str, str] = field(default_factory=dict)
-    service_plans: Optional[Dict[str, ServicePlan]] = fields.dict_()
+    resources_prefix: str = ""
+    service_object_ids: Dict[str, str] = fields.dict_()
+    service_plans: Dict[str, ServicePlan] = fields.dict_()
 
 
 @dataclass_json

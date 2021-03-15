@@ -15,15 +15,15 @@ def generate_terraform(config: MachConfig, *, site: str = None):
     env = setup_jinja()
     template = env.get_template("site.tf")
     sites = _filter_sites(config.sites, site)
-    for site in sites:
-        site_dir = config.deployment_path / Path(site.identifier)
+    for s in sites:
+        site_dir = config.deployment_path / Path(s.identifier)
         site_dir.mkdir(exist_ok=True)
         output_file = site_dir / Path("site.tf")
         content = _clean_tf(
             template.render(
                 config=config,
                 general_config=config.general_config,
-                site=site,
+                site=s,
             )
         )
         with open(output_file, "w+") as fh:
@@ -52,8 +52,8 @@ def plan_terraform(
 ):
     """Terraform init and plan for all generated sites."""
     sites = _filter_sites(config.sites, site)
-    for site in sites:
-        site_dir = config.deployment_path / Path(site.identifier)
+    for s in sites:
+        site_dir = config.deployment_path / Path(s.identifier)
         if not site_dir.is_dir():
             click.echo(f"Could not find site directory {site_dir}")
             continue
@@ -84,13 +84,13 @@ def apply_terraform(
 ):
     """Terraform apply for all generated sites."""
     sites = _filter_sites(config.sites, site)
-    for site in sites:
-        site_dir = config.deployment_path / Path(site.identifier)
+    for s in sites:
+        site_dir = config.deployment_path / Path(s.identifier)
         if not site_dir.is_dir():
             click.echo(f"Could not find site directory {site_dir}")
             continue
 
-        click.echo(f"Applying Terraform for {site.identifier}")
+        click.echo(f"Applying Terraform for {s.identifier}")
 
         if not reuse:
             run_terraform("init", site_dir)
@@ -137,7 +137,7 @@ def run_terraform(command: Union[List[str], str], cwd):
     p.check_returncode()
 
 
-def _filter_sites(sites: List[Site], site_identifier: Optional[str]):
+def _filter_sites(sites: List[Site], site_identifier: Optional[str]) -> List[Site]:
     if not site_identifier:
         return sites
 

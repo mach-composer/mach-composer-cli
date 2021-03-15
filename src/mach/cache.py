@@ -6,6 +6,7 @@ if TYPE_CHECKING:
 
 
 def cache_dir_for(config: "MachConfig", *, create=True):
+    assert config.file
     cache_dir = os.path.join(
         os.getcwd(), ".mach", os.path.splitext(os.path.basename(config.file))[0]
     )
