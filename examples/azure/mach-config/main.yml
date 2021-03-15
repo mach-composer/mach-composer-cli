@@ -1,5 +1,7 @@
 ---
-general_config:
+mach_composer:
+  version: 1.0.0
+global:
   environment: test
   terraform_config:
     azure_remote_state:
@@ -12,26 +14,35 @@ general_config:
     tenant_id: <your-tenant-id>
     subscription_id: <your-subscription-id>
     region: westeurope
-    resources_prefix: ''
-    service_object_ids: {}
+    resources_prefix: ""
 sites:
-- identifier: my-site
-  commercetools:
-    project_key: my-site
-    client_id: <client-id>
-    client_secret: <client-secret>
-    scopes: manage_api_clients:my-site manage_project:my-site view_api_clients:my-site
-  components:
-  - name: your-component
-    variables:
-      FOO_VAR: my-value
-    secrets:
-      MY_SECRET: secretvalue
+  - identifier: my-site
+    commercetools:
+      project_key: my-site
+      client_id: <client-id>
+      client_secret: <client-secret>
+      scopes: manage_api_clients:my-site manage_project:my-site view_api_clients:my-site
+      languages:
+        - en-GB
+        - nl-NL
+      currencies:
+        - GBP
+        - EUR
+      countries:
+        - GB
+        - NL
+    components:
+      - name: your-component
+        variables:
+          FOO_VAR: my-value
+        secrets:
+          MY_SECRET: secretvalue
 components:
-- name: your-component
-  source: git::https://github.com/<username>/<your-component>.git//terraform
-  version: 0.1.0
-  short_name: yourcomp
-  integrations:
-  - azure
-  - commercetools
+  - name: your-component
+    source: git::https://github.com/<username>/<your-component>.git//terraform
+    version: 0.1.0
+    azure:
+      short_name: yourcomp
+    integrations:
+      - azure
+      - commercetools
