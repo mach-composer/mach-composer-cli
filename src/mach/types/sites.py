@@ -158,6 +158,21 @@ class CommercetoolsTax(JsonSchemaMixin):
 
 @dataclass_json
 @dataclass
+class CommercetoolsZoneLocation(JsonSchemaMixin):
+    country: str
+    state: str = ""
+
+
+@dataclass_json
+@dataclass
+class CommercetoolsZone(JsonSchemaMixin):
+    name: str
+    description: str = ""
+    locations: List[CommercetoolsZoneLocation] = fields.list_()
+
+
+@dataclass_json
+@dataclass
 class CommercetoolsSettings(JsonSchemaMixin):
     """commercetools configuration."""
 
@@ -179,6 +194,7 @@ class CommercetoolsSettings(JsonSchemaMixin):
     channels: Optional[List[CommercetoolsChannel]] = fields.list_()
     taxes: Optional[List[CommercetoolsTax]] = fields.list_()
     stores: List[Store] = fields.list_()
+    zones: List[CommercetoolsZone] = fields.list_()
     create_frontend_credentials: bool = fields.default(True)
 
 

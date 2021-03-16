@@ -69,6 +69,7 @@ commercetools:
   Defaults to True
 - `channels` - List of [channel definitions](#channels)
 - `taxes` - List of [tax definitions](#taxes)
+- `zones` - List of [zone definitions](#zones)
 - `stores` - List of [store definitions](#stores) if multiple (store) contexts are going to be used.
 - `create_frontend_credentials` - Defines if frontend API credentials must be created
   Defaults to `true`
@@ -100,6 +101,40 @@ channels:
 - `name` - Name of the channel. Localized string [^1]
 - `description` - Description of the channel. Localized string [^1]
 
+### zones
+
+Defines shipping zones.
+
+Example:
+```yaml
+zones:
+  - name: US zone 1
+    locations:
+      - country: US
+        state: Nevada
+  - name: US zone 2
+    locations:
+      - country: US
+  - name: CA
+    locations:
+      - country: CA
+  - name: Benelux
+    locations:
+      - country: NL
+      - country: BE
+      - country: LU
+
+```
+
+- **`name`** - (Required) Name for the zone
+- **`locations`** - List of [locations](#locations) that are part of this zone
+- `description` - Zone description
+
+#### locations
+
+- **`country`** - (Required) Two-digit country codes as per [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2)
+- `state` - State
+  
 ### taxes
 
 Defines tax rates for various countries.
