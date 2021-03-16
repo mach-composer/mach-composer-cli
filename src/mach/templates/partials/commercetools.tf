@@ -59,6 +59,21 @@ resource "commercetools_tax_category_rate" "{{ tax.country|lower }}_vat" {
 {% endfor %}
 {% endif %}
 
+{% for zone in commercetools.zones %}
+resource "commercetools_shipping_zone" "{{ zone.name|slugify }}" {
+  name = "{{ zone.name }}"
+  description = "{{ zone.description }}"
+  {% for location in zone.locations %}
+  location {
+      country = "{{ location.country }}"
+      {% if location.state %}
+      state = "{{ location.state }}"
+      {% endif %}
+  }
+  {% endfor %}
+}
+{% endfor %}
+
 output "frontend_channels" {
     value = [
         {% for channel in commercetools.channels %}commercetools_channel.{{ channel.key }}.id,{% endfor %}

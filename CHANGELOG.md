@@ -5,6 +5,7 @@
 - Add Amplience support
 - Add Apollo Federation support
 - Add support for commercetools Store-specific variables and secrets on components included in new variable: `ct_stores`
+- Add support for commercetools shipping zones
 - Add support for multiple API endpoints:
     - `base_url` replaced with `endpoints`
     - `has_public_api` replaced with `endpoints`
