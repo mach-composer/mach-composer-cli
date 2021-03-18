@@ -1,8 +1,8 @@
 # Amplience
 
-When configured, MACH can manage a [hub](https://amplience.com/docs/intro/hubsandrepositories.html) per site.
+When configured, MACH will load the [Amplience provider](https://registry.terraform.io/providers/labd/amplience/latest) which can be used by any component that needs the Amplience integration.
 
-For this you need to define a **client_id** and **client_secret** in your [general config](../../reference/syntax/global.md#amplience).
+For this you need to define a **client_id**, **client_secret** in your [general config](../../reference/syntax/global.md#amplience).
 
 ## site configuration
 
