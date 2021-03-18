@@ -146,13 +146,14 @@
           ],
           "scope": [
             [
+              "create_anonymous_token:mach-site-eu",
               "manage_my_profile:mach-site-eu",
               "manage_my_orders:mach-site-eu",
-              "view_states:mach-site-eu",
               "manage_my_shopping_lists:mach-site-eu",
-              "view_products:mach-site-eu",
               "manage_my_payments:mach-site-eu",
-              "create_anonymous_token:mach-site-eu",
+              "view_states:mach-site-eu",
+              "view_products:mach-site-eu",
+              "view_stores:mach-site-eu",
               "view_project_settings:mach-site-eu"
             ]
           ]

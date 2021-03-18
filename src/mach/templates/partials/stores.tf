@@ -25,15 +25,16 @@ resource "commercetools_store" "{{ store.key }}" {
 resource "commercetools_api_client" "frontend_credentials_{{ store.key }}" {
   name = "frontend_credentials_terraform_{{ store.key }}"
   scope = [
+    "create_anonymous_token:{{ commercetools.project_key }}",
     "manage_my_profile:{{ commercetools.project_key }}",
     "manage_my_orders:{{ commercetools.project_key }}",
     "manage_my_orders:{{ commercetools.project_key}}:{{ store.key }}",
-    "view_states:{{ commercetools.project_key }}",
     "manage_my_shopping_lists:{{ commercetools.project_key }}",
-    "view_products:{{ commercetools.project_key }}",
     "manage_my_payments:{{ commercetools.project_key}}",
-    "create_anonymous_token:{{ commercetools.project_key }}",
-    "view_project_settings:{{ commercetools.project_key }}"
+    "view_states:{{ commercetools.project_key }}",
+    "view_products:{{ commercetools.project_key }}",
+    "view_stores:{{ commercetools.project_key }}",
+    "view_project_settings:{{ commercetools.project_key }}",
   ]
 
   depends_on = [commercetools_store.{{ store.key }}]
@@ -59,14 +60,15 @@ output "frontend_client_secret_{{ store.key }}" {
 resource "commercetools_api_client" "frontend_credentials" {
   name = "frontend_credentials_terraform"
   scope = [
+    "create_anonymous_token:{{ commercetools.project_key }}",
     "manage_my_profile:{{ commercetools.project_key }}",
     "manage_my_orders:{{ commercetools.project_key }}",
-    "view_states:{{ commercetools.project_key }}",
     "manage_my_shopping_lists:{{ commercetools.project_key }}",
-    "view_products:{{ commercetools.project_key }}",
     "manage_my_payments:{{ commercetools.project_key}}",
-    "create_anonymous_token:{{ commercetools.project_key }}",
-    "view_project_settings:{{ commercetools.project_key }}"
+    "view_states:{{ commercetools.project_key }}",
+    "view_products:{{ commercetools.project_key }}",
+    "view_stores:{{ commercetools.project_key }}",
+    "view_project_settings:{{ commercetools.project_key }}",
   ]
 }
 
