@@ -77,6 +77,7 @@ provider "sentry" {
 
 {% if site.commercetools %}{% include 'partials/commercetools.tf' %}{% endif %}
 {% if site.contentful %}{% include 'partials/contentful.tf' %}{% endif %}
+{% if site.amplience %}{% include 'partials/amplience.tf' %}{% endif %}
 
 {% if site.aws %}{% include 'partials/aws.tf' %}{% endif %}
 {% if site.azure %}{% include 'partials/azure.tf' %}{% endif %}
