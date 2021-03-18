@@ -53,6 +53,12 @@ terraform {
       version = "~> {{ general_config.terraform_config.providers.contentful or '0.1.0' }}"
     }
     {% endif %}
+    {% if site.amplience %}
+    amplience = {
+      source = "labd/amplience"
+      version = "~> {{ general_config.terraform_config.providers.amplience or '0.1.0' }}"
+    }
+    {% endif %}
     {% if general_config.sentry.managed %}
     sentry = {
       source = "jianyuan/sentry"

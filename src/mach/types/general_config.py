@@ -69,6 +69,7 @@ class TerraformProviders(JsonSchemaMixin):
     commercetools: Optional[str] = fields.none()
     sentry: Optional[str] = fields.none()
     contentful: Optional[str] = fields.none()
+    amplience: Optional[str] = fields.none()
 
 
 @dataclass_json

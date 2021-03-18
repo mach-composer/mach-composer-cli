@@ -17,6 +17,8 @@ ENV TERRAFORM_AZURE_VERSION=2.47.0
 ENV TERRAFORM_AWS_VERSION=3.28.0
 ENV TERRAFORM_NULL_VERSION=2.1.2
 ENV TERRAFORM_COMMERCETOOLS_VERSION=0.25.3
+ENV TERRAFORM_CONTENTFUL_VERSION=0.1.0
+ENV TERRAFORM_AMPLIENCE_VERSION=0.1.0
 ENV TERRAFORM_SENTRY_VERSION=0.6.0
 
 RUN apk add --no-cache --virtual .build-deps g++ libffi-dev openssl-dev wget unzip jq make curl \
@@ -77,6 +79,22 @@ RUN cd /tmp && \
 RUN cd /tmp && \
     wget https://github.com/labd/terraform-provider-commercetools/releases/download/v${TERRAFORM_COMMERCETOOLS_VERSION}/terraform-provider-commercetools_${TERRAFORM_COMMERCETOOLS_VERSION}_linux_amd64.zip && \
     unzip -n terraform-provider-commercetools_${TERRAFORM_COMMERCETOOLS_VERSION}_linux_amd64.zip -d ${TERRAFORM_PLUGINS_PATH} && \
+    rm -rf /tmp/* && \
+    rm -rf /var/cache/apk/* && \
+    rm -rf /var/tmp/*
+
+# Install contentful provider
+RUN cd /tmp && \
+    wget https://github.com/labd/terraform-provider-contentful/releases/download/v${TERRAFORM_CONTENTFUL_VERSION}/terraform-provider-contentful_${TERRAFORM_CONTENTFUL_VERSION}_linux_amd64.zip && \
+    unzip -n terraform-provider-commercetools_${TERRAFORM_CONTENTFUL_VERSION}_linux_amd64.zip -d ${TERRAFORM_PLUGINS_PATH} && \
+    rm -rf /tmp/* && \
+    rm -rf /var/cache/apk/* && \
+    rm -rf /var/tmp/*
+
+# Install amplience provider
+RUN cd /tmp && \
+    wget https://github.com/labd/terraform-provider-amplience/releases/download/v${TERRAFORM_AMPLIENCE_VERSION}/terraform-provider-amplience_${TERRAFORM_AMPLIENCE_VERSION}_linux_amd64.zip && \
+    unzip -n terraform-provider-commercetools_${TERRAFORM_AMPLIENCE_VERSION}_linux_amd64.zip -d ${TERRAFORM_PLUGINS_PATH} && \
     rm -rf /tmp/* && \
     rm -rf /var/cache/apk/* && \
     rm -rf /var/tmp/*
