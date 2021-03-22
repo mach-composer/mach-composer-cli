@@ -142,7 +142,7 @@
       "commercetools_api_client": {
         "frontend_credentials": {
           "name": [
-            "frontend_credentials_terraform"
+            "MACH frontend credentials"
           ],
           "scope": [
             [

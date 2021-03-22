@@ -23,7 +23,7 @@ resource "commercetools_store" "{{ store.key }}" {
 
 {% if commercetools.create_frontend_credentials %}
 resource "commercetools_api_client" "frontend_credentials_{{ store.key }}" {
-  name = "frontend_credentials_terraform_{{ store.key }}"
+  name = "MACH frontend store credentials {{ store.key }}"
   scope = [
     "create_anonymous_token:{{ commercetools.project_key }}",
     "manage_my_profile:{{ commercetools.project_key }}",
@@ -58,7 +58,7 @@ output "frontend_client_secret_{{ store.key }}" {
 {# note: No stores definied, create 1 set of credentials #}
 
 resource "commercetools_api_client" "frontend_credentials" {
-  name = "frontend_credentials_terraform"
+  name = "MACH frontend credentials"
   scope = [
     "create_anonymous_token:{{ commercetools.project_key }}",
     "manage_my_profile:{{ commercetools.project_key }}",
