@@ -84,3 +84,10 @@ docker run --rm \
     docker.pkg.github.com/labd/mach-composer/mach:latest \
     apply
 ```
+
+!!! tip "Caching in CI/CD"
+    For an example on how to setup the Terraform plugin cache, see the examples in the how-to's for:
+
+    - [GitLab](../../../howto/ci/gitlab.md#terraform-plugin-cache)
+    - GitHub actions (todo)
+    - Azure DevOps (todo)
