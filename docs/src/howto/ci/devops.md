@@ -2,7 +2,7 @@
 
 This section will describe how to setup your CI/CD pipeline using DevOps including some examples.
 
-## MACH stack
+## MACH stack deployment
 
 How to set up the deployment process fro your MACH configuration.
 
@@ -10,7 +10,6 @@ How to set up the deployment process fro your MACH configuration.
 
 The pipeline must be able to;
 
-- [Pull the private MACH docker](#mach-docker-image) image from GitHub
 - [Access the component repositories](#component-repositories)
 - [Manage resources in the Azure environment](#manage-azure)
 
@@ -37,15 +36,13 @@ The pipeline needs this to be able to access the KeyVault to pull in other crede
 
 #### 3. MACH docker image
 
-Since the MACH docker image is hosted on a private GitHub repository, we need to make sure your pipeline has access to it.
-
-We do this by creating a service connection, and using that service connection later in our pipeline configuration.
+We need to configure a Docker Registry service connection for the pipeline to use the MACH docker image.
 
 1. Go to your *Project settings*
 2. Choose **Pipelines** > **Service connections**
 3. Choose 'Docker Registry'<br>
    ![Docker Registry](../../_img/deployment/devops/new_connection.png){: style="max-width:400px"}
-4. Enter `https://docker.pkg.github.com` as Docker registry and fill in your GitHub username and personal access token.<br>
+4. Enter `https://docker.pkg.github.com` as Docker registry<br>
    The name given in '**Service connection name**' will be used later in the pipeline
    ![New connection](../../_img/deployment/devops/docker_connection.png)
 
@@ -125,7 +122,7 @@ steps:
   displayName: Apply
 ```
 
-## Components
+## Component deployment
 
 For the component CI pipeline we need to be able to test, package and upload the function app ZIP file.
 

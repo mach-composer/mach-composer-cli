@@ -139,9 +139,9 @@ $ ./build.sh upload
 
 Refer to the CI/CD section for instructions on how to setup your Continuous Integration pipeline for component deployments:
 
-- [GitLab](../../howto/ci/gitlab.md#components)
-- [GitHub actions](../../howto/ci/github.md#components)
-- [Azure DevOps](../../howto/ci/devops.md#components)
+- [GitLab](../../howto/ci/gitlab.md#component-deployment)
+- [GitHub actions](../../howto/ci/github.md#component-deployment)
+- [Azure DevOps](../../howto/ci/devops.md#component-deployment)
 
 
 ## Second stage - MACH deployment
