@@ -13,6 +13,7 @@
 - Add configuration options for Azure service plans
 - Add `mach_composer` configuration block to configure required MACH composer version
 - Add `--ignore-version` to disable the MACH composer version check
+- Add extra scope to MACH-managed frontend credentials: `view_stores`
 - Improved development workflow:
   - Improved git log parsing
   - Add `mach bootstrap` commands:
@@ -56,6 +57,13 @@
   ```
   When you name the endpoint that replaces `base_url` "main", it will have the least effect on your existing Terraform state.<br><br>
   When endpoints are defined on a component, the component needs to define endpoint Terraform variables ([AWS](https://docs.machcomposer.io/reference/components/aws.html#with-endpoints) and [Azure](https://docs.machcomposer.io/reference/components/azure.html#with-endpoints))
+- **config**: Remove existing commercetools frontend credentials from your Terraform state.<br>
+When you let MACH manage your frontend credentials (enabled by default) these credentials will change because the [API client](https://docs.commercetools.com/api/projects/api-clients) needs to be re-created due to the updated scope.<br>
+To avoid rendering your frontend implementations corrupted (because old credentials are not valid anymore) a solution would be to remove the current API client from your Terraform state before rolling out the changes.
+  ```bash
+  cd deployments/main/<your-site>/
+  terraform state rm commercetools_api_client.frontend_credentials
+  ```
 - **component**: Components with a `commercetools` integration require a new variable `ct_stores`:
   ```terraform
   variable "ct_stores" {
