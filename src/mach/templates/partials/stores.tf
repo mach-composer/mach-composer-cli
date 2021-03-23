@@ -21,20 +21,10 @@ resource "commercetools_store" "{{ store.key }}" {
   {% endif %}
 }
 
-{% if commercetools.create_frontend_credentials %}
+{% if commercetools.frontend.create_credentials %}
 resource "commercetools_api_client" "frontend_credentials_{{ store.key }}" {
   name = "frontend_credentials_terraform_{{ store.key }}"
-  scope = [
-    "manage_my_profile:{{ commercetools.project_key }}",
-    "manage_my_orders:{{ commercetools.project_key }}",
-    "manage_my_orders:{{ commercetools.project_key}}:{{ store.key }}",
-    "view_states:{{ commercetools.project_key }}",
-    "manage_my_shopping_lists:{{ commercetools.project_key }}",
-    "view_products:{{ commercetools.project_key }}",
-    "manage_my_payments:{{ commercetools.project_key}}",
-    "create_anonymous_token:{{ commercetools.project_key }}",
-    "view_project_settings:{{ commercetools.project_key }}"
-  ]
+  scope = {{ commercetools.frontend.permission_scopes|render_commercetools_scopes(commercetools.project_key, store.key) }}
 
   depends_on = [commercetools_store.{{ store.key }}]
 }
@@ -53,21 +43,12 @@ output "frontend_client_secret_{{ store.key }}" {
 {% endif %}
 {% endfor %}
 
-{% elif commercetools.create_frontend_credentials %}
+{% elif commercetools.frontend.create_credentials %}
 {# note: No stores definied, create 1 set of credentials #}
 
 resource "commercetools_api_client" "frontend_credentials" {
   name = "frontend_credentials_terraform"
-  scope = [
-    "manage_my_profile:{{ commercetools.project_key }}",
-    "manage_my_orders:{{ commercetools.project_key }}",
-    "view_states:{{ commercetools.project_key }}",
-    "manage_my_shopping_lists:{{ commercetools.project_key }}",
-    "view_products:{{ commercetools.project_key }}",
-    "manage_my_payments:{{ commercetools.project_key}}",
-    "create_anonymous_token:{{ commercetools.project_key }}",
-    "view_project_settings:{{ commercetools.project_key }}"
-  ]
+  scope = {{ commercetools.frontend.permission_scopes|render_commercetools_scopes(commercetools.project_key) }}
 }
 
 output "frontend_client_scope" {

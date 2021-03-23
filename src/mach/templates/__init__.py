@@ -1,4 +1,5 @@
 import os
+from typing import List
 
 from jinja2 import Environment, FileSystemLoader
 from jinja2.filters import do_mark_safe
@@ -23,6 +24,7 @@ def load_filters(env: Environment):
             "zone_name": zone_name,
             "slugify": utils.slugify,
             "service_plan_resource_name": service_plan_resource_name,
+            "render_commercetools_scopes": render_commercetools_scopes,
         }
     )
 
@@ -135,3 +137,25 @@ def service_plan_resource_name(value: str) -> str:
     if value == "default":
         return "functionapps"
     return f"functionapps_{value}"
+
+
+STORE_SUPPORTED_SCOPES = [
+    "manage_orders",
+    "manage_my_orders",
+    "view_orders",
+    "manage_customers",
+    "view_customers",
+    # "manage_my_profile", // TODO: This should actually be part of the list
+]
+
+
+def render_commercetools_scopes(
+    value: List[str], project_key: str, store_key: str = ""
+):
+    scopes = []
+    for scope in value:
+        scopes.append(f'"{scope}:{project_key}",')
+        if store_key and scope in STORE_SUPPORTED_SCOPES:
+            scopes.append(f'"{scope}:{project_key}:{store_key}",')
+
+    return "[\n" + "".join(scopes) + "\n]"
