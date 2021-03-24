@@ -7,5 +7,9 @@ PyYAML==5.3
 requests==2.23.0
 cookiecutter==1.7.2
 colorama==0.4.4
+
+# CDK
 tldextract==3.1.0
 cdktf==0.1.0
+cdktf-cdktf-provider-aws==1.0.32
+cdktf-cdktf-provider-azurerm==0.1.36
