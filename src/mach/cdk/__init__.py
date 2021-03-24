@@ -1,8 +1,9 @@
 from typing import TYPE_CHECKING
 
+import cdktf_cdktf_provider_aws as aws
 from cdktf import App, TerraformStack
 
-from .imports import aws, commercetools
+from .imports import commercetools
 
 if TYPE_CHECKING:
     from .types import MachConfig, Site
@@ -14,9 +15,9 @@ class SiteStack(TerraformStack):
 
         if site.aws:
             aws_extra_kwargs = {}
-            if site.aws.deploy_role_arn:
+            if site.aws.deploy_role_name:
                 aws_extra_kwargs["assume_role"] = aws.AwsProviderAssumeRole(
-                    role_arn=f"arn:aws:iam::{site.aws.account_id}:role/{site.aws.deploy_role_arn}"
+                    role_arn=f"arn:aws:iam::{site.aws.account_id}:role/{site.aws.deploy_role_name}"
                 )
 
             aws.AwsProvider(self, "aws", region=site.aws.region, **aws_extra_kwargs)
