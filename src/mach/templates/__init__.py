@@ -145,7 +145,7 @@ STORE_SUPPORTED_SCOPES = [
     "view_orders",
     "manage_customers",
     "view_customers",
-    # "manage_my_profile", // TODO: This should actually be part of the list
+    "manage_my_profile",
 ]
 
 

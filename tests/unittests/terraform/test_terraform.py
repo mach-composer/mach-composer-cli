@@ -188,14 +188,14 @@ def test_commercetools_frontend_credentials(config: types.MachConfig, tf_mock):
     assert data.resource.commercetools_api_client[
         "frontend_credentials_main-store"
     ].scope == [
+        "create_anonymous_token:ct-unit-test",
         "manage_my_profile:ct-unit-test",
+        "manage_my_profile:ct-unit-test:main-store",
         "manage_my_orders:ct-unit-test",
         "manage_my_orders:ct-unit-test:main-store",
-        "view_states:ct-unit-test",
         "manage_my_shopping_lists:ct-unit-test",
-        "view_products:ct-unit-test",
         "manage_my_payments:ct-unit-test",
-        "create_anonymous_token:ct-unit-test",
+        "view_products:ct-unit-test",
         "view_project_settings:ct-unit-test",
     ]
 
@@ -210,7 +210,6 @@ def test_commercetools_frontend_credentials(config: types.MachConfig, tf_mock):
         "view_products",
         "manage_my_payments",
         "create_anonymous_token",
-        "view_project_settings",
         "view_stores",
     ]
 
@@ -219,11 +218,11 @@ def test_commercetools_frontend_credentials(config: types.MachConfig, tf_mock):
         "frontend_credentials_main-store"
     ].scope == [
         "manage_my_profile:ct-unit-test",
+        "manage_my_profile:ct-unit-test:main-store",
         "manage_my_orders:ct-unit-test",
         "manage_my_orders:ct-unit-test:main-store",
         "view_products:ct-unit-test",
         "manage_my_payments:ct-unit-test",
         "create_anonymous_token:ct-unit-test",
-        "view_project_settings:ct-unit-test",
         "view_stores:ct-unit-test",
     ]
