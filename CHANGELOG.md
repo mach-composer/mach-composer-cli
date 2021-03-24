@@ -101,7 +101,7 @@
 **AWS**
 
 - **config**: The AWS `route53_zone_name` setting has been removed in favour of multiple endpoint support
-- **config**: The `deploy_role` setting has been renamed to `deploy_role_arn`
+- **config**: The `deploy_role` setting has been renamed to `deploy_role_name`
 - **component**: Introduced new variable `tags`:
   ```terraform
   variable "tags" {

@@ -1,9 +1,9 @@
 {% set aws = site.aws %}
 provider "aws" {
   region  = "{{ aws.region }}"
-  {% if aws.deploy_role_arn %}
+  {% if aws.deploy_role_name %}
   assume_role {
-    role_arn = "arn:aws:iam::{{ aws.account_id }}:role/{{ aws.deploy_role_arn }}"
+    role_arn = "arn:aws:iam::{{ aws.account_id }}:role/{{ aws.deploy_role_name }}"
   }
   {% endif %}
 }
@@ -13,9 +13,9 @@ provider "aws" {
   alias   = "{{ provider.name }}"
   region  = "{{ provider.region }}"
 
-  {% if aws.deploy_role_arn %}
+  {% if aws.deploy_role_name %}
   assume_role {
-    role_arn = "arn:aws:iam::{{ aws.account_id }}:role/{{ aws.deploy_role_arn }}"
+    role_arn = "arn:aws:iam::{{ aws.account_id }}:role/{{ aws.deploy_role_name }}"
   }
   {% endif %}
 }
