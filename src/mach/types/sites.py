@@ -327,7 +327,7 @@ class SiteAWSSettings(JsonSchemaMixin):
 
     account_id: int
     region: str
-    deploy_role_arn: Optional[str] = fields.none()
+    deploy_role_name: Optional[str] = fields.none()
     extra_providers: Optional[List[AWSProvider]] = fields.list_()
 
 

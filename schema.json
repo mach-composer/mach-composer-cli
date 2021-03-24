@@ -751,7 +751,7 @@
         "region": {
           "type": "string"
         },
-        "deploy_role_arn": {
+        "deploy_role_name": {
           "type": "string"
         },
         "extra_providers": {
