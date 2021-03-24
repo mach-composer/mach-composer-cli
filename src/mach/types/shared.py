@@ -22,7 +22,7 @@ class ComponentAzureConfig(JsonSchemaMixin):
 
 @dataclass_json
 @dataclass
-class ServicePlan:
+class ServicePlan(JsonSchemaMixin):
     kind: str
     tier: str
     size: str

@@ -6,6 +6,7 @@
 - Add Apollo Federation support
 - Add support for commercetools Store-specific variables and secrets on components included in new variable: `ct_stores`
 - Add support for commercetools shipping zones
+- Make commercetools frontend API client scopes configurable with new `frontend` configuration block
 - Add support for multiple API endpoints:
     - `base_url` replaced with `endpoints`
     - `has_public_api` replaced with `endpoints`
@@ -56,6 +57,26 @@
   ```
   When you name the endpoint that replaces `base_url` "main", it will have the least effect on your existing Terraform state.<br><br>
   When endpoints are defined on a component, the component needs to define endpoint Terraform variables ([AWS](https://docs.machcomposer.io/reference/components/aws.html#with-endpoints) and [Azure](https://docs.machcomposer.io/reference/components/azure.html#with-endpoints))
+- **config**: commercetools `create_frontend_credentials` is replaced with new `frontend` block:
+  ```terraform
+  commercetools:
+    frontend:
+      create_credentials: false
+  ```
+  default is still `true`
+- **config** Default scopes for commercetools frontend API client changed:
+    - If you want to maintain previous scope set, define the following in the `frontend` block:
+    ```terraform
+    commercetools:
+      frontend:
+        permission_scopes: [manage_my_profile, manage_my_orders, view_states, manage_my_shopping_lists, view_products, manage_my_payments, create_anonymous_token, view_project_settings]
+    ```
+    - Old scope set didn't include store-specific [`manage_my_profile:project:store`](https://docs.commercetools.com/api/scopes#manage_my_profileprojectkeystorekey) scope. If you're using the old set as described above, MACH will need to re-create the store-specific API clients in order to add the extra scope. For migration options, see next point
+    - In case the scope needs to be updated but (production) frontend implementations are already using the current API client credentials, a way to migrate is to;
+      1. Remove the old API client resource with `terraform state rm commercetools_api_client.frontend_credentials`
+      2. Repeat step for the store-specific API clients in your Terraform state
+      3. Perform `mach apply` to create the new API clients with updated scope
+      4. Your commercetools project will now contain API clients with the same name. Once the frontend implementation is migrated, the older one can safely be removed.
 - **component**: Components with a `commercetools` integration require a new variable `ct_stores`:
   ```terraform
   variable "ct_stores" {

@@ -2,14 +2,14 @@
   "type": "object",
   "required": [
     "mach_composer",
-    "global",
+    "general_config",
     "sites"
   ],
   "properties": {
     "mach_composer": {
       "$ref": "#/definitions/MachComposerConfig"
     },
-    "global": {
+    "general_config": {
       "$ref": "#/definitions/GlobalConfig"
     },
     "sites": {
@@ -167,6 +167,9 @@
         },
         "contentful": {
           "type": "string"
+        },
+        "amplience": {
+          "type": "string"
         }
       },
       "description": "Terraform provider version overwrites."
@@ -231,7 +234,9 @@
         },
         "service_plans": {
           "type": "object",
-          "additionalProperties": {},
+          "additionalProperties": {
+            "$ref": "#/definitions/ServicePlan"
+          },
           "default": {}
         }
       },
@@ -252,6 +257,33 @@
         }
       },
       "description": "Frontdoor settings."
+    },
+    "ServicePlan": {
+      "type": "object",
+      "required": [
+        "kind",
+        "tier",
+        "size"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string"
+        },
+        "tier": {
+          "type": "string"
+        },
+        "size": {
+          "type": "string"
+        },
+        "capacity": {
+          "type": "integer"
+        },
+        "dedicated_resource_group": {
+          "type": "boolean",
+          "default": false
+        }
+      },
+      "description": "ServicePlan(kind: str, tier: str, size: str, capacity: Union[int, NoneType] = None, dedicated_resource_group: bool = <factory>)"
     },
     "ContentfulConfig": {
       "type": "object",
@@ -407,9 +439,15 @@
           },
           "default": []
         },
-        "create_frontend_credentials": {
-          "type": "boolean",
-          "default": true
+        "zones": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/CommercetoolsZone"
+          },
+          "default": []
+        },
+        "frontend": {
+          "$ref": "#/definitions/CommercetoolsFrontendSettings"
         }
       },
       "description": "commercetools configuration."
@@ -505,6 +543,70 @@
       },
       "description": "commercetools store definition."
     },
+    "CommercetoolsZone": {
+      "type": "object",
+      "required": [
+        "name"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string",
+          "default": ""
+        },
+        "locations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/CommercetoolsZoneLocation"
+          },
+          "default": []
+        }
+      },
+      "description": "CommercetoolsZone(name: str, description: str = '', locations: List[mach.types.sites.CommercetoolsZoneLocation] = <factory>)"
+    },
+    "CommercetoolsZoneLocation": {
+      "type": "object",
+      "required": [
+        "country"
+      ],
+      "properties": {
+        "country": {
+          "type": "string"
+        },
+        "state": {
+          "type": "string",
+          "default": ""
+        }
+      },
+      "description": "CommercetoolsZoneLocation(country: str, state: str = '')"
+    },
+    "CommercetoolsFrontendSettings": {
+      "type": "object",
+      "properties": {
+        "create_credentials": {
+          "type": "boolean",
+          "default": true
+        },
+        "permission_scopes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [
+            "create_anonymous_token",
+            "manage_my_profile",
+            "manage_my_orders",
+            "manage_my_shopping_lists",
+            "manage_my_payments",
+            "view_products",
+            "view_project_settings"
+          ]
+        }
+      },
+      "description": "CommercetoolsFrontendSettings(create_credentials: bool = <factory>, permission_scopes: List[str] = <factory>)"
+    },
     "ContentfulSettings": {
       "type": "object",
       "required": [
@@ -572,13 +674,6 @@
     "SiteAzureSettings": {
       "type": "object",
       "properties": {
-        "service_object_ids": {
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
-          },
-          "default": {}
-        },
         "frontdoor": {
           "$ref": "#/definitions/FrontDoorSettings"
         },
@@ -601,9 +696,18 @@
           "type": "string",
           "default": ""
         },
+        "service_object_ids": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "default": {}
+        },
         "service_plans": {
           "type": "object",
-          "additionalProperties": {},
+          "additionalProperties": {
+            "$ref": "#/definitions/ServicePlan"
+          },
           "default": {}
         }
       },
@@ -813,7 +917,7 @@
           "type": "string"
         }
       },
-      "description": "LocalArtifact(script: str, filename: str, workdir: str = None)"
+      "description": "LocalArtifact(script: str, filename: str, workdir: Union[str, NoneType] = None)"
     }
   }
 }

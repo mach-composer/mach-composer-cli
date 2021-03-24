@@ -173,6 +173,23 @@ class CommercetoolsZone(JsonSchemaMixin):
 
 @dataclass_json
 @dataclass
+class CommercetoolsFrontendSettings(JsonSchemaMixin):
+    create_credentials: bool = fields.default(True)
+    permission_scopes: List[str] = fields.default(
+        [
+            "create_anonymous_token",
+            "manage_my_profile",
+            "manage_my_orders",
+            "manage_my_shopping_lists",
+            "manage_my_payments",
+            "view_products",
+            "view_project_settings",
+        ]
+    )
+
+
+@dataclass_json
+@dataclass
 class CommercetoolsSettings(JsonSchemaMixin):
     """commercetools configuration."""
 
@@ -195,7 +212,11 @@ class CommercetoolsSettings(JsonSchemaMixin):
     taxes: Optional[List[CommercetoolsTax]] = fields.list_()
     stores: List[Store] = fields.list_()
     zones: List[CommercetoolsZone] = fields.list_()
-    create_frontend_credentials: bool = fields.default(True)
+    frontend: CommercetoolsFrontendSettings = fields.none()
+
+    def __post_init__(self):
+        if not self.frontend:
+            self.frontend = CommercetoolsFrontendSettings()
 
 
 @dataclass_json
