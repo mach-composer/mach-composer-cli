@@ -71,8 +71,7 @@ commercetools:
 - `taxes` - List of [tax definitions](#taxes)
 - `zones` - List of [zone definitions](#zones)
 - `stores` - List of [store definitions](#stores) if multiple (store) contexts are going to be used.
-- `create_frontend_credentials` - Defines if frontend API credentials must be created
-  Defaults to `true`
+- `frontend` - [Frontend configuration block](#frontend)
 
 ### channels
 
@@ -164,6 +163,18 @@ stores:
 - `distribution_channels` - List of supply channel keys used for [product projection store filtering](https://docs.commercetools.com/http-api-projects-productProjections#prices-beta)
 - `supply_channels` - List of supply channel keys used for [product projection store filtering](https://docs.commercetools.com/http-api-projects-productProjections#prices-beta)
 
+### frontend
+
+Example:
+```yaml
+frontend:
+  create_credentials: true
+  permission_scopes: [manage_my_profile, manage_my_orders, view_states, manage_my_shopping_lists, view_products, manage_my_payments, create_anonymous_token, view_project_settings]
+```
+
+- `create_credentials` - Defines if frontend API credentials must be created
+  Defaults to `true`
+- `permission_scopes` - List of [scopes](https://docs.commercetools.com/api/scopes) excluding the project key
 
 ## sentry
 

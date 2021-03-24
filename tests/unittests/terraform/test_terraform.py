@@ -146,3 +146,83 @@ def test_generate_w_stores(config: types.MachConfig, tf_mock):
     assert len(other_store.variables) == 1
     assert len(main_store.secrets) == 1
     assert not other_store.secrets
+
+
+def test_commercetools_frontend_credentials(config: types.MachConfig, tf_mock):
+    config.sites[0].commercetools = types.CommercetoolsSettings(
+        project_key="ct-unit-test",
+        client_id="a96e59be-24da-4f41-a6cf-d61d7b6e1766",
+        client_secret="98c32de8-1a6c-45a9-a718-d3cce5201799",
+        scopes="manage_project:ct-unit-test",
+        languages=["nl-NL"],
+        countries=["NL"],
+        currencies=["EUR"],
+        stores=[
+            types.Store(
+                name={
+                    "en-GB": "Default store",
+                },
+                key="main-store",
+            ),
+            types.Store(
+                name={
+                    "en-GB": "Some other store",
+                },
+                key="other-store",
+            ),
+            types.Store(
+                name={
+                    "en-GB": "Forgotten store",
+                },
+                key="forgotten-store",
+            ),
+        ],
+    )
+    data = tf.generate(parse.parse_config(config))
+    assert list(data.resource.commercetools_api_client.keys()) == [
+        "frontend_credentials_main-store",
+        "frontend_credentials_other-store",
+        "frontend_credentials_forgotten-store",
+    ]
+
+    assert data.resource.commercetools_api_client[
+        "frontend_credentials_main-store"
+    ].scope == [
+        "create_anonymous_token:ct-unit-test",
+        "manage_my_profile:ct-unit-test",
+        "manage_my_profile:ct-unit-test:main-store",
+        "manage_my_orders:ct-unit-test",
+        "manage_my_orders:ct-unit-test:main-store",
+        "manage_my_shopping_lists:ct-unit-test",
+        "manage_my_payments:ct-unit-test",
+        "view_products:ct-unit-test",
+        "view_project_settings:ct-unit-test",
+    ]
+
+    config.sites[0].commercetools.frontend.create_credentials = False
+    data = tf.generate(parse.parse_config(config))
+    assert "commercetools_api_client" not in data.resource
+
+    config.sites[0].commercetools.frontend.create_credentials = True
+    config.sites[0].commercetools.frontend.permission_scopes = [
+        "manage_my_profile",
+        "manage_my_orders",
+        "view_products",
+        "manage_my_payments",
+        "create_anonymous_token",
+        "view_stores",
+    ]
+
+    data = tf.generate(parse.parse_config(config))
+    assert data.resource.commercetools_api_client[
+        "frontend_credentials_main-store"
+    ].scope == [
+        "manage_my_profile:ct-unit-test",
+        "manage_my_profile:ct-unit-test:main-store",
+        "manage_my_orders:ct-unit-test",
+        "manage_my_orders:ct-unit-test:main-store",
+        "view_products:ct-unit-test",
+        "manage_my_payments:ct-unit-test",
+        "create_anonymous_token:ct-unit-test",
+        "view_stores:ct-unit-test",
+    ]

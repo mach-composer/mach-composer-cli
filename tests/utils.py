@@ -34,6 +34,9 @@ class HclWrapper(dict):
             # where all items are dicts with 1 key.
             # We'll unwrap this to access the elements in a more
             # elegant way.
+            if not all([isinstance(v, dict) for v in value]):
+                return value
+
             result = {}
             for item in value:
                 for k, v in item.items():
