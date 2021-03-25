@@ -155,7 +155,7 @@ class AWSEndpointsSynther(Synther):
             #     self.stack,
             #     f"{ep_slug}_acm_validation",
             #     # for_each = {
-            #     #     for dvo in aws_acm_certificate.{{ endpoint.key|slugify }}.domain_validation_options : dvo.domain_name => {
+            #     #     for dvo in aws_acm_certificate.{{ endpoint.key|slugify }}.domain_validation_options : dvo.domain_name => {  # noqa
             #     #     name   = dvo.resource_record_name
             #     #     record = dvo.resource_record_value
             #     #     type   = dvo.resource_record_type
