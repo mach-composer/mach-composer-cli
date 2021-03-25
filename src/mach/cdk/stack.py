@@ -25,6 +25,9 @@ class SiteStack(TerraformStack):
 
 
 def generate(config: "MachConfig", site: "Site", outdir: str):
-    app = App(outdir=outdir)
+    app = App(outdir=outdir, context={
+        "excludeStackIdFromLogicalIds": True,
+        "allowSepCharsInLogicalIds": True,
+    })
     SiteStack(app, config=config, site=site)
     app.synth()
