@@ -193,26 +193,35 @@ class CommercetoolsFrontendSettings(JsonSchemaMixin):
 class CommercetoolsSettings(JsonSchemaMixin):
     """commercetools configuration."""
 
+    # Authentication settings
     project_key: str
     client_id: str
     client_secret: str
     scopes: str
-    currencies: List[str]
-    languages: List[str]
-    countries: List[str]
+
     token_url: Optional[str] = fields.default(
         "https://auth.europe-west1.gcp.commercetools.com"
     )
     api_url: Optional[str] = fields.default(
         "https://api.europe-west1.gcp.commercetools.com"
     )
-    # CT settings
-    messages_enabled: Optional[bool] = fields.default(True)
+
+    # Set to false to not manage commercetools settings via mach composer
+    manage_project: Optional[bool] = fields.default(True)
+
+    # Project settings
+    currencies: Optional[List[str]] = fields.none()
+    languages: Optional[List[str]] = fields.none()
+    countries: Optional[List[str]] = fields.none()
+    messages_enabled: bool = fields.default(True)
     channels: Optional[List[CommercetoolsChannel]] = fields.list_()
     taxes: Optional[List[CommercetoolsTax]] = fields.list_()
     stores: List[Store] = fields.list_()
     zones: List[CommercetoolsZone] = fields.list_()
+
+    # Extra credentials
     frontend: CommercetoolsFrontendSettings = fields.none()
+
 
     def __post_init__(self):
         if not self.frontend:

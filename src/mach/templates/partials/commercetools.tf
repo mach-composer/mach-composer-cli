@@ -9,15 +9,23 @@ provider "commercetools" {
     api_url       = "{{ commercetools.api_url }}"
 }
 
+{% if commercetools.manage_project %}
 resource "commercetools_project_settings" "project" {
     name       = "{{ commercetools.project_key }}"
+    {% if commercetools.countries is not none -%}
     countries  = [{% for country in commercetools.countries %}"{{ country }}"{% if not loop.last %},{% endif %}{% endfor %}]
+    {%- endif %}
+    {% if commercetools.currencies is not none -%}
     currencies = [{% for currency in commercetools.currencies %}"{{ currency }}"{% if not loop.last %},{% endif %}{% endfor %}]
+    {%- endif %}
+    {% if commercetools.languages is not none -%}
     languages  = [{% for language in commercetools.languages %}"{{ language }}"{% if not loop.last %},{% endif %}{% endfor %}]
+    {%- endif %}
     messages   = {
         enabled = {{ commercetools.messages_enabled | string | lower }}
     }
 }
+{% endif %}
 
 {% for channel in commercetools.channels %}
 resource "commercetools_channel" "{{ channel.key }}" {
@@ -82,7 +90,9 @@ output "frontend_channels" {
 
 resource "null_resource" "commercetools" {
   depends_on = [
+    {% if commercetools.manage_project %}
     commercetools_project_settings.project,
+    {% endif %}
     {% for channel in commercetools.channels %}
     commercetools_channel.{{ channel.key }},
     {% endfor %}
@@ -94,4 +104,5 @@ resource "null_resource" "commercetools" {
     {% endfor %}
   ]
 }
+
 {% include 'partials/stores.tf' %}
