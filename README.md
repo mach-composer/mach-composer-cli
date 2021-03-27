@@ -7,19 +7,33 @@
 
 **Documentation:** [docs.machcomposer.io](https://docs.machcomposer.io)
 
-MACH composer is a framework that you use to orchestrate and extend modern digital commerce & experience platforms, based on MACH technologies and cloud native services. It provides a standards-based, future-proof tool-set and methodology to hand to your teams when building these types of platforms.
+MACH composer is a framework that you use to orchestrate and extend modern
+digital commerce & experience platforms, based on MACH technologies and cloud
+native services. It provides a standards-based, future-proof tool-set and
+methodology to hand to your teams when building these types of platforms.
 
 It includes:
 
-- A configuration framework for managing MACH-services configuration, using infrastructure-as-code underneath (powered by Terraform)
-- A microservices architecture based on modern serverless technology (AWS Lambda and Azure Functions), including (alpha) support for building your microservices with the Serverless Framework
-- Multi-tenancy support for managing many instances of your platform, that share the same library of micro services
+- A configuration framework for managing MACH-services configuration, using
+  infrastructure-as-code underneath (powered by Terraform)
+- A microservices architecture based on modern serverless technology (AWS
+  Lambda and Azure Functions), including (alpha) support for building your
+  microservices with the Serverless Framework
+- Multi-tenancy support for managing many instances of your platform, that
+  share the same library of micro services
 - CI/CD tools for automating the delivery of your MACH ecosystem
-- Tight integration with AWS an Azure, including an (opinionated) setup of these cloud environments
+- Tight integration with AWS an Azure, including an (opinionated) setup of
+  these cloud environments
 
-The framework is intended as the 'center piece' of your MACH architecture and incorporates industry best practises such as the 12 Factor Methodology, Infrastrucure-as-code, DevOps, immutable deployments, FAAS, etc.
+The framework is intended as the 'center piece' of your MACH architecture and
+incorporates industry best practises such as the 12 Factor Methodology,
+Infrastrucure-as-code, DevOps, immutable deployments, FAAS, etc.
 
-With combining (and requiring) these practises, using the framework has significant impact on your engineering methodology and organisation. On the other hand, by combining those practises we believe it offers an accelerated 'way in' in terms of embracing modern engineering practises in your organisation.
+With combining (and requiring) these practises, using the framework has
+significant impact on your engineering methodology and organisation. On the
+other hand, by combining those practises we believe it offers an accelerated
+'way in' in terms of embracing modern engineering practises in your
+organisation.
 
 ## Getting started
 
@@ -69,27 +83,27 @@ sites:
 components:
   - name: payment
     source: git::ssh://git@github.com/your-project/components/payment-component.git//terraform
-    endpoints: 
+    endpoints:
       main: public
     version: e638e57
 ```
 
 ### Installation
 
-- Make sure you have Terraform 0.14 installed 
+- Make sure you have Terraform 0.14 installed
 tip: Use [tfenv](https://github.com/tfutils/tfenv) to support multiple versions of Terraform)
 - Create a new virtualenv with Python 3.8
 - Run the following commands:
 
 ```
 $ make install
-``` 
+```
 
 ### Running MACH
 
 To generate the files:
 
-`mach generate # generates all available configs.` 
+`mach generate # generates all available configs.`
 
 `mach generate -f main.yml`
 
