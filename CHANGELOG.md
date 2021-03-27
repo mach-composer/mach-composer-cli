@@ -4,6 +4,8 @@
 - Add Sentry DSN management options
 - Add Amplience support
 - Add Apollo Federation support
+- Add `commercetools.manage_project` boolean flag to indicate if mach composer
+  should manage your commercetools project settings. Default is true
 - Add support for commercetools Store-specific variables and secrets on components included in new variable: `ct_stores`
 - Add support for commercetools shipping zones
 - Make commercetools frontend API client scopes configurable with new `frontend` configuration block
