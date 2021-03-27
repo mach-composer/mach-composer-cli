@@ -28,15 +28,16 @@ sites:
       client_id: 6SWM8ttjAYll-f9dopjdt
       client_secret: Q6gu2Hxlbhwv7wtrgPPydmS--6wv7tyh
       scopes: manage_api_clients:mach-site-eu manage_project:mach-site-eu view_api_clients:mach-site-eu
-      languages:
-        - nl-NL
-        - en-GB
-      currencies:
-        - GBP
-        - EUR
-      countries:
-        - NL
-        - GB
+      project_settings:
+        languages:
+          - nl-NL
+          - en-GB
+        currencies:
+          - GBP
+          - EUR
+        countries:
+          - NL
+          - GB
     components:
       - name: commercetools-config
       - name: payment
@@ -52,12 +53,13 @@ sites:
       client_id: 6SWM8ttjAYll-f9dopjdt
       client_secret: Q6gu2Hxlbhwv7wtrgPPydmS--6wv7tyh
       scopes: manage_api_clients:mach-site-us manage_project:mach-site-us view_api_clients:mach-site-us
-      languages:
-        - en-US
-      currencies:
-        - USD
-      countries:
-        - US
+      project_settings:
+        languages:
+          - en-US
+        currencies:
+          - USD
+        countries:
+          - US
     components:
       - name: commercetools-config
       - name: us-payment

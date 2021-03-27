@@ -9,20 +9,14 @@ provider "commercetools" {
     api_url       = "{{ commercetools.api_url }}"
 }
 
-{% if commercetools.manage_project %}
+{% if commercetools.project_settings %}
 resource "commercetools_project_settings" "project" {
     name       = "{{ commercetools.project_key }}"
-    {% if commercetools.countries is not none -%}
-    countries  = [{% for country in commercetools.countries %}"{{ country }}"{% if not loop.last %},{% endif %}{% endfor %}]
-    {%- endif %}
-    {% if commercetools.currencies is not none -%}
-    currencies = [{% for currency in commercetools.currencies %}"{{ currency }}"{% if not loop.last %},{% endif %}{% endfor %}]
-    {%- endif %}
-    {% if commercetools.languages is not none -%}
-    languages  = [{% for language in commercetools.languages %}"{{ language }}"{% if not loop.last %},{% endif %}{% endfor %}]
-    {%- endif %}
+    countries  = [{% for country in commercetools.project_settings.countries %}"{{ country }}"{% if not loop.last %},{% endif %}{% endfor %}]
+    currencies = [{% for currency in commercetools.project_settings.currencies %}"{{ currency }}"{% if not loop.last %},{% endif %}{% endfor %}]
+    languages  = [{% for language in commercetools.project_settings.languages %}"{{ language }}"{% if not loop.last %},{% endif %}{% endfor %}]
     messages   = {
-        enabled = {{ commercetools.messages_enabled | string | lower }}
+        enabled = {{ commercetools.project_settings.messages_enabled | string | lower }}
     }
 }
 {% endif %}
@@ -90,7 +84,7 @@ output "frontend_channels" {
 
 resource "null_resource" "commercetools" {
   depends_on = [
-    {% if commercetools.manage_project %}
+    {% if commercetools.project_settings %}
     commercetools_project_settings.project,
     {% endif %}
     {% for channel in commercetools.channels %}
