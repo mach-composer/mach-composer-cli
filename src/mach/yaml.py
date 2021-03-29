@@ -3,7 +3,6 @@ import os
 import re
 import tempfile
 from contextlib import contextmanager
-from pathlib import PurePath
 from typing import Union
 
 import click
