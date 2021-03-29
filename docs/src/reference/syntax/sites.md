@@ -158,22 +158,33 @@ Defines tax rates for various countries.
 Defines [commercetools stores](https://docs.commercetools.com/http-api-projects-stores).
 
 Example:
-```yaml
-stores:
-  - name:
-      en-GB: my store
-    key: mystore
-    distribution_channels:
-      - EU-DIST
-    supply_channels:
-      - EU-SUPPL
-```
-
+=== "Managed"
+    ```yaml
+    stores:
+      - key: mystore
+        name:
+          en-GB: my store
+        distribution_channels:
+          - EU-DIST
+        supply_channels:
+          - EU-SUPPL
+    ```
+=== "Not managed"
+    ```yaml
+    stores:
+      - key: mystore
+        managed: false
+      - key: our-other-store
+        managed: false
+      - key: global-store
+        managed: false
+    ```
 - **`name`** - (Required) Name of the store. Localized string [^1]
 - **`key`** - (Required) Store key
 - `languages` - List of languages
 - `distribution_channels` - List of supply channel keys used for [product projection store filtering](https://docs.commercetools.com/http-api-projects-productProjections#prices-beta)
 - `supply_channels` - List of supply channel keys used for [product projection store filtering](https://docs.commercetools.com/http-api-projects-productProjections#prices-beta)
+- `managed` - Indicate whether this store should be managed by MACH or not. Default to `true`
 
 ### frontend
 

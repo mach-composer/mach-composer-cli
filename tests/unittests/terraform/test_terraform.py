@@ -91,19 +91,19 @@ def test_generate_w_stores(config: types.MachConfig, tf_mock):
             currencies=["EUR"],
         ),
         stores=[
-            types.Store(
+            types.CommercetoolsStore(
                 name={
                     "en-GB": "Default store",
                 },
                 key="main-store",
             ),
-            types.Store(
+            types.CommercetoolsStore(
                 name={
                     "en-GB": "Some other store",
                 },
                 key="other-store",
             ),
-            types.Store(
+            types.CommercetoolsStore(
                 name={
                     "en-GB": "Forgotten store",
                 },
@@ -162,19 +162,19 @@ def test_commercetools_frontend_credentials(config: types.MachConfig, tf_mock):
             currencies=["EUR"],
         ),
         stores=[
-            types.Store(
+            types.CommercetoolsStore(
                 name={
                     "en-GB": "Default store",
                 },
                 key="main-store",
             ),
-            types.Store(
+            types.CommercetoolsStore(
                 name={
                     "en-GB": "Some other store",
                 },
                 key="other-store",
             ),
-            types.Store(
+            types.CommercetoolsStore(
                 name={
                     "en-GB": "Forgotten store",
                 },

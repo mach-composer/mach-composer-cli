@@ -99,4 +99,10 @@ resource "null_resource" "commercetools" {
   ]
 }
 
+{% if commercetools.stores %}
 {% include 'partials/stores.tf' %}
+{% endif %}
+
+{% if commercetools.frontend.create_credentials %}
+{% include 'partials/commercetools_frontend.tf' %}
+{% endif %}
