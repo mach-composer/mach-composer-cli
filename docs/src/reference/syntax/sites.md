@@ -45,6 +45,29 @@ commercetools:
   client_id: T9J5g5bJe-VV8aVvN5Q
   client_secret: FIo3PGHJDThCM17wok_irLakRzCA
   scopes: manage_api_clients:my-site-tst manage_project:my-site-tst view_api_clients:my-site-tst
+```
+
+- **`project_key`** - (Required) commercetools project key
+- **`client_id`** - (Required) API client ID
+- **`client_secret`** - (Required) API client secret
+- **`scopes`** - (Required) Required scopes for given API client ID.
+- `project_settings` - [Project settings](#project_settings) configuration block
+- `token_url` - Defaults to `https://auth.europe-west1.gcp.commercetools.com`
+- `api_url` - Defaults to `https://api.europe-west1.gcp.commercetools.com`
+- `channels` - List of [channel definitions](#channels)
+- `taxes` - List of [tax definitions](#taxes)
+- `zones` - List of [zone definitions](#zones)
+- `stores` - List of [store definitions](#stores) if multiple (store) contexts are going to be used.
+- `frontend` - [Frontend configuration block](#frontend)
+
+### project_settings
+
+Configuration block to define [project settings](https://docs.commercetools.com/api/projects/project).
+
+Example:
+
+```yaml
+project_settings:
   languages:
     - en-GB
     - nl-NL
@@ -56,22 +79,11 @@ commercetools:
     - NL
 ```
 
-- **`project_key`** - (Required) commercetools project key
-- **`client_id`** - (Required) API client ID
-- **`client_secret`** - (Required) API client secret
-- **`scopes`** - (Required) Required scopes for given API client ID.
 - **`currencies`** - (Required) List of three-digit currency codes as per ISO 4217
 - **`languages`** - (Required) List of IETF language tag
 - **`countries`** - (Required) List of two-digit country codes as per [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2)
-- `token_url` - Defaults to `https://auth.europe-west1.gcp.commercetools.com`
-- `api_url` - Defaults to `https://api.europe-west1.gcp.commercetools.com`
 - `messages_enabled` - When false the creation of messages is disabled.<br>
   Defaults to True
-- `channels` - List of [channel definitions](#channels)
-- `taxes` - List of [tax definitions](#taxes)
-- `zones` - List of [zone definitions](#zones)
-- `stores` - List of [store definitions](#stores) if multiple (store) contexts are going to be used.
-- `frontend` - [Frontend configuration block](#frontend)
 
 ### channels
 
