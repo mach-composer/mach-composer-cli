@@ -1,10 +1,13 @@
+import io
 import os
 import re
 import tempfile
 from contextlib import contextmanager
+from pathlib import PurePath
 from typing import Union
 
 import click
+import requests
 import yaml
 import yamlinclude
 from mach import exceptions, git
@@ -31,13 +34,25 @@ def resolve_file(path):
         yield path
         return
 
-    with tempfile.TemporaryDirectory() as tmpdir:
-        git_match = re.match(r"^git::(.*)", path)
-        if git_match:
-            git_path = git_match.group(1)
+    git_match = re.match(r"^git::(.*)", path)
+    if git_match:
+        git_path = git_match.group(1)
+        with tempfile.TemporaryDirectory() as tmpdir:
             yield resolve_git(git_path, tmpdir)
-        else:
-            raise Exception("External include paths not supported yet")
+    elif path.startswith("http"):
+        suffix = "." + path.rsplit(".", 1)[1]
+        with tempfile.NamedTemporaryFile(suffix=suffix) as tmpfile:
+            yield resolve_http(path, tmpfile)
+    else:
+        raise Exception(f"External path {path} not supported.")
+
+
+def resolve_http(path: str, tmpfile: io.FileIO):
+    resp = requests.get(path)
+    resp.raise_for_status()
+    tmpfile.write(resp.content)
+    tmpfile.seek(0)
+    return tmpfile.name
 
 
 def resolve_git(path: str, tmpdir: str):
