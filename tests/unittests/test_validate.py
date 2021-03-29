@@ -128,7 +128,7 @@ def test_validate_store_keys(name, valid):
             currencies=["EUR"],
         ),
         stores=[
-            types.Store(
+            types.CommercetoolsStore(
                 key=name,
                 name={
                     "en-GB": "Default store",
@@ -147,7 +147,7 @@ def test_validate_store_keys(name, valid):
     validate.validate_store_keys(ct)
 
     ct.stores.append(
-        types.Store(
+        types.CommercetoolsStore(
             key="main-store",
             name={
                 "en-GB": "Another store",
@@ -189,7 +189,7 @@ def test_validate_stores(parsed_config: types.MachConfig):
             currencies=["EUR"],
         ),
         stores=[
-            types.Store(
+            types.CommercetoolsStore(
                 name={
                     "en-GB": "Default store",
                 },

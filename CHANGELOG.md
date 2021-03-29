@@ -32,10 +32,11 @@
     - Supports a `default` endpoint that doesn't require custom domain
       settings
 
-**Commercetools**
+**commercetools**
 - Move `currencies`, `languages`, `countries`, `messages_enabled` to `project_settings` configuration block
 - Add support for commercetools Store-specific variables and secrets on
   components included in new variable: `ct_stores`
+- Add `managed` setting to commercetools store. Set to false it will indicate the store should not be managed by MACH composer
 - Add support for commercetools shipping zones
 - Make commercetools frontend API client scopes configurable with new
   `frontend` configuration block
