@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.1.0 (unreleased)
+
+- Add support for include yaml files using the `!include` operator:
+  ```
+  components: !include components.yml
+  components: !include git::https://github.com/labd/mach-configs.git@9f42fe2//components.yml
+  ```
+
 ## 1.0.0 (unreleased)
 
 ### New platforms

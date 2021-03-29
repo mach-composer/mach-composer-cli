@@ -1,4 +1,7 @@
+import pytest
 from mach import parse, types
+
+from tests.utils import get_file
 
 
 def test_resolve_sentry_configs(config: types.MachConfig):
@@ -72,3 +75,36 @@ def test_apollo_federation_integration_set(apollo_config: types.MachConfig):
     config = apollo_config
     for c in config.components:
         assert "apollo_federation" in c.integrations
+
+
+@pytest.mark.parametrize("filename", ["aws_config1.yml", "aws_config_external.yml"])
+def test_parse_from_file(filename):
+    config = parse.parse_config_from_file(get_file(filename))
+    assert config.components == [
+        types.ComponentConfig(
+            name="commercetools-config",
+            source="git::https://github.com/some-organisation/mach-component-commercetools.git//terraform",  # noqa
+            version="1aa9215",
+            integrations=[""],
+        ),
+        types.ComponentConfig(
+            name="payment",
+            source="git::https://github.com/some-organisation/mach-component-payment.git//terraform",  # noqa
+            version="0a9a0b5",
+            integrations=["aws", "commercetools"],
+            endpoints={"public": "main"},
+        ),
+        types.ComponentConfig(
+            name="us-payment",
+            source="git::https://github.com/some-organisation/mach-component-payment.git//terraform",  # noqa
+            version="0a9a0b5",
+            integrations=["aws", "commercetools"],
+            endpoints={"public": "default"},
+        ),
+        types.ComponentConfig(
+            name="api-extensions",
+            source="git::https://github.com/some-organisation/mach-component-api-extensions.git//terraform",  # noqa
+            version="a4bbb28",
+            integrations=["aws", "commercetools", "sentry"],
+        ),
+    ]

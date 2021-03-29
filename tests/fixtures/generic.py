@@ -1,4 +1,5 @@
 import pytest
+import requests_mock as rmock
 from click.testing import CliRunner
 
 
@@ -34,3 +35,9 @@ def cookiecutter(mocker):
     return mocker.patch(
         "cookiecutter.main.determine_repo_dir", side_effect=cc_cache.determine_repo_dir
     )
+
+
+@pytest.fixture()
+def requests_mock():
+    with rmock.Mocker() as m:
+        yield m
