@@ -29,7 +29,7 @@ __all__ = [
     "AWSProvider",
     "Endpoint",
     "EndpointEncoder",
-    "Store",
+    "CommercetoolsStore",
     "CommercetoolsChannel",
     "CommercetoolsTax",
     "CommercetoolsProjectSettings",
@@ -127,14 +127,19 @@ JsonSchemaMixin.register_field_encoders({Endpoint: EndpointEncoder()})
 
 @dataclass_json
 @dataclass
-class Store(JsonSchemaMixin):
+class CommercetoolsStore(JsonSchemaMixin):
     """commercetools store definition."""
 
-    name: LocalizedString
     key: str
+    name: LocalizedString = fields.dict_()
+    managed: bool = True
     languages: Optional[List[str]] = fields.list_()
     distribution_channels: Optional[List[str]] = fields.list_()
     supply_channels: Optional[List[str]] = fields.list_()
+
+    def __post_init__(self):
+        if self.managed and not self.name:
+            raise ValidationError("name is required")
 
 
 @dataclass_json
@@ -223,7 +228,7 @@ class CommercetoolsSettings(JsonSchemaMixin):
 
     channels: Optional[List[CommercetoolsChannel]] = fields.list_()
     taxes: Optional[List[CommercetoolsTax]] = fields.list_()
-    stores: List[Store] = fields.list_()
+    stores: List[CommercetoolsStore] = fields.list_()
     zones: List[CommercetoolsZone] = fields.list_()
 
     # Extra credentials
@@ -232,6 +237,10 @@ class CommercetoolsSettings(JsonSchemaMixin):
     def __post_init__(self):
         if not self.frontend:
             self.frontend = CommercetoolsFrontendSettings()
+
+    @property
+    def managed_stores(self):
+        return [store for store in self.stores if store.managed]
 
 
 @dataclass_json
