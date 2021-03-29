@@ -43,7 +43,8 @@ def add(file: str):
 def ensure_local(repo: str, dest: str):
     """Ensure the repository is present on the given dest."""
     reference = ""
-    if reference_match := re.match(r"(.*)(?:(?:@)(\w+))", repo):
+    reference_match = re.match(r"(.*)(?:(?:@)(\w+))", repo)
+    if reference_match:
         repo, reference = reference_match.groups()
 
     if os.path.exists(dest):
