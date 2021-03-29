@@ -32,6 +32,8 @@ __all__ = [
     "Store",
     "CommercetoolsChannel",
     "CommercetoolsTax",
+    "CommercetoolsProjectSettings",
+    "CommercetoolsFrontendSettings",
     "CommercetoolsSettings",
     "ContentfulSettings",
     "AmplienceSettings",
@@ -190,6 +192,16 @@ class CommercetoolsFrontendSettings(JsonSchemaMixin):
 
 @dataclass_json
 @dataclass
+class CommercetoolsProjectSettings(JsonSchemaMixin):
+    # Project settings
+    currencies: Optional[List[str]] = fields.none()
+    languages: Optional[List[str]] = fields.none()
+    countries: Optional[List[str]] = fields.none()
+    messages_enabled: bool = fields.default(True)
+
+
+@dataclass_json
+@dataclass
 class CommercetoolsSettings(JsonSchemaMixin):
     """commercetools configuration."""
 
@@ -207,13 +219,8 @@ class CommercetoolsSettings(JsonSchemaMixin):
     )
 
     # Set to false to not manage commercetools settings via mach composer
-    manage_project: Optional[bool] = fields.default(True)
+    project_settings: Optional[CommercetoolsProjectSettings] = fields.none()
 
-    # Project settings
-    currencies: Optional[List[str]] = fields.none()
-    languages: Optional[List[str]] = fields.none()
-    countries: Optional[List[str]] = fields.none()
-    messages_enabled: bool = fields.default(True)
     channels: Optional[List[CommercetoolsChannel]] = fields.list_()
     taxes: Optional[List[CommercetoolsTax]] = fields.list_()
     stores: List[Store] = fields.list_()
@@ -221,7 +228,6 @@ class CommercetoolsSettings(JsonSchemaMixin):
 
     # Extra credentials
     frontend: CommercetoolsFrontendSettings = fields.none()
-
 
     def __post_init__(self):
         if not self.frontend:

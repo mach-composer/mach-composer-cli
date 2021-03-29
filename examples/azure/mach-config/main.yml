@@ -22,15 +22,16 @@ sites:
       client_id: <client-id>
       client_secret: <client-secret>
       scopes: manage_api_clients:my-site manage_project:my-site view_api_clients:my-site
-      languages:
-        - en-GB
-        - nl-NL
-      currencies:
-        - GBP
-        - EUR
-      countries:
-        - GB
-        - NL
+      project_settings:
+        languages:
+          - en-GB
+          - nl-NL
+        currencies:
+          - GBP
+          - EUR
+        countries:
+          - GB
+          - NL
     components:
       - name: your-component
         variables:

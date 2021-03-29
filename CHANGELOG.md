@@ -33,8 +33,7 @@
       settings
 
 **Commercetools**
-- Add `commercetools.manage_project` boolean flag to indicate if mach composer
-  should manage your commercetools project settings. Default is true
+- Move `currencies`, `languages`, `countries`, `messages_enabled` to `project_settings` configuration block
 - Add support for commercetools Store-specific variables and secrets on
   components included in new variable: `ct_stores`
 - Add support for commercetools shipping zones
