@@ -1,6 +1,6 @@
 import warnings
 from collections import defaultdict
-from os.path import abspath, basename, splitext
+from os.path import abspath, basename, dirname, splitext
 from pathlib import Path
 from typing import Dict, List
 
@@ -19,6 +19,7 @@ from mach.types import (
     SiteAzureSettings,
 )
 from mach.validate import validate_config
+from mach.yaml import YamlIncludeConstructor
 from marshmallow.exceptions import ValidationError
 
 
@@ -45,6 +46,12 @@ def parse_configs(
 def parse_config_from_file(file: str) -> MachConfig:
     """Parse file into MachConfig object."""
     click.echo(f"Parsing {file}...")
+
+    YamlIncludeConstructor.add_to_loader_class(
+        loader_class=yaml.FullLoader,
+        base_dir=abspath(dirname(file)),
+    )
+
     with open(file, "r") as fh:
         dictionary_config = yaml.full_load(fh)
 

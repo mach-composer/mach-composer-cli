@@ -1,4 +1,5 @@
 import os
+import re
 import subprocess
 from dataclasses import dataclass
 from typing import List, Optional
@@ -14,6 +15,10 @@ PRETTY_FMT = {
 }
 
 PRETTY_FMT_STR = "format:" + "|".join([fmt for fmt in PRETTY_FMT.values()])
+
+
+class GitError(exceptions.MachError):
+    pass
 
 
 @dataclass
@@ -35,15 +40,23 @@ def add(file: str):
     _run(["git", "add", file])
 
 
-def ensure_local(repo: str, dest: str, *, reference: str = ""):
+def ensure_local(repo: str, dest: str):
     """Ensure the repository is present on the given dest."""
+    reference = ""
+    reference_match = re.match(r"(.*)(?:(?:@)(\w+))", repo)
+    if reference_match:
+        repo, reference = reference_match.groups()
+
     if os.path.exists(dest):
         _run(["git", "pull"], cwd=dest)
     else:
         clone(repo, dest)
 
     if reference:
-        _run(["git", "reset", "--hard", reference], cwd=dest)
+        try:
+            _run(["git", "reset", "--hard", reference], cwd=dest)
+        except GitError as e:
+            raise GitError(f"Unable to swtich to reference {reference}: {e}")
 
 
 def clone(repo: str, dest: str):
@@ -83,9 +96,8 @@ def _clean_commit_id(commit_id: str) -> str:
 
 
 def _run(cmd: List, *args, **kwargs) -> bytes:
-    kwargs["stderr"] = subprocess.DEVNULL
-
+    kwargs["stderr"] = subprocess.STDOUT
     try:
         return subprocess.check_output(cmd, *args, **kwargs)
     except subprocess.CalledProcessError as e:
-        raise exceptions.MachError(f"Could not perform command: {e}")
+        raise GitError(e.output.decode() if e.output else str(e)) from e
