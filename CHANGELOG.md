@@ -119,8 +119,8 @@
   variable "ct_stores" {
     type = map(object({
       key       = string
-      variables = map(string)
-      secrets   = map(string)
+      variables = any
+      secrets   = any
     }))
     default = {}
   }

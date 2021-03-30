@@ -20,14 +20,14 @@ module "{{ component.name }}" {
   {% if component.has_cloud_integration or component.variables %}
   variables = {
     {% for key, value in component.variables.items() %}
-    {{ key }} = {{ value|component_value }}
+    {{ key }} = {{ value|variable_value }}
     {% endfor %}
   }
   {% endif %}
   {% if component.has_cloud_integration or component.secrets %}
   secrets = {
     {% for key, value in component.secrets.items() %}
-    {{ key }} = {{ value|component_value }}
+    {{ key }} = {{ value|variable_value }}
     {% endfor %}
   }
   {% endif %}
@@ -62,12 +62,12 @@ module "{{ component.name }}" {
         key = "{{ store.key }}"
         variables = {
           {% for key, value in component.store_variables.get(store.key, {}).items() %}
-          {{ key }} = {{ value|component_value }}
+          {{ key }} = {{ value|variable_value }}
           {% endfor %}
         }
         secrets = {
           {% for key, value in component.store_secrets.get(store.key, {}).items() %}
-          {{ key }} = {{ value|component_value }}
+          {{ key }} = {{ value|variable_value }}
           {% endfor %}
         }
       }

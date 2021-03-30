@@ -18,7 +18,7 @@ def setup_jinja() -> Environment:
 def load_filters(env: Environment):
     env.filters.update(
         {
-            "component_value": render_value,
+            "variable_value": render_variable,
             "azure_region_long": azure_region_long,
             "azure_region_short": azure_region_short,
             "zone_name": zone_name,
@@ -29,11 +29,19 @@ def load_filters(env: Environment):
     )
 
 
-def render_value(value):
+def render_variable(value):
     if isinstance(value, bool):
         return "true" if value else "false"
     if isinstance(value, (int, float)):
         return value
+    if isinstance(value, list):
+        values = ",".join([render_variable(val) for val in value])
+        return f"[{values}]"
+    if isinstance(value, dict):
+        values = ",\n".join(
+            [f"{key} = {render_variable(val)}" for key, val in value.items()]
+        )
+        return f"{{{values}}}"
     return do_mark_safe(f'"{value}"')
 
 

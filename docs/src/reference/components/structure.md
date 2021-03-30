@@ -55,12 +55,12 @@ variable "site" {
 }
 
 variable "variables" {
-  type        = map(string)
+  type        = any
   description = "Generic way to pass variables to components."
 }
 
 variable "secrets" {
-  type        = map(string)
+  type        = any
   description = "Map of secret values. Can be placed in a key vault."
 }
 
