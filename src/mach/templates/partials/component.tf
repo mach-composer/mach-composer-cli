@@ -17,23 +17,26 @@ resource "sentry_key" "{{ component.name }}" {
 module "{{ component.name }}" {
   source            = "{{ definition.source }}{% if definition.use_version_reference %}?ref={{ definition.version }}{% endif %}"
 
-  {% if component.has_cloud_integration %}
-  component_version       = "{{ definition.version }}"
-  environment             = "{{ general_config.environment }}"
-  site                    = "{{ site.identifier }}"
-  tags                    = local.tags
-
+  {% if component.has_cloud_integration or component.variables %}
   variables = {
     {% for key, value in component.variables.items() %}
     {{ key }} = {{ value|component_value }}
     {% endfor %}
   }
-
+  {% endif %}
+  {% if component.has_cloud_integration or component.secrets %}
   secrets = {
     {% for key, value in component.secrets.items() %}
     {{ key }} = {{ value|component_value }}
     {% endfor %}
   }
+  {% endif %}
+
+  {% if component.has_cloud_integration %}
+  component_version       = "{{ definition.version }}"
+  environment             = "{{ general_config.environment }}"
+  site                    = "{{ site.identifier }}"
+  tags                    = local.tags
   {% endif %}
 
   {% if "azure" in component.integrations %}
