@@ -105,7 +105,7 @@ variable "tags" {
 
 ### commercetools
 
-The following variable is given when `commercetools` integration is defined.
+The following variable is given when the [`commercetools` integration](../../topics/integrations/commercetools.md) is defined.
 
 ```terraform
 variable "ct_project_key" {
@@ -135,7 +135,7 @@ variable "ct_stores" {
 
 ### sentry
 
-The following variable is given when `sentry` integration is defined.
+The following variable is given when the [`sentry` integration](../../topics/integrations/sentry.md) is defined.
 
 ```terraform
 variable "sentry_dsn" {
@@ -147,7 +147,7 @@ variable "sentry_dsn" {
 
 ### contentful
 
-The following variable is given when `contentful` integration is defined.
+The following variable is given when the [`contentful` integration](../../topics/integrations/contentful.md) is defined.
 
 ```terraform
 variable "contentful_space_id" {
@@ -158,7 +158,7 @@ variable "contentful_space_id" {
 
 ### amplience
 
-The following variable is given when `amplience` integration is defined.
+The following variable is given when the [`amplience` integration](../../topics/integrations/amplience.md) is defined.
 
 ```terraform
 variable "amplience_client_id" {
@@ -179,7 +179,7 @@ variable "amplience_hub_id" {
 
 ### apollo federation
 
-The following variable is given when `apollo_federation` integration is defined.
+The following variable is given when the [`apollo_federation` integration](../../topics/integrations/apollo_federation.md) is defined.
 
 ```terraform
 variable "apollo_federation" {

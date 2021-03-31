@@ -34,13 +34,16 @@ global:
 
 The rate limits can also be defined/overwritten on [`site`](../../reference/syntax/sites.md) and [`component`](../../reference/syntax/sites.md#components) level
 
-## Expose DSN to components
+## Integrate with components
 
-MACH needs to know what components want to use the Sentry DSN.<br>
-For this you need to include `sentry` to the list of integrations.<br>
-When doing so, MACH expects the component to have one variable `sentry_dsn` defined ([more info](../../reference/components/structure.md#sentry))
+When `sentry` is set as an [component integration](../../reference/components/structure.md#integrations), the component should have the following Terraform variables defined:
+
+- `sentry_dsn`
 
 If the integration is set, MACH will;
 
 - Generate a new DSN for the component
 - Assign the DSN to the `sentry_dsn` variable
+
+!!! info ""
+    More information on the [sentry integration on components](../../reference/components/structure.md#sentry)
