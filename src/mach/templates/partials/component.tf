@@ -17,23 +17,26 @@ resource "sentry_key" "{{ component.name }}" {
 module "{{ component.name }}" {
   source            = "{{ definition.source }}{% if definition.use_version_reference %}?ref={{ definition.version }}{% endif %}"
 
+  {% if component.has_cloud_integration or component.variables %}
+  variables = {
+    {% for key, value in component.variables.items() %}
+    {{ key }} = {{ value|variable_value }}
+    {% endfor %}
+  }
+  {% endif %}
+  {% if component.has_cloud_integration or component.secrets %}
+  secrets = {
+    {% for key, value in component.secrets.items() %}
+    {{ key }} = {{ value|variable_value }}
+    {% endfor %}
+  }
+  {% endif %}
+
   {% if component.has_cloud_integration %}
   component_version       = "{{ definition.version }}"
   environment             = "{{ general_config.environment }}"
   site                    = "{{ site.identifier }}"
   tags                    = local.tags
-
-  variables = {
-    {% for key, value in component.variables.items() %}
-    {{ key }} = {{ value|component_value }}
-    {% endfor %}
-  }
-
-  secrets = {
-    {% for key, value in component.secrets.items() %}
-    {{ key }} = {{ value|component_value }}
-    {% endfor %}
-  }
   {% endif %}
 
   {% if "azure" in component.integrations %}
@@ -59,12 +62,12 @@ module "{{ component.name }}" {
         key = "{{ store.key }}"
         variables = {
           {% for key, value in component.store_variables.get(store.key, {}).items() %}
-          {{ key }} = {{ value|component_value }}
+          {{ key }} = {{ value|variable_value }}
           {% endfor %}
         }
         secrets = {
           {% for key, value in component.store_secrets.get(store.key, {}).items() %}
-          {{ key }} = {{ value|component_value }}
+          {{ key }} = {{ value|variable_value }}
           {% endfor %}
         }
       }
