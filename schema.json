@@ -370,10 +370,7 @@
         "project_key",
         "client_id",
         "client_secret",
-        "scopes",
-        "currencies",
-        "languages",
-        "countries"
+        "scopes"
       ],
       "properties": {
         "project_key": {
@@ -388,24 +385,6 @@
         "scopes": {
           "type": "string"
         },
-        "currencies": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "languages": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "countries": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
         "token_url": {
           "type": "string",
           "default": "https://auth.europe-west1.gcp.commercetools.com"
@@ -414,9 +393,8 @@
           "type": "string",
           "default": "https://api.europe-west1.gcp.commercetools.com"
         },
-        "messages_enabled": {
-          "type": "boolean",
-          "default": true
+        "project_settings": {
+          "$ref": "#/definitions/CommercetoolsProjectSettings"
         },
         "channels": {
           "type": "array",
@@ -435,7 +413,7 @@
         "stores": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/Store"
+            "$ref": "#/definitions/CommercetoolsStore"
           },
           "default": []
         },
@@ -451,6 +429,34 @@
         }
       },
       "description": "commercetools configuration."
+    },
+    "CommercetoolsProjectSettings": {
+      "type": "object",
+      "properties": {
+        "currencies": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "languages": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "countries": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "messages_enabled": {
+          "type": "boolean",
+          "default": true
+        }
+      },
+      "description": "CommercetoolsProjectSettings(currencies: Union[List[str], NoneType] = None, languages: Union[List[str], NoneType] = None, countries: Union[List[str], NoneType] = None, messages_enabled: bool = <factory>)"
     },
     "CommercetoolsChannel": {
       "type": "object",
@@ -503,21 +509,25 @@
       },
       "description": "commercetools tax definition."
     },
-    "Store": {
+    "CommercetoolsStore": {
       "type": "object",
       "required": [
-        "name",
         "key"
       ],
       "properties": {
+        "key": {
+          "type": "string"
+        },
         "name": {
           "type": "object",
           "additionalProperties": {
             "type": "string"
-          }
+          },
+          "default": {}
         },
-        "key": {
-          "type": "string"
+        "managed": {
+          "type": "boolean",
+          "default": true
         },
         "languages": {
           "type": "array",
