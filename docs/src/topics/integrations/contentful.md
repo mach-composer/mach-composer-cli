@@ -10,8 +10,11 @@ Each site can have their own Contentful Space.
 
 You can define the name of the space that needs to be created in your [site configuration](../../reference/syntax/sites.md#contentful) by giving it a **name** and optionally set a custom **default locale**.
 
-## Expose Space ID to components
+## Integrate with components
 
-MACH needs to know what components want to use the Space ID.<br>
-For this you need to include `contentful` to the list of integrations.<br>
-When doing so, MACH expects the component to have one variable `contentful_space_id` defined ([more info](../../reference/components/structure.md#contentful)).
+When `contentful` is set as an [component integration](../../reference/components/structure.md#integrations), the component should have the following Terraform variables defined:
+
+- `contentful_space_id`
+
+!!! info ""
+    More information on the [contentful integration on components](../../reference/components/structure.md#contentful).

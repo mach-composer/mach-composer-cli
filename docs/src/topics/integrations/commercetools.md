@@ -7,6 +7,7 @@ From a MACH configuration file, you can configure the following items in commerc
 - currencies
 - languages
 - countries
+- shipping zones
 - channels
 - taxes
 - stores
@@ -35,7 +36,7 @@ locals {
 }
 
 resource "commercetools_api_client" "client" {
-  name  = format("%s_api_extension", var.azure_name_prefix)
+  name  = "api-extension"
   scope = local.ct_scopes
 }
 ```
@@ -75,6 +76,20 @@ The component can use the correct variables based on the context that is decided
 
     Read the [parse store variables and secrets](../../howto/commercetools/store-vars.md) how-to for more information.
 
+### Outside MACH configuration
+
+If you don't want to manage the stores from the MACH configuration itself, you still have the possibility to define them in the configuration so that components can use store variables and receive a full list of the stores available.
+
+This is done by setting a store to `managed: false`:
+
+```yaml
+commercetools:
+  stores:
+    - key: uk-store
+      managed: false
+    - key: nl-store
+      managed: false
+```
 
 ## Example configuration block
 
@@ -131,3 +146,15 @@ commercetools:
         inventory_channels:
           - INV
 ```
+
+## Integrate with components
+
+When `commercetools` is set as an [component integration](../../reference/components/structure.md#integrations), the component should have the following Terraform variables defined:
+
+- `ct_project_key`
+- `ct_api_url`
+- `ct_auth_url`
+- `ct_stores`
+
+!!! info ""
+    More information on the [commercetools integration on components](../../reference/components/structure.md#commercetools).

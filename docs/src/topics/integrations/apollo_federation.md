@@ -19,25 +19,15 @@ apollo_federation:
   graph_variant: current
 ```
       
-## Expose Apollo Federation to components
+## Integrate with components
 
-MACH needs to know what components want to use the Apollo Federation configuration.<br>
-For this you need to include `apollo_federation` to the list of integrations.
+When `apollo_federation` is set as an [component integration](../../reference/components/structure.md#integrations), the component should have the following Terraform variables defined:
 
-Components with the `apollo_federation` integration need to have an extra required variable [^1]:
+- `apollo_federation`
 
-```terraform
-variable "apollo_federation" {
-  type = object({
-    api_key       = string
-    graph         = string
-    graph_variant = string
-  })
-}
-```
+!!! info ""
+    More information on the [apollo_federation integration on components](../../reference/components/structure.md#apollo-federation).
 
 ## Further reading
 
 For more instructions on how to integrate Apollo Federation into your MACH stack, [read our how-to](../../howto/apollo-federation.md).
-
-[^1]: Read more about the [Apollo Federation structure for components](../../reference/components/structure.md#apollo-federation)
