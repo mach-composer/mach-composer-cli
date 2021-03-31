@@ -30,6 +30,44 @@ The configuration file has the following structure:
 !!! tip "JSON schema"
     A JSON schema for the syntax is [available on GitHub](https://github.com/labd/mach-composer/blob/master/schema.json). This can be used to configure IntelliSense autocompletion support in VSCode.
 
+## Including YAML files
+
+Using the `!include` tag it's possible to load in another yaml file as part of your configuration.
+
+This can be used for example to manage your component definitions elsewhere like so;
+
+```yaml
+---
+mach_composer: ...
+global: ...
+sites: ...
+components: !include components.yml
+```
+
+Or load them from an external location;
+
+=== "Git"
+    ```yaml
+    ---
+    mach_composer: ...
+    global: ...
+    sites: ...
+    components: !include git::https://github.com/your-org/mach-config.git@9f42fe2//components.yml
+    ```
+=== "HTTPS"
+    ```yaml
+    ---
+    mach_composer: ...
+    global: ...
+    sites: ...
+    components: !include https://www.your-org.com/mach/components.yml
+    ```
+
+!!! info "SOPS compatability"
+    Using the `!include` tag doesn't play well with [SOPS](../../howto/security/encrypt.md) yet.
+
+    SOPS will remove the `!` from the tag when encrypting.
+
 ## Full example
 
 === "AWS"
