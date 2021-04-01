@@ -23,24 +23,43 @@ from mach.yaml import YamlIncludeConstructor
 from marshmallow.exceptions import ValidationError
 
 
+def parse_components(file: str):
+    YamlIncludeConstructor.add_to_loader_class(
+        loader_class=yaml.FullLoader,
+        base_dir=abspath(dirname(file)),
+    )
+    with open(file, "r") as fh:
+        yaml_data = yaml.full_load(fh)
+
+    components = ComponentConfig.schema(infer_missing=True, many=True).load(yaml_data)
+    return components
+
+
 def parse_configs(
     files: List[str], output_path: str = None, *, ignore_version=True
 ) -> List[MachConfig]:
     """Parse and validate configurations."""
-    valid_configs = []
-    for file in files:
-        config = parse_config_from_file(file)
-        config.file = file
-        click.echo(f"Parsed {file} into config")
-        validate_config(config, ignore_version=ignore_version)
+    return [
+        parse_and_validate(file, output_path, ignore_version=ignore_version)
+        for file in files
+    ]
 
-        if output_path:
-            full_output_path = Path(f"{output_path}/{splitext(basename(file))[0]}")
-            full_output_path.mkdir(exist_ok=True, parents=True)
-            config.output_path = str(full_output_path)
 
-        valid_configs.append(config)
-    return valid_configs
+def parse_and_validate(
+    file: str, output_path: str = None, *, ignore_version=True
+) -> MachConfig:
+    """Parse and validate configuration."""
+    config = parse_config_from_file(file)
+    config.file = file
+    click.echo(f"Parsed {file} into config")
+    validate_config(config, ignore_version=ignore_version)
+
+    if output_path:
+        full_output_path = Path(f"{output_path}/{splitext(basename(file))[0]}")
+        full_output_path.mkdir(exist_ok=True, parents=True)
+        config.output_path = str(full_output_path)
+
+    return config
 
 
 def parse_config_from_file(file: str) -> MachConfig:

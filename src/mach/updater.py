@@ -1,6 +1,8 @@
 import os
 import re
-import typing
+from abc import ABC
+from dataclasses import dataclass
+from typing import List, Optional, Tuple, Union
 
 import click
 from mach import cache, exceptions, git
@@ -12,14 +14,26 @@ VERSION_RE = re.compile(r"(\s*version: )([\"']?.*[\"']?)")
 ROOT_BLOCK_START = re.compile(r"^\w+")
 
 
-Updates = typing.List[typing.Tuple[ComponentConfig, str]]
+Updates = List[Tuple[ComponentConfig, str]]
+
+
+@dataclass
+class UpdaterInput:
+    data: Union[MachConfig, List[ComponentConfig]]
+    file: str
+
+    @property
+    def is_mach_config(self):
+        return isinstance(self.data, MachConfig)
 
 
 def update_config_component(  # noqa: C901
-    config: MachConfig,
+    updater_input: UpdaterInput,
     component_name: str,
     new_version: str,
 ):
+    config = updater_input.data
+
     component = config.get_component(component_name)
     if not component:
         raise exceptions.MachError(f"Could not find component {component_name}")
@@ -29,12 +43,11 @@ def update_config_component(  # noqa: C901
 
     click.echo(f"Updating {component_name} to version {new_version}...")
 
-    assert config.file
-    FileUpdater.apply_updates(config.file, [(component, new_version)])
+    FileUpdater.apply_updates(updater_input.file, [(component, new_version)])
 
 
 def update_config_components(  # noqa: C901
-    config: MachConfig,
+    updater_input: UpdaterInput,
     *,
     check_only=False,
     verbose=False,
@@ -46,22 +59,28 @@ def update_config_components(  # noqa: C901
     :param check_only: Only check for updates; don't update the file
     :param verbose: Enable verbose output
     """
-    intro_msg = f"Checking updates for components in {config.file}"
+    intro_msg = f"Checking updates for components in {updater_input.file}"
     print(intro_msg)
     print("-" * len(intro_msg))
 
-    updates: Updates = _fetch_changes(config)
+    updates: Updates = _fetch_changes(updater_input)
+
+    updater_cls = FileUpdater if updater_input.is_mach_config else ComponentsFileUpdater
 
     if not check_only:
-        assert config.file
-        FileUpdater.apply_updates(config.file, updates)
+        updater_cls.apply_updates(updater_input.file, updates)
 
 
-def _fetch_changes(config: MachConfig) -> Updates:
-    cache_dir = cache.cache_dir_for(config)
+def _fetch_changes(updater_input: UpdaterInput) -> Updates:
+    cache_dir = cache.cache_dir_for(updater_input.file)
+
+    if updater_input.is_mach_config:
+        components = updater_input.data.components
+    else:
+        components = updater_input.data
+
     updates: Updates = []
-
-    for component in config.components:
+    for component in components:
         click.echo(f"Updates for {component.name}...")
 
         match = re.match(r"^git::(.*)", component.source)
@@ -93,7 +112,7 @@ def _fetch_changes(config: MachConfig) -> Updates:
     return updates
 
 
-class FileUpdater:
+class BaseFileUpdater(ABC):
     """Updater which update component version in-place.
 
     We'll use a very basic search-and-replace based on regular expressions
@@ -104,36 +123,33 @@ class FileUpdater:
     def apply_updates(cls, file: str, updates: Updates):
         """Apply given updates to the file."""
         instance = cls()
-        instance._apply_updates(file, updates)
+        instance.apply(file, updates)
 
-    def _apply_updates(self, file: str, updates: Updates):
-        self.in_components = False
-        self.current_component: typing.Optional[ComponentConfig] = None
+    def apply(self, file: str, updates: Updates):
+        click.echo("Writing updated to file...")
+        self.current_component: Optional[ComponentConfig] = None
         self.updates = {component.name: version for component, version in updates}
         self.component_map = {component.name: component for component, _ in updates}
 
         with open(file) as f:
             lines = f.readlines()
 
-        newlines = []
-        for line in lines:
-            if line.startswith("components:"):
-                self.in_components = True
-            elif ROOT_BLOCK_START.match(line):
-                self.in_components = False
-            elif self.in_components:
-                line = self.process_component_line(line)
-            newlines.append(line)
+        newlines = [self.process_line(line) for line in lines]
 
         with open(file, mode="w") as f:
             for line in newlines:
                 f.write(line)
 
+    def process_line(self, line: str) -> str:
+        raise NotImplementedError()
+
     def process_component_line(self, line: str):
         name_match = NAME_RE.match(line)
-
+        print(line)
         if name_match:
             component_name = name_match.group(1)
+
+            print(f"Processing {component_name}")
 
             try:
                 self.current_component = self.component_map[component_name]
@@ -160,3 +176,23 @@ class FileUpdater:
             new_version = f'"{new_version}"'
 
         return VERSION_RE.sub(rf"\g<1>{new_version}", line)
+
+
+class FileUpdater(BaseFileUpdater):
+    def __init__(self):
+        self.in_components = False
+
+    def process_line(self, line: str) -> str:
+        if line.startswith("components:"):
+            self.in_components = True
+        elif ROOT_BLOCK_START.match(line):
+            self.in_components = False
+        elif self.in_components:
+            return self.process_component_line(line)
+
+        return line
+
+
+class ComponentsFileUpdater(BaseFileUpdater):
+    def process_line(self, line: str) -> str:
+        return self.process_component_line(line)

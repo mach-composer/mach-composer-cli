@@ -211,30 +211,45 @@ def update(
             f"When specifying a component ({component}) you should specify a version as well"
         )
 
-    files = get_input_files(file)
-    configs = parse.parse_configs(files)
-    try:
-        for config in configs:
+    for file in get_input_files(file):
+        try:
+            config = parse.parse_and_validate(file)
+            data = updater.UpdaterInput(config, file)
+        except Exception as e:
+            click.echo(
+                f"Could not parse {file} as regular MACH config, will try to parse as "
+                f"components list: {e}"
+            )
+            # We might have a components yml as input, try to parse that
+            try:
+                components = parse.parse_components(file)
+            except Exception as e:
+                raise click.ClickException(str(e)) from e
+            else:
+                data = updater.UpdaterInput(components, file)
+
+        try:
             if component and version:
-                updater.update_config_component(config, component, version)
+                updater.update_config_component(data, component, version)
             else:
                 updater.update_config_components(
-                    config, verbose=verbose, check_only=check
+                    data, verbose=verbose, check_only=check
                 )
             if commit:
-                assert config.file
-                git.add(config.file)
+                git.add(file)
+        except MachError as e:
+            raise click.ClickException(str(e)) from e
 
-        if commit:
-            if component:
-                commit_msg = f"Updated {component} component"
-            else:
-                commit_msg = "Updated components"
+    if commit:
+        if component:
+            commit_msg = f"Updated {component} component"
+        else:
+            commit_msg = "Updated components"
 
+        try:
             git.commit(commit_msg)
-
-    except MachError as e:
-        raise click.ClickException(str(e)) from e
+        except MachError as e:
+            raise click.ClickException(str(e)) from e
 
 
 @mach.command()
