@@ -145,7 +145,6 @@ class BaseFileUpdater(ABC):
 
     def process_component_line(self, line: str):
         name_match = NAME_RE.match(line)
-        print(line)
         if name_match:
             component_name = name_match.group(1)
 
