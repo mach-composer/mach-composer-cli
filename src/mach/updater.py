@@ -60,8 +60,8 @@ def update_config_components(  # noqa: C901
     :param verbose: Enable verbose output
     """
     intro_msg = f"Checking updates for components in {updater_input.file}"
-    print(intro_msg)
-    print("-" * len(intro_msg))
+    click.echo(intro_msg)
+    click.echo("-" * len(intro_msg))
 
     updates: Updates = _fetch_changes(updater_input)
 
@@ -103,7 +103,7 @@ def _fetch_changes(updater_input: UpdaterInput) -> Updates:
             continue
 
         for commit in commits:
-            print(f"  {commit.id}: {commit.msg}")
+            click.echo(f"  {commit.id}: {commit.msg}")
 
         click.echo("")
 
@@ -129,12 +129,22 @@ class BaseFileUpdater(ABC):
         click.echo("Writing updated to file...")
         self.current_component: Optional[ComponentConfig] = None
         self.updates = {component.name: version for component, version in updates}
+        self.applied = []
         self.component_map = {component.name: component for component, _ in updates}
 
         with open(file) as f:
             lines = f.readlines()
 
         newlines = [self.process_line(line) for line in lines]
+
+        not_applied = set(self.updates.keys()) - set(self.applied)
+        if not_applied:
+            click.echo(
+                click.style(
+                    f"Unable to apply all updates to the components: {', '.join(not_applied)}",
+                    fg="yellow",
+                )
+            )
 
         with open(file, mode="w") as f:
             for line in newlines:
@@ -147,8 +157,6 @@ class BaseFileUpdater(ABC):
         name_match = NAME_RE.match(line)
         if name_match:
             component_name = name_match.group(1)
-
-            print(f"Processing {component_name}")
 
             try:
                 self.current_component = self.component_map[component_name]
@@ -174,6 +182,7 @@ class BaseFileUpdater(ABC):
         if new_version.isdigit():
             new_version = f'"{new_version}"'
 
+        self.applied.append(self.current_component.name)
         return VERSION_RE.sub(rf"\g<1>{new_version}", line)
 
 
