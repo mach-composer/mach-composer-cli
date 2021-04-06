@@ -12,7 +12,21 @@ from mach.exceptions import MachError
 from mach.terraform import apply_terraform, generate_terraform, plan_terraform
 
 
-@click.group()
+class Command(click.Command):
+    def invoke(self, ctx):
+        try:
+            return super().invoke(ctx)
+        except MachError as e:
+            raise click.ClickException(str(e)) from e
+
+
+class Group(click.Group):
+    def command(self, *args, **kwargs):
+        kwargs.setdefault("cls", Command)
+        return super().command(*args, **kwargs)
+
+
+@click.group(cls=Group)
 def mach():
     pass
 
@@ -44,13 +58,7 @@ def terraform_command(f):
     def new_func(file, site, output_path: str, ignore_version: bool, **kwargs):
         files = get_input_files(file)
 
-        try:
-            configs = parse.parse_configs(
-                files, output_path, ignore_version=ignore_version
-            )
-        except MachError as e:
-            raise click.ClickException(str(e)) from e
-
+        configs = parse.parse_configs(files, output_path, ignore_version=ignore_version)
         try:
             result = f(
                 file=file,
@@ -212,33 +220,16 @@ def update(
         )
 
     for file in get_input_files(file):
-        try:
-            config = parse.parse_and_validate(file)
-            data = updater.UpdaterInput(config, file)
-        except Exception as e:
-            click.echo(
-                f"Could not parse {file} as regular MACH config, will try to parse as "
-                f"components list: {e}"
-            )
-            # We might have a components yml as input, try to parse that
-            try:
-                components = parse.parse_components(file)
-            except Exception as e:
-                raise click.ClickException(str(e)) from e
-            else:
-                data = updater.UpdaterInput(components, file)
+        updater.update_file(
+            file,
+            component_name=component,
+            new_version=version,
+            verbose=verbose,
+            check_only=check,
+        )
 
-        try:
-            if component and version:
-                updater.update_config_component(data, component, version)
-            else:
-                updater.update_config_components(
-                    data, verbose=verbose, check_only=check
-                )
-            if commit:
-                git.add(file)
-        except MachError as e:
-            raise click.ClickException(str(e)) from e
+        if commit:
+            git.add(file)
 
     if commit:
         if component:
@@ -246,10 +237,7 @@ def update(
         else:
             commit_msg = "Updated components"
 
-        try:
-            git.commit(commit_msg)
-        except MachError as e:
-            raise click.ClickException(str(e)) from e
+        git.commit(commit_msg)
 
 
 @mach.command()
