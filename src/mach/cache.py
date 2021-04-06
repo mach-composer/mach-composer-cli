@@ -1,5 +1,4 @@
 import os
-from typing import TYPE_CHECKING
 
 
 def cache_dir_for(file: str, *, create=True):

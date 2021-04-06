@@ -31,7 +31,25 @@ def parse_components(file: str):
     with open(file, "r") as fh:
         yaml_data = yaml.full_load(fh)
 
-    components = ComponentConfig.schema(infer_missing=True, many=True).load(yaml_data)
+    try:
+        with warnings.catch_warnings():
+            # Suppress a 'Unknown type ForwardRef('Component')' warning from dataclasses_json
+            warnings.simplefilter("ignore")
+            components = ComponentConfig.schema(infer_missing=True, many=True).load(
+                yaml_data
+            )
+    except KeyError as e:
+        # Most probably a missing value in the configuration.
+        # dataclasses_json doesn't really give a proper Exception for this.
+        # TODO: See if we can improve this / make it more robust. Either by improving
+        # dataclassess_json (with a PR) or by extending it (if possible)
+        raise exceptions.ParseError(f"Required attribute {e} missing") from e
+    except ValidationError as e:
+        # TODO: We don't have any path here, so not the best of error messages
+        raise exceptions.ParseError(
+            "Configuration file could not be validated", details=e.normalized_messages()
+        ) from e
+
     return components
 
 

@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from typing import List, Optional, Tuple, Union
 
 import click
-from mach import cache, exceptions, git
+from mach import cache, exceptions, git, parse
 from mach.types import ComponentConfig, MachConfig
 
 NAME_RE = re.compile(r".* name: [\"']?(.*)[\"']?")
@@ -25,6 +25,33 @@ class UpdaterInput:
     @property
     def is_mach_config(self):
         return isinstance(self.data, MachConfig)
+
+
+def update_file(
+    file: str,
+    *,
+    component_name: Optional[str],
+    new_version: Optional[str],
+    verbose=False,
+    check_only=False,
+):
+    try:
+        config = parse.parse_and_validate(file)
+        data = UpdaterInput(config, file)
+    except exceptions.ParseError as e:
+        # We might have a components yml as input, try to parse that
+        try:
+            components = parse.parse_components(file)
+        except exceptions.ParseError:
+            # Raise original error
+            raise e
+
+        data = UpdaterInput(components, file)
+
+    if component_name and new_version:
+        update_config_component(data, component_name, new_version)
+    else:
+        update_config_components(data, verbose=verbose, check_only=check_only)
 
 
 def update_config_component(  # noqa: C901
