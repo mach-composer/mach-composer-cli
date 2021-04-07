@@ -5,8 +5,7 @@ from pathlib import Path
 from typing import Dict, List
 
 import click
-import yaml
-from mach import exceptions
+from mach import exceptions, yaml
 from mach.types import (
     CloudOption,
     ComponentAzureConfig,
@@ -19,41 +18,65 @@ from mach.types import (
     SiteAzureSettings,
 )
 from mach.validate import validate_config
-from mach.yaml import YamlIncludeConstructor
 from marshmallow.exceptions import ValidationError
+
+
+def parse_components(file: str):
+    yaml_data = yaml.load(file)
+
+    try:
+        with warnings.catch_warnings():
+            # Suppress a 'Unknown type ForwardRef('Component')' warning from dataclasses_json
+            warnings.simplefilter("ignore")
+            components = ComponentConfig.schema(infer_missing=True, many=True).load(
+                yaml_data
+            )
+    except KeyError as e:
+        # Most probably a missing value in the configuration.
+        # dataclasses_json doesn't really give a proper Exception for this.
+        # TODO: See if we can improve this / make it more robust. Either by improving
+        # dataclassess_json (with a PR) or by extending it (if possible)
+        raise exceptions.ParseError(f"Required attribute {e} missing") from e
+    except ValidationError as e:
+        # TODO: We don't have any path here, so not the best of error messages
+        raise exceptions.ParseError(
+            "Configuration file could not be validated", details=e.normalized_messages()
+        ) from e
+
+    return components
 
 
 def parse_configs(
     files: List[str], output_path: str = None, *, ignore_version=True
 ) -> List[MachConfig]:
     """Parse and validate configurations."""
-    valid_configs = []
-    for file in files:
-        config = parse_config_from_file(file)
-        config.file = file
-        click.echo(f"Parsed {file} into config")
-        validate_config(config, ignore_version=ignore_version)
+    return [
+        parse_and_validate(file, output_path, ignore_version=ignore_version)
+        for file in files
+    ]
 
-        if output_path:
-            full_output_path = Path(f"{output_path}/{splitext(basename(file))[0]}")
-            full_output_path.mkdir(exist_ok=True, parents=True)
-            config.output_path = str(full_output_path)
 
-        valid_configs.append(config)
-    return valid_configs
+def parse_and_validate(
+    file: str, output_path: str = None, *, ignore_version=True
+) -> MachConfig:
+    """Parse and validate configuration."""
+    config = parse_config_from_file(file)
+    config.file = file
+    click.echo(f"Parsed {file} into config")
+    validate_config(config, ignore_version=ignore_version)
+
+    if output_path:
+        full_output_path = Path(f"{output_path}/{splitext(basename(file))[0]}")
+        full_output_path.mkdir(exist_ok=True, parents=True)
+        config.output_path = str(full_output_path)
+
+    return config
 
 
 def parse_config_from_file(file: str) -> MachConfig:
     """Parse file into MachConfig object."""
     click.echo(f"Parsing {file}...")
-
-    YamlIncludeConstructor.add_to_loader_class(
-        loader_class=yaml.FullLoader,
-        base_dir=abspath(dirname(file)),
-    )
-
-    with open(file, "r") as fh:
-        dictionary_config = yaml.full_load(fh)
+    dictionary_config = yaml.load(file)
 
     try:
         with warnings.catch_warnings():
