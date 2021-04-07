@@ -5,8 +5,7 @@ from pathlib import Path
 from typing import Dict, List
 
 import click
-import yaml
-from mach import exceptions
+from mach import exceptions, yaml
 from mach.types import (
     CloudOption,
     ComponentAzureConfig,
@@ -19,17 +18,11 @@ from mach.types import (
     SiteAzureSettings,
 )
 from mach.validate import validate_config
-from mach.yaml import YamlIncludeConstructor
 from marshmallow.exceptions import ValidationError
 
 
 def parse_components(file: str):
-    YamlIncludeConstructor.add_to_loader_class(
-        loader_class=yaml.FullLoader,
-        base_dir=abspath(dirname(file)),
-    )
-    with open(file, "r") as fh:
-        yaml_data = yaml.full_load(fh)
+    yaml_data = yaml.load(file)
 
     try:
         with warnings.catch_warnings():
@@ -83,14 +76,7 @@ def parse_and_validate(
 def parse_config_from_file(file: str) -> MachConfig:
     """Parse file into MachConfig object."""
     click.echo(f"Parsing {file}...")
-
-    YamlIncludeConstructor.add_to_loader_class(
-        loader_class=yaml.FullLoader,
-        base_dir=abspath(dirname(file)),
-    )
-
-    with open(file, "r") as fh:
-        dictionary_config = yaml.full_load(fh)
+    dictionary_config = yaml.load(file)
 
     try:
         with warnings.catch_warnings():
