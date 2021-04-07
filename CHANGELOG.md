@@ -31,10 +31,10 @@
     - `has_public_api` replaced with `endpoints`
     - Supports a `default` endpoint that doesn't require custom domain
       settings
-- Add support for include yaml files using the `!include` operator:
+- Add support for including yaml files using the `${include(...)}`
   ```
-  components: !include components.yml
-  components: !include git::https://github.com/labd/mach-configs.git@9f42fe2//components.yml
+  components: ${include(components.yml)}
+  components: ${include(git::https://github.com/labd/mach-configs.git@9f42fe2//components.yml)}
   ```
 
 

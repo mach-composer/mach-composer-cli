@@ -32,7 +32,7 @@ The configuration file has the following structure:
 
 ## Including YAML files
 
-Using the `!include` tag it's possible to load in another yaml file as part of your configuration.
+Using the `${include()}` syntax it's possible to load in another yaml file as part of your configuration.
 
 This can be used for example to manage your component definitions elsewhere like so;
 
@@ -41,7 +41,7 @@ This can be used for example to manage your component definitions elsewhere like
 mach_composer: ...
 global: ...
 sites: ...
-components: !include components.yml
+components: ${include(components.yml)}
 ```
 
 Or load them from an external location;
@@ -52,7 +52,7 @@ Or load them from an external location;
     mach_composer: ...
     global: ...
     sites: ...
-    components: !include git::https://github.com/your-org/mach-config.git@9f42fe2//components.yml
+    components: ${include(git::https://github.com/your-org/mach-config.git@9f42fe2//components.yml)}
     ```
 === "HTTPS"
     ```yaml
@@ -60,13 +60,8 @@ Or load them from an external location;
     mach_composer: ...
     global: ...
     sites: ...
-    components: !include https://www.your-org.com/mach/components.yml
+    components: ${include(https://www.your-org.com/mach/components.yml)}
     ```
-
-!!! info "SOPS compatability"
-    Using the `!include` tag doesn't play well with [SOPS](../../howto/security/encrypt.md) yet.
-
-    SOPS will remove the `!` from the tag when encrypting.
 
 ## Full example
 
