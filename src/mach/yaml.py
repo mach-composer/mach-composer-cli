@@ -3,6 +3,7 @@ import os
 import re
 import tempfile
 from contextlib import contextmanager
+from os.path import abspath, dirname
 from typing import Union
 
 import click
@@ -12,6 +13,41 @@ import yamlinclude
 from mach import exceptions, git
 
 EXTERNAL_RE = re.compile(r"^(git::)?(http|https)://")
+INCLUDE_RE = re.compile(r"^(.*)\${include\((.*)\)}\s*$")
+
+
+class YamlFileIO(io.TextIOWrapper):
+    """YAML IO wrapper to modify the yaml input stream before parsing it.
+
+    We support the !include tag using the yamlinclude package.
+    However, MACH will provide this option in the same fashion as variables can be defined
+    using the `${...}` syntax: `${include(file.yml)}`.
+    An added bonus here is that SOPS will not strip this syntax as it does with !include
+    """
+
+    def read(self, size=-1):
+        lines = super().read(size)
+        return "\n".join([self.parse_line(line) for line in lines.split("\n")])
+
+    def parse_line(self, line: str) -> str:
+        match = INCLUDE_RE.match(line)
+        if match:
+            prefix, include_part = match.groups()
+            line = f"{prefix}!include {include_part}"
+        return line
+
+
+def load(file: str):
+    YamlIncludeConstructor.add_to_loader_class(
+        loader_class=yaml.FullLoader,
+        base_dir=abspath(dirname(file)),
+    )
+
+    with open(file, "r+b") as fh:
+        yaml_io = YamlFileIO(fh)
+        data = yaml.full_load(yaml_io)
+
+    return data
 
 
 class YamlIncludeConstructor(yamlinclude.YamlIncludeConstructor):

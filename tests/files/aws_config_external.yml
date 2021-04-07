@@ -67,4 +67,4 @@ sites:
         variables:
           ORDER_PREFIX: MACH-
 
-components: !include components.yml
+components: ${include(components.yml)}
