@@ -5,7 +5,7 @@ import subprocess
 import tempfile
 from contextlib import contextmanager
 from os.path import abspath, dirname
-from typing import Union
+from typing import Tuple, Union
 
 import click
 import requests
@@ -15,6 +15,8 @@ from mach import exceptions, git
 
 EXTERNAL_RE = re.compile(r"^(git::)?(http|https)://")
 INCLUDE_RE = re.compile(r"^(.*)\${include\((.*)\)}\s*$")
+
+Encrypted = bool
 
 
 class YamlFileIO(io.TextIOWrapper):
@@ -38,11 +40,12 @@ class YamlFileIO(io.TextIOWrapper):
         return line
 
 
-def load(file: str):
+def load(file: str) -> Tuple[dict, Encrypted]:
     YamlIncludeConstructor.add_to_loader_class(
         loader_class=yaml.FullLoader,
         base_dir=abspath(dirname(file)),
     )
+    encrypted = False
 
     with open(file, "r+b") as fh:
         data = _yaml_load(fh)
@@ -50,8 +53,9 @@ def load(file: str):
     if "sops" in data:
         click.echo("Detected SOPS encryption; decrypting...")
         data = _yaml_load(_sops_stream(file))
+        encrypted = True
 
-    return data
+    return data, encrypted
 
 
 def _yaml_load(iostream: io.IOBase):
