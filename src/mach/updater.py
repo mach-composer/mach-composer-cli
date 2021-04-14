@@ -1,5 +1,6 @@
 import os
 import re
+import subprocess
 from abc import ABC
 from dataclasses import dataclass
 from typing import List, Optional, Tuple, Union
@@ -25,6 +26,10 @@ class UpdaterInput:
     @property
     def is_mach_config(self):
         return isinstance(self.data, MachConfig)
+
+    @property
+    def file_encrypted(self):
+        return self.is_mach_config and self.data.file_encrypted
 
 
 def update_file(
@@ -70,7 +75,8 @@ def update_config_component(  # noqa: C901
 
     click.echo(f"Updating {component_name} to version {new_version}...")
 
-    FileUpdater.apply_updates(updater_input.file, [(component, new_version)])
+    updater_cls = updater_for(updater_input)
+    updater_cls.apply_updates(updater_input, [(component, new_version)])
 
 
 def update_config_components(  # noqa: C901
@@ -92,10 +98,16 @@ def update_config_components(  # noqa: C901
 
     updates: Updates = _fetch_changes(updater_input)
 
-    updater_cls = FileUpdater if updater_input.is_mach_config else ComponentsFileUpdater
-
     if not check_only:
-        updater_cls.apply_updates(updater_input.file, updates)
+        updater_cls = updater_for(updater_input)
+        updater_cls.apply_updates(updater_input, updates)
+
+
+def updater_for(updater_input: UpdaterInput):
+    if updater_input.is_mach_config:
+        return SopsUpdater if updater_input.file_encrypted else FileUpdater
+
+    return ComponentsFileUpdater
 
 
 def _fetch_changes(updater_input: UpdaterInput) -> Updates:
@@ -139,7 +151,7 @@ def _fetch_changes(updater_input: UpdaterInput) -> Updates:
     return updates
 
 
-class BaseFileUpdater(ABC):
+class BaseUpdater(ABC):
     """Updater which update component version in-place.
 
     We'll use a very basic search-and-replace based on regular expressions
@@ -147,13 +159,56 @@ class BaseFileUpdater(ABC):
     """
 
     @classmethod
-    def apply_updates(cls, file: str, updates: Updates):
+    def apply_updates(cls, updater_input: UpdaterInput, updates: Updates):
         """Apply given updates to the file."""
         instance = cls()
-        instance.apply(file, updates)
+        instance.apply(updater_input, updates)
 
-    def apply(self, file: str, updates: Updates):
+    def apply(self, updater_input: UpdaterInput, updates: Updates):
+        raise NotImplementedError()
+
+
+class SopsUpdater(BaseUpdater):
+    def apply(self, updater_input: UpdaterInput, updates: Updates):
+        assert updater_input.file_encrypted
+
+        if not updater_input.is_mach_config:
+            raise NotImplementedError(
+                "SOPS support not supported yet for updating a components file"
+            )
+
+        component_indexes = {
+            c.name: i for i, c in enumerate(updater_input.data.components)
+        }
+
+        for component, version in updates:
+
+            index = component_indexes[component.name]
+            cmd = [
+                "sops",
+                "--set",
+                f'["components"][{index}]["version"] "{version}"',
+                updater_input.file,
+            ]
+
+            try:
+                subprocess.run(cmd, check=True)
+            except subprocess.CalledProcessError as e:
+                click.echo(f"Failed to update {component.name}: {e}")
+            else:
+                click.echo(f"Updated {component.name} to {version} using SOPS")
+
+
+class BaseFileUpdater(BaseUpdater):
+    """Updater which update component version in-place.
+
+    We'll use a very basic search-and-replace based on regular expressions
+    instead of the yaml parser to not mess with any formatting.
+    """
+
+    def apply(self, updater_input: UpdaterInput, updates: Updates):
         click.echo("Writing updated to file...")
+        file = updater_input.file
         self.current_component: Optional[ComponentConfig] = None
         self.updates = {component.name: version for component, version in updates}
         self.applied = []
