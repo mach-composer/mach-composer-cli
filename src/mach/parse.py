@@ -22,7 +22,7 @@ from marshmallow.exceptions import ValidationError
 
 
 def parse_components(file: str):
-    yaml_data, encrypted = yaml.load(file)
+    yaml_data, _ = yaml.load(file)
 
     try:
         with warnings.catch_warnings():
