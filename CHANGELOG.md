@@ -10,6 +10,7 @@
 **General**
 - Add `mach_composer` configuration block to configure required MACH composer
   version
+- [SOPS](https://github.com/mozilla/sops) support: SOPS-encrypted configuration files will get decrypted before being parsed further
 - Add `--ignore-version` to disable the MACH composer version check
 - Improved development workflow:
   - Improved git log parsing
