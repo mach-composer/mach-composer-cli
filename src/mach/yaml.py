@@ -1,6 +1,7 @@
 import io
 import os
 import re
+import subprocess
 import tempfile
 from contextlib import contextmanager
 from os.path import abspath, dirname
@@ -44,10 +45,27 @@ def load(file: str):
     )
 
     with open(file, "r+b") as fh:
-        yaml_io = YamlFileIO(fh)
-        data = yaml.full_load(yaml_io)
+        data = _yaml_load(fh)
+
+    if "sops" in data:
+        click.echo("Detected SOPS encryption; decrypting...")
+        data = _yaml_load(_sops_stream(file))
 
     return data
+
+
+def _yaml_load(iostream: io.IOBase):
+    yaml_io = YamlFileIO(iostream)
+    return yaml.full_load(yaml_io)
+
+
+def _sops_stream(file: str, *args, **kwargs) -> bytes:
+    kwargs["stderr"] = subprocess.STDOUT
+    cmd = ["sops", "-d", file, "--output-type=yaml"]
+    try:
+        return io.BytesIO(subprocess.check_output(cmd, *args, **kwargs))
+    except subprocess.CalledProcessError as e:
+        raise exceptions.MachError(e.output.decode() if e.output else str(e)) from e
 
 
 class YamlIncludeConstructor(yamlinclude.YamlIncludeConstructor):
