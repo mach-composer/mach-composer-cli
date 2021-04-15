@@ -1,10 +1,11 @@
 import io
 import os
 import re
+import subprocess
 import tempfile
 from contextlib import contextmanager
 from os.path import abspath, dirname
-from typing import Union
+from typing import Tuple, Union
 
 import click
 import requests
@@ -14,6 +15,8 @@ from mach import exceptions, git
 
 EXTERNAL_RE = re.compile(r"^(git::)?(http|https)://")
 INCLUDE_RE = re.compile(r"^(.*)\${include\((.*)\)}\s*$")
+
+Encrypted = bool
 
 
 class YamlFileIO(io.TextIOWrapper):
@@ -37,17 +40,36 @@ class YamlFileIO(io.TextIOWrapper):
         return line
 
 
-def load(file: str):
+def load(file: str) -> Tuple[dict, Encrypted]:
     YamlIncludeConstructor.add_to_loader_class(
         loader_class=yaml.FullLoader,
         base_dir=abspath(dirname(file)),
     )
+    encrypted = False
 
     with open(file, "r+b") as fh:
-        yaml_io = YamlFileIO(fh)
-        data = yaml.full_load(yaml_io)
+        data = _yaml_load(fh)
 
-    return data
+    if "sops" in data:
+        click.echo("Detected SOPS encryption; decrypting...")
+        data = _yaml_load(_sops_stream(file))
+        encrypted = True
+
+    return data, encrypted
+
+
+def _yaml_load(iostream: io.IOBase):
+    yaml_io = YamlFileIO(iostream)
+    return yaml.full_load(yaml_io)
+
+
+def _sops_stream(file: str, *args, **kwargs) -> bytes:
+    kwargs["stderr"] = subprocess.STDOUT
+    cmd = ["sops", "-d", file, "--output-type=yaml"]
+    try:
+        return io.BytesIO(subprocess.check_output(cmd, *args, **kwargs))
+    except subprocess.CalledProcessError as e:
+        raise exceptions.MachError(e.output.decode() if e.output else str(e)) from e
 
 
 class YamlIncludeConstructor(yamlinclude.YamlIncludeConstructor):
