@@ -22,7 +22,7 @@ from marshmallow.exceptions import ValidationError
 
 
 def parse_components(file: str):
-    yaml_data = yaml.load(file)
+    yaml_data, _ = yaml.load(file)
 
     try:
         with warnings.catch_warnings():
@@ -76,13 +76,14 @@ def parse_and_validate(
 def parse_config_from_file(file: str) -> MachConfig:
     """Parse file into MachConfig object."""
     click.echo(f"Parsing {file}...")
-    dictionary_config = yaml.load(file)
+    dictionary_config, encrypted = yaml.load(file)
 
     try:
         with warnings.catch_warnings():
             # Suppress a 'Unknown type ForwardRef('Component')' warning from dataclasses_json
             warnings.simplefilter("ignore")
             config = MachConfig.schema(infer_missing=True).load(dictionary_config)  # type: ignore
+            config.file_encrypted = encrypted
     except KeyError as e:
         # Most probably a missing value in the configuration.
         # dataclasses_json doesn't really give a proper Exception for this.

@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, List, Optional
+from typing import List, Optional
 
 from dataclasses_json import config, dataclass_json
 from dataclasses_jsonschema import JsonSchemaMixin
@@ -24,14 +24,11 @@ class MachConfig(JsonSchemaMixin):
     sites: List[Site]
     components: List[ComponentConfig] = fields.list_()
 
-    # Not used during a mach update or apply, but MACH
-    # must be able to accept this attribute when parsing
-    # encrypted configurations
-    sops: Optional[Any] = fields.none()
-
     # Items that are not used in the configuration itself by set by the parser
     output_path: str = "deployments"
     file: Optional[str] = fields.none()
+    # Indicates that the config file is SOPS encrypted
+    file_encrypted: bool = False
 
     @property
     def deployment_path(self) -> Path:
