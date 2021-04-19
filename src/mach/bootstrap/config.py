@@ -24,7 +24,7 @@ def create_configuration(output_file: str):
 def _create_config() -> types.MachConfig:  # noqa: C901
     environment = click.prompt("Environment", "test")
     cloud = click.prompt(
-        "Cloud environment", type=click.Choice(["aws", "azure"]), default="aws"
+        "Cloud environment", type=click.Choice(["aws", "azure", "gcp"]), default="aws"
     )
     site_id = click.prompt("Site identifier")
     use_commercetools = click.confirm("Use commercetools?", default=True)
@@ -56,13 +56,20 @@ def _create_config() -> types.MachConfig:  # noqa: C901
                 region="eu-central-1",
             )
         )
-    else:
+    elif cloud == "azure":
         tf_config = types.TerraformConfig(
             azure_remote_state=types.AzureTFState(
                 resource_group="<your-resource-group>",
                 storage_account="<your-storage-account>",
                 container_name="<your-container-name>",
                 state_folder=environment,
+            )
+        )
+    elif cloud == "gcp":
+        tf_config = types.TerraformConfig(
+            gcp_remote_state=types.GCPTFState(
+                bucket="<your bucket>",
+                prefix="mach",
             )
         )
 

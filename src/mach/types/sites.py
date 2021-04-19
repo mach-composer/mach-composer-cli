@@ -337,7 +337,11 @@ class Component(JsonSchemaMixin):
 
     @property
     def has_cloud_integration(self) -> bool:
-        return "aws" in self.integrations or "azure" in self.integrations
+        return (
+            "aws" in self.integrations
+            or "azure" in self.integrations
+            or "gcp" in self.integrations
+        )
 
     @property
     def endpoints(self) -> Dict[str, str]:
@@ -394,6 +398,13 @@ class SiteAzureSettings(JsonSchemaMixin):
 
 @dataclass_json
 @dataclass
+class SiteGCPSettings(JsonSchemaMixin):
+    project_id: str
+    region: str
+
+
+@dataclass_json
+@dataclass
 class Site(JsonSchemaMixin):
     """Site definition."""
 
@@ -407,6 +418,7 @@ class Site(JsonSchemaMixin):
     amplience: Optional[AmplienceSettings] = fields.none()
     apollo_federation: Optional[ApolloFederationSettings] = fields.none()
     azure: Optional[SiteAzureSettings] = fields.none()
+    gcp: Optional[SiteGCPSettings] = fields.none()
     aws: Optional[SiteAWSSettings] = fields.none()
     components: List[Component] = fields.list_()
     sentry: Optional[SentryDsn] = fields.none()
