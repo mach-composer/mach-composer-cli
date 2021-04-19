@@ -2,6 +2,7 @@
 
 provider "google" {
   project = "{{ gcp.project_id }}"
+  region  = "{{ gcp.region }}"
 }
 
 

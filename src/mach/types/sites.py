@@ -337,7 +337,11 @@ class Component(JsonSchemaMixin):
 
     @property
     def has_cloud_integration(self) -> bool:
-        return "aws" in self.integrations or "azure" in self.integrations
+        return (
+            "aws" in self.integrations
+            or "azure" in self.integrations
+            or "gcp" in self.integrations
+        )
 
     @property
     def endpoints(self) -> Dict[str, str]:
@@ -396,6 +400,7 @@ class SiteAzureSettings(JsonSchemaMixin):
 @dataclass
 class SiteGCPSettings(JsonSchemaMixin):
     project_id: str
+    region: str
 
 
 @dataclass_json

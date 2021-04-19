@@ -47,6 +47,10 @@ module "{{ component.name }}" {
   {% include 'partials/component_aws_variables.tf' %}
   {% endif %}
 
+  {% if "gcp" in component.integrations %}
+  {% include 'partials/component_gcp_variables.tf' %}
+  {% endif %}
+
   {% if "sentry" in component.integrations %}
   sentry_dsn              = {% if general_config.sentry.managed %}sentry_key.{{ component.name }}.dsn_secret{% else %}"{{ component.sentry.dsn }}"{% endif %}
   {% endif %}
