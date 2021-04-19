@@ -25,6 +25,12 @@ terraform {
     encrypt        = {% if aws_config.encrypt %}true{% else %}false{% endif %}
 
   }
+  {% elif general_config.terraform_config.gcp_remote_state %}
+  {% set gcp_config = general_config.terraform_config.gcp_remote_state %}
+  backend "gcs" {
+    bucket         = "{{ gcp_config.bucket}}"
+    prefix         = "{{ gcp_config.prefix}}/{{ site.identifier }}"
+  }
   {% endif %}
 }
 
@@ -99,5 +105,6 @@ provider "sentry" {
 
 {% if site.aws %}{% include 'partials/aws.tf' %}{% endif %}
 {% if site.azure %}{% include 'partials/azure.tf' %}{% endif %}
+{% if site.gcp %}{% include 'partials/gcp.tf' %}{% endif %}
 
 {% include 'partials/components.tf' %}
