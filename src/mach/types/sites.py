@@ -394,6 +394,12 @@ class SiteAzureSettings(JsonSchemaMixin):
 
 @dataclass_json
 @dataclass
+class SiteGCPSettings(JsonSchemaMixin):
+    project_id: str
+
+
+@dataclass_json
+@dataclass
 class Site(JsonSchemaMixin):
     """Site definition."""
 
@@ -407,6 +413,7 @@ class Site(JsonSchemaMixin):
     amplience: Optional[AmplienceSettings] = fields.none()
     apollo_federation: Optional[ApolloFederationSettings] = fields.none()
     azure: Optional[SiteAzureSettings] = fields.none()
+    gcp: Optional[SiteGCPSettings] = fields.none()
     aws: Optional[SiteAWSSettings] = fields.none()
     components: List[Component] = fields.list_()
     sentry: Optional[SentryDsn] = fields.none()
