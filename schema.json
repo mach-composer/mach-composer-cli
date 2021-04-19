@@ -69,6 +69,7 @@
         "cloud": {
           "type": "string",
           "enum": [
+            "gcp",
             "aws",
             "azure"
           ]
@@ -91,6 +92,9 @@
     "TerraformConfig": {
       "type": "object",
       "properties": {
+        "gcp_remote_state": {
+          "$ref": "#/definitions/GCPTFState"
+        },
         "azure_remote_state": {
           "$ref": "#/definitions/AzureTFState"
         },
@@ -102,6 +106,30 @@
         }
       },
       "description": "Terraform configuration."
+    },
+    "GCPTFState": {
+      "type": "object",
+      "required": [
+        "resource_group",
+        "storage_account",
+        "container_name",
+        "state_folder"
+      ],
+      "properties": {
+        "resource_group": {
+          "type": "string"
+        },
+        "storage_account": {
+          "type": "string"
+        },
+        "container_name": {
+          "type": "string"
+        },
+        "state_folder": {
+          "type": "string"
+        }
+      },
+      "description": "Azure storage account state backend configuration."
     },
     "AzureTFState": {
       "type": "object",
@@ -156,6 +184,9 @@
     "TerraformProviders": {
       "type": "object",
       "properties": {
+        "gcp": {
+          "type": "string"
+        },
         "aws": {
           "type": "string"
         },
@@ -347,6 +378,9 @@
         },
         "apollo_federation": {
           "$ref": "#/definitions/ApolloFederationSettings"
+        },
+        "gcp": {
+          "$ref": "#/definitions/SiteGCPSettings"
         },
         "azure": {
           "$ref": "#/definitions/SiteAzureSettings"
@@ -683,6 +717,20 @@
         }
       },
       "description": "Apollo Federation settings."
+    },
+    "SiteGCPSettings": {
+      "type": "object",
+      "properties": {
+        "project_id": {
+          "type": "string",
+          "default": ""
+        },
+        "region": {
+          "type": "string",
+          "default": ""
+        }
+      },
+      "description": "Site-specific Azure settings."
     },
     "SiteAzureSettings": {
       "type": "object",

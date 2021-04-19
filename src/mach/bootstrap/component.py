@@ -23,7 +23,9 @@ def create_component(output_dir: str, cookiecutter_location: str):
     if not cookiecutter_location:
         cookiecutter_location = DEFAULT_COOKIECUTTER
         cloud = click.prompt(
-            "Cloud environment", type=click.Choice(["aws", "azure"]), default="aws"
+            "Cloud environment",
+            type=click.Choice(["aws", "azure", "gcp"]),
+            default="aws",
         )
 
         cookiecutter_kwargs.update(
@@ -120,5 +122,10 @@ def _get_component_context(cloud: str) -> dict:
                 ),
             }
         )
-
+    elif cloud == "gcp":
+        context.update(
+            {
+                "project_id": click.prompt("Shared project id name"),
+            }
+        )
     return context
