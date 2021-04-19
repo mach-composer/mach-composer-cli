@@ -9,12 +9,14 @@ from . import fields
 from .shared import ServicePlan
 
 __all__ = [
+    "GCPTFState",
     "AzureTFState",
     "AWSTFState",
     "TerraformProviders",
     "TerraformConfig",
     "SentryConfig",
     "FrontDoorSettings",
+    "GCPConfig",
     "AzureConfig",
     "ContentfulConfig",
     "AmplienceConfig",
@@ -33,6 +35,15 @@ class StringEnum(str, Enum):
         if isinstance(value, str):
             return self.value != value
         return super().__ne__(value)
+
+
+@dataclass_json
+@dataclass
+class GCPTFState(JsonSchemaMixin):
+    """GCP storage account state backend configuration."""
+
+    bucket: str
+    prefix: str
 
 
 @dataclass_json
@@ -64,6 +75,7 @@ class AWSTFState(JsonSchemaMixin):
 class TerraformProviders(JsonSchemaMixin):
     """Terraform provider version overwrites."""
 
+    gcp: Optional[str] = fields.none()
     aws: Optional[str] = fields.none()
     azure: Optional[str] = fields.none()
     commercetools: Optional[str] = fields.none()
@@ -77,6 +89,7 @@ class TerraformProviders(JsonSchemaMixin):
 class TerraformConfig(JsonSchemaMixin):
     """Terraform configuration."""
 
+    gcp_remote_state: Optional[GCPTFState] = fields.none()
     azure_remote_state: Optional[AzureTFState] = fields.none()
     aws_remote_state: Optional[AWSTFState] = fields.none()
     providers: Optional[TerraformProviders] = fields.none()
@@ -116,6 +129,15 @@ class FrontDoorSettings(JsonSchemaMixin):
 
 @dataclass_json
 @dataclass
+class GCPConfig(JsonSchemaMixin):
+    """GCP configuration."""
+
+    project_id: str
+    region: str
+
+
+@dataclass_json
+@dataclass
 class AzureConfig(JsonSchemaMixin):
     """Azure configuration."""
 
@@ -147,6 +169,7 @@ class AmplienceConfig(JsonSchemaMixin):
 
 
 class CloudOption(StringEnum):
+    GCP = "gcp"
     AWS = "aws"
     AZURE = "azure"
 
@@ -160,6 +183,7 @@ class GlobalConfig(JsonSchemaMixin):
     terraform_config: TerraformConfig
     cloud: CloudOption
     sentry: Optional[SentryConfig] = fields.none()
+    gcp: Optional[GCPConfig] = fields.none()
     azure: Optional[AzureConfig] = fields.none()
     contentful: Optional[ContentfulConfig] = fields.none()
     amplience: Optional[AmplienceConfig] = fields.none()
