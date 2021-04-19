@@ -1,9 +1,6 @@
 provider "google" {
-  version                    = "=2.37.0"
-  subscription_id            = var.subscription_id
-  tenant_id                  = var.tenant_id
-  skip_provider_registration = true
-  features {}
+  project = var.project_id
+  region = var.region
 }
 
 module "shared_infra" {

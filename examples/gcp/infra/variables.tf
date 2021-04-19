@@ -1,13 +1,10 @@
 variable "region" {
   type        = string
-  default     = "westeurope"
+  default     = "europe-west4"
   description = "Region: gcp region"
 }
 
-variable "dns_zone_name" {
-  description = "The domain name to create a DNS zone for"
+variable "project_id" {
+  type        = string
+  description = "The Google shared project id"
 }
-
-variable "subscription_id" {}
-
-variable "tenant_id" {}
