@@ -1,6 +1,6 @@
 ---
 mach_composer:
-  version: 1.0.0-rc.22
+  version: 1.0.0
 global:
   environment: test
   terraform_config:
@@ -38,8 +38,6 @@ components:
   - name: your-component
     source: git::https://github.com/<username>/<your-component>.git//terraform
     version: 0.1.0
-    azure:
-      short_name: yourcomp
     integrations:
-      - azure
+      - gcp
       - commercetools
