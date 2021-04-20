@@ -35,7 +35,7 @@ terraform {
       version = "~> {{ general_config.terraform_config.providers.aws or '3.28.0' }}"
     }
     {% endif %}
-    
+
     {% if site.azure %}
     azurerm = {
       version = "~> {{ general_config.terraform_config.providers.azure or '2.47.0' }}"
@@ -56,7 +56,7 @@ terraform {
     {% if site.amplience %}
     amplience = {
       source = "labd/amplience"
-      version = "~> {{ general_config.terraform_config.providers.amplience or '0.1.0' }}"
+      version = "~> {{ general_config.terraform_config.providers.amplience or '0.2.2' }}"
     }
     {% endif %}
     {% if general_config.sentry.managed %}
