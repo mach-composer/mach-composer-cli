@@ -263,7 +263,6 @@ class ContentfulSettings(JsonSchemaMixin):
 class AmplienceSettings(JsonSchemaMixin):
     """Amplience settings."""
 
-    hub_id: str
     client_id: str = ""
     client_secret: str = ""
 
