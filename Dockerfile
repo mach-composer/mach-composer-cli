@@ -1,9 +1,9 @@
 ARG PYTHON_VERSION="3.8.5"
 
 FROM golang:1.15.6 AS go-builder
-# RUN go get -d -v golang.org/x/net/html  
-RUN GO111MODULE=on go get -u go.mozilla.org/sops/v3/cmd/sops@v3.6.1 && \
-    cd $GOPATH/pkg/mod/go.mozilla.org/sops/v3@v3.6.1 && \
+# RUN go get -d -v golang.org/x/net/html
+RUN GO111MODULE=on go get -u go.mozilla.org/sops/v3/cmd/sops@v3.7.1 && \
+    cd $GOPATH/pkg/mod/go.mozilla.org/sops/v3@v3.7.1 && \
     make install
 
 
