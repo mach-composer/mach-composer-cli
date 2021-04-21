@@ -1,6 +1,6 @@
 # Tutorial
 
-In this tutoria, we will explain how to set up a new MACH composer project in any of the supported clouds, including the setup of a commercetools project. Also, we explain how to create your first MACH component (a serverless microservice), and attach it to your project.
+In this tutorial, we will explain how to set up a new MACH composer project in any of the supported clouds, including the setup of a commercetools project. Also, we explain how to create your first MACH component (a serverless microservice), and attach it to your project.
 
 ## How does MACH composer work?
 
