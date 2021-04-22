@@ -25,7 +25,7 @@ Encrypting your file can be done with the `sops --encrypt` command:
 
 MACH composer offers built-in support for decrypting sops-encrypted files automatically.
 
-When MACH composer encounters an encrypted YAML file, it will attempt to decrypt the file prior to the execution of `generate`, `plan` or `deploy`. 
+When MACH composer encounters an encrypted YAML file, it will attempt to decrypt the file prior to the execution of `generate`, `plan` or `apply`. 
 Make sure that your CI/CD environment has access to the appropriate encryption keys in AWS KMS or Azure KeyVault.
 
 ##### Decrypting manually
