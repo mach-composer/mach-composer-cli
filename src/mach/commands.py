@@ -215,9 +215,11 @@ def update(
         )
 
     if component and not version:
-        raise click.ClickException(
-            f"When specifying a component ({component}) you should specify a version as well"
-        )
+        if "@" not in component:
+            raise click.ClickException(
+                f"When specifying a component ({component}) you should specify a version as well"
+            )
+        component, version = component.split("@")
 
     for file in get_input_files(file):
         updater.update_file(
