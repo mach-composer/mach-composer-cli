@@ -21,3 +21,10 @@ provider "google-beta" {
   {% endfor %}
   {% include 'partials/endpoints/gcp_url_locals.tf' %}
 {% endif %}
+
+locals {
+  tags = {
+    Site = "{{ site.identifier }}"
+    Environment = "{{ general_config.environment }}"
+  }
+}
