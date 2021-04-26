@@ -268,6 +268,8 @@ def resolve_component_definitions(config: MachConfig):
                 comp.integrations = ["aws"]
             elif config.general_config.cloud == CloudOption.AZURE:
                 comp.integrations = ["azure"]
+            elif config.general_config.cloud == CloudOption.GCP:
+                comp.integrations = ["gcp"]
 
         if config.general_config.cloud == CloudOption.AZURE:
             if not comp.azure:
