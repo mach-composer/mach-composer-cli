@@ -49,7 +49,7 @@ terraform {
     {% endif %}
 
     {% if site.gcp %}
-    gcp = {
+    google = {
       version = "~> {{ general_config.terraform_config.providers.gcp or '3.65.0' }}"
     }
     {% endif %}
