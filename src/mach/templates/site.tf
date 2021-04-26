@@ -47,6 +47,13 @@ terraform {
       version = "~> {{ general_config.terraform_config.providers.azure or '2.47.0' }}"
     }
     {% endif %}
+
+    {% if site.gcp %}
+    gcp = {
+      version = "~> {{ general_config.terraform_config.providers.gcp or '3.65.0' }}"
+    }
+    {% endif %}
+
     {% if site.commercetools %}
     commercetools = {
       source = "labd/commercetools"
