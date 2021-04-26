@@ -9,18 +9,6 @@ provider "google-beta" {
   region  = "{{ gcp.region }}"
 }
 
-{% for provider in gcp.extra_providers %}
-provider "google" {
-  project = "{{ gcp.project_id }}"
-  region  = "{{ gcp.region }}"
-}
-
-provider "google-beta" {
-  project = "{{ gcp.project_id }}"
-  region  = "{{ gcp.region }}"
-}
-{% endfor %}
-
 {% if site.used_endpoints %}
   {% for zone in site.dns_zones %}
   data "google_dns_managed_zone" "{{ zone|slugify }}" {
