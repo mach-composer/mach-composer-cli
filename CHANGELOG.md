@@ -8,6 +8,7 @@
 - Add Sentry DSN management options
 
 **General**
+
 - Add `mach_composer` configuration block to configure required MACH composer
   version
 - [SOPS](https://github.com/mozilla/sops) support: SOPS-encrypted configuration files will get decrypted before being parsed further
@@ -40,6 +41,7 @@
 
 
 **commercetools**
+
 - Move `currencies`, `languages`, `countries`, `messages_enabled` to `project_settings` configuration block
 - Add support for commercetools Store-specific variables and secrets on
   components included in new variable: `ct_stores`
@@ -49,10 +51,12 @@
   `frontend` configuration block
 
 **AWS**
+
 - AWS: Set `auto-deploy` on API gateway stage
 - AWS: Add new component variable `tags`
 
 **Azure**
+
 - Add configuration options for Azure service plans
 - Upgraded Terraform to `0.14.5`
 - Upgraded Terraform commercetools provider to `0.25.3`
