@@ -12,7 +12,7 @@ provider "google-beta" {
 {% if site.used_endpoints %}
   {% for zone in site.dns_zones %}
   data "google_dns_managed_zone" "{{ zone|slugify }}" {
-    name = "{{ zone|slugify }}"
+    name = "{{ zone|slugify('-') }}"
   }
   {% endfor %}
 
