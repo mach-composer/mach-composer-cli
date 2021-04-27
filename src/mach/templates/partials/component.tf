@@ -106,8 +106,6 @@ module "{{ component.name }}" {
       aws.{{ provider.name }} = aws.{{ provider.name }}
       {% endfor %}
     {% endif %}
-    {% if "gcp" in component.integrations %}google = google
-    google-beta = google-beta{% endif %}
   }
 
   depends_on = [

@@ -13,7 +13,7 @@ COPY --from=go-builder /go/bin/sops /usr/bin/
 ENV AZURE_CLI_VERSION=2.5.1
 ENV TERRAFORM_VERSION=0.14.5
 ENV TERRAFORM_EXTERNAL_VERSION=1.2.0
-ENV TERRAFORM_GCP_VERSION=3.63.0
+ENV TERRAFORM_GOOGLE_VERSION=3.65.0
 ENV TERRAFORM_AZURE_VERSION=2.47.0
 ENV TERRAFORM_AWS_VERSION=3.28.0
 ENV TERRAFORM_NULL_VERSION=2.1.2
@@ -76,10 +76,10 @@ RUN cd /tmp && \
     rm -rf /var/cache/apk/* && \
     rm -rf /var/tmp/*
 
-# Install gcp provider
+# Install google provider
 RUN cd /tmp && \
-    wget https://releases.hashicorp.com/terraform-provider-google/${TERRAFORM_GCP_VERSION}/terraform-provider-google_${TERRAFORM_GCP_VERSION}_linux_amd64.zip && \
-    unzip -n terraform-provider-google_${TERRAFORM_GCP_VERSION}_linux_amd64.zip -d ${TERRAFORM_PLUGINS_PATH} && \
+    wget https://releases.hashicorp.com/terraform-provider-google/${TERRAFORM_GOOGLE_VERSION}/terraform-provider-google_${TERRAFORM_GOOGLE_VERSION}_linux_amd64.zip && \
+    unzip -n terraform-provider-google_${TERRAFORM_GOOGLE_VERSION}_linux_amd64.zip -d ${TERRAFORM_PLUGINS_PATH} && \
     rm -rf /tmp/* && \
     rm -rf /var/cache/apk/* && \
     rm -rf /var/tmp/*
