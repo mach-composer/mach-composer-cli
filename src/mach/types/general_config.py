@@ -75,7 +75,8 @@ class AWSTFState(JsonSchemaMixin):
 class TerraformProviders(JsonSchemaMixin):
     """Terraform provider version overwrites."""
 
-    gcp: Optional[str] = fields.none()
+    google: Optional[str] = fields.none()
+    google_beta: Optional[str] = fields.none()
     aws: Optional[str] = fields.none()
     azure: Optional[str] = fields.none()
     commercetools: Optional[str] = fields.none()
