@@ -1,15 +1,20 @@
 # Step 3. Prepare you Google Cloud environment
 
-In Google Cloud you need to create two new [**Google Cloud projects**](https://cloud.google.com/resource-manager/docs/creating-managing-projects)
+## Create shared/services project
 
-1. **Site-specific project** - for resources specific to a single MACH stack
-2. **Shared project** - for any shared resources amongst all MACH stacks
-
-
-## 1. Prepare
-
-Login to your Google subscription through the CLI of [gcloud](https://cloud.google.com/sdk/gcloud/).
+## Create project per MACH stack
+### Enable services
 
 ```bash
-gcloud auth login
+gcloud services enable compute.googleapis.com
+...
 ```
+
+**Custom domains**
+
+Custom domain names are not supported by API Gateway. 
+For custom domains, we need to create a load balancer and direct requests to the `gateway.dev` domain of the deployed API.
+
+- [Setting up load balancing 'the hard way'](https://cloud.google.com/blog/topics/developers-practitioners/serverless-load-balancing-terraform-hard-way)
+- [API gateway behind load balancer](https://medium.com/swlh/google-api-gateway-and-load-balancer-cdn-9692b7a976df)
+- [Load balancing with Terraform](https://cloud.google.com/community/tutorials/modular-load-balancing-with-terraform)
