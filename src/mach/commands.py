@@ -193,6 +193,12 @@ def apply(
     is_flag=True,
     help="Automatically commits the change.",
 )
+@click.option(
+    "-m",
+    "--commit-message",
+    default=None,
+    help="Use a custom message for the commit."
+)
 @click.argument("component", required=False)
 @click.argument("version", required=False)
 def update(
@@ -202,6 +208,7 @@ def update(
     component: str,
     version: str,
     commit: bool,
+    message: str,
 ):
     """Update all (or a given) component.
 
@@ -232,7 +239,9 @@ def update(
             git.add(file)
 
     if commit:
-        if component:
+        if message:
+            commit_msg = message
+        elif component:
             commit_msg = f"Updated {component} component"
         else:
             commit_msg = "Updated components"
