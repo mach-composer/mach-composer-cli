@@ -23,3 +23,6 @@ In this tutorial we'll walk you through the steps required to get started with M
     - Step 3: [Setup your Azure environment](./azure/step-3-setup-azure.md)
     - Step 4: [Create your first MACH component](./azure/step-4-create-component.md)
     - Step 5: [Setup and deploy your MACH stack](./azure/step-5-create-mach-stack.md)
+- For **Google Cloud**:
+    - Step 3: [Setup your Google Cloud environment](./gcp/step-3-setup-gcp.md)
+    - Step 4: [Setup your first MACH component](./gcp/step-4-create-component.md)
