@@ -101,7 +101,7 @@ mach plan -f main.yml
 - `--output-path TEXT` Output path, defaults to `cwd`/deployments.
 - `--reuse` Supress a terraform init for improved speed (not recommended for production usage)
 - `--ignore-version` Skip MACH composer version check
-  
+
 
 ## `sites`
 List all sites.
@@ -130,6 +130,9 @@ mach update --check
 
 # To update a specific component and create a commit message
 mach update pim-importer v1.2.0 -c
+
+# You can also use the "@" delimiter for component version
+mach update pim-importer@v1.2.0 -c
 ```
 
 **Options**
