@@ -129,7 +129,7 @@
           "type": "string"
         }
       },
-      "description": "Azure storage account state backend configuration."
+      "description": "GCP storage account state backend configuration."
     },
     "AzureTFState": {
       "type": "object",

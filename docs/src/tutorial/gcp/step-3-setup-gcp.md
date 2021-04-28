@@ -13,3 +13,10 @@ Login to your Google subscription through the CLI of [gcloud](https://cloud.goog
 ```bash
 gcloud auth login
 ```
+
+Enable necessary services (TODO: Make complete)
+
+```bash
+gcloud services enable compute.googleapis.com
+...
+```

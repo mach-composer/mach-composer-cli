@@ -47,6 +47,16 @@ terraform {
       version = "~> {{ general_config.terraform_config.providers.azure or '2.47.0' }}"
     }
     {% endif %}
+
+    {% if site.gcp %}
+    google = {
+      version = "~> {{ general_config.terraform_config.providers.google or '3.65.0' }}"
+    }
+    google-beta = {
+      version = "~> {{ general_config.terraform_config.providers.google_beta or general_config.terraform_config.providers.google or '3.65.0' }}"
+    }
+    {% endif %}
+
     {% if site.commercetools %}
     commercetools = {
       source = "labd/commercetools"
