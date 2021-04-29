@@ -239,7 +239,7 @@ def update(
             git.add(file)
 
     if commit:
-        if message:
+        if commit_message:
             commit_msg = commit_message
         elif component:
             commit_msg = f"Updated {component} component"
