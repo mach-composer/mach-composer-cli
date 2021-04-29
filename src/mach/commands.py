@@ -208,7 +208,7 @@ def update(
     component: str,
     version: str,
     commit: bool,
-    message: str,
+    commit_message: str,
 ):
     """Update all (or a given) component.
 
@@ -242,7 +242,7 @@ def update(
 
     if commit:
         if message:
-            commit_msg = message
+            commit_msg = commit_message
         elif component:
             commit_msg = f"Updated {component} component"
         else:
