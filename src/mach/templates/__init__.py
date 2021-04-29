@@ -1,9 +1,13 @@
 import os
+import re
 from typing import List
 
 from jinja2 import Environment, FileSystemLoader
 from jinja2.filters import do_mark_safe
 from mach import utils
+from mach.exceptions import MachError
+
+VARIABLE_RE = re.compile(r"^\${(component|var)\.(.*)}$")
 
 
 def setup_jinja() -> Environment:
@@ -30,6 +34,10 @@ def load_filters(env: Environment):
 
 
 def render_variable(value):
+    parsed_variable = parse_config_variable(value)
+    if parsed_variable:
+        return do_mark_safe(parsed_variable)
+
     if isinstance(value, bool):
         return "true" if value else "false"
     if isinstance(value, (int, float)):
@@ -43,6 +51,24 @@ def render_variable(value):
         )
         return f"{{{values}}}"
     return do_mark_safe(f'"{value}"')
+
+
+def parse_config_variable(value: any):
+    var_m = VARIABLE_RE.match(str(value).strip())
+    if not var_m:
+        return None
+
+    type_, var = var_m.groups()
+    if type_ == "component":
+        parts = var.split(".")
+        if len(parts) != 2:
+            raise MachError(
+                f"Invalid variable '{value}'; "
+                "When using a ${component...} variable it has to consist of 2 parts; "
+                "component-name.output-name"
+            )
+        return f"module.{parts[0]}.{parts[1]}"
+    return None
 
 
 AZURE_REGION_DISPLAY_MAP_LONG = {
