@@ -1,15 +1,15 @@
-# Overview of primary flows
+# Overview of deployment flows
 
-## Pushing a component to the component registry
+## Stage 1: Pushing a component to the component registry
 
 MACH composer is primarily used to deploy components in an individual site, and provide it with the right context (settings, endpoints, etc).
 
 Components themselves are responsible for publishing their own artifacts into the component registry (which can be a simple S3 bucket). And usually that is implemented by configuring a CI/CD pipeline that manages that automatically.
 
-An artifact is usually a zip file containing a serverless function, i.e. `my-component-vXYZ.zip`. These can be conveniently generated using the serverless framework, using `sls package`, but can also be built using a different process.
+An artifact is usually a zip file containing a serverless function, i.e. `my-component-vXYZ.zip`. These can be conveniently generated using the serverless framework, using `sls package`, but can also be built using a different process. Next to serverless functions, it is increasingly common to deploy Docker containers through MACH composer, using the serverless container hosting options in cloud providers (i.e. AWS Fargate).
 
-!!! tip "A component is a Terraform module"
-    Next to the component publishing its artifact into a component registry, it should also provide the necessary terraform resources for the component. Usually, components have a `/terraform` directory in the root of the component, containing all those resources. Effectively, this makes a component a terraform module. And MACH composer in turn leverages [Terraforms 'modules sources'](https://www.terraform.io/docs/language/modules/sources.html) functionality to 'pull together' different modules from different Git repositories.
+!!! tip "A component always contains a Terraform module"
+    Next to the component publishing its artifact into a component registry, it should also provide the necessary terraform resources for the component. Usually, components have a `/terraform` directory in the root of the component, containing the Terraform module, which is the entrypoint for MACH composer. And MACH composer in turn leverages [Terraforms 'modules sources'](https://www.terraform.io/docs/language/modules/sources.html) functionality to 'pull together' different modules from different Git repositories.
 
 <div class="mermaid">
 sequenceDiagram
@@ -26,7 +26,7 @@ sequenceDiagram
 </div>
 
 
-## MACH composer deployment
+## Stage 2: MACH composer deployment
 
 MACH composer itself is primarily a code generator that generates the required Terraform code per site in the YAML configuration. Optionally (though recommended) MACH composer decrypts the YAML file through SOPS.
 

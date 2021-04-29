@@ -33,7 +33,7 @@ nav:
     - Introduction: topics/components/index.md
     - topics/components/public.md
   - Deployment:
-    - Overview: topics/deployment/sequence.md
+    - Overview: topics/deployment/overview.md
     - Components: topics/deployment/components.md
     - MACH stack: 
       - Overview: topics/deployment/config/index.md
