@@ -278,6 +278,7 @@ class SentryDsn(JsonSchemaMixin):
     """Specific sentry DSN settings."""
 
     dsn: Optional[str] = fields.none()
+    project: Optional[str] = fields.none()
     rate_limit_window: Optional[int] = fields.none()
     rate_limit_count: Optional[int] = fields.none()
 
@@ -285,6 +286,7 @@ class SentryDsn(JsonSchemaMixin):
     def from_config(cls, config: SentryConfig) -> "SentryDsn":
         return cls(
             dsn=config.dsn,
+            project=config.project,
             rate_limit_window=config.rate_limit_window,
             rate_limit_count=config.rate_limit_count,
         )
@@ -292,6 +294,8 @@ class SentryDsn(JsonSchemaMixin):
     def merge(self, config: Union[SentryConfig, "SentryDsn"]):
         if not self.dsn:
             self.dsn = config.dsn
+        if not self.project:
+            self.project = config.project
         if not self.rate_limit_window:
             self.rate_limit_window = config.rate_limit_window
         if not self.rate_limit_count:
