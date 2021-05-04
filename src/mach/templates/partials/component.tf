@@ -3,7 +3,7 @@
 {% if "sentry" in component.integrations and general_config.sentry.managed %}
 resource "sentry_key" "{{ component.name }}" {
   organization = "{{ general_config.sentry.organization }}"
-  project = "{{ general_config.sentry.project }}"
+  project = "{{ component.sentry.project }}"
   name = "{{ site.identifier }}_{{ component.name }}"
   {% if component.sentry.rate_limit_window %}
   rate_limit_window = {{ component.sentry.rate_limit_window }}
