@@ -150,19 +150,20 @@ def resolve_site_configs(config: MachConfig):
                     )
                 )
 
-        # Merge Contentful settings
-        if config.general_config.contentful:
-            for site in config.sites:
-                if site.contentful:
-                    site.contentful.merge(config.general_config.contentful)
+    # Merge Contentful settings
+    if config.general_config.contentful:
+        for site in config.sites:
+            if site.contentful:
+                site.contentful.merge(config.general_config.contentful)
 
-        # Merge Amplience settings
-        if config.general_config.amplience:
-            for site in config.sites:
-                if site.amplience:
-                    site.amplience.merge(config.general_config.amplience)
+    # Merge Amplience settings
+    if config.general_config.amplience:
+        for site in config.sites:
+            if site.amplience:
+                site.amplience.merge(config.general_config.amplience)
 
-        if config.general_config.sentry:
+    if config.general_config.sentry:
+        for site in config.sites:
             if not site.sentry:
                 site.sentry = SentryDsn.from_config(config.general_config.sentry)
             else:
@@ -243,7 +244,7 @@ def resolve_site_components(config: MachConfig) -> MachConfig:
 
             if site.sentry:
                 if not component.sentry:
-                    component.sentry = site.sentry
+                    component.sentry = SentryDsn.from_config(site.sentry)
                 else:
                     component.sentry.merge(site.sentry)
 
