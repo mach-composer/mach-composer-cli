@@ -261,9 +261,7 @@ class BaseFileUpdater(BaseUpdater):
         except KeyError:
             return line
 
-        if new_version.isdigit():
-            new_version = f'"{new_version}"'
-
+        new_version = f'"{new_version}"'
         self.applied.append(self.current_component.name)
         return VERSION_RE.sub(rf"\g<1>{new_version}", line)
 
