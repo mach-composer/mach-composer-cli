@@ -194,10 +194,7 @@ def apply(
     help="Automatically commits the change.",
 )
 @click.option(
-    "-m",
-    "--commit-message",
-    default=None,
-    help="Use a custom message for the commit."
+    "-m", "--commit-message", default=None, help="Use a custom message for the commit."
 )
 @click.argument("component", required=False)
 @click.argument("version", required=False)
