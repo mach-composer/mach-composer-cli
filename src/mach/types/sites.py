@@ -11,7 +11,7 @@ from .general_config import (
     AmplienceConfig,
     AzureConfig,
     ContentfulConfig,
-    FrontDoorSettings,
+    FrontdoorSettings,
     SentryConfig,
 )
 from .shared import ComponentAzureConfig, ServicePlan
@@ -364,7 +364,7 @@ class SiteAWSSettings(JsonSchemaMixin):
 class SiteAzureSettings(JsonSchemaMixin):
     """Site-specific Azure settings."""
 
-    frontdoor: Optional[FrontDoorSettings] = fields.none()
+    frontdoor: Optional[FrontdoorSettings] = fields.none()
     alert_group: Optional[AlertGroup] = fields.none()
     resource_group: str = ""
     tenant_id: str = ""  # Can overwrite values from AzureConfig

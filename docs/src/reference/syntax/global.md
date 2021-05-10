@@ -118,7 +118,7 @@ azure:
     gitlab-sp: d1114ea6-88f9-45b2-9de4-031291090380 # gitlab-sp
     developers: 3d280212-934f-4d32-876d-1b541a7697ba # developers tst group
   frontdoor:
-    resource_group: my-shared-rg
+    dns_resource_group: my-shared-rg
   service_plans:
     premium:
       kind: "Linux"
@@ -179,10 +179,10 @@ Example:
 Example:
 ```yaml
 frontdoor:
-  resource_group: my-shared-rg
+  dns_resource_group: my-shared-rg
 ```
 
-- **`resource_group`** - (Required)
+- **`dns_resource_group`** - (Required) Resource group name where the DNS zone can be found
 - `suppress_changes` - Suppress changes to the Frontdoor instance. This is a temporary work-around for some issues in the Azure Terraform provider.
 
 ## contentful

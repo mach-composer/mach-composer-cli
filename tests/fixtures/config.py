@@ -63,6 +63,7 @@ def azure_config():
                 tenant_id="6f10659d-4227-43e6-95ab-80d12a18acf9",
                 subscription_id="5f34d95d-4dd8-40b3-9d18-f9007e2ce6ac",
                 region="westeurope",
+                frontdoor=types.FrontdoorSettings(dns_resource_group="shared-rg"),
             ),
             cloud=types.CloudOption.AZURE,
             sentry=types.SentryConfig(dsn="sentry-dsn"),

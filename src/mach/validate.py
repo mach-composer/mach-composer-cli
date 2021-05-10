@@ -68,6 +68,14 @@ def validate_site(site: types.Site, *, config: types.MachConfig):
     if config.general_config.cloud == types.CloudOption.AWS and not site.aws:
         raise ValidationError(f"Site {site.identifier} is missing an aws configuration")
 
+    if config.general_config.cloud == types.CloudOption.AZURE:
+        if site.endpoints and not site.azure.frontdoor:
+            raise ValidationError(
+                f"Site {site.identifier} has endpoints defined but frontdoor is not configured. "
+                "Make sure your azure.frontdoor block is correcty configured in either the global "
+                "or site configuration."
+            )
+
     validate_endpoints(site, config.general_config.cloud)
     validate_commercetools(site)
 
