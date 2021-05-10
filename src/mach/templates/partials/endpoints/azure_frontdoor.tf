@@ -6,13 +6,13 @@ locals {
 {% for endpoint in site.used_custom_endpoints %}
 data "azurerm_dns_zone" "{{ endpoint.key }}" {
     name                = "{{ endpoint.zone }}"
-    resource_group_name = "{{ site.azure.frontdoor.resource_group }}"
+    resource_group_name = "{{ site.azure.frontdoor.dns_resource_group }}"
 }
 
 resource "azurerm_dns_cname_record" "{{ endpoint.key }}" {
   name                = "{{ endpoint.subdomain }}"
   zone_name           = data.azurerm_dns_zone.{{ endpoint.key }}.name
-  resource_group_name = "{{ site.azure.frontdoor.resource_group }}"
+  resource_group_name = "{{ site.azure.frontdoor.dns_resource_group }}"
   ttl                 = 600
   record              = local.frontdoor_domain
 }

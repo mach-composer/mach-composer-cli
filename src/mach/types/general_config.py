@@ -14,7 +14,7 @@ __all__ = [
     "TerraformProviders",
     "TerraformConfig",
     "SentryConfig",
-    "FrontDoorSettings",
+    "FrontdoorSettings",
     "AzureConfig",
     "ContentfulConfig",
     "AmplienceConfig",
@@ -104,10 +104,10 @@ class SentryConfig(JsonSchemaMixin):
 
 @dataclass_json
 @dataclass
-class FrontDoorSettings(JsonSchemaMixin):
+class FrontdoorSettings(JsonSchemaMixin):
     """Frontdoor settings."""
 
-    resource_group: str
+    dns_resource_group: str
 
     # Undocumented option to workaround some tenacious issues
     # with using Frontdoor in the Azure Terraform provider
@@ -122,7 +122,7 @@ class AzureConfig(JsonSchemaMixin):
     tenant_id: str
     subscription_id: str
     region: str
-    frontdoor: Optional[FrontDoorSettings] = fields.none()
+    frontdoor: Optional[FrontdoorSettings] = fields.none()
     resources_prefix: str = ""
     service_object_ids: Dict[str, str] = fields.dict_()
     service_plans: Dict[str, ServicePlan] = fields.dict_()

@@ -15,7 +15,7 @@ global:
     subscription_id: 086bd7e7-0755-44ab-a730-7a0b8ad4883f
     region: westeurope
     frontdoor:
-      resource_group: mach-shared-we-rg
+      dns_resource_group: mach-shared-we-rg
     service_plans:
       premium:
         kind: "Linux"

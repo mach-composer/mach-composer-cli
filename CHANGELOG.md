@@ -158,6 +158,7 @@
 - **config**: The `front_door` configuration block has been renamed to `frontdoor`
 - **config**: The Azure frontdoor settings `dns_zone` and `ssl_key_*` settings have been removed;<br>
   Certificates are now managed by Frontdoor and dns_zone is auto-detected.
+- **config**: The Azure frontdoor settings `resource_group` has been renamed to `dns_resource_group`
 - **config**: Moved component `short_name` to new `azure` configuration block
 - **state**: The Terraform `azurerm_dns_cname_record` resources have been renamed; they now take the name of the associated endpoint key. For the smoothest transition, rename them in your Terraform state:<br>
   ```bash
