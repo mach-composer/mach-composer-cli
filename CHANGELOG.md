@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.0.0 (unreleased)
+## 1.0.0 (2021-05-10)
 
 ### New platforms
 - Add Amplience support
