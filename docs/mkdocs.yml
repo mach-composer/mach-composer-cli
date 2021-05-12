@@ -6,7 +6,7 @@ repo_url: https://github.com/labd/mach-composer
 # edit_uri: tree/master/docs/src
 edit_uri: ""
 
-copyright: 'Copyright &copy; 2020 - Lab Digital B.V.'
+copyright: 'Copyright &copy; 2021 - Lab Digital B.V.'
 docs_dir: src
 
 nav:
