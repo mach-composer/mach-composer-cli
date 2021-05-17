@@ -60,8 +60,8 @@ def parse_config_variable(value: any):
 
     type_, var = var_m.groups()
     if type_ == "component":
-        parts = var.split(".")
-        if len(parts) != 2:
+        parts = var.split(".", maxsplit=1)
+        if len(parts) < 2:
             raise MachError(
                 f"Invalid variable '{value}'; "
                 "When using a ${component...} variable it has to consist of 2 parts; "
