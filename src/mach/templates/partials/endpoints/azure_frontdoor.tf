@@ -117,6 +117,7 @@ resource "azurerm_frontdoor" "app-service" {
       routing_rule,
       backend_pool,
       backend_pool_health_probe,
+      frontend_endpoint,
     ]
   }
   {% endif %}

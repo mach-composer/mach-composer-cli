@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.1 (unreleased)
+- Azure: Include `frontend_endpoint` in ignore list when `suppress_changes` is used
+
 ## 1.0.0 (2021-05-10)
 
 ### New platforms
