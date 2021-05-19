@@ -17,7 +17,7 @@ dataclasses-jsonschema==2.13.0  # via -r requirements.in
 filelock==3.0.12          # via tldextract
 idna==2.10                # via requests, tldextract
 jinja2-time==0.2.0        # via cookiecutter
-jinja2==2.11.1            # via -r requirements.in, cookiecutter, jinja2-time
+jinja2==2.11.3            # via -r requirements.in, cookiecutter, jinja2-time
 jsonschema==3.2.0         # via dataclasses-jsonschema
 markupsafe==1.1.1         # via cookiecutter, jinja2
 marshmallow-enum==1.5.1   # via dataclasses-json
