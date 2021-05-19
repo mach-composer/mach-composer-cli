@@ -59,22 +59,25 @@ jobs:
               VERSION=edge
           fi
           fi
+          CACHE_FROM_TAG="${VERSION}"
           TAGS="${VERSION}"
           if [[ $VERSION =~ ^(v)?[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$ ]]; then
           MINOR=${VERSION%.*}
           MAJOR=${MINOR%.*}
           TAGS="$TAGS,${MINOR},${MAJOR},latest"
+          CACHE_FROM_TAG="latest"
           elif [ "${{ github.event_name }}" = "push" ]; then
           TAGS="$TAGS,sha-${GITHUB_SHA::8}"
           fi
           echo ::set-output name=version::${VERSION}
           echo ::set-output name=tags::${TAGS}
+          echo ::set-output name=cache-from-tag::${CACHE_FROM_TAG}
           echo ::set-output name=created::$(date -u +'%Y-%m-%dT%H:%M:%SZ')
           echo $VERSION
       - name: Build and push
         uses: docker/build-push-action@v1
         with:
-          cache-froms: docker.pkg.github.com/labd/mach-composer/mach:latest
+          cache_froms: docker.pkg.github.com/labd/mach-composer/mach:${{ steps.prep.outputs.cache-from-tag }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
           registry: docker.pkg.github.com
