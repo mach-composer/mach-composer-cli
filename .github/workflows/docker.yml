@@ -74,6 +74,10 @@ jobs:
           echo ::set-output name=cache-from-tag::${CACHE_FROM_TAG}
           echo ::set-output name=created::$(date -u +'%Y-%m-%dT%H:%M:%SZ')
           echo $VERSION
+      - name: Login to docker.pkg.github.com
+        run: docker login -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }} docker.pkg.github.com
+      - name: Pull cache from docker.pkg.github.com
+        run: docker pull docker.pkg.github.com/labd/mach-composer/mach:${{ steps.prep.outputs.cache-from-tag }} || true
       - name: Build and push
         uses: docker/build-push-action@v1
         with:
