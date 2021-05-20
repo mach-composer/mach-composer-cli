@@ -2,8 +2,9 @@
 
 ## 1.1 (unreleased)
 - Variable support:
-  - Support for `${var.}` variables; use with `--var-file` command line option
-  - Support for `${component.}` variables to use component output values
+  - `${var.}` to be used with the `--var-file` command line option
+  - `${component.}` to use component output values
+  - `${env.}` to include environment variables in the configuration file
 - Azure: Include `frontend_endpoint` in ignore list when `suppress_changes` is used
 
 ## 1.0.0 (2021-05-10)

@@ -6,6 +6,7 @@ The following types are supported;
 
 - [`${component.}`](#component) component output references
 - [`${var.}`](#var) variables file values
+- [`${env.}`](#env) environment variables value
 - [`${include.}`](#include) file includes
 
 ## Example
@@ -14,7 +15,7 @@ The following types are supported;
 mach_composer:
   version: 1.0.0
 global:
-  environment: test
+  environment: ${env.MACH_ENVIRONMENT}
   cloud: aws
 sites:
   - identifier: my-site
@@ -92,6 +93,18 @@ will use the `stripe_secret` value from the given variables file.
     You can [encrypt your `variables.yml` using SOPS](../howto/security/encrypt.md#encrypted-variables).
 
     When doing so, MACH won't render the variable files directly into your Terraform configuration but uses [terraform-sops](https://github.com/carlpett/terraform-provider-sops) to refer you the SOPS encrypted variables within the Terraform file.
+
+## `env`
+**Usage** `${env.<variable-name>}`
+
+Use environment variables in your MACH configuration:
+
+```bash
+export MACH_ENVIRONMENT=test
+mach apply
+```
+
+Will replace `${env.MACH_ENVIRONMENT}` in our [example](#example) with `test`.
 
 ## `include`
 **Usage** `${include(<filename>)}`

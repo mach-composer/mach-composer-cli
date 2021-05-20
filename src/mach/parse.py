@@ -1,3 +1,4 @@
+import os
 import re
 import warnings
 from collections import defaultdict
@@ -23,7 +24,7 @@ from mach.validate import validate_config
 from mach.variables import resolve_variable
 from marshmallow.exceptions import ValidationError
 
-VARIABLE_RE = re.compile(r"^\${(var)\.(.*)}$")
+VARIABLE_RE = re.compile(r"^\${(var|env)\.(.*)}$")
 
 
 def parse_components(file: str):
@@ -162,17 +163,31 @@ def resolve_variables(obj: Any, vars: dict, vars_encrypted: bool = False):
             # Return as is.
             return obj
 
-        var_name = var_m.group(2)
-        # We'll resolve the variable.
-        # In case of encrypted vars we won't return the value as is,
-        # but still the function will raise an error in case the variable cannot be found.
-        # Better to catch it here then during terraform apply.
-        var_value = resolve_variable(var_name, vars)
+        type_, var_name = var_m.groups()
 
-        if vars_encrypted:
-            return TerraformReference(f"data.sops_external.variables.data.{var_name}")
+        if type_ == "var":
+            # We'll resolve the variable.
+            # In case of encrypted vars we won't return the value as is,
+            # but still the function will raise an error in case the variable cannot be found.
+            # Better to catch it here then during terraform apply.
+            var_value = resolve_variable(var_name, vars)
 
-        return var_value
+            if vars_encrypted:
+                return TerraformReference(
+                    f"data.sops_external.variables.data.{var_name}"
+                )
+            return var_value
+        elif type_ == "env":
+            var_value = os.environ.get(var_name, "")
+            if not var_value:
+                msg = (
+                    f"Variable {obj} used but no value found in environment variables."
+                )
+                # TODO: Add possibility by enabling/disabling strict mode using an env var or CLI option
+                raise exceptions.MachError(msg)
+            return var_value
+        else:
+            raise exceptions.MachError(f"Unsupported variables type '{type_}': {obj}")
 
     annotations = getattr(obj, "__annotations__", {})
     if annotations:
