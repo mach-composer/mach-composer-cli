@@ -24,17 +24,6 @@
         "$ref": "#/definitions/ComponentConfig"
       },
       "default": []
-    },
-    "output_path": {
-      "type": "string",
-      "default": "deployments"
-    },
-    "file": {
-      "type": "string"
-    },
-    "file_encrypted": {
-      "type": "boolean",
-      "default": false
     }
   },
   "description": "Main MACH configuration object.",
@@ -222,7 +211,7 @@
           "type": "string"
         },
         "frontdoor": {
-          "$ref": "#/definitions/FrontDoorSettings"
+          "$ref": "#/definitions/FrontdoorSettings"
         },
         "resources_prefix": {
           "type": "string",
@@ -245,13 +234,13 @@
       },
       "description": "Azure configuration."
     },
-    "FrontDoorSettings": {
+    "FrontdoorSettings": {
       "type": "object",
       "required": [
-        "resource_group"
+        "dns_resource_group"
       ],
       "properties": {
-        "resource_group": {
+        "dns_resource_group": {
           "type": "string"
         },
         "suppress_changes": {
@@ -688,7 +677,7 @@
       "type": "object",
       "properties": {
         "frontdoor": {
-          "$ref": "#/definitions/FrontDoorSettings"
+          "$ref": "#/definitions/FrontdoorSettings"
         },
         "alert_group": {
           "$ref": "#/definitions/AlertGroup"
@@ -840,6 +829,9 @@
       "type": "object",
       "properties": {
         "dsn": {
+          "type": "string"
+        },
+        "project": {
           "type": "string"
         },
         "rate_limit_window": {
