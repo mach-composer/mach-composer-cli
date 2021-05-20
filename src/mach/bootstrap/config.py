@@ -161,6 +161,11 @@ def _clean_config_dump(data: dict) -> dict:
 
     TODO: These are actions that should be performed in the Marshmallow schema.
     """
-    del data["output_path"]
-    del data["file_encrypted"]
+    data.pop("output_path", None)
+    data.pop("file", None)
+    data.pop("file_encrypted", None)
+
+    data.pop("variables", None)
+    data.pop("variables_encrypted", None)
+
     return data

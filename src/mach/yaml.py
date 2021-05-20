@@ -12,11 +12,14 @@ import requests
 import yaml
 import yamlinclude
 from mach import exceptions, git
+from yaml.error import YAMLError  # noqa
 
 EXTERNAL_RE = re.compile(r"^(git::)?(http|https)://")
 INCLUDE_RE = re.compile(r"^(.*)\${include\((.*)\)}\s*$")
 
 Encrypted = bool
+
+__all__ = ["YAMLError", "load"]
 
 
 class YamlFileIO(io.TextIOWrapper):

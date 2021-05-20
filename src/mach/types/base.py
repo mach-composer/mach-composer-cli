@@ -29,6 +29,8 @@ class MachConfig(JsonSchemaMixin):
     file: Optional[str] = fields.none()
     # Indicates that the config file is SOPS encrypted
     file_encrypted: bool = False
+    variables: dict = fields.dict_()
+    variables_encrypted: bool = False
 
     @property
     def deployment_path(self) -> Path:
