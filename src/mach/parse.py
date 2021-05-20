@@ -1,8 +1,9 @@
+import re
 import warnings
 from collections import defaultdict
-from os.path import abspath, basename, dirname, splitext
+from os.path import abspath, basename, splitext
 from pathlib import Path
-from typing import Dict, List
+from typing import Any, Dict, List
 
 import click
 from mach import exceptions, yaml
@@ -18,7 +19,10 @@ from mach.types import (
     SiteAzureSettings,
 )
 from mach.validate import validate_config
+from mach.variables import resolve_variable
 from marshmallow.exceptions import ValidationError
+
+VARIABLE_RE = re.compile(r"^\${(var)\.(.*)}$")
 
 
 def parse_components(file: str):
@@ -47,20 +51,44 @@ def parse_components(file: str):
 
 
 def parse_configs(
-    files: List[str], output_path: str = None, *, ignore_version=True
+    files: List[str],
+    output_path: str = None,
+    *,
+    ignore_version=True,
+    var_file: str = "",
 ) -> List[MachConfig]:
     """Parse and validate configurations."""
+    vars = {}
+    vars_encrypted = False
+
+    if var_file:
+        try:
+            vars, vars_encrypted = yaml.load(var_file)
+        except yaml.YAMLError as e:
+            raise exceptions.ParseError(f"Could not parse variables file:\n{e}")
+
     return [
-        parse_and_validate(file, output_path, ignore_version=ignore_version)
+        parse_and_validate(
+            file,
+            output_path,
+            ignore_version=ignore_version,
+            vars=vars,
+            vars_encrypted=vars_encrypted,
+        )
         for file in files
     ]
 
 
 def parse_and_validate(
-    file: str, output_path: str = None, *, ignore_version=True
+    file: str,
+    output_path: str = None,
+    *,
+    ignore_version=True,
+    vars={},
+    vars_encrypted=False,
 ) -> MachConfig:
     """Parse and validate configuration."""
-    config = parse_config_from_file(file)
+    config = parse_config_from_file(file, vars=vars, vars_encrypted=vars_encrypted)
     config.file = file
     click.echo(f"Parsed {file} into config")
     validate_config(config, ignore_version=ignore_version)
@@ -73,7 +101,7 @@ def parse_and_validate(
     return config
 
 
-def parse_config_from_file(file: str) -> MachConfig:
+def parse_config_from_file(file: str, *, vars={}, vars_encrypted=False) -> MachConfig:
     """Parse file into MachConfig object."""
     click.echo(f"Parsing {file}...")
     dictionary_config, encrypted = yaml.load(file)
@@ -83,7 +111,11 @@ def parse_config_from_file(file: str) -> MachConfig:
             # Suppress a 'Unknown type ForwardRef('Component')' warning from dataclasses_json
             warnings.simplefilter("ignore")
             config = MachConfig.schema(infer_missing=True).load(dictionary_config)  # type: ignore
-            config.file_encrypted = encrypted
+
+        config.file_encrypted = encrypted
+        config.variables = vars
+        config.variables_encrypted = vars_encrypted
+
     except KeyError as e:
         # Most probably a missing value in the configuration.
         # dataclasses_json doesn't really give a proper Exception for this.
@@ -100,10 +132,48 @@ def parse_config_from_file(file: str) -> MachConfig:
 
 
 def parse_config(config: MachConfig) -> MachConfig:
+    resolve_variables(config, config.variables)
     parse_global_config(config)
     resolve_component_definitions(config)
     resolve_site_configs(config)
     return config
+
+
+def resolve_variables(obj: Any, variables: dict):
+    """Resolve variables in the configuration.
+
+    Only look for ${var.} variables since these can and must be rendered
+    during parsing phase.
+
+    This method will loop over objects that are either;
+    - a dataclass (all configuration types are dataclasses)
+    - a list of values
+    - a dictionary
+
+    ${component.} variables for example must be rendered in the Jinja template.
+    """
+    if isinstance(obj, str):
+        var_m = VARIABLE_RE.match(obj.strip())
+        if not var_m:
+            # Return as is.
+            return obj
+
+        return resolve_variable(var_m.group(2), variables)
+
+    annotations = getattr(obj, "__annotations__", {})
+    if annotations:
+        for field in annotations.keys():
+            value = getattr(obj, field, None)
+            if not value:
+                continue
+            value = resolve_variables(value, variables)
+            setattr(obj, field, value)
+    elif isinstance(obj, list):
+        return [resolve_variables(v, variables) for v in obj]
+    elif isinstance(obj, dict):
+        return {k: resolve_variables(v, variables) for k, v in obj.items()}
+
+    return obj
 
 
 def parse_global_config(config: MachConfig):

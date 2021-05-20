@@ -68,6 +68,13 @@ def parse_config_variable(value: any):
                 "component-name.output-name"
             )
         return f"module.{parts[0]}.{parts[1]}"
+    if type_ == "var":
+        # This should not happen
+        raise MachError(
+            "${var...} variables should have been parsed already by MACH composer. "
+            "Something went wrong."
+        )
+
     return None
 
 

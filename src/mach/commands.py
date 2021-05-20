@@ -55,10 +55,18 @@ def terraform_command(f):
         default="deployments",
         help="Output path, defaults to `cwd`/deployments.",
     )
-    def new_func(file, site, output_path: str, ignore_version: bool, **kwargs):
+    @click.option(
+        "--var-file",
+        help="Use a variable file to parse the configuration with",
+    )
+    def new_func(
+        file, site, output_path: str, ignore_version: bool, var_file, **kwargs
+    ):
         files = get_input_files(file)
 
-        configs = parse.parse_configs(files, output_path, ignore_version=ignore_version)
+        configs = parse.parse_configs(
+            files, output_path, ignore_version=ignore_version, var_file=var_file
+        )
         try:
             result = f(
                 file=file,
