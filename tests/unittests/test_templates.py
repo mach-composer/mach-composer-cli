@@ -36,7 +36,7 @@ def test_render_config_variable():
         templates.parse_config_variable(r"${component.infra.db_password}")
         == "module.infra.db_password"
     )
-    assert templates.parse_config_variable(r"${component.infra.db_password") == None
+    assert templates.parse_config_variable(r"${component.infra.db_password") is None
 
     with pytest.raises(exceptions.MachError):
         assert templates.parse_config_variable(r"${component.infra}")
