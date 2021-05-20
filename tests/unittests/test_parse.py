@@ -71,12 +71,6 @@ def test_parse_azure_service_plans(azure_config: types.MachConfig):
     )
 
 
-def test_apollo_federation_integration_set(apollo_config: types.MachConfig):
-    config = apollo_config
-    for c in config.components:
-        assert "apollo_federation" in c.integrations
-
-
 @pytest.mark.parametrize("filename", ["aws_config1.yml", "aws_config_external.yml"])
 def test_parse_from_file(filename):
     config = parse.parse_config_from_file(get_file(filename))
