@@ -1,6 +1,8 @@
 # Changelog
 
 ## 1.1 (unreleased)
+- Variable support:
+  - Support for `${component.}` variables
 - Azure: Include `frontend_endpoint` in ignore list when `suppress_changes` is used
 
 ## 1.0.0 (2021-05-10)
