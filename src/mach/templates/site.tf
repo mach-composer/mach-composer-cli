@@ -5,22 +5,22 @@ terraform {
   {% if general_config.terraform_config.azure_remote_state %}
   {% set azure_config = general_config.terraform_config.azure_remote_state %}
   backend "azurerm" {
-    resource_group_name  = "{{ azure_config.resource_group }}"
-    storage_account_name = "{{ azure_config.storage_account }}"
-    container_name       = "{{ azure_config.container_name }}"
+    resource_group_name  = {{ azure_config.resource_group|tf }}
+    storage_account_name = {{ azure_config.storage_account|tf }}
+    container_name       = {{ azure_config.container_name|tf }}
     key                  = "{{ azure_config.state_folder}}/{{ site.identifier }}"
   }
   {% elif general_config.terraform_config.aws_remote_state %}
   {% set aws_config = general_config.terraform_config.aws_remote_state %}
   backend "s3" {
-    bucket         = "{{ aws_config.bucket}}"
+    bucket         = {{ aws_config.bucket|tf }}
     key            = "{{ aws_config.key_prefix}}/{{ site.identifier }}"
-    region         = "{{ aws_config.region }}"
+    region         = {{ aws_config.region|tf }}
     {% if aws_config.role_arn %}
-    role_arn       = "{{ aws_config.role_arn }}"
+    role_arn       = {{ aws_config.role_arn|tf }}
     {% endif %}
     {% if aws_config.lock_table %}
-    dynamodb_table = "{{ aws_config.lock_table }}"
+    dynamodb_table = {{ aws_config.lock_table|tf }}
     {% endif %}
     encrypt        = {% if aws_config.encrypt %}true{% else %}false{% endif %}
 
@@ -65,13 +65,30 @@ terraform {
       version = "~> {{ general_config.terraform_config.providers.sentry or '0.6.0' }}"
     }
     {% endif %}
+    {% if config.variables_encrypted %}
+    sops = {
+      source = "carlpett/sops"
+      version = "~> 0.5"
+    }
+    {% endif %}
   }
 }
 
+{% if config.variables_encrypted %}
+data "local_file" "variables" {
+  filename = "variables.yml"
+}
+
+data "sops_external" "variables" {
+  source     = data.local_file.variables.content
+  input_type = "yaml"
+}
+{% endif %}
+
 {% if general_config.sentry.managed %}
 provider "sentry" {
-  token = "{{ general_config.sentry.auth_token }}"
-  base_url = "{% if general_config.sentry.base_url %}{{ general_config.sentry.base_url }}{% else %}https://sentry.io/api/{% endif %}"
+  token = {{ general_config.sentry.auth_token|tf }}
+  base_url = {% if general_config.sentry.base_url %}{{ general_config.sentry.base_url|tf }}{% else %}"https://sentry.io/api/"{% endif %}
 }
 {% endif %}
 

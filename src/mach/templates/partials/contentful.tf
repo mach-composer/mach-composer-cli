@@ -1,13 +1,13 @@
 {% set contentful = site.contentful %}
 
 provider "contentful" {
-  cma_token       = "{{ contentful.cma_token }}"
-  organization_id = "{{ contentful.organization_id }}"
+  cma_token       = {{ contentful.cma_token|tf }}
+  organization_id = {{ contentful.organization_id|tf }}
 }
 
 resource "contentful_space" "space" {
-  name           = "{{ contentful.space }}"
-  default_locale = "{{ contentful.default_locale }}"
+  name           = {{ contentful.space|tf }}
+  default_locale = {{ contentful.default_locale|tf }}
 }
 
 resource "contentful_apikey" "apikey" {

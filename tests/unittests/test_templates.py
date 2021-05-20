@@ -15,18 +15,18 @@ def test_zone_name_filter(url, zone):
     assert templates.zone_name(url) == zone
 
 
-def test_render_variable():
-    assert templates.render_variable(True) == "true"
-    assert templates.render_variable(False) == "false"
+def test_render_tfvalue():
+    assert templates.render_tfvalue(True) == "true"
+    assert templates.render_tfvalue(False) == "false"
 
-    assert templates.render_variable(12) == 12
+    assert templates.render_tfvalue(12) == 12
     assert (
-        templates.render_variable(["value1", False, "value2"])
+        templates.render_tfvalue(["value1", False, "value2"])
         == """["value1",false,"value2"]"""
     )
 
     assert (
-        templates.render_variable(r"${component.infra.db_password}")
+        templates.render_tfvalue(r"${component.infra.db_password}")
         == "module.infra.db_password"
     )
 

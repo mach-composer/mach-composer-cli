@@ -6,6 +6,7 @@ from jinja2 import Environment, FileSystemLoader
 from jinja2.filters import do_mark_safe
 from mach import utils
 from mach.exceptions import MachError
+from mach.types.values import TerraformReference
 
 VARIABLE_RE = re.compile(r"^\${(component|var)\.(.*)}$")
 
@@ -22,7 +23,9 @@ def setup_jinja() -> Environment:
 def load_filters(env: Environment):
     env.filters.update(
         {
-            "variable_value": render_variable,
+            "tfvalue": render_tfvalue,
+            # Alias:
+            "tf": render_tfvalue,
             "azure_region_long": azure_region_long,
             "azure_region_short": azure_region_short,
             "zone_name": zone_name,
@@ -33,21 +36,23 @@ def load_filters(env: Environment):
     )
 
 
-def render_variable(value):
+def render_tfvalue(value):
     parsed_variable = parse_config_variable(value)
     if parsed_variable:
         return do_mark_safe(parsed_variable)
 
+    if isinstance(value, TerraformReference):
+        return value
     if isinstance(value, bool):
         return "true" if value else "false"
     if isinstance(value, (int, float)):
         return value
     if isinstance(value, list):
-        values = ",".join([render_variable(val) for val in value])
+        values = ",".join([render_tfvalue(val) for val in value])
         return f"[{values}]"
     if isinstance(value, dict):
         values = ",\n".join(
-            [f"{key} = {render_variable(val)}" for key, val in value.items()]
+            [f"{key} = {render_tfvalue(val)}" for key, val in value.items()]
         )
         return f"{{{values}}}"
     return do_mark_safe(f'"{value}"')

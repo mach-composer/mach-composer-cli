@@ -18,14 +18,14 @@ resource "azurerm_app_service_plan" "{{ key|service_plan_resource_name }}" {
   {% else %}local.resource_group_name
   {% endif %}
   location            = local.resource_group_location
-  kind                = "{{ plan.kind }}"
+  kind                = {{ plan.kind|tf }}
   reserved            = {% if plan.kind|lower == 'windows' %}false{% else %}true{% endif %}
 
   sku {
-    tier = "{{ plan.tier }}"
-    size = "{{ plan.size }}"
+    tier = {{ plan.tier|tf }}
+    size = {{ plan.size|tf }}
     {% if plan.capacity -%}
-    capacity = {{ plan.capacity }}
+    capacity = {{ plan.capacity|tf }}
     {% endif %}
   }
 

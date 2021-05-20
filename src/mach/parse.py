@@ -17,6 +17,7 @@ from mach.types import (
     ServicePlan,
     Site,
     SiteAzureSettings,
+    TerraformReference,
 )
 from mach.validate import validate_config
 from mach.variables import resolve_variable
@@ -67,16 +68,19 @@ def parse_configs(
         except yaml.YAMLError as e:
             raise exceptions.ParseError(f"Could not parse variables file:\n{e}")
 
-    return [
-        parse_and_validate(
+    configs = []
+    for file in files:
+        config = parse_and_validate(
             file,
             output_path,
             ignore_version=ignore_version,
             vars=vars,
             vars_encrypted=vars_encrypted,
         )
-        for file in files
-    ]
+        config.variables_path = var_file
+        configs.append(config)
+
+    return configs
 
 
 def parse_and_validate(
@@ -132,14 +136,14 @@ def parse_config_from_file(file: str, *, vars={}, vars_encrypted=False) -> MachC
 
 
 def parse_config(config: MachConfig) -> MachConfig:
-    resolve_variables(config, config.variables)
+    resolve_variables(config, config.variables, config.variables_encrypted)
     parse_global_config(config)
     resolve_component_definitions(config)
     resolve_site_configs(config)
     return config
 
 
-def resolve_variables(obj: Any, variables: dict):
+def resolve_variables(obj: Any, vars: dict, vars_encrypted: bool = False):
     """Resolve variables in the configuration.
 
     Only look for ${var.} variables since these can and must be rendered
@@ -158,7 +162,17 @@ def resolve_variables(obj: Any, variables: dict):
             # Return as is.
             return obj
 
-        return resolve_variable(var_m.group(2), variables)
+        var_name = var_m.group(2)
+        # We'll resolve the variable.
+        # In case of encrypted vars we won't return the value as is,
+        # but still the function will raise an error in case the variable cannot be found.
+        # Better to catch it here then during terraform apply.
+        var_value = resolve_variable(var_name, vars)
+
+        if vars_encrypted:
+            return TerraformReference(f"data.sops_external.variables.data.{var_name}")
+
+        return var_value
 
     annotations = getattr(obj, "__annotations__", {})
     if annotations:
@@ -166,12 +180,12 @@ def resolve_variables(obj: Any, variables: dict):
             value = getattr(obj, field, None)
             if not value:
                 continue
-            value = resolve_variables(value, variables)
+            value = resolve_variables(value, vars, vars_encrypted)
             setattr(obj, field, value)
     elif isinstance(obj, list):
-        return [resolve_variables(v, variables) for v in obj]
+        return [resolve_variables(v, vars, vars_encrypted) for v in obj]
     elif isinstance(obj, dict):
-        return {k: resolve_variables(v, variables) for k, v in obj.items()}
+        return {k: resolve_variables(v, vars, vars_encrypted) for k, v in obj.items()}
 
     return obj
 

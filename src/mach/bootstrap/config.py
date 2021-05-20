@@ -166,6 +166,7 @@ def _clean_config_dump(data: dict) -> dict:
     data.pop("file_encrypted", None)
 
     data.pop("variables", None)
+    data.pop("variables_path", None)
     data.pop("variables_encrypted", None)
 
     return data

@@ -71,14 +71,23 @@ def test_parse_azure_service_plans(azure_config: types.MachConfig):
     )
 
 
-def test_parse_w_variables(config: types.MachConfig):
-    config.sites[0].components[0].variables = {"my-value": r"${var.my-value}"}
+@pytest.mark.parametrize("encrypted", [True, False])
+def test_parse_w_variables(config: types.MachConfig, encrypted):
+    config.sites[0].components[0].variables = {"my-value": r"${var.site1.my-value}"}
+    config.variables_encrypted = encrypted
     with pytest.raises(Exception):
         config = parse.parse_config(config)
 
-    config.variables["my-value"] = "foo"
+    config.variables = {"site1": {"my-value": "foo"}}
     config = parse.parse_config(config)
-    assert config.sites[0].components[0].variables == {"my-value": "foo"}
+
+    if encrypted:
+        assert (
+            config.sites[0].components[0].variables["my-value"]
+            == "data.sops_external.variables.data.site1.my-value"
+        )
+    else:
+        assert config.sites[0].components[0].variables["my-value"] == "foo"
 
 
 @pytest.mark.parametrize("filename", ["aws_config1.yml", "aws_config_external.yml"])

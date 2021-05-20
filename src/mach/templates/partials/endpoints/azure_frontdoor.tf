@@ -5,14 +5,14 @@ locals {
 
 {% for endpoint in site.used_custom_endpoints %}
 data "azurerm_dns_zone" "{{ endpoint.key }}" {
-    name                = "{{ endpoint.zone }}"
-    resource_group_name = "{{ site.azure.frontdoor.dns_resource_group }}"
+    name                = {{ endpoint.zone|tf }}
+    resource_group_name = {{ site.azure.frontdoor.dns_resource_group|tf }}
 }
 
 resource "azurerm_dns_cname_record" "{{ endpoint.key }}" {
-  name                = "{{ endpoint.subdomain }}"
+  name                = {{ endpoint.subdomain|tf }}
   zone_name           = data.azurerm_dns_zone.{{ endpoint.key }}.name
-  resource_group_name = "{{ site.azure.frontdoor.dns_resource_group }}"
+  resource_group_name = {{ site.azure.frontdoor.dns_resource_group|tf }}
   ttl                 = 600
   record              = local.frontdoor_domain
 }
@@ -36,8 +36,8 @@ resource "azurerm_frontdoor" "app-service" {
 
   {% for endpoint in site.used_custom_endpoints %}
   frontend_endpoint {
-    name                              = "{{ endpoint.key }}"
-    host_name                         = "{{ endpoint.url }}"
+    name                              = {{ endpoint.key|tf }}
+    host_name                         = {{ endpoint.url|tf }}
 
     custom_https_provisioning_enabled = true
     custom_https_configuration {
@@ -59,7 +59,7 @@ resource "azurerm_frontdoor" "app-service" {
     frontend_endpoints = [
       local.frontdoor_domain_identifier,
       {% for endpoint in site.used_custom_endpoints %}
-      "{{ endpoint.key }}",
+      {{ endpoint.key|tf }},
       {% endfor %}
     ]
     redirect_configuration {
@@ -85,7 +85,7 @@ resource "azurerm_frontdoor" "app-service" {
     frontend_endpoints = [
       local.frontdoor_domain_identifier,
       {% if endpoint.url %}
-      "{{ endpoint.key }}",
+      {{ endpoint.key|tf }},
       {% endif %}
     ]
     forwarding_configuration {
