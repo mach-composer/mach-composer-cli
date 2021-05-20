@@ -4,6 +4,7 @@ A MACH configuration typically contains secrets that are configured on the compo
 
 We recommend using [SOPS](https://github.com/mozilla/sops) to encrypt your MACH configuration files or a part of it.
 
+## Using SOPS
 #### Encrypting
 
 Encrypting your file can be done with the `sops --encrypt` command:
@@ -39,3 +40,18 @@ And you can then execute MACH composer with this decrypted file:
 ```bash
 $ mach apply -f main.yml.dec
 ```
+
+## Encrypted variables
+
+Just as you would encrypt your MACH configuration, it is also possible to use an encrypted variable file to be used in your configuration.
+
+For example, if you would run MACH with 
+
+```bash
+mach apply -f main.yml --var-file variables.yml
+``` 
+
+and `variables.yml` is encrpyted with SOPS, MACH will use [terraform-sops](https://github.com/carlpett/terraform-provider-sops) to make sure the encrypted variables are used in a secure manner.
+
+!!! info "Using variables"
+    More info on using variables and variable files in MACH.

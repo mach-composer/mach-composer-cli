@@ -33,6 +33,7 @@ mach apply --auto-approve -f main.yml
 - `--with-sp-login` If az login with service principal environment variables should be done.
 - `--auto-approve` Auto-approve the Terraform plan
 - `--file` or `-f TEXT` YAML file to apply. If not set apply all *.yml files.
+- `--var-file` YAML file with variables to be used in the configuration file.
 - `--site` or `-s TEXT` Site to apply. If not set apply all sites.
 - `--component` or `-c TEXT` Specific component to target.
 - `--output-path TEXT` Output path, defaults to `cwd`/deployments`.
@@ -81,6 +82,7 @@ mach generate -f main.yml
 **Options**
 
 - `--file` or `-f TEXT` YAML file to parse. If not set parse all *.yml files.
+- `--var-file` YAML file with variables to be used in the configuration file.
 - `--site` or `-s TEXT` Site to parse. If not set parse all sites.
 - `--output-path TEXT` Output path, defaults to `cwd`/deployments.
 - `--ignore-version` Skip MACH composer version check
@@ -96,6 +98,7 @@ mach plan -f main.yml
 **Options**
 
 - `--file` or `-f TEXT` YAML file to parse. If not set parse all *.yml files.
+- `--var-file` YAML file with variables to be used in the configuration file.
 - `--site` or `-s TEXT` Site to generate plan of. If not set generate plans for all sites.
 - `--component` or `-c TEXT` Specific component to target.
 - `--output-path TEXT` Output path, defaults to `cwd`/deployments.

@@ -67,6 +67,7 @@ nav:
     - reference/components/structure.md
     - reference/components/aws.md
     - reference/components/azure.md
+  - reference/variables.md
   - reference/cli.md
   - reference/changelog.md
 - How-to:
