@@ -1,7 +1,7 @@
 <!-- start-no-pypi -->
 [![MACH composer](https://github.com/labd/mach-composer/blob/master/docs/src/_img/logo.png?raw=true)](https://docs.machcomposer.io)
 
-[![Python Tests](https://github.com/labd/mach-composer/actions/workflows/python-tox.yml/badge.svg)](https://github.com/labd/mach-composer/actions/workflows/python-tox.yml)
+[![Deploy](https://github.com/labd/mach-composer/actions/workflows/deploy.yml/badge.svg)](https://github.com/labd/mach-composer/actions/workflows/deploy.yml)
 [![PyPi](https://img.shields.io/pypi/v/mach-composer.svg)](https://pypi.org/project/mach-composer/)
 <!-- end-no-pypi -->
 
