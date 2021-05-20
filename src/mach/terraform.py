@@ -1,5 +1,6 @@
 import os
 import re
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -29,6 +30,11 @@ def generate_terraform(config: MachConfig, *, site: str = None):
         with open(output_file, "w+") as fh:
             fh.write(content)
         click.echo(f"Generated file {output_file}")
+
+        if config.variables_path and config.variables_encrypted:
+            # We need to copy the variables file for Terraform to access it
+            shutil.copy(config.variables_path, f"{site_dir}/variables.yml")
+            click.echo("Copied variables file")
 
         run_terraform("fmt", cwd=site_dir)
 

@@ -1,6 +1,6 @@
 {% set aws = site.aws %}
 provider "aws" {
-  region  = "{{ aws.region }}"
+  region  = {{ aws.region|tf }}
   {% if aws.deploy_role_name %}
   assume_role {
     role_arn = "arn:aws:iam::{{ aws.account_id }}:role/{{ aws.deploy_role_name }}"
@@ -10,8 +10,8 @@ provider "aws" {
 
 {% for provider in aws.extra_providers %}
 provider "aws" {
-  alias   = "{{ provider.name }}"
-  region  = "{{ provider.region }}"
+  alias   = {{ provider.name|tf }}
+  region  = {{ provider.region|tf }}
 
   {% if aws.deploy_role_name %}
   assume_role {
@@ -37,6 +37,6 @@ provider "aws" {
 locals {
   tags = {
     Site = "{{ site.identifier }}"
-    Environment = "{{ general_config.environment }}"
+    Environment = {{ general_config.environment|tf }}
   }
 }

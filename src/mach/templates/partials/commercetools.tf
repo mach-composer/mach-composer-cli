@@ -1,20 +1,20 @@
 {% set commercetools = site.commercetools %}
 
 provider "commercetools" {
-    client_id     = "{{ commercetools.client_id }}"
-    client_secret = "{{ commercetools.client_secret }}"
-    project_key   = "{{ commercetools.project_key }}"
-    scopes        = "{{ commercetools.scopes }}"
-    token_url     = "{{ commercetools.token_url }}"
-    api_url       = "{{ commercetools.api_url }}"
+    client_id     = {{ commercetools.client_id|tf }}
+    client_secret = {{ commercetools.client_secret|tf }}
+    project_key   = {{ commercetools.project_key|tf }}
+    scopes        = {{ commercetools.scopes|tf }}
+    token_url     = {{ commercetools.token_url|tf }}
+    api_url       = {{ commercetools.api_url|tf }}
 }
 
 {% if commercetools.project_settings %}
 resource "commercetools_project_settings" "project" {
-    name       = "{{ commercetools.project_key }}"
-    countries  = [{% for country in commercetools.project_settings.countries %}"{{ country }}"{% if not loop.last %},{% endif %}{% endfor %}]
-    currencies = [{% for currency in commercetools.project_settings.currencies %}"{{ currency }}"{% if not loop.last %},{% endif %}{% endfor %}]
-    languages  = [{% for language in commercetools.project_settings.languages %}"{{ language }}"{% if not loop.last %},{% endif %}{% endfor %}]
+    name       = {{ commercetools.project_key|tf }}
+    countries  = [{% for country in commercetools.project_settings.countries %}{{ country|tf }}{% if not loop.last %},{% endif %}{% endfor %}]
+    currencies = [{% for currency in commercetools.project_settings.currencies %}{{ currency|tf }}{% if not loop.last %},{% endif %}{% endfor %}]
+    languages  = [{% for language in commercetools.project_settings.languages %}{{ language|tf }}{% if not loop.last %},{% endif %}{% endfor %}]
     messages   = {
         enabled = {{ commercetools.project_settings.messages_enabled | string | lower }}
     }
@@ -24,12 +24,12 @@ resource "commercetools_project_settings" "project" {
 {% for channel in commercetools.channels %}
 resource "commercetools_channel" "{{ channel.key }}" {
     key = "{{ channel.key }}"
-    roles = [{% for role in channel.roles %}"{{ role }}"{% if not loop.last %}, {% endif %}{% endfor %}]
+    roles = [{% for role in channel.roles %}{{ role|tf }}{% if not loop.last %}, {% endif %}{% endfor %}]
 
     {% if channel.name %}
     name = {
         {% for language, localized_name in channel.name.items() %}
-        {{ language }} = "{{ localized_name }}"
+        {{ language }} = {{ localized_name|tf }}
         {% endfor %}
     }
     {% endif %}
@@ -37,7 +37,7 @@ resource "commercetools_channel" "{{ channel.key }}" {
     {% if channel.description %}
     description = {
         {% for language, localized_name in channel.description.items() %}
-        {{ language }} = "{{ localized_name}}"
+        {{ language }} = {{ localized_name|tf }}
         {% endfor %}
     }
     {% endif %}
@@ -53,8 +53,8 @@ resource "commercetools_tax_category" "standard" {
 {% for tax in commercetools.taxes %}
 resource "commercetools_tax_category_rate" "{{ tax.country|lower }}_vat" {
   tax_category_id = commercetools_tax_category.standard.id
-  name = "{{ tax.name }}"
-  amount = {{ tax.amount }}
+  name = {{ tax.name|tf }}
+  amount = {{ tax.amount|tf }}
   country = "{{ tax.country }}"
   included_in_price = true
 }
@@ -64,12 +64,12 @@ resource "commercetools_tax_category_rate" "{{ tax.country|lower }}_vat" {
 {% for zone in commercetools.zones %}
 resource "commercetools_shipping_zone" "{{ zone.name|slugify }}" {
   name = "{{ zone.name }}"
-  description = "{{ zone.description }}"
+  description = {{ zone.description|tf }}
   {% for location in zone.locations %}
   location {
-      country = "{{ location.country }}"
+      country = {{ location.country|tf }}
       {% if location.state %}
-      state = "{{ location.state }}"
+      state = {{ location.state|tf }}
       {% endif %}
   }
   {% endfor %}
