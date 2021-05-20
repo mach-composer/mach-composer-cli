@@ -1,6 +1,10 @@
 name: Publish
 
 on:
+  workflow_run:
+    workflows: ["test"]
+    types:
+      - completed
   push:
     branches:
     - master
