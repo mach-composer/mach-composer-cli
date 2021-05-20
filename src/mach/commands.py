@@ -62,7 +62,7 @@ def terraform_command(f):
     def new_func(
         file, site, output_path: str, ignore_version: bool, var_file, **kwargs
     ):
-        files = get_input_files(file)
+        files = get_input_files(file, var_file=var_file)
 
         configs = parse.parse_configs(
             files, output_path, ignore_version=ignore_version, var_file=var_file
@@ -319,7 +319,7 @@ def bootstrap(output: str, type_: str, cookiecutter: str):
         _bootstrap.create_component(output, cookiecutter)
 
 
-def get_input_files(file: Optional[str]) -> List[str]:
+def get_input_files(file: Optional[str], *, var_file: str) -> List[str]:
     """Determine input files. If file is not specified use all *.yml files."""
     if file:
         files = [file]
@@ -328,4 +328,13 @@ def get_input_files(file: Optional[str]) -> List[str]:
     if not files:
         click.echo("No .yml files found")
         sys.exit(1)
+
+    # If a var-file is given, strip it from the list of files to parse a MACH configurations.
+    # This is mainly a convenience for when you have the following files;
+    # - main.yml
+    # - variables.yml
+    # and to run `mach apply --var-file variables.yml`
+    # instead of `mach apply -f main.yml --var-file variables.yml`
+    if var_file:
+        files = filter(lambda f: f.lstrip("./") != var_file, files)
     return files
