@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import List, Optional
+from typing import Any, Dict, List, Optional
 
 from dataclasses_json import config, dataclass_json
 from dataclasses_jsonschema import JsonSchemaMixin
@@ -30,7 +30,7 @@ class MachConfig(JsonSchemaMixin):
     # Indicates that the config file is SOPS encrypted
     file_encrypted: bool = False
 
-    variables: dict = fields.dict_()
+    variables: Dict[str, Any] = fields.dict_()
     variables_path: str = fields.none()
     variables_encrypted: bool = False
 
