@@ -43,19 +43,15 @@ components: ${include(components.yml)}
 
 You can use this to refer to any [Terraform output](https://www.terraform.io/docs/language/values/outputs.html) that another component has defined.
 
-So for example if a component called "infra" has the following outputs:
+So for example if a component called "email" has the following outputs:
 
 ```terraform
 # outputs.tf
 
-output "sns_topic_arn" {
-    value = aws_sns_topic.main.arn
-}
-
-output "psql_server" {
+output "sqs_queue" {
     value = {
-        endpoint = aws_db_instance.main.endpoint
-        arn = aws_db_instance.main.arn
+      id = aws_sqs_queue.email_queue.id
+      arn = aws_sqs_queue.email_queue.arn
     }
 }
 ```
@@ -66,8 +62,7 @@ These can then be used in the configuration:
 components:
   - name: order-notifier
     variables:
-      sns_topic: ${component.infra.sns_topic_arn}
-      database_endpoint: ${component.psql_server.endpoint}
+      email_queue_id: ${component.email.sqs_queue.id}
 ```
 
 ## `var`
@@ -88,6 +83,16 @@ will use the `stripe_secret` value from the given variables file.
 
 !!! info ""
     These values can be nested, so it's possible to define a `${var.site1.stripe.secret_key}` with your `variables.yml` looking like:
+
+    ```yaml
+    ---
+    site1:
+      stripe:
+        secret_key: vRBNcBH2XuNvHwAoPdDnhs2XyeVMOT
+    site2:
+      stripe:
+        secret_key: 2hzctJCLjyMjUL07BNSh3Nyjt6r7aC
+    ```
 
 !!! tip "Note on encryption"
     You can [encrypt your `variables.yml` using SOPS](../howto/security/encrypt.md#encrypted-variables).
