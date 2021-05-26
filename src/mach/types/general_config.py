@@ -104,11 +104,19 @@ class SentryConfig(JsonSchemaMixin):
 
 @dataclass_json
 @dataclass
+class FrontdoorSslConfig(JsonSchemaMixin):
+    name: str
+    resource_group: str
+    secret_name: str
+
+
+@dataclass_json
+@dataclass
 class FrontdoorSettings(JsonSchemaMixin):
     """Frontdoor settings."""
 
     dns_resource_group: str
-
+    ssl_key_vault: Optional[FrontdoorSslConfig] = fields.none()
     # Undocumented option to workaround some tenacious issues
     # with using Frontdoor in the Azure Terraform provider
     suppress_changes: bool = fields.default(False)

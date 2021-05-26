@@ -118,13 +118,26 @@ resource "azurerm_frontdoor" "app-service" {
   {% endif %}
 }
 
+{% if site.azure.frontdoor.ssl_key_vault %}
+data "azurerm_key_vault" "ssl" {
+  name                = {{ site.azure.frontdoor.ssl_key_vault.name|tf }}
+  resource_group_name = {{ site.azure.frontdoor.ssl_key_vault.resource_group|tf }}
+}
+{% endif %}
+
 {% for endpoint in site.used_custom_endpoints %}
 resource "azurerm_frontdoor_custom_https_configuration" "{{ endpoint.key|slugify }}" {
   frontend_endpoint_id              = azurerm_frontdoor.app-service.frontend_endpoints["{{ endpoint.key }}"]
   custom_https_provisioning_enabled = true
 
   custom_https_configuration {
+    {% if site.azure.frontdoor.ssl_key_vault %}
+    certificate_source                         = "AzureKeyVault"
+    azure_key_vault_certificate_vault_id       = data.azurerm_key_vault.ssl.id
+    azure_key_vault_certificate_secret_name    = {{ site.azure.frontdoor.ssl_key_vault.secret_name|tf }}
+    {% else %}
     certificate_source                      = "FrontDoor"
+    {% endif %}
   }
 }
 {% endfor %}

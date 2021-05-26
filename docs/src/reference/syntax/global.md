@@ -180,10 +180,21 @@ Example:
 ```yaml
 frontdoor:
   dns_resource_group: my-shared-rg
+  ssl_key_vault:
+    name: mysharedwekvcerts
+    resource_group: my-shared-we-rg
+    secret_name: my-domain-net
 ```
 
 - **`dns_resource_group`** - (Required) Resource group name where the DNS zone can be found
 - `suppress_changes` - Suppress changes to the Frontdoor instance. This is a temporary work-around for some issues in the Azure Terraform provider.
+- `ssl_key_vault` - SSL certificate configuration when Frontdoor should use your own certificate
+
+#### ssl_key_vault
+- **`name`** - (Required) KeyVault name
+- **`resource_group`** - (Required) KeyVault resource group
+- **`secret_name`** - (Required) Certificate name
+
 
 ## contentful
 Defines global Contentful credentials to manage the spaces
