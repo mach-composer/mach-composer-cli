@@ -328,7 +328,7 @@ def bootstrap(output: str, type_: str, cookiecutter: str):
     help="YAML file to read. If not set read all *.yml files.",
 )
 def path(file: str, site: str):
-    """Return output path for given site"""
+    """Return output path for given site."""
     # Suppress click output, we only want to output the output path
     click.echo = lambda *args, **kwargs: None
     files = get_input_files(file)
