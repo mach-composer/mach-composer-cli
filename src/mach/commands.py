@@ -319,7 +319,7 @@ def bootstrap(output: str, type_: str, cookiecutter: str):
         _bootstrap.create_component(output, cookiecutter)
 
 
-def get_input_files(file: Optional[str], *, var_file: str) -> List[str]:
+def get_input_files(file: Optional[str], *, var_file: str = None) -> List[str]:
     """Determine input files. If file is not specified use all *.yml files."""
     if file:
         files = [file]
