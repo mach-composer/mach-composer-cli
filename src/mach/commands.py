@@ -319,6 +319,29 @@ def bootstrap(output: str, type_: str, cookiecutter: str):
         _bootstrap.create_component(output, cookiecutter)
 
 
+@mach.command()
+@click.argument("site", required=True)
+@click.option(
+    "-f",
+    "--file",
+    default=None,
+    help="YAML file to read. If not set read all *.yml files.",
+)
+def path(file: str, site: str):
+    """Return output path for given site"""
+    # Suppress click output, we only want to output the output path
+    click.echo = lambda *args, **kwargs: None
+    files = get_input_files(file)
+    configs = parse.parse_configs(files, "deployments")
+    for config in configs:
+        click.echo(f"{config.file}:")
+        for site_ in config.sites:
+            if site_.identifier == site:
+                sys.stdout.write(f"{config.deployment_path_for(site_)}\n")
+                return
+    sys.exit(f"Could not find site definition {site}\n")
+
+
 def get_input_files(file: Optional[str], *, var_file: str = None) -> List[str]:
     """Determine input files. If file is not specified use all *.yml files."""
     if file:

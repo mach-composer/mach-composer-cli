@@ -38,6 +38,9 @@ class MachConfig(JsonSchemaMixin):
     def deployment_path(self) -> Path:
         return Path(self.output_path)
 
+    def deployment_path_for(self, site: Site):
+        return self.deployment_path / Path(site.identifier)
+
     def get_component(self, name: str) -> Optional[ComponentConfig]:
         for comp in self.components:
             if comp.name == name:
