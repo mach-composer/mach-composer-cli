@@ -38,11 +38,6 @@ resource "azurerm_frontdoor" "app-service" {
   frontend_endpoint {
     name                              = {{ endpoint.key|tf }}
     host_name                         = {{ endpoint.url|tf }}
-
-    custom_https_provisioning_enabled = true
-    custom_https_configuration {
-      certificate_source = "FrontDoor"
-    }
   }
   {% endfor %}
 
@@ -122,4 +117,15 @@ resource "azurerm_frontdoor" "app-service" {
   }
   {% endif %}
 }
+
+{% for endpoint in site.used_custom_endpoints %}
+resource "azurerm_frontdoor_custom_https_configuration" "{{ endpoint.key|slugify }}" {
+  frontend_endpoint_id              = azurerm_frontdoor.app-service.frontend_endpoints["{{ endpoint.key }}"]
+  custom_https_provisioning_enabled = true
+
+  custom_https_configuration {
+    certificate_source                      = "FrontDoor"
+  }
+}
+{% endfor %}
 {% endif %}

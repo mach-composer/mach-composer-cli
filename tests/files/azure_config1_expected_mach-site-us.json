@@ -25,7 +25,7 @@
         {
           "azurerm": [
             {
-              "version": "~> 2.47.0"
+              "version": "~> 2.60.0"
             }
           ],
           "commercetools": [
@@ -228,16 +228,6 @@
               ],
               "host_name": [
                 "api.us-tst.mach-services.net"
-              ],
-              "custom_https_provisioning_enabled": [
-                true
-              ],
-              "custom_https_configuration": [
-                {
-                  "certificate_source": [
-                    "FrontDoor"
-                  ]
-                }
               ]
             }
           ],
@@ -355,6 +345,25 @@
               ],
               "health_probe_name": [
                 "public-payment-hpSettings"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "azurerm_frontdoor_custom_https_configuration": {
+        "public": {
+          "frontend_endpoint_id": [
+            "${azurerm_frontdoor.app-service.frontend_endpoints[\"public\"]}"
+          ],
+          "custom_https_provisioning_enabled": [
+            true
+          ],
+          "custom_https_configuration": [
+            {
+              "certificate_source": [
+                "FrontDoor"
               ]
             }
           ]
@@ -577,6 +586,12 @@
         "source": [
           "git::https://github.com/some-organisation/mach-component-payment.git//terraform?ref=0a9a0b5"
         ],
+        "variables": [
+          {}
+        ],
+        "secrets": [
+          {}
+        ],
         "component_version": [
           "0a9a0b5"
         ],
@@ -588,12 +603,6 @@
         ],
         "tags": [
           "${local.tags}"
-        ],
-        "variables": [
-          {}
-        ],
-        "secrets": [
-          {}
         ],
         "azure_short_name": [
           "payment"
@@ -662,6 +671,14 @@
         "source": [
           "git::https://github.com/some-organisation/mach-component-api-extensions.git//terraform?ref=a4bbb28"
         ],
+        "variables": [
+          {
+            "ORDER_PREFIX": "MACH-"
+          }
+        ],
+        "secrets": [
+          {}
+        ],
         "component_version": [
           "a4bbb28"
         ],
@@ -673,14 +690,6 @@
         ],
         "tags": [
           "${local.tags}"
-        ],
-        "variables": [
-          {
-            "ORDER_PREFIX": "MACH-"
-          }
-        ],
-        "secrets": [
-          {}
         ],
         "azure_short_name": [
           "apiexts"
