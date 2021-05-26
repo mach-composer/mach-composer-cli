@@ -107,6 +107,7 @@ def test_generate_azure_w_endpoints(azure_config: types.MachConfig, tf_mock):
         "azurerm_app_service_plan.functionapps",
         "azurerm_dns_cname_record.public",
         "azurerm_frontdoor.app-service",
+        "azurerm_frontdoor_custom_https_configuration.public",
         "azurerm_resource_group.main",
     ]
     assert tf.get_resource_ids(data) == expected_resources
@@ -141,6 +142,8 @@ def test_generate_azure_w_endpoints(azure_config: types.MachConfig, tf_mock):
         "azurerm_dns_cname_record.private",
         "azurerm_dns_cname_record.public",
         "azurerm_frontdoor.app-service",
+        "azurerm_frontdoor_custom_https_configuration.private",
+        "azurerm_frontdoor_custom_https_configuration.public",
         "azurerm_resource_group.main",
     ]
 
