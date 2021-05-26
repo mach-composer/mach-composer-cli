@@ -55,6 +55,7 @@ nav:
   - Development:
     - Workflow: topics/development/workflow.md
     - topics/development/environment.md
+    - topics/development/troubleshooting.md
 - Reference:
   - Overview: reference/index.md
   - Syntax:

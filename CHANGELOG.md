@@ -1,18 +1,37 @@
 # Changelog
 
 ## 1.1 (unreleased)
+
+**General**
+
 - Variable support:
   - `${var.}` to be used with the `--var-file` command line option
   - `${component.}` to use component output values
   - `${env.}` to include environment variables in the configuration file
-- Azure: Include `frontend_endpoint` in ignore list when `suppress_changes` is used
+
+**Azure**
+
+- Upgraded Terraform Azure provider to [`2.60.0`](https://github.com/terraform-providers/terraform-provider-azurerm/blob/master/CHANGELOG.md#2600-may-20-2021)
+- Include `frontend_endpoint` in ignore list when `suppress_changes` is used
+
+### Upgrade notes
+
+**For Azure**
+
+Changes have been made in the Frontdoor configuration in the underlying Terraform Azure provider.<br>
+If you are using endpoints with a custom domain, you'll need to import the new [`azurerm_frontdoor_custom_https_configuration`](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/frontdoor_custom_https_configuration#import) into your Terraform state.<br>
+More on how to work with the Terraform state in [our troubleshooting guide](https://docs.machcomposer.io/topics/development/troubleshooting.html).
+
+
 
 ## 1.0.0 (2021-05-10)
 
-### New platforms
+**New platforms**
+
 - Add Amplience support
 - Add Apollo Federation support
 - Add Sentry DSN management options
+
 
 **General**
 
@@ -57,10 +76,12 @@
 - Make commercetools frontend API client scopes configurable with new
   `frontend` configuration block
 
+
 **AWS**
 
 - AWS: Set `auto-deploy` on API gateway stage
 - AWS: Add new component variable `tags`
+
 
 **Azure**
 
@@ -308,8 +329,7 @@ or `integrations: []` if no integrations are needed at all.
 - Fix `--auto-approve` option on `mach apply` command
 
 
-0.2.0 (2020-10-06)
-=================
+## 0.2.0 (2020-10-06)
 - Add AWS support
 - Add new required attribute `cloud` in general config
 
