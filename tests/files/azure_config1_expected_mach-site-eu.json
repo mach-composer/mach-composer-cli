@@ -358,21 +358,11 @@
     {
       "sentry_key": {
         "api-extensions": {
-          "organization": [
-            "labd"
-          ],
-          "project": [
-            "mach"
-          ],
-          "name": [
-            "mach-site-eu_api-extensions"
-          ],
-          "rate_limit_window": [
-            21600
-          ],
-          "rate_limit_count": [
-            100
-          ]
+          "organization": ["labd"],
+          "project": ["mach"],
+          "name": ["mach-site-eu-site-api-extensions"],
+          "rate_limit_window": [21600],
+          "rate_limit_count": [100]
         }
       }
     }
