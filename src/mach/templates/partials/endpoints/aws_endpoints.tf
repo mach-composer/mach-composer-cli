@@ -55,7 +55,7 @@ resource "aws_apigatewayv2_stage" "{{ endpoint.key|slugify }}_default" {
     {% endif %}
   }
 
-  resource "aws_route53_record" "{{ endpoint.key|slugify }}" {
+  resource "aws_route53_record" "{{ endpoint.key|slugify }}_acm_validation" {
     for_each = {
       for dvo in aws_acm_certificate.{{ endpoint.key|slugify }}.domain_validation_options : dvo.domain_name => {
         name   = dvo.resource_record_name
