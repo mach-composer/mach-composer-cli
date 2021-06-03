@@ -84,7 +84,7 @@ def test_parse_w_variables(config: types.MachConfig, encrypted):
     if encrypted:
         assert (
             config.sites[0].components[0].variables["my-value"]
-            == "data.sops_external.variables.data.site1.my-value"
+            == 'data.sops_external.variables.data["site1.my-value"]'
         )
     else:
         assert config.sites[0].components[0].variables["my-value"] == "foo"

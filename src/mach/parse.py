@@ -174,7 +174,7 @@ def resolve_variables(obj: Any, vars: dict, vars_encrypted: bool = False):
 
             if vars_encrypted:
                 return TerraformReference(
-                    f"data.sops_external.variables.data.{var_name}"
+                    f'data.sops_external.variables.data["{var_name}"]'
                 )
             return var_value
         elif type_ == "env":
