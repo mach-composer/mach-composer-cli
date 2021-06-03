@@ -89,6 +89,7 @@ data "sops_external" "variables" {
 provider "sentry" {
   token = {{ general_config.sentry.auth_token|tf }}
   base_url = {% if general_config.sentry.base_url %}{{ general_config.sentry.base_url|tf }}{% else %}"https://sentry.io/api/"{% endif %}
+
 }
 {% endif %}
 
