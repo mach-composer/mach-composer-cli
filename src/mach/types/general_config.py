@@ -9,17 +9,17 @@ from . import fields
 from .shared import ServicePlan
 
 __all__ = [
-    "AzureTFState",
     "AWSTFState",
-    "TerraformProviders",
-    "TerraformConfig",
-    "SentryConfig",
-    "FrontdoorSettings",
-    "AzureConfig",
-    "ContentfulConfig",
     "AmplienceConfig",
+    "AzureConfig",
+    "AzureTFState",
     "CloudOption",
+    "ContentfulConfig",
+    "FrontdoorSettings",
     "GlobalConfig",
+    "SentryConfig",
+    "TerraformConfig",
+    "TerraformProviders",
 ]
 
 

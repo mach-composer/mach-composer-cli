@@ -81,6 +81,7 @@ class Endpoint:
     zone: Optional[str] = fields.none()
     throttling_burst_limit: Optional[int] = fields.none()
     throttling_rate_limit: Optional[int] = fields.none()
+    enable_cdn: Optional[bool] = fields.default(False)
 
     # To be set by the parser
     components: List["Component"] = fields.list_()
@@ -424,6 +425,11 @@ class Site(JsonSchemaMixin):
     def used_endpoints(self) -> List[Endpoint]:
         """Return only the endpoints that are actually used by the components."""
         return [ep for ep in self.endpoints if ep.components]
+
+    @property
+    def has_cdn_endpoint(self) -> bool:
+        """Check if there is an endpoint with a cdn enabled."""
+        return any(ep.enable_cdn for ep in self.used_endpoints)
 
     @property
     def used_custom_endpoints(self) -> List[Endpoint]:

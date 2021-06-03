@@ -8,6 +8,7 @@
   - `${var.}` to be used with the `--var-file` command line option
   - `${component.}` to use component output values
   - `${env.}` to include environment variables in the configuration file
+- Added `enable_cdn` setting for endpoints, ignored if not AWS. Creates a CDN in front of an endpoint.
 
 **Azure**
 
