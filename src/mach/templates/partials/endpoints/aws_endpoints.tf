@@ -72,15 +72,6 @@ resource "aws_apigatewayv2_stage" "{{ endpoint.key|slugify }}_default" {
     zone_id         = data.aws_route53_zone.{{ endpoint.zone|slugify }}.zone_id
   }
 
-  resource "aws_acm_certificate_validation" "{{ endpoint.key|slugify }}" {
-    certificate_arn         = aws_acm_certificate.{{ endpoint.key|slugify }}.arn
-    validation_record_fqdns = [for record in aws_route53_record.{{ endpoint.key|slugify }}_acm_validation : record.fqdn]
-
-    {% if endpoint.enable_cdn %}
-      provider = aws.mach-cf-us-east-1
-    {% endif %}
-  }
-
   {% if endpoint.enable_cdn %}
     resource "aws_cloudfront_distribution" "{{ endpoint.key|slugify }}" {
       origin {
