@@ -29,7 +29,7 @@ provider "aws" {
   {% endfor %}
 
   {% for endpoint in site.used_endpoints %}
-    {% include 'partials/endpoints/aws_api_gateway.tf' %}
+    {% include 'partials/endpoints/aws_endpoints.tf' %}
   {% endfor %}
   {% include 'partials/endpoints/aws_url_locals.tf' %}
 {% endif %}
