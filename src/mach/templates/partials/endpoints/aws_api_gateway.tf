@@ -33,54 +33,59 @@ resource "aws_apigatewayv2_stage" "{{ endpoint.key|slugify }}_default" {
 }
 
 {% if endpoint.url %}
-resource "aws_acm_certificate" "{{ endpoint.key|slugify }}" {
-  domain_name       = {{ endpoint.url|tf }}
-  validation_method = "DNS"
-}
+  {% if endpoint.enable_cdn %}
+    {% include 'partials/endpoints/aws_gateway_cloudfront.tf' %}
+  {% else %}
+  resource "aws_acm_certificate" "{{ endpoint.key|slugify }}" {
+    domain_name       = {{ endpoint.url|tf }}
+    validation_method = "DNS"
+  }
 
-resource "aws_route53_record" "{{ endpoint.key|slugify }}_acm_validation" {
-  for_each = {
-    for dvo in aws_acm_certificate.{{ endpoint.key|slugify }}.domain_validation_options : dvo.domain_name => {
-      name   = dvo.resource_record_name
-      record = dvo.resource_record_value
-      type   = dvo.resource_record_type
+  resource "aws_route53_record" "{{ endpoint.key|slugify }}_acm_validation" {
+    for_each = {
+      for dvo in aws_acm_certificate.{{ endpoint.key|slugify }}.domain_validation_options : dvo.domain_name => {
+        name   = dvo.resource_record_name
+        record = dvo.resource_record_value
+        type   = dvo.resource_record_type
+      }
+    }
+
+    allow_overwrite = true
+    name            = each.value.name
+    records         = [each.value.record]
+    ttl             = 60
+    type            = each.value.type
+    zone_id         = data.aws_route53_zone.{{ endpoint.zone|slugify }}.zone_id
+  }
+
+  # Route53 mappings
+  resource "aws_apigatewayv2_domain_name" "{{ endpoint.key|slugify }}" {
+    domain_name = {{ endpoint.url|tf }}
+
+    domain_name_configuration {
+      certificate_arn = aws_acm_certificate.{{ endpoint.key|slugify }}.arn
+      endpoint_type   = "REGIONAL"
+      security_policy = "TLS_1_2"
     }
   }
 
-  allow_overwrite = true
-  name            = each.value.name
-  records         = [each.value.record]
-  ttl             = 60
-  type            = each.value.type
-  zone_id         = data.aws_route53_zone.{{ endpoint.zone|slugify }}.zone_id
-}
+  resource "aws_route53_record" "{{ endpoint.key|slugify }}" {
+    name    = aws_apigatewayv2_domain_name.{{ endpoint.key|slugify }}.domain_name
+    type    = "A"
+    zone_id = data.aws_route53_zone.{{ endpoint.zone|slugify }}.id
 
-# Route53 mappings
-resource "aws_apigatewayv2_domain_name" "{{ endpoint.key|slugify }}" {
-  domain_name = {{ endpoint.url|tf }}
-
-  domain_name_configuration {
-    certificate_arn = aws_acm_certificate.{{ endpoint.key|slugify }}.arn
-    endpoint_type   = "REGIONAL"
-    security_policy = "TLS_1_2"
+    alias {
+      name                   = aws_apigatewayv2_domain_name.{{ endpoint.key|slugify }}.domain_name_configuration[0].target_domain_name
+      zone_id                = aws_apigatewayv2_domain_name.{{ endpoint.key|slugify }}.domain_name_configuration[0].hosted_zone_id
+      evaluate_target_health = false
+    }
   }
-}
 
-resource "aws_route53_record" "{{ endpoint.key|slugify }}" {
-  name    = aws_apigatewayv2_domain_name.{{ endpoint.key|slugify }}.domain_name
-  type    = "A"
-  zone_id = data.aws_route53_zone.{{ endpoint.zone|slugify }}.id
-
-  alias {
-    name                   = aws_apigatewayv2_domain_name.{{ endpoint.key|slugify }}.domain_name_configuration[0].target_domain_name
-    zone_id                = aws_apigatewayv2_domain_name.{{ endpoint.key|slugify }}.domain_name_configuration[0].hosted_zone_id
-    evaluate_target_health = false
+  resource "aws_apigatewayv2_api_mapping" "{{ endpoint.key|slugify }}" {
+    api_id      = aws_apigatewayv2_api.{{ endpoint.key|slugify }}_gateway.id
+    stage       = aws_apigatewayv2_stage.{{ endpoint.key|slugify }}_default.id
+    domain_name = {{ endpoint.url|tf }}
   }
-}
-
-resource "aws_apigatewayv2_api_mapping" "{{ endpoint.key|slugify }}" {
-  api_id      = aws_apigatewayv2_api.{{ endpoint.key|slugify }}_gateway.id
-  stage       = aws_apigatewayv2_stage.{{ endpoint.key|slugify }}_default.id
-  domain_name = {{ endpoint.url|tf }}
-}
+  {% endif %}
 {% endif %}
+

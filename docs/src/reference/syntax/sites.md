@@ -20,13 +20,31 @@ Endpoint definitions to be used in the API Gateway or Frontdoor routing.
 
 Each component might require a different endpoint. In the [component definition](./components.md) it can be defined which endpoint it expects. The actual endpoint can be defined here using the unique key.
 
-Example:
+Basic example:
 
 ```yaml
 endpoints:
   main: api.tst.mach-example.net
   services: services.tst.mach-example.net
 ```
+
+Complex example:
+
+```yaml
+endpoints:
+  internal:
+    url: internal-api.tst.mach-example.net
+    zone: tst.mach-example.net
+    throttling_burst_limit: 5000
+    throttling_rate_limit: 10000
+    enable_cdn: true
+```
+
+- **`url`** - (Required) url of the endpoint
+- `zone` - DNS zone to use, if missing it's determined based on the given `url`  
+- `throttling_burst_limit` - Set burst limit for API Gateway endpoints
+- `throttling_rate_limit` - Set burst limit for API Gateway endpoints
+- `enable_cdn` - Defaults to false. Sets a CDN in front of this endpoint for better global availability. For AWS creates a CloudFront distribution
 
 !!! info "Azure support"
     At the moment, this option is not supported when using Azure and simply ignored.
@@ -370,7 +388,6 @@ aws:
 - **`region`** - AWS region to deploy site in
 - `deploy_role_name` - The [IAM role](./prerequisites/aws#iam-deploy-role) name needed for deployment
 - `extra_providers`
-
 
 ## components
 

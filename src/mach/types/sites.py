@@ -81,6 +81,7 @@ class Endpoint:
     zone: Optional[str] = fields.none()
     throttling_burst_limit: Optional[int] = fields.none()
     throttling_rate_limit: Optional[int] = fields.none()
+    enable_cdn: Optional[bool] = fields.default(False)
 
     # To be set by the parser
     components: List["Component"] = fields.list_()
