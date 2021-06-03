@@ -21,6 +21,19 @@ provider "aws" {
 }
 {% endfor %}
 
+{% if site.has_cdn_endpoint %}
+provider "aws" {
+  alias   = "mach-cf-us-east-1"
+  region  = "us-east-1"
+
+  {% if aws.deploy_role_name %}
+  assume_role {
+    role_arn = "arn:aws:iam::{{ aws.account_id }}:role/{{ aws.deploy_role_name }}"
+  }
+  {% endif %}
+}
+{% endif %}
+
 {% if site.used_endpoints %}
   {% for zone in site.dns_zones %}
   data "aws_route53_zone" "{{ zone|slugify }}" {

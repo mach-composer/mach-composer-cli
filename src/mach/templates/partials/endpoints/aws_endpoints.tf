@@ -33,19 +33,6 @@ resource "aws_apigatewayv2_stage" "{{ endpoint.key|slugify }}_default" {
 }
 
 {% if endpoint.url %}
-  {% if endpoint.enable_cdn %}
-    provider "aws" {
-      alias   = "mach-cf-us-east-1"
-      region  = "us-east-1"
-
-      {% if aws.deploy_role_name %}
-      assume_role {
-        role_arn = "arn:aws:iam::{{ aws.account_id }}:role/{{ aws.deploy_role_name }}"
-      }
-      {% endif %}
-    }
-  {% endif %}
-
   resource "aws_acm_certificate" "{{ endpoint.key|slugify }}" {
     domain_name       = {{ endpoint.url|tf }}
     validation_method = "DNS"

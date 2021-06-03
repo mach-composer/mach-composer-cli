@@ -427,6 +427,11 @@ class Site(JsonSchemaMixin):
         return [ep for ep in self.endpoints if ep.components]
 
     @property
+    def has_cdn_endpoint(self) -> bool:
+        """Checks if there is an endpoint with a cdn enabled."""
+        return any(ep.enable_cdn for ep in self.used_endpoints)
+
+    @property
     def used_custom_endpoints(self) -> List[Endpoint]:
         """Return custom endpoints that are used by the components."""
         return [ep for ep in self.used_endpoints if ep.url]

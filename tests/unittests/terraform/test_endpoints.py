@@ -190,3 +190,16 @@ def test_generate_azure_w_default_endpoint(azure_config: types.MachConfig, tf_mo
         "azurerm_frontdoor.app-service",
         "azurerm_resource_group.main",
     ]
+
+
+def test_aws_endpoint_with_cdn_generates_one_us_east_provider(config: types.MachConfig, tf_mock):
+    config.sites[0].endpoints = [
+        types.Endpoint(key="public", url="api.mach-example.com", enable_cdn=True)
+    ]
+    config.components[0].endpoints = {
+        "main": "public",
+    }
+
+    data = tf.generate(parse.parse_config(config))
+
+    assert data['provider']['aws'] == {'alias': ['mach-cf-us-east-1'], 'region': ['us-east-1']}
