@@ -34,11 +34,25 @@ resource "aws_apigatewayv2_stage" "{{ endpoint.key|slugify }}_default" {
 
 {% if endpoint.url %}
   {% if endpoint.enable_cdn %}
-    {% include 'partials/endpoints/aws_gateway_cloudfront.tf' %}
-  {% else %}
+    provider "aws" {
+      alias   = "mach-cf-us-east-1"
+      region  = "us-east-1"
+
+      {% if aws.deploy_role_name %}
+      assume_role {
+        role_arn = "arn:aws:iam::{{ aws.account_id }}:role/{{ aws.deploy_role_name }}"
+      }
+      {% endif %}
+    }
+  {% endif %}
+
   resource "aws_acm_certificate" "{{ endpoint.key|slugify }}" {
     domain_name       = {{ endpoint.url|tf }}
     validation_method = "DNS"
+
+    {% if endpoint.enable_cdn %}
+      provider = aws.mach-cf-us-east-1
+    {% endif %}
   }
 
   resource "aws_route53_record" "{{ endpoint.key|slugify }}_acm_validation" {
@@ -58,6 +72,80 @@ resource "aws_apigatewayv2_stage" "{{ endpoint.key|slugify }}_default" {
     zone_id         = data.aws_route53_zone.{{ endpoint.zone|slugify }}.zone_id
   }
 
+  resource "aws_acm_certificate_validation" "{{ endpoint.key|slugify }}" {
+    certificate_arn         = aws_acm_certificate.{{ endpoint.key|slugify }}.arn
+    validation_record_fqdns = [for record in aws_route53_record.{{ endpoint.key|slugify }}_acm_validation : record.fqdn]
+
+    {% if endpoint.enable_cdn %}
+      provider = aws.mach-cf-us-east-1
+    {% endif %}
+  }
+
+  {% if endpoint.enable_cdn %}
+    resource "aws_cloudfront_distribution" "{{ endpoint.key|slugify }}" {
+      origin {
+        origin_id   = "api-gateway"
+        domain_name = replace(aws_apigatewayv2_api.{{ endpoint.key|slugify }}_gateway.api_endpoint, "https://", "")
+
+        custom_origin_config {
+          http_port              = 80
+          https_port             = 443
+          origin_protocol_policy = "https-only"
+          origin_ssl_protocols   = ["TLSv1.2"]
+        }
+      }
+
+      aliases             = [{{ endpoint.url|tf }}]
+      enabled             = true
+      wait_for_deployment = false
+
+      default_cache_behavior {
+        allowed_methods  = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
+        cached_methods   = ["GET", "HEAD"]
+        target_origin_id = "api-gateway"
+
+        forwarded_values {
+          query_string = true
+          cookies {
+            forward = "all"
+          }
+        }
+
+        viewer_protocol_policy = "redirect-to-https"
+        min_ttl                = 0
+        default_ttl            = 0
+        max_ttl                = 0
+      }
+
+      price_class = "PriceClass_200"
+
+      restrictions {
+        geo_restriction {
+          restriction_type = "none"
+        }
+      }
+
+      viewer_certificate {
+        acm_certificate_arn      = aws_acm_certificate.{{ endpoint.key|slugify }}.arn
+        ssl_support_method       = "sni-only"
+        minimum_protocol_version = "TLSv1"
+
+      }
+    }
+
+    resource "aws_route53_record" "{{ endpoint.key|slugify }}_cloudfront" {
+      zone_id = data.aws_route53_zone.{{ endpoint.zone|slugify }}.zone_id
+      name    = {{ endpoint.url|tf }}
+      type    = "A"
+
+      alias {
+        name                   = aws_cloudfront_distribution.{{ endpoint.key|slugify }}.domain_name
+        zone_id                = aws_cloudfront_distribution.{{ endpoint.key|slugify }}.hosted_zone_id
+        evaluate_target_health = false
+      }
+    }
+
+  {% else %}
   # Route53 mappings
   resource "aws_apigatewayv2_domain_name" "{{ endpoint.key|slugify }}" {
     domain_name = {{ endpoint.url|tf }}
@@ -86,6 +174,7 @@ resource "aws_apigatewayv2_stage" "{{ endpoint.key|slugify }}_default" {
     stage       = aws_apigatewayv2_stage.{{ endpoint.key|slugify }}_default.id
     domain_name = {{ endpoint.url|tf }}
   }
+
   {% endif %}
 {% endif %}
 
