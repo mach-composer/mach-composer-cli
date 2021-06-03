@@ -428,7 +428,7 @@ class Site(JsonSchemaMixin):
 
     @property
     def has_cdn_endpoint(self) -> bool:
-        """Checks if there is an endpoint with a cdn enabled."""
+        """Check if there is an endpoint with a cdn enabled."""
         return any(ep.enable_cdn for ep in self.used_endpoints)
 
     @property
