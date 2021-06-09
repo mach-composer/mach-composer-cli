@@ -18,7 +18,9 @@ provider "google-beta" {
 
   {% for endpoint in site.used_endpoints %}
     {% include 'partials/endpoints/gcp_api_gateway.tf' %}
+    
   {% endfor %}
+
   {% include 'partials/endpoints/gcp_url_locals.tf' %}
 {% endif %}
 
