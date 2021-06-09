@@ -87,6 +87,10 @@ terraform {
       version = "~> 0.5"
     }
     {% endif %}
+
+    utils = {
+      source = "cloudposse/utils"
+    }
   }
 }
 
