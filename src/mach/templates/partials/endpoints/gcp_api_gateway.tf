@@ -5,18 +5,33 @@ resource "google_api_gateway_api" "{{ endpoint.key|slugify }}_gateway" {
   api_id = "{{ endpoint.key|slugify }}"
 }
 
+locals {
+  api_spec_base = <<EOT
+swagger: '2.0'
+info:
+  title: {{ endpoint.key }} API
+  description: {{ endpoint.key }} API
+  version: 0.1.0
+schemes:
+  - https
+produces:
+  - application/json
+EOT
+}
+
 
 data "utils_deep_merge_yaml" "{{ endpoint.key|slugify }}_api_spec" {
   input = [
     {% for component in endpoint.components %}
     module.{{ component.name }}.gcp_api_spec_{{ endpoint.key|slugify }},
     {% endfor %}
+    local.api_spec_base,
   ]
 }
 
 locals {
   api_spec_{{ endpoint.key|slugify }} = base64encode(data.utils_deep_merge_yaml.{{ endpoint.key|slugify }}_api_spec.output)
-  api_spec_{{ endpoint.key|slugify }}_hash = lower(substr(local.api_spec_{{ endpoint.key|slugify }}, 0, 5))
+  api_spec_{{ endpoint.key|slugify }}_hash = lower(substr(md5(local.api_spec_{{ endpoint.key|slugify }}), 0, 5))
 }
 
 resource "google_api_gateway_api_config" "{{ endpoint.key|slugify }}" {
