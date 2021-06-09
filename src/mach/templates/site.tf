@@ -50,10 +50,10 @@ terraform {
 
     {% if site.gcp %}
     google = {
-      version = "~> {{ general_config.terraform_config.providers.google or '3.65.0' }}"
+      version = "~> {{ general_config.terraform_config.providers.google or '3.70.0' }}"
     }
     google-beta = {
-      version = "~> {{ general_config.terraform_config.providers.google_beta or general_config.terraform_config.providers.google or '3.65.0' }}"
+      version = "~> {{ general_config.terraform_config.providers.google_beta or general_config.terraform_config.providers.google or '3.70.0' }}"
     }
     {% endif %}
 
