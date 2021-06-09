@@ -8,6 +8,7 @@ from typing import List, Optional, Tuple, Union
 import click
 from mach import cache, exceptions, git, parse
 from mach.types import ComponentConfig, MachConfig
+from mach.variables import ignore_variable_not_found
 
 NAME_RE = re.compile(r".* name: [\"']?(.*)[\"']?")
 VERSION_RE = re.compile(r"(\s*version: )([\"']?.*[\"']?)")
@@ -41,7 +42,8 @@ def update_file(
     check_only=False,
 ):
     try:
-        config = parse.parse_and_validate(file)
+        with ignore_variable_not_found():
+            config = parse.parse_and_validate(file)
         data = UpdaterInput(config, file)
     except exceptions.ParseError as e:
         # We might have a components yml as input, try to parse that
