@@ -6,7 +6,7 @@ resource "google_api_gateway_api" "{{ endpoint.key|slugify }}_gateway" {
 }
 
 locals {
-  api_spec_base = <<EOT
+  api_spec_base_{{ endpoint.key|slugify }} = <<EOT
 swagger: '2.0'
 info:
   title: {{ endpoint.key }} API
@@ -25,7 +25,7 @@ data "utils_deep_merge_yaml" "{{ endpoint.key|slugify }}_api_spec" {
     {% for component in endpoint.components %}
     module.{{ component.name }}.gcp_api_spec_{{ endpoint.key|slugify }},
     {% endfor %}
-    local.api_spec_base,
+    local.api_spec_base_{{ endpoint.key|slugify }},
   ]
 }
 
@@ -64,9 +64,3 @@ resource "google_api_gateway_gateway" "{{ endpoint.key|slugify }}" {
     create_before_destroy = true
   }
 }
-
-
-output "deep_merge_output" {
-  value = data.utils_deep_merge_yaml.{{ endpoint.key|slugify }}_api_spec.output
-}
-
