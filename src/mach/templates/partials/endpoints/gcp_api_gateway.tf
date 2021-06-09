@@ -64,3 +64,13 @@ resource "google_api_gateway_gateway" "{{ endpoint.key|slugify }}" {
     create_before_destroy = true
   }
 }
+
+# TODO: This doesn't work yet; it needs to have a load balancer in front of it
+resource "google_dns_record_set" "{{ endpoint.key|slugify }}_api" {
+  provider     = "google-beta"
+  managed_zone = data.google_dns_managed_zone.{{ endpoint.zone|replace('.', '-')|slugify }}.name
+  name         = "{{ endpoint.url }}."
+  type         = "CNAME"
+  rrdatas      = ["${google_api_gateway_gateway.{{ endpoint.key|slugify }}.default_hostname}."]
+  ttl          = 600
+}
