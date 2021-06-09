@@ -74,7 +74,7 @@ def history(dir: str, from_ref: str, *, branch: Optional[str] = "") -> List[Comm
     lines = _run(cmd, cwd=dir).decode("utf-8").splitlines()
     commits = []
     for line in lines:
-        commit_id, author, date, message = line.split("|")
+        commit_id, author, date, message = line.split("|", 3)
         commits.append(
             Commit(id=_clean_commit_id(commit_id), msg=_clean_commit_msg(message))
         )
