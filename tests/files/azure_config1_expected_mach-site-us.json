@@ -278,9 +278,7 @@
                 ]
               ],
               "patterns_to_match": [
-                [
-                  "/payment/*"
-                ]
+                "${lookup(module.payment.azure_endpoint_public,\"routing_patterns\",['/payment/*'])}"
               ],
               "frontend_endpoints": [
                 [
@@ -306,16 +304,16 @@
                 "public-payment-hpSettings"
               ],
               "path": [
-                "/payment/healthchecks"
+                "${lookup(module.payment.azure_endpoint_public,\"health_probe_path\",\"/\")}"
               ],
               "protocol": [
-                "Https"
+                "${lookup(module.payment.azure_endpoint_public,\"health_probe_protocol\",\"Https\")}"
               ],
               "enabled": [
-                false
+                "${contains(keys(module.payment.azure_endpoint_public),\"health_probe_path\")}"
               ],
               "probe_method": [
-                "HEAD"
+                "${lookup(module.payment.azure_endpoint_public,\"health_probe_method\",\"HEAD\")}"
               ]
             }
           ],
@@ -327,16 +325,16 @@
               "backend": [
                 {
                   "host_header": [
-                    "${local.name_prefix}-func-payment.azurewebsites.net"
+                    "${lookup(module.payment.azure_endpoint_public,\"host_header\",module.payment.azure_endpoint_public.address)}"
                   ],
                   "address": [
-                    "${local.name_prefix}-func-payment.azurewebsites.net"
+                    "${module.payment.azure_endpoint_public.address}"
                   ],
                   "http_port": [
-                    80
+                    "${lookup(module.payment.azure_endpoint_public,\"http_port\",80)}"
                   ],
                   "https_port": [
-                    443
+                    "${lookup(module.payment.azure_endpoint_public,\"https_port\",443)}"
                   ]
                 }
               ],

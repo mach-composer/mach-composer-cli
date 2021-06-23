@@ -1,16 +1,16 @@
 {% for component in endpoint.components %}
 backend_pool_health_probe {
   name = "{{ endpoint.key }}-{{ component.name }}-hpSettings"
-  path = "{% if component.health_check_path %}{{ component.health_check_path }}{% else %}/{{ component.name }}/healthchecks{% endif %}"
-  protocol = "Https"
-  enabled = false
-  probe_method = "HEAD"
+  path = lookup(module.{{ component.name }}.azure_endpoint_{{ endpoint.key }}, "health_probe_path", "/")
+  protocol = lookup(module.{{ component.name }}.azure_endpoint_{{ endpoint.key }}, "health_probe_protocol", "Https")
+  enabled = contains(keys(module.{{ component.name }}.azure_endpoint_{{ endpoint.key }}), "health_probe_path")
+  probe_method = lookup(module.{{ component.name }}.azure_endpoint_{{ endpoint.key }}, "health_probe_method", "HEAD")
 }
 
 routing_rule {
   name               = "{{ endpoint.key }}-{{ component.name }}-routing"
   accepted_protocols = ["Https"]
-  patterns_to_match  = ["/{{ component.name }}/*"]
+  patterns_to_match  = lookup(module.{{ component.name }}.azure_endpoint_{{ endpoint.key }}, "routing_patterns", ["/{{ component.name }}/*"])
   frontend_endpoints = [
     local.frontdoor_domain_identifier,
     {% if endpoint.url %}
@@ -26,10 +26,10 @@ routing_rule {
 backend_pool {
   name = "{{ endpoint.key }}-{{ component.name }}"
   backend {
-      host_header = "${local.name_prefix}-func-{{ component.azure.short_name }}.azurewebsites.net"
-      address     = "${local.name_prefix}-func-{{ component.azure.short_name }}.azurewebsites.net"
-      http_port   = 80
-      https_port  = 443
+      host_header = lookup(module.{{ component.name }}.azure_endpoint_{{ endpoint.key }}, "host_header", module.{{ component.name }}.azure_endpoint_{{ endpoint.key }}.address)
+      address     = module.{{ component.name }}.azure_endpoint_{{ endpoint.key }}.address
+      http_port   = lookup(module.{{ component.name }}.azure_endpoint_{{ endpoint.key }}, "http_port", 80)
+      https_port  = lookup(module.{{ component.name }}.azure_endpoint_{{ endpoint.key }}, "https_port", 443)
   }
 
   load_balancing_name = "lbSettings"
