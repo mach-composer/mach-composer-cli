@@ -15,9 +15,10 @@ routing_rule {
   accepted_protocols = ["Https"]
   patterns_to_match  = lookup(module.{{ component.name }}.azure_endpoint_{{ cep_key }}, "routing_patterns", ["/{{ component.name }}/*"])
   frontend_endpoints = [
-    local.frontdoor_domain_identifier,
     {% if endpoint.url %}
     {{ endpoint.key|tf }},
+    {% else %}
+    local.frontdoor_domain_identifier,
     {% endif %}
   ]
   forwarding_configuration {
