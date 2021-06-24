@@ -282,7 +282,6 @@
               ],
               "frontend_endpoints": [
                 [
-                  "${local.frontdoor_domain_identifier}",
                   "public"
                 ]
               ],
