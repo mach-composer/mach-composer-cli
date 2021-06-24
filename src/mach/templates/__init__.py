@@ -6,6 +6,7 @@ from jinja2 import Environment, FileSystemLoader
 from jinja2.filters import do_mark_safe
 from mach import utils
 from mach.exceptions import MachError
+from mach.types.sites import Component, Endpoint
 from mach.types.values import TerraformReference
 
 VARIABLE_RE = re.compile(r"^\${(component|var)\.(.*)}$")
@@ -32,6 +33,7 @@ def load_filters(env: Environment):
             "slugify": utils.slugify,
             "service_plan_resource_name": service_plan_resource_name,
             "render_commercetools_scopes": render_commercetools_scopes,
+            "component_endpoint_name": component_endpoint_name,
         }
     )
 
@@ -205,3 +207,18 @@ def render_commercetools_scopes(
             scopes.append(f'"{scope}:{project_key}:{store_key}",')
 
     return "[\n" + "".join(scopes) + "\n]"
+
+
+def component_endpoint_name(
+    component: Component,
+    endpoint: Endpoint,
+) -> str:
+    """Takes an component and an site-endpoint, and return a Terraform reference to an output.
+
+    The endpoint might have a different name in the component itself based on the mappings
+    """
+    for component_key, ep_key in component.endpoints.items():
+        if ep_key == endpoint.key:
+            return component_key
+
+    raise ValueError(f"Endpoint {endpoint.key} not found on {component.name}")

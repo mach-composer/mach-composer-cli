@@ -249,7 +249,7 @@
                 ]
               ],
               "patterns_to_match": [
-                "${lookup(module.us-payment.azure_endpoint_default,\"routing_patterns\",['/us-payment/*'])}"
+                "${lookup(module.us-payment.azure_endpoint_public,\"routing_patterns\",['/us-payment/*'])}"
               ],
               "frontend_endpoints": [
                 [
@@ -265,10 +265,10 @@
                     "default-us-payment"
                   ],
                   "cache_enabled": [
-                    "${lookup(module.us-payment.azure_endpoint_default,\"cache_enabled\",False)}"
+                    "${lookup(module.us-payment.azure_endpoint_public,\"cache_enabled\",False)}"
                   ],
                   "custom_forwarding_path": [
-                    "${lookup(module.us-payment.azure_endpoint_default,\"custom_forwarding_path\",None)}"
+                    "${lookup(module.us-payment.azure_endpoint_public,\"custom_forwarding_path\",None)}"
                   ]
                 }
               ]
@@ -280,16 +280,16 @@
                 "default-us-payment-hpSettings"
               ],
               "path": [
-                "${lookup(module.us-payment.azure_endpoint_default,\"health_probe_path\",\"/\")}"
+                "${lookup(module.us-payment.azure_endpoint_public,\"health_probe_path\",\"/\")}"
               ],
               "protocol": [
-                "${lookup(module.us-payment.azure_endpoint_default,\"health_probe_protocol\",\"Https\")}"
+                "${lookup(module.us-payment.azure_endpoint_public,\"health_probe_protocol\",\"Https\")}"
               ],
               "enabled": [
-                "${contains(keys(module.us-payment.azure_endpoint_default),\"health_probe_path\")}"
+                "${contains(keys(module.us-payment.azure_endpoint_public),\"health_probe_path\")}"
               ],
               "probe_method": [
-                "${lookup(module.us-payment.azure_endpoint_default,\"health_probe_method\",\"GET\")}"
+                "${lookup(module.us-payment.azure_endpoint_public,\"health_probe_method\",\"GET\")}"
               ]
             }
           ],
@@ -301,16 +301,16 @@
               "backend": [
                 {
                   "host_header": [
-                    "${lookup(module.us-payment.azure_endpoint_default,\"host_header\",module.us-payment.azure_endpoint_default.address)}"
+                    "${lookup(module.us-payment.azure_endpoint_public,\"host_header\",module.us-payment.azure_endpoint_public.address)}"
                   ],
                   "address": [
-                    "${module.us-payment.azure_endpoint_default.address}"
+                    "${module.us-payment.azure_endpoint_public.address}"
                   ],
                   "http_port": [
-                    "${lookup(module.us-payment.azure_endpoint_default,\"http_port\",80)}"
+                    "${lookup(module.us-payment.azure_endpoint_public,\"http_port\",80)}"
                   ],
                   "https_port": [
-                    "${lookup(module.us-payment.azure_endpoint_default,\"https_port\",443)}"
+                    "${lookup(module.us-payment.azure_endpoint_public,\"https_port\",443)}"
                   ]
                 }
               ],
