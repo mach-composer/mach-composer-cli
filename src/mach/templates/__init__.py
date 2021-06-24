@@ -213,7 +213,7 @@ def component_endpoint_name(
     component: Component,
     endpoint: Endpoint,
 ) -> str:
-    """Takes an component and an site-endpoint, and return a Terraform reference to an output.
+    """Take an component and an site-endpoint, and return a Terraform reference to an output.
 
     The endpoint might have a different name in the component itself based on the mappings
     """
