@@ -249,9 +249,7 @@
                 ]
               ],
               "patterns_to_match": [
-                [
-                  "/us-payment/*"
-                ]
+                "${lookup(module.us-payment.azure_endpoint_default,\"routing_patterns\",['/us-payment/*'])}"
               ],
               "frontend_endpoints": [
                 [
@@ -265,6 +263,12 @@
                   ],
                   "backend_pool_name": [
                     "default-us-payment"
+                  ],
+                  "cache_enabled": [
+                    "${lookup(module.us-payment.azure_endpoint_default,\"cache_enabled\",False)}"
+                  ],
+                  "custom_forwarding_path": [
+                    "${lookup(module.us-payment.azure_endpoint_default,\"custom_forwarding_path\",None)}"
                   ]
                 }
               ]
@@ -276,16 +280,16 @@
                 "default-us-payment-hpSettings"
               ],
               "path": [
-                "/us-payment/healthchecks"
+                "${lookup(module.us-payment.azure_endpoint_default,\"health_probe_path\",\"/\")}"
               ],
               "protocol": [
-                "Https"
+                "${lookup(module.us-payment.azure_endpoint_default,\"health_probe_protocol\",\"Https\")}"
               ],
               "enabled": [
-                false
+                "${contains(keys(module.us-payment.azure_endpoint_default),\"health_probe_path\")}"
               ],
               "probe_method": [
-                "HEAD"
+                "${lookup(module.us-payment.azure_endpoint_default,\"health_probe_method\",\"GET\")}"
               ]
             }
           ],
@@ -297,16 +301,16 @@
               "backend": [
                 {
                   "host_header": [
-                    "${local.name_prefix}-func-us-payment.azurewebsites.net"
+                    "${lookup(module.us-payment.azure_endpoint_default,\"host_header\",module.us-payment.azure_endpoint_default.address)}"
                   ],
                   "address": [
-                    "${local.name_prefix}-func-us-payment.azurewebsites.net"
+                    "${module.us-payment.azure_endpoint_default.address}"
                   ],
                   "http_port": [
-                    80
+                    "${lookup(module.us-payment.azure_endpoint_default,\"http_port\",80)}"
                   ],
                   "https_port": [
-                    443
+                    "${lookup(module.us-payment.azure_endpoint_default,\"https_port\",443)}"
                   ]
                 }
               ],

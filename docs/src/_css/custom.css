@@ -18,3 +18,7 @@ h2, h3 {
 h2 {
     border-bottom: 1px solid #e7e7ff;
 }
+
+h2:not(:first-of-type) {
+    padding-top: 20px;
+}

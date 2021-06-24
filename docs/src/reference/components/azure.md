@@ -60,9 +60,9 @@ variable "azure_monitor_action_group_id" {
 
 ### With `endpoints`
 
-In order to support the [`endpoints`](../../topics/deployment/config/azure.md#http-routing) attribute on the component, the component needs to define what endpoints it expects.
+In order to support the [`endpoints`](../../topics/deployment/config/azure.md#http-routing) attribute on the component, the component needs to define what endpoints it expects **and** needs to provide output about the [routing options](../../topics/deployment/config/azure.md#http-routing).
 
-For example, if the component requires two endpoints (`main` and `webhooks`) to be set, the following variables needs to be defined:
+For example, if the component requires two endpoints (`main` and `webhooks`) to be set, the following variables and outputs needs to be defined:
 
 ```terraform
 variable "azure_endpoint_main" {
@@ -77,6 +77,55 @@ variable "azure_endpoint_webhooks" {
     url          = string
     frontdoor_id = string
   })
+}
+
+output "azure_endpoint_main" {
+  value = {
+    address = azurerm_app_service.main.default_site_hostname
+  }
+}
+
+output "azure_endpoint_webhooks" {
+  value = {
+    address = azurerm_app_service.main.default_site_hostname
+    routing_patterns = [
+      "/hooks/*",
+    ]
+  }
+}
+```
+
+#### Defining `outputs`
+
+As shown in the example above, the component needs to have an output *per endpoint* defined in order to instruct MACH how to setup Frontdoor routing.
+
+This output needs to have a name in the form of `azure_endpoint_<endpoint-name>` and contain the following attributes:
+
+- **`address`** - (Required) The host address to route traffic to
+- `host_header` - The value to use as the host header sent to the backend. By default will take the value of `address`.
+- `http_port` -  The HTTP TCP port number. Possible values are between `1` - `65535`. Defaults to `80`.
+- `https_port` - The HTTPS TCP port number. Possible values are between `1` - `65535`. Defaults to `443`.
+- `health_probe_path` - The path to use for the Health Probe. If left empty, health probe won't be enabled.
+- `health_probe_protocol` - Protocol scheme to use for the Health Probe. Defaults to `Http`
+- `health_probe_method` - Specifies HTTP method the health probe uses when querying the service. Possible values include: `GET` and `HEAD`. Defaults to `GET`.
+- `cache_enabled` - Specifies whether to Enable caching or not. Valid options are `true` or `false`. Defaults to `false`.
+- `custom_forwarding_path` - Path to use when constructing the request to forward to the backend. This functions as a URL Rewrite. Default behaviour preserves the URL path.
+
+
+**Full example**
+```terraform
+output "azure_endpoint_main" {
+  value = {
+    address = azurerm_app_service.main.default_site_hostname
+    routing_patterns = [
+      "/graphql/*",
+    ]
+   health_probe_path = "/"
+   health_probe_method = "Get"
+   host_header = "www.example.com/something-else/"
+   https_port = 9000
+   cache_enabled = true
+  }
 }
 ```
 
