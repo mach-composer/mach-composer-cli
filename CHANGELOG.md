@@ -12,6 +12,11 @@
 
 **Azure**
 
+- Add extra Frontdoor routing options to components such as:
+  - Custom routing paths
+  - Health probe settings
+  - Custom host address and ports
+  - Caching options
 - Upgraded Terraform Azure provider to [`2.60.0`](https://github.com/terraform-providers/terraform-provider-azurerm/blob/master/CHANGELOG.md#2600-may-20-2021)
 - Include `frontend_endpoint` in ignore list when `suppress_changes` is used
 - Add Frontdoor `ssl_key_vault` option to supply your own SSL certificate for your endpoints
@@ -20,9 +25,18 @@
 
 **For Azure**
 
-Changes have been made in the Frontdoor configuration in the underlying Terraform Azure provider.<br>
-If you are using endpoints with a custom domain, you'll need to import the new [`azurerm_frontdoor_custom_https_configuration`](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/frontdoor_custom_https_configuration#import) into your Terraform state.<br>
-More on how to work with the Terraform state in [our troubleshooting guide](https://docs.machcomposer.io/topics/development/troubleshooting.html).
+- Each component that has an `endpoint` defined needs to have an Terraform output defined for that endpoint. For example:<br>
+  ```terraform
+  output "azure_endpoint_main" {
+    value = {
+      address = azurerm_function_app.main.default_hostname
+    }
+  }
+  ```
+  Read more about the [configuration options](https://docs.machcomposer.io/reference/components/azure.html#defining-outputs).
+- Changes have been made in the Frontdoor configuration in the underlying Terraform Azure provider.<br>
+  If you are using endpoints with a custom domain, you'll need to import the new [`azurerm_frontdoor_custom_https_configuration`](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/frontdoor_custom_https_configuration#import) into your Terraform state.<br>
+  More on how to work with the Terraform state in [our troubleshooting guide](https://docs.machcomposer.io/topics/development/troubleshooting.html).
 
 
 

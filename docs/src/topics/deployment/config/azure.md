@@ -15,7 +15,7 @@ Only when a MACH stack contains components that have an [`endpoint`](../../../re
 
 If you have defined your component with a `default` endpoint, MACH will create a Frontdoor instance for you which includes the default Azure domain.
 
-```
+```yaml
 components:
   - name: payment
     source: git::ssh://git@github.com/your-project/components/payment-component.git//terraform
@@ -33,7 +33,7 @@ Whenever a custom endpoint from your [endpoints definition](../../../reference/s
 
 In addition to that it will also setup the necessary DNS record.
 
-### Routes to the component
+### Component routing
 
 For each component with an `endpoint` MACH composer will add a route to the Frontdoor instance using the name of the component.
 
@@ -59,6 +59,11 @@ components:
 The routing in Frontdoor that will be created:
 
 ![Frontdoor routes](../../../_img/azure/frontdoor_routes.png)
+
+!!! tip "Frontdoor resource"
+    An important thing to keep in mind is that the [Frontdoor resource](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/frontdoor) in Terraform is managed as a single resource, including all the routing to the components.
+
+    This means the components can't create the routing themselves (as with AWS) but need to instruct MACH how to set up routing. This can be done by defining routing options in [output values](../../../reference/components/azure.md#defining-outputs).
 
 ## App service plans
 
