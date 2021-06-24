@@ -107,7 +107,10 @@ This output needs to have a name in the form of `azure_endpoint_<endpoint-name>`
 - `https_port` - The HTTPS TCP port number. Possible values are between `1` - `65535`. Defaults to `443`.
 - `health_probe_path` - The path to use for the Health Probe. If left empty, health probe won't be enabled.
 - `health_probe_protocol` - Protocol scheme to use for the Health Probe. Defaults to `Http`
-- `health_probe_method` - Specifies HTTP method the health probe uses when querying the service. Possible values include: `Get` and `Head`. Defaults to `Get`.
+- `health_probe_method` - Specifies HTTP method the health probe uses when querying the service. Possible values include: `GET` and `HEAD`. Defaults to `GET`.
+- `cache_enabled` - Specifies whether to Enable caching or not. Valid options are `true` or `false`. Defaults to `false`.
+- `custom_forwarding_path` - Path to use when constructing the request to forward to the backend. This functions as a URL Rewrite. Default behaviour preserves the URL path.
+
 
 **Full example**
 ```terraform
@@ -121,6 +124,7 @@ output "azure_endpoint_main" {
    health_probe_method = "Get"
    host_header = "www.example.com/something-else/"
    https_port = 9000
+   cache_enabled = true
   }
 }
 ```

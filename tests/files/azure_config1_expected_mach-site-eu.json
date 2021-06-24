@@ -263,6 +263,12 @@
                   ],
                   "backend_pool_name": [
                     "default-us-payment"
+                  ],
+                  "cache_enabled": [
+                    "${lookup(module.us-payment.azure_endpoint_default,\"cache_enabled\",False)}"
+                  ],
+                  "custom_forwarding_path": [
+                    "${lookup(module.us-payment.azure_endpoint_default,\"custom_forwarding_path\",None)}"
                   ]
                 }
               ]
@@ -283,7 +289,7 @@
                 "${contains(keys(module.us-payment.azure_endpoint_default),\"health_probe_path\")}"
               ],
               "probe_method": [
-                "${lookup(module.us-payment.azure_endpoint_default,\"health_probe_method\",\"Get\")}"
+                "${lookup(module.us-payment.azure_endpoint_default,\"health_probe_method\",\"GET\")}"
               ]
             }
           ],

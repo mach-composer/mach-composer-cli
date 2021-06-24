@@ -4,7 +4,7 @@ backend_pool_health_probe {
   path = lookup(module.{{ component.name }}.azure_endpoint_{{ endpoint.key }}, "health_probe_path", "/")
   protocol = lookup(module.{{ component.name }}.azure_endpoint_{{ endpoint.key }}, "health_probe_protocol", "Https")
   enabled = contains(keys(module.{{ component.name }}.azure_endpoint_{{ endpoint.key }}), "health_probe_path")
-  probe_method = lookup(module.{{ component.name }}.azure_endpoint_{{ endpoint.key }}, "health_probe_method", "Get")
+  probe_method = lookup(module.{{ component.name }}.azure_endpoint_{{ endpoint.key }}, "health_probe_method", "GET")
 }
 
 routing_rule {
@@ -18,8 +18,10 @@ routing_rule {
     {% endif %}
   ]
   forwarding_configuration {
-      forwarding_protocol = "MatchRequest"
-      backend_pool_name   = "{{ endpoint.key }}-{{ component.name }}"
+      forwarding_protocol            = "MatchRequest"
+      backend_pool_name              = "{{ endpoint.key }}-{{ component.name }}"
+      cache_enabled                  = lookup(module.{{ component.name }}.azure_endpoint_{{ endpoint.key }}, "cache_enabled", false)
+      custom_forwarding_path         = lookup(module.{{ component.name }}.azure_endpoint_{{ endpoint.key }}, "custom_forwarding_path", null)
   }
 }
 

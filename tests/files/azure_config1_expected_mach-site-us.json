@@ -293,6 +293,12 @@
                   ],
                   "backend_pool_name": [
                     "public-payment"
+                  ],
+                  "cache_enabled": [
+                    "${lookup(module.payment.azure_endpoint_public,\"cache_enabled\",False)}"
+                  ],
+                  "custom_forwarding_path": [
+                    "${lookup(module.payment.azure_endpoint_public,\"custom_forwarding_path\",None)}"
                   ]
                 }
               ]
@@ -313,7 +319,7 @@
                 "${contains(keys(module.payment.azure_endpoint_public),\"health_probe_path\")}"
               ],
               "probe_method": [
-                "${lookup(module.payment.azure_endpoint_public,\"health_probe_method\",\"Get\")}"
+                "${lookup(module.payment.azure_endpoint_public,\"health_probe_method\",\"GET\")}"
               ]
             }
           ],
