@@ -283,7 +283,7 @@
                 "${contains(keys(module.us-payment.azure_endpoint_default),\"health_probe_path\")}"
               ],
               "probe_method": [
-                "${lookup(module.us-payment.azure_endpoint_default,\"health_probe_method\",\"HEAD\")}"
+                "${lookup(module.us-payment.azure_endpoint_default,\"health_probe_method\",\"Get\")}"
               ]
             }
           ],

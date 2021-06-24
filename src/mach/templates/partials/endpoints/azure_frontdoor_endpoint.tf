@@ -4,7 +4,7 @@ backend_pool_health_probe {
   path = lookup(module.{{ component.name }}.azure_endpoint_{{ endpoint.key }}, "health_probe_path", "/")
   protocol = lookup(module.{{ component.name }}.azure_endpoint_{{ endpoint.key }}, "health_probe_protocol", "Https")
   enabled = contains(keys(module.{{ component.name }}.azure_endpoint_{{ endpoint.key }}), "health_probe_path")
-  probe_method = lookup(module.{{ component.name }}.azure_endpoint_{{ endpoint.key }}, "health_probe_method", "HEAD")
+  probe_method = lookup(module.{{ component.name }}.azure_endpoint_{{ endpoint.key }}, "health_probe_method", "Get")
 }
 
 routing_rule {

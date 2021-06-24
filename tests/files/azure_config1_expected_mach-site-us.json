@@ -313,7 +313,7 @@
                 "${contains(keys(module.payment.azure_endpoint_public),\"health_probe_path\")}"
               ],
               "probe_method": [
-                "${lookup(module.payment.azure_endpoint_public,\"health_probe_method\",\"HEAD\")}"
+                "${lookup(module.payment.azure_endpoint_public,\"health_probe_method\",\"Get\")}"
               ]
             }
           ],
