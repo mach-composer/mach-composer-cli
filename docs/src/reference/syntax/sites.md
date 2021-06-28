@@ -46,11 +46,6 @@ endpoints:
 - `throttling_rate_limit` - Set burst limit for API Gateway endpoints
 - `enable_cdn` - Defaults to false. Sets a CDN in front of this endpoint for better global availability. For AWS creates a CloudFront distribution
 
-!!! info "Azure support"
-    At the moment, this option is not supported when using Azure and simply ignored.
-
-    For Azure, the endpoints that are created for the APIs are constructed by using the commercetools project key as DNS record. More on that in the [Azure routing](../../topics/deployment/config/azure.md#http-routing) section
-
 ## commercetools
 
 commercetools configuration.

@@ -117,13 +117,6 @@ def validate_site_components(components: List[types.Component], *, site: types.S
                 )
 
         if site.azure:
-            if len(component.endpoints) > 1:
-                raise ValidationError(
-                    f"The '{component.name}' component has multiple endpoints defined. "
-                    "This is not supported on Azure yet.\n"
-                    "See https://github.com/labd/mach-composer/issues/64 for more information."
-                )
-
             service_plans = site.azure.service_plans
             if (
                 component.azure

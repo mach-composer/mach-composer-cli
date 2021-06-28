@@ -34,6 +34,7 @@
   }
   ```
   Read more about the [configuration options](https://docs.machcomposer.io/reference/components/azure.html#defining-outputs).
+- Remove endpoints restrictions: Azure components can now use multiple endpoints.
 - Changes have been made in the Frontdoor configuration in the underlying Terraform Azure provider.<br>
   If you are using endpoints with a custom domain, you'll need to import the new [`azurerm_frontdoor_custom_https_configuration`](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/frontdoor_custom_https_configuration#import) into your Terraform state.<br>
   More on how to work with the Terraform state in [our troubleshooting guide](https://docs.machcomposer.io/topics/development/troubleshooting.html).
