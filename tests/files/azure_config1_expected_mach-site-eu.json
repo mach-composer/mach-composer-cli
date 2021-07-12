@@ -268,7 +268,7 @@
                 "content": [
                   {
                     "name": [
-                      "default-us-payment-routing-${routing_rule.key}"
+                      "default-us-payment-routing-${lookup(routing_rule.value, \"name\", routing_rule.key)}"
                     ],
                     "accepted_protocols": [
                       [

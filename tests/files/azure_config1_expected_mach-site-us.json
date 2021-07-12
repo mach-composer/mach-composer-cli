@@ -297,7 +297,7 @@
                 "content": [
                   {
                     "name": [
-                      "public-payment-routing-${routing_rule.key}"
+                      "public-payment-routing-${lookup(routing_rule.value, \"name\", routing_rule.key)}"
                     ],
                     "accepted_protocols": [
                       [

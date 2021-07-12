@@ -13,7 +13,7 @@ backend_pool_health_probe {
 dynamic "routing_rule" {
   for_each = local.fd_{{ endpoint.key }}_{{ component.name }}_routes
   content {
-    name = "{{ endpoint.key }}-{{ component.name }}-routing-${routing_rule.key}"
+    name = "{{ endpoint.key }}-{{ component.name }}-routing-${lookup(routing_rule.value, "name", routing_rule.key)}"
 
     accepted_protocols = ["Https"]
     patterns_to_match  = routing_rule.value.patterns
