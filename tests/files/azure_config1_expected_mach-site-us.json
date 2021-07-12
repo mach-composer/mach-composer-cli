@@ -267,40 +267,6 @@
                   ]
                 }
               ]
-            },
-            {
-              "name": [
-                "public-payment-routing"
-              ],
-              "accepted_protocols": [
-                [
-                  "Https"
-                ]
-              ],
-              "patterns_to_match": [
-                "${lookup(module.payment.azure_endpoint_public,\"routing_patterns\",['/payment/*'])}"
-              ],
-              "frontend_endpoints": [
-                [
-                  "public"
-                ]
-              ],
-              "forwarding_configuration": [
-                {
-                  "forwarding_protocol": [
-                    "MatchRequest"
-                  ],
-                  "backend_pool_name": [
-                    "public-payment"
-                  ],
-                  "cache_enabled": [
-                    "${lookup(module.payment.azure_endpoint_public,\"cache_enabled\",False)}"
-                  ],
-                  "custom_forwarding_path": [
-                    "${lookup(module.payment.azure_endpoint_public,\"custom_forwarding_path\",None)}"
-                  ]
-                }
-              ]
             }
           ],
           "backend_pool_health_probe": [
@@ -320,6 +286,51 @@
               "probe_method": [
                 "${lookup(module.payment.azure_endpoint_public,\"health_probe_method\",\"GET\")}"
               ]
+            }
+          ],
+          "dynamic": [
+            {
+              "routing_rule": {
+                "for_each": [
+                  "${local.fd_public_payment_routes}"
+                ],
+                "content": [
+                  {
+                    "name": [
+                      "public-payment-routing-${routing_rule.key}"
+                    ],
+                    "accepted_protocols": [
+                      [
+                        "Https"
+                      ]
+                    ],
+                    "patterns_to_match": [
+                      "${lookup(routing_rule.value,\"patterns\",['/payment/*'])}"
+                    ],
+                    "frontend_endpoints": [
+                      [
+                        "public"
+                      ]
+                    ],
+                    "forwarding_configuration": [
+                      {
+                        "forwarding_protocol": [
+                          "MatchRequest"
+                        ],
+                        "backend_pool_name": [
+                          "public-payment"
+                        ],
+                        "cache_enabled": [
+                          "${lookup(routing_rule.value,\"cache_enabled\",False)}"
+                        ],
+                        "custom_forwarding_path": [
+                          "${lookup(routing_rule.value,\"custom_forwarding_path\",None)}"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
             }
           ],
           "backend_pool": [
@@ -546,6 +557,11 @@
       ],
       "frontdoor_domain_identifier": [
         "${replace(local.frontdoor_domain,\".\",\"-\")}"
+      ]
+    },
+    {
+      "fd_public_payment_routes": [
+        "${{for i in range(length(lookup(module.payment.azure_endpoint_public,,\"routes\",,[],),),) : i => element(module.payment.azure_endpoint_public.routes,,i,)}}"
       ]
     },
     {

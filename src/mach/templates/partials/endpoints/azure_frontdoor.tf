@@ -19,6 +19,29 @@ resource "azurerm_dns_cname_record" "{{ endpoint.key }}" {
 {% endfor %}
 
 {% if site.used_endpoints %}
+locals {
+  {% for endpoint in site.used_custom_endpoints %}
+  {% for component in endpoint.components %}
+  {% set cep_key = component|component_endpoint_name(endpoint) %}
+  fd_{{ endpoint.key }}_{{ component.name }}_routes = {
+    for i in range(
+      length(
+        lookup(
+          module.{{ component.name }}.azure_endpoint_{{ cep_key }}, 
+          "routes", 
+          []
+        )
+      )
+    ) : 
+    i => element(
+      module.{{ component.name }}.azure_endpoint_{{ cep_key }}.routes, 
+      i
+    )
+  }
+  {% endfor %}
+  {% endfor %}
+}
+
 resource "azurerm_frontdoor" "app-service" {
   name                                          = format("%s-fd", local.name_prefix)
   resource_group_name                           = local.resource_group_name

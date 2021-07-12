@@ -108,6 +108,11 @@ This output needs to have a name in the form of `azure_endpoint_<endpoint-name>`
 - `health_probe_path` - The path to use for the Health Probe. If left empty, health probe won't be enabled.
 - `health_probe_protocol` - Protocol scheme to use for the Health Probe. Defaults to `Http`
 - `health_probe_method` - Specifies HTTP method the health probe uses when querying the service. Possible values include: `GET` and `HEAD`. Defaults to `GET`.
+- `routes` - A list of custom Frontdoor routing rules. By default MACH will generate one default routing rule for each component.
+
+**`routes` options**
+
+- `patterns` - List of patterns to match
 - `cache_enabled` - Specifies whether to Enable caching or not. Valid options are `true` or `false`. Defaults to `false`.
 - `custom_forwarding_path` - Path to use when constructing the request to forward to the backend. This functions as a URL Rewrite. Default behaviour preserves the URL path.
 
@@ -117,14 +122,23 @@ This output needs to have a name in the form of `azure_endpoint_<endpoint-name>`
 output "azure_endpoint_main" {
   value = {
     address = azurerm_app_service.main.default_site_hostname
-    routing_patterns = [
-      "/graphql/*",
+    health_probe_path = "/"
+    health_probe_method = "Get"
+    host_header = "www.example.com/something-else/"
+    https_port = 9000
+    routes = [
+      {
+        patterns = [
+          "/*",
+        ]
+      },
+      {
+        patterns = [
+          "/media/*",
+        ]
+        cache_enabled = true
+      } 
     ]
-   health_probe_path = "/"
-   health_probe_method = "Get"
-   host_header = "www.example.com/something-else/"
-   https_port = 9000
-   cache_enabled = true
   }
 }
 ```
