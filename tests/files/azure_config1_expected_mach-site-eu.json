@@ -276,7 +276,7 @@
                       ]
                     ],
                     "patterns_to_match": [
-                      "${lookup(routing_rule.value,\"patterns\",['/us-payment/*'])}"
+                      "${routing_rule.value.patterns}"
                     ],
                     "frontend_endpoints": [
                       [

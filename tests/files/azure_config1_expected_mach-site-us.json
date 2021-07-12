@@ -305,7 +305,7 @@
                       ]
                     ],
                     "patterns_to_match": [
-                      "${lookup(routing_rule.value,\"patterns\",['/payment/*'])}"
+                      "${routing_rule.value.patterns}"
                     ],
                     "frontend_endpoints": [
                       [
@@ -560,8 +560,11 @@
       ]
     },
     {
+      "fd_public_payment_route_defs": [
+        "${lookup(module.payment.azure_endpoint_public,,\"routes\",,[{'patterns': ['/payment/*']}],)}"
+      ],
       "fd_public_payment_routes": [
-        "${{for i in range(length(lookup(module.payment.azure_endpoint_public,,\"routes\",,[],),),) : i => element(module.payment.azure_endpoint_public.routes,,i,)}}"
+        "${{for i in range(length(local.fd_public_payment_route_defs,),) : i => element(local.fd_public_payment_route_defs,,i,)}}"
       ]
     },
     {

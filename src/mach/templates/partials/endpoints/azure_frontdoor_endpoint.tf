@@ -16,7 +16,7 @@ dynamic "routing_rule" {
     name = "{{ endpoint.key }}-{{ component.name }}-routing-${routing_rule.key}"
 
     accepted_protocols = ["Https"]
-    patterns_to_match  = lookup(routing_rule.value, "patterns", ["/{{ component.name }}/*"])
+    patterns_to_match  = routing_rule.value.patterns
     frontend_endpoints = [
       {% if endpoint.url %}
       {{ endpoint.key|tf }},
