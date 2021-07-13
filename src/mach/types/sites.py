@@ -107,6 +107,10 @@ class Endpoint:
 
         return utils.subdomain_from_url(self.url)
 
+    @property
+    def is_root_domain(self):
+        return self.url == self.zone
+
     def __post_init__(self):
         """Ensure endpoints have protocol stripped."""
         self.url = utils.strip_protocol(self.url)

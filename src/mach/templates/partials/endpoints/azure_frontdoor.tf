@@ -9,6 +9,15 @@ data "azurerm_dns_zone" "{{ endpoint.key }}" {
     resource_group_name = {{ site.azure.frontdoor.dns_resource_group|tf }}
 }
 
+{% if endpoint.is_root_domain %}
+resource "azurerm_dns_a_record" "{{ endpoint.key }}" {
+  name                = "@"
+  zone_name           = data.azurerm_dns_zone.{{ endpoint.key }}.name
+  resource_group_name = {{ site.azure.frontdoor.dns_resource_group|tf }}
+  ttl                 = 600
+  target_resource_id  = azurerm_frontdoor.app-service.id
+}
+{% else %}
 resource "azurerm_dns_cname_record" "{{ endpoint.key }}" {
   name                = {{ endpoint.subdomain|tf }}
   zone_name           = data.azurerm_dns_zone.{{ endpoint.key }}.name
@@ -16,6 +25,7 @@ resource "azurerm_dns_cname_record" "{{ endpoint.key }}" {
   ttl                 = 600
   record              = local.frontdoor_domain
 }
+{% endif %}
 {% endfor %}
 
 {% if site.used_endpoints %}
@@ -70,7 +80,9 @@ resource "azurerm_frontdoor" "app-service" {
 
   depends_on = [
     {% for endpoint in site.used_custom_endpoints %}
+    {% if not endpoint.is_root_domain %}
     azurerm_dns_cname_record.{{ endpoint.key }},
+    {% endif %}
     {% endfor %}
   ]
 

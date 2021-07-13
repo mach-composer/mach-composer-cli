@@ -21,6 +21,7 @@
 - Include `frontend_endpoint` in ignore list when `suppress_changes` is used
 - Add Frontdoor `ssl_key_vault` option to supply your own SSL certificate for your endpoints
 - Add new `service_plans` option `per_site_scaling`
+- Fix: set correct root-level DNS record (`@`) when endpoint URL is the same as the zone
 
 **Commercetools**
 
