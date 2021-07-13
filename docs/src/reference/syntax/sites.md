@@ -69,6 +69,7 @@ commercetools:
 - `api_url` - Defaults to `https://api.europe-west1.gcp.commercetools.com`
 - `channels` - List of [channel definitions](#channels)
 - `taxes` - List of [tax definitions](#taxes)
+- `tax_categories` - List of [tax_category definitions](#tax_categories)
 - `zones` - List of [zone definitions](#zones)
 - `stores` - List of [store definitions](#stores) if multiple (store) contexts are going to be used.
 - `frontend` - [Frontend configuration block](#frontend)
@@ -161,13 +162,53 @@ zones:
   
 ### taxes
 
-Defines tax rates for various countries.
+Defines tax rates for various countries but will only create a single tax category.
+Please see [tax_categories](#tax_categories) for setups demanding multiple tax categories.
+
+**Cannot be used in conjunction with `tax_categories`**
 
 - **`country`** - (Required) A two-digit country code as per [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2)
 - **`amount`** - (Required) Number Percentage in the range of [0..1]
 - **`name`** - (Required) Tax rate name
+- **`included_in_price`** - Tax included in price
+
+### tax_categories
+
+Defines [commercetools tax categories](https://docs.commercetools.com/tutorials/explore-merchant-center#creating-tax-categories) with commercetools tax rates.
+
+**Cannot be used in conjunction with `taxes`**
+
+Example:
+```yaml
+tax_categories:
+- name: Non-standard taxes
+  key: non-standard-taxes
+  rates:
+  - name: rate 2
+    amount: 0.02
+    country: GB
+    included_in_price: false
+  - name: rate 10
+    amount: 0.1
+    country: NL
+    included_in_price: true
+- name: Standard taxes
+  key: some-standard
+  rates:
+  - name: rate 21
+    amount: 0.21
+    country: GB
+  - name: rate 6
+    amount: 0.06
+    country: NL
+```
+
+- **`name`** - (Required) Name of the category
+- **`key`** - (Required) Key of the category
+- **`rates`** - List of [tax rates](#taxes)
 
 ### stores
+
 Defines [commercetools stores](https://docs.commercetools.com/http-api-projects-stores).
 
 Example:

@@ -32,6 +32,7 @@ __all__ = [
     "CommercetoolsStore",
     "CommercetoolsChannel",
     "CommercetoolsTax",
+    "CommercetoolsTaxCategory",
     "CommercetoolsProjectSettings",
     "CommercetoolsFrontendSettings",
     "CommercetoolsSettings",
@@ -162,6 +163,17 @@ class CommercetoolsTax(JsonSchemaMixin):
     country: str
     amount: float
     name: str
+    included_in_price: Optional[bool] = True
+
+
+@dataclass_json
+@dataclass
+class CommercetoolsTaxCategory(JsonSchemaMixin):
+    """commercetools tax categories definition."""
+
+    key: str
+    name: str
+    rates: Optional[List[CommercetoolsTax]] = fields.list_()
 
 
 @dataclass_json
@@ -229,6 +241,7 @@ class CommercetoolsSettings(JsonSchemaMixin):
 
     channels: Optional[List[CommercetoolsChannel]] = fields.list_()
     taxes: Optional[List[CommercetoolsTax]] = fields.list_()
+    tax_categories: Optional[List[CommercetoolsTaxCategory]] = fields.list_()
     stores: List[CommercetoolsStore] = fields.list_()
     zones: List[CommercetoolsZone] = fields.list_()
 

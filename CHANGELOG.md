@@ -22,6 +22,10 @@
 - Add Frontdoor `ssl_key_vault` option to supply your own SSL certificate for your endpoints
 - Add new `service_plans` option `per_site_scaling`
 
+**Commercetools**
+
+- Add `tax_categories` to allow more complex tax setups. Does not work in conjunction with `taxes`
+
 ### Upgrade notes
 
 **For Azure**
