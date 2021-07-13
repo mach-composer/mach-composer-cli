@@ -44,6 +44,24 @@ resource "commercetools_channel" "{{ channel.key }}" {
 }
 {% endfor %}
 
+{% for tax_category in commercetools.tax_categories %}
+resource "commercetools_tax_category" "{{ tax_category.key|lower }}" {
+  name = {{ tax_category.name|tf }}
+  key = {{ tax_category.key|tf }}
+}
+
+{% for rate in tax_category.rates %}
+resource "commercetools_tax_category_rate" "{{ rate.name|slugify }}" {
+  tax_category_id = commercetools_tax_category.{{ tax_category.key|lower }}.id
+  name = {{ rate.name|tf }}
+  amount = {{ rate.amount|tf }}
+  country = "{{ rate.country }}"
+  included_in_price = {{ rate.included_in_price|tf }}
+}
+
+{% endfor %}
+{% endfor %}
+
 {% if commercetools.taxes %}
 resource "commercetools_tax_category" "standard" {
   name = "Standard tax category"

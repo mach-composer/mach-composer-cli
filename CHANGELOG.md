@@ -21,6 +21,10 @@
 - Include `frontend_endpoint` in ignore list when `suppress_changes` is used
 - Add Frontdoor `ssl_key_vault` option to supply your own SSL certificate for your endpoints
 
+**Commercetools**
+
+- Add `tax_categories` to allow more complex tax setups. Does not work in conjunction with `taxes`
+
 ### Upgrade notes
 
 **For Azure**

@@ -133,6 +133,7 @@ def validate_site_components(components: List[types.Component], *, site: types.S
 def validate_commercetools(site: types.Site):
     if site.commercetools:
         validate_store_keys(site.commercetools)
+        validate_taxes(site.commercetools)
 
 
 def validate_store_keys(ct_settings: types.CommercetoolsSettings):
@@ -151,6 +152,12 @@ def validate_store_keys(ct_settings: types.CommercetoolsSettings):
                 raise ValidationError(
                     f"Store key {key} may only contain alphanumeric characters or underscores"
                 )
+
+
+def validate_taxes(ct_settings: types.CommercetoolsSettings):
+    """Ensure either `taxes` or `tax_categories` are used."""
+    if ct_settings.taxes and ct_settings.tax_categories:
+        raise ValidationError("`taxes` and `tax_categories` are mutually exclusive.")
 
 
 def validate_components(config: types.MachConfig):

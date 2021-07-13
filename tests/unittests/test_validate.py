@@ -201,6 +201,45 @@ def test_validate_stores(parsed_config: types.MachConfig):
     validate.validate_config(config)
 
 
+def test_validate_taxes_tax_categories(parsed_config: types.MachConfig):
+    """Tests if an error is raised when taxes and tax_categories are used in conjunction."""
+    config = parsed_config
+    site = config.sites[0]
+
+    site.commercetools = types.CommercetoolsSettings(
+        project_key="ct-unit-test",
+        client_id="a96e59be-24da-4f41-a6cf-d61d7b6e1766",
+        client_secret="98c32de8-1a6c-45a9-a718-d3cce5201799",
+        scopes="manage_project:ct-unit-test",
+        project_settings=types.CommercetoolsProjectSettings(
+            languages=["nl-NL"],
+            countries=["NL"],
+            currencies=["EUR"],
+        ),
+        taxes=[types.CommercetoolsTax(name="foo tax", amount=1, country="NL")],
+    )
+
+    validate.validate_commercetools(site)
+
+    site.commercetools.tax_categories = [
+        types.CommercetoolsTaxCategory(
+            name="foo category",
+            key="foo-key",
+            rates=[
+                types.CommercetoolsTax(
+                    name="foo category tax",
+                    amount=2,
+                    country="NL",
+                    included_in_price=True,
+                )
+            ],
+        )
+    ]
+
+    with pytest.raises(ValidationError):
+        validate.validate_commercetools(site)
+
+
 def test_validate_azure_service_plans(parsed_azure_config: types.MachConfig):
     config = parsed_azure_config
     config.components[0].azure.service_plan = "premium"
