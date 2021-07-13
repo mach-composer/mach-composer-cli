@@ -19,7 +19,9 @@ resource "azurerm_app_service_plan" "{{ key|service_plan_resource_name }}" {
   {% endif %}
   location            = local.resource_group_location
   kind                = {{ plan.kind|tf }}
-  reserved            = {% if plan.kind|lower == 'windows' %}false{% else %}true{% endif %}
+  reserved            = {% if plan.kind|lower == 'windows' %}false{% else %}true
+  {% endif %}
+  per_site_scaling    = {{ plan.per_site_scaling|tf }}
 
   sku {
     tier = {{ plan.tier|tf }}

@@ -28,3 +28,4 @@ class ServicePlan(JsonSchemaMixin):
     size: str
     capacity: Optional[int] = fields.none()
     dedicated_resource_group: bool = fields.default(False)
+    per_site_scaling: bool = fields.default(False)

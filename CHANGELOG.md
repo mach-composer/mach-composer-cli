@@ -20,6 +20,7 @@
 - Upgraded Terraform Azure provider to [`2.60.0`](https://github.com/terraform-providers/terraform-provider-azurerm/blob/master/CHANGELOG.md#2600-may-20-2021)
 - Include `frontend_endpoint` in ignore list when `suppress_changes` is used
 - Add Frontdoor `ssl_key_vault` option to supply your own SSL certificate for your endpoints
+- Add new `service_plans` option `per_site_scaling`
 
 ### Upgrade notes
 
