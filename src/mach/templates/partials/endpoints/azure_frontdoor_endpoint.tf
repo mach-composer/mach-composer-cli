@@ -10,22 +10,26 @@ backend_pool_health_probe {
   probe_method = lookup(module.{{ component.name }}.azure_endpoint_{{ cep_key }}, "health_probe_method", "GET")
 }
 
-routing_rule {
-  name               = "{{ endpoint.key }}-{{ component.name }}-routing"
-  accepted_protocols = ["Https"]
-  patterns_to_match  = lookup(module.{{ component.name }}.azure_endpoint_{{ cep_key }}, "routing_patterns", ["/{{ component.name }}/*"])
-  frontend_endpoints = [
-    {% if endpoint.url %}
-    {{ endpoint.key|tf }},
-    {% else %}
-    local.frontdoor_domain_identifier,
-    {% endif %}
-  ]
-  forwarding_configuration {
-      forwarding_protocol            = "MatchRequest"
-      backend_pool_name              = "{{ endpoint.key }}-{{ component.name }}"
-      cache_enabled                  = lookup(module.{{ component.name }}.azure_endpoint_{{ cep_key }}, "cache_enabled", false)
-      custom_forwarding_path         = lookup(module.{{ component.name }}.azure_endpoint_{{ cep_key }}, "custom_forwarding_path", null)
+dynamic "routing_rule" {
+  for_each = local.fd_{{ endpoint.key }}_{{ component.name }}_routes
+  content {
+    name = "{{ endpoint.key }}-{{ component.name }}-routing-${lookup(routing_rule.value, "name", routing_rule.key)}"
+
+    accepted_protocols = ["Https"]
+    patterns_to_match  = routing_rule.value.patterns
+    frontend_endpoints = [
+      {% if endpoint.url %}
+      {{ endpoint.key|tf }},
+      {% else %}
+      local.frontdoor_domain_identifier,
+      {% endif %}
+    ]
+    forwarding_configuration {
+        forwarding_protocol            = "MatchRequest"
+        backend_pool_name              = "{{ endpoint.key }}-{{ component.name }}"
+        cache_enabled                  = lookup(routing_rule.value, "cache_enabled", false)
+        custom_forwarding_path         = lookup(routing_rule.value, "custom_forwarding_path", null)
+    }
   }
 }
 

@@ -238,40 +238,6 @@
                   ]
                 }
               ]
-            },
-            {
-              "name": [
-                "default-us-payment-routing"
-              ],
-              "accepted_protocols": [
-                [
-                  "Https"
-                ]
-              ],
-              "patterns_to_match": [
-                "${lookup(module.us-payment.azure_endpoint_public,\"routing_patterns\",['/us-payment/*'])}"
-              ],
-              "frontend_endpoints": [
-                [
-                  "${local.frontdoor_domain_identifier}"
-                ]
-              ],
-              "forwarding_configuration": [
-                {
-                  "forwarding_protocol": [
-                    "MatchRequest"
-                  ],
-                  "backend_pool_name": [
-                    "default-us-payment"
-                  ],
-                  "cache_enabled": [
-                    "${lookup(module.us-payment.azure_endpoint_public,\"cache_enabled\",False)}"
-                  ],
-                  "custom_forwarding_path": [
-                    "${lookup(module.us-payment.azure_endpoint_public,\"custom_forwarding_path\",None)}"
-                  ]
-                }
-              ]
             }
           ],
           "backend_pool_health_probe": [
@@ -291,6 +257,51 @@
               "probe_method": [
                 "${lookup(module.us-payment.azure_endpoint_public,\"health_probe_method\",\"GET\")}"
               ]
+            }
+          ],
+          "dynamic": [
+            {
+              "routing_rule": {
+                "for_each": [
+                  "${local.fd_default_us-payment_routes}"
+                ],
+                "content": [
+                  {
+                    "name": [
+                      "default-us-payment-routing-${lookup(routing_rule.value, \"name\", routing_rule.key)}"
+                    ],
+                    "accepted_protocols": [
+                      [
+                        "Https"
+                      ]
+                    ],
+                    "patterns_to_match": [
+                      "${routing_rule.value.patterns}"
+                    ],
+                    "frontend_endpoints": [
+                      [
+                        "${local.frontdoor_domain_identifier}"
+                      ]
+                    ],
+                    "forwarding_configuration": [
+                      {
+                        "forwarding_protocol": [
+                          "MatchRequest"
+                        ],
+                        "backend_pool_name": [
+                          "default-us-payment"
+                        ],
+                        "cache_enabled": [
+                          "${lookup(routing_rule.value,\"cache_enabled\",False)}"
+                        ],
+                        "custom_forwarding_path": [
+                          "${lookup(routing_rule.value,\"custom_forwarding_path\",None)}"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
             }
           ],
           "backend_pool": [
@@ -466,6 +477,7 @@
         "${replace(local.frontdoor_domain,\".\",\"-\")}"
       ]
     },
+    {},
     {
       "endpoint_url_default": [
         "${local.frontdoor_domain}"
