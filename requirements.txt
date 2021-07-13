@@ -30,14 +30,14 @@ python-slugify==4.0.1     # via cookiecutter
 pyyaml-include==1.2.post2  # via -r requirements.in
 pyyaml==5.4.1             # via -r requirements.in, pyyaml-include
 requests-file==1.5.1      # via tldextract
-requests==2.23.0          # via -r requirements.in, cookiecutter, requests-file, tldextract
+requests==2.25.1          # via -r requirements.in, cookiecutter, requests-file, tldextract
 six==1.15.0               # via cookiecutter, jsonschema, python-dateutil, requests-file
 stringcase==1.2.0         # via dataclasses-json
 text-unidecode==1.3       # via python-slugify
 tldextract==3.1.0         # via -r requirements.in
 typing-extensions==3.7.4.3  # via typing-inspect
 typing-inspect==0.6.0     # via dataclasses-json
-urllib3==1.25.11          # via requests
+urllib3==1.26.6           # via requests
 
 # The following packages are considered to be unsafe in a requirements file:
 # setuptools
