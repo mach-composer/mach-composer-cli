@@ -402,6 +402,9 @@
           "reserved": [
             true
           ],
+          "per_site_scaling": [
+            false
+          ],
           "sku": [
             {
               "tier": [
@@ -435,6 +438,9 @@
           ],
           "reserved": [
             true
+          ],
+          "per_site_scaling": [
+            false
           ],
           "sku": [
             {
