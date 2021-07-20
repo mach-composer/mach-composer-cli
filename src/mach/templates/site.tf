@@ -32,7 +32,7 @@ terraform {
   required_providers {
     {% if site.aws %}
     aws = {
-      version = "~> {{ general_config.terraform_config.providers.aws or '3.28.0' }}"
+      version = "~> {{ general_config.terraform_config.providers.aws or '3.50.0' }}"
     }
     {% endif %}
 
@@ -44,7 +44,7 @@ terraform {
     {% if site.commercetools %}
     commercetools = {
       source = "labd/commercetools"
-      version = "~> {{ general_config.terraform_config.providers.commercetools or '0.25.3' }}"
+      version = "~> {{ general_config.terraform_config.providers.commercetools or '0.29.3' }}"
     }
     {% endif %}
     {% if site.contentful %}

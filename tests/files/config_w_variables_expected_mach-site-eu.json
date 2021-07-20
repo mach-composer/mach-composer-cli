@@ -28,13 +28,13 @@
         {
           "aws": [
             {
-              "version": "~> 3.28.0"
+              "version": "~> 3.50.0"
             }
           ],
           "commercetools": [
             {
               "source": "labd/commercetools",
-              "version": "~> 0.25.3"
+              "version": "~> 0.29.3"
             }
           ],
           "sentry": [

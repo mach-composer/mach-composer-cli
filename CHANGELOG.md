@@ -10,6 +10,9 @@
   - `${env.}` to include environment variables in the configuration file
 - Added `enable_cdn` setting for endpoints, ignored if not AWS. Creates a CDN in front of an endpoint.
 
+**AWS**
+- Upgraded Terraform AWS provider to [`3.28.0`](https://github.com/hashicorp/terraform-provider-aws/blob/main/CHANGELOG.md#3500-july-15-2021)
+
 **Azure**
 
 - Add extra Frontdoor routing options to components such as:
@@ -25,6 +28,7 @@
 
 **Commercetools**
 
+- Upgraded Terraform commercetools provider to [`0.25.3`](https://github.com/labd/terraform-provider-commercetools/blob/master/CHANGELOG.md#v0293-2021-06-16)
 - Add `tax_categories` to allow more complex tax setups. Does not work in conjunction with `taxes`
 
 ### Upgrade notes
