@@ -10,7 +10,7 @@ RUN GO111MODULE=on go get -u go.mozilla.org/sops/v3/cmd/sops@v3.7.1 && \
 FROM python:${PYTHON_VERSION}-alpine
 COPY --from=go-builder /go/bin/sops /usr/bin/
 
-ENV AZURE_CLI_VERSION=2.5.1
+ENV AZURE_CLI_VERSION=2.26.1
 ENV TERRAFORM_VERSION=0.14.5
 ENV TERRAFORM_EXTERNAL_VERSION=1.2.0
 ENV TERRAFORM_AZURE_VERSION=2.68.0
