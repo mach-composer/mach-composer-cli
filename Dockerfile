@@ -1,4 +1,4 @@
-ARG PYTHON_VERSION="3.8.5"
+ARG PYTHON_VERSION="3.8.11"
 
 FROM golang:1.15.6 AS go-builder
 # RUN go get -d -v golang.org/x/net/html
