@@ -21,8 +21,8 @@ ENV TERRAFORM_CONTENTFUL_VERSION=0.1.0
 ENV TERRAFORM_AMPLIENCE_VERSION=0.2.2
 ENV TERRAFORM_SENTRY_VERSION=0.6.0
 
-RUN apk add --no-cache --virtual .build-deps g++ libffi-dev openssl-dev wget unzip make curl \
-    && apk add bash ca-certificates git libc6-compat openssl openssh-client jq
+RUN apk add --no-cache --virtual .build-deps g++ libffi-dev openssl-dev wget unzip make \
+    && apk add bash ca-certificates git libc6-compat openssl openssh-client jq curl
 
 # Install Azure CLI
 RUN pip --no-cache-dir install azure-cli==${AZURE_CLI_VERSION}
