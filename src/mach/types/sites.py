@@ -25,6 +25,7 @@ if TYPE_CHECKING:
 
 __all__ = [
     "AlertGroup",
+    "AlgoliaSettings",
     "ApolloFederationSettings",
     "AWSProvider",
     "Endpoint",
@@ -332,6 +333,15 @@ class ApolloFederationSettings(JsonSchemaMixin):
 
 @dataclass_json
 @dataclass
+class AlgoliaSettings(JsonSchemaMixin):
+    """Algolia settings."""
+
+    application_id: str
+    api_key: str
+
+
+@dataclass_json
+@dataclass
 class Component(JsonSchemaMixin):
     """Component configuration."""
 
@@ -428,6 +438,7 @@ class Site(JsonSchemaMixin):
     contentful: Optional[ContentfulSettings] = fields.none()
     amplience: Optional[AmplienceSettings] = fields.none()
     apollo_federation: Optional[ApolloFederationSettings] = fields.none()
+    algolia: Optional[AlgoliaSettings] = fields.none()
     azure: Optional[SiteAzureSettings] = fields.none()
     aws: Optional[SiteAWSSettings] = fields.none()
     components: List[Component] = fields.list_()

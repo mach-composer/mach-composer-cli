@@ -74,6 +74,24 @@ def test_generate_apollo_federation(click_runner, click_dir, tf_mock):
     assert site_config == get_json("apollo_config1_expected_mach-site-eu.json")
 
 
+def test_generate_algolia(click_runner, click_dir, tf_mock):
+    """Test minimum algolia config passes the right vars to the respective modules."""
+    result = click_runner.invoke(
+        generate, ["-f", get_file("algolia_config1.yml"), "--ignore-version"]
+    )
+    assert result.exit_code == 0, result.stdout_bytes
+
+    deployments_dir = os.path.join(click_dir, "deployments", "algolia_config1")
+    sites = os.listdir(deployments_dir)
+    assert sorted(sites) == ["mach-site-eu"]
+    assert tf_mock.call_count == 1
+
+    with open(os.path.join(deployments_dir, "mach-site-eu", "site.tf")) as f:
+        site_config = hcl2.load(f)
+    # write_json("algolia_config1_expected_mach-site-eu.json", site_config)
+    assert site_config == get_json("algolia_config1_expected_mach-site-eu.json")
+
+
 def test_generate_variables(click_runner, click_dir, tf_mock):
     """Test minimum apollo federation config passes the right vars to the respective modules."""
     result = click_runner.invoke(

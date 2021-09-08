@@ -59,6 +59,12 @@ terraform {
       version = "~> {{ general_config.terraform_config.providers.amplience or '0.2.2' }}"
     }
     {% endif %}
+    {% if site.algolia %}
+    algolia = {
+      source = "k-yomo/algolia"
+      version = "~> {{ general_config.terraform_config.providers.algolia or '0.2.1' }}"
+    }
+    {% endif %}
     {% if general_config.sentry.managed %}
     sentry = {
       source = "jianyuan/sentry"
@@ -96,6 +102,8 @@ provider "sentry" {
 {% if site.commercetools %}{% include 'partials/commercetools.tf' %}{% endif %}
 {% if site.contentful %}{% include 'partials/contentful.tf' %}{% endif %}
 {% if site.amplience %}{% include 'partials/amplience.tf' %}{% endif %}
+{% if site.algolia %}{% include 'partials/algolia.tf' %}{% endif %}
+
 
 {% if site.aws %}{% include 'partials/aws.tf' %}{% endif %}
 {% if site.azure %}{% include 'partials/azure.tf' %}{% endif %}

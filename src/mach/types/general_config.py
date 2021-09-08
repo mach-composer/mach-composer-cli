@@ -70,6 +70,7 @@ class TerraformProviders(JsonSchemaMixin):
     sentry: Optional[str] = fields.none()
     contentful: Optional[str] = fields.none()
     amplience: Optional[str] = fields.none()
+    algolia: Optional[str] = fields.none()
 
 
 @dataclass_json

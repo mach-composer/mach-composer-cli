@@ -1,0 +1,113 @@
+{
+  "terraform": [
+    {
+      "backend": [
+        {
+          "s3": {
+            "bucket": [
+              "aws-bucket"
+            ],
+            "key": [
+              "mach-composer-tst/mach-site-eu"
+            ],
+            "region": [
+              "eu-central-1"
+            ],
+            "dynamodb_table": [
+              "tfstate-lock"
+            ],
+            "encrypt": [
+              true
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "required_providers": [
+        {
+          "aws": [
+            {
+              "version": "~> 3.50.0"
+            }
+          ],
+          "algolia": [
+            {
+              "source": "k-yomo/algolia",
+              "version": "~> 0.2.1"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "provider": [
+    {
+      "algolia": {
+        "app_id": [
+          "ab12345"
+        ],
+        "api_key": [
+          "abcd12345"
+        ]
+      }
+    },
+    {
+      "aws": {
+        "region": [
+          "eu-central-1"
+        ]
+      }
+    }
+  ],
+  "locals": [
+    {
+      "tags": [
+        {
+          "Site": "mach-site-eu",
+          "Environment": "site"
+        }
+      ]
+    }
+  ],
+  "module": [
+    {
+      "federated-gateway": {
+        "source": [
+          "git::https://github.com/some-organisation/mach-component-federated-gateway.git//terraform?ref=0a9a0b5"
+        ],
+        "algolia": [
+          {
+            "application_id": "ab12345",
+            "api_key": "abcd12345"
+          }
+        ],
+        "providers": [
+          {}
+        ],
+        "depends_on": [
+          []
+        ]
+      }
+    },
+    {
+      "federated-commercetools-proxy": {
+        "source": [
+          "git::https://github.com/some-organisation/mach-component-federated-commercetools-proxy.git//terraform?ref=0a9a0b5"
+        ],
+        "algolia": [
+          {
+            "application_id": "ab12345",
+            "api_key": "abcd12345"
+          }
+        ],
+        "providers": [
+          {}
+        ],
+        "depends_on": [
+          []
+        ]
+      }
+    }
+  ]
+}

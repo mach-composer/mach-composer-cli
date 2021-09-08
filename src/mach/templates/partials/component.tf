@@ -94,6 +94,13 @@ module "{{ component.name }}" {
     }
   {% endif %}
 
+  {% if "algolia" in component.integrations %}
+    algolia = {
+      application_id = {{ site.algolia.application_id|tf }}
+      api_key        = {{ site.algolia.api_key|tf }}
+    }
+  {% endif %}
+
   providers = {
     {% if "azure" in component.integrations %}azurerm = azurerm{% endif %}
     {% if "aws" in component.integrations %}

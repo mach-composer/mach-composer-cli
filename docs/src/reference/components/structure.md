@@ -56,6 +56,7 @@ Available integrations are:
 - `contentful`
 - `amplience`
 - `apollo_federation`
+- `algolia`
 
 By default, integrations are set on the given cloud provider. So when no `integrations` defintion is given, it defaults to `['aws']` in case of an AWS deployment.
 
@@ -187,6 +188,19 @@ variable "apollo_federation" {
     api_key       = string
     graph         = string
     graph_variant = string
+  })
+}
+```
+
+### algolia
+
+The following variable is given when the [`algolia` integration](../../topics/integrations/algolia.md) is defined.
+
+```terraform
+variable "algolia" {
+  type = object({
+    application_id = string
+    api_key        = string
   })
 }
 ```
