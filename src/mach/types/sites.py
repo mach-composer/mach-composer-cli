@@ -2,7 +2,7 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Union
 
 from dataclasses_json import config, dataclass_json
-from dataclasses_jsonschema import FieldEncoder, JsonSchemaMixin
+from dataclasses_jsonschema import JsonSchemaMixin
 from mach import utils
 from marshmallow import ValidationError
 

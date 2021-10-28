@@ -43,9 +43,37 @@ endpoints:
 
 - **`url`** - (Required) url of the endpoint
 - `zone` - DNS zone to use, if missing it's determined based on the given `url`
+- `aws` - Configuration block for [AWS-specific settings](#aws)
+- `azure` - Configuration block for [Azure-specific settings](#azure)
+
+### aws
+Example:
+
+```yaml
+aws:
+  throttling_burst_limit: 5000
+  throttling_rate_limit: 10000
+  enable_cdn: true
+```
+
 - `throttling_burst_limit` - Set burst limit for API Gateway endpoints
 - `throttling_rate_limit` - Set burst limit for API Gateway endpoints
 - `enable_cdn` - Defaults to false. Sets a CDN in front of this endpoint for better global availability. For AWS creates a CloudFront distribution
+
+### azure
+Example:
+
+```yaml
+azure:
+  session_affinity_enabled: True
+  session_affinity_ttl_seconds: 3600
+  waf_policy_id: "string"
+```
+
+- `session_affinity_enabled` - Whether to allow session affinity on this host
+- `session_affinity_ttl_seconds` - The TTL to use in seconds for session affinity, if applicable.
+- `waf_policy_id` - Defines the Web Application Firewall policy `ID` for the host.
+
 
 ## commercetools
 

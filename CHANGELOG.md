@@ -15,6 +15,9 @@
 
 **Azure**
 
+- Add extra Frontdoor frontend_endpoint options:
+  - session affinity
+  - waf policy support
 - Add extra Frontdoor routing options to components such as:
   - Custom routing paths
   - Health probe settings
