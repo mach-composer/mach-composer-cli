@@ -51,8 +51,12 @@ sites:
         variables:
           ORDER_PREFIX: MACH-
   - identifier: mach-site-us
-    endpoints: 
+    endpoints:
       public: https://api.us-tst.mach-services.net
+      waf:
+        url: https://api-waf.us-tst.mach-services.net
+        azure:
+          waf_policy_id: "waf_policy_id"
     commercetools:
       project_key: mach-site-us
       client_id: 6SWM8ttjAYll-f9dopjdt
@@ -68,6 +72,7 @@ sites:
     components:
       - name: commercetools-config
       - name: payment
+      - name: waf-api
       - name: api-extensions
         variables:
           ORDER_PREFIX: MACH-
@@ -79,7 +84,7 @@ components:
     integrations: [""]
   - name: payment
     source: git::https://github.com/some-organisation/mach-component-payment.git//terraform
-    endpoints: 
+    endpoints:
       public: public
     version: 0a9a0b5
     integrations: ["azure", "commercetools"]
@@ -87,8 +92,14 @@ components:
       service_plan: premium
   - name: us-payment
     source: git::https://github.com/some-organisation/mach-component-payment.git//terraform
-    endpoints: 
+    endpoints:
       public: default
+    version: 0a9a0b5
+    integrations: ["azure", "commercetools"]
+  - name: waf-api
+    source: git::https://github.com/some-organisation/mach-component-payment.git//terraform
+    endpoints:
+      public: waf
     version: 0a9a0b5
     integrations: ["azure", "commercetools"]
   - name: api-extensions

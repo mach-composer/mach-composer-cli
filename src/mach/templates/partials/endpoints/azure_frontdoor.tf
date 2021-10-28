@@ -34,8 +34,8 @@ locals {
   {% for component in endpoint.components %}
   {% set cep_key = component|component_endpoint_name(endpoint) %}
   fd_{{ endpoint.key }}_{{ component.name }}_route_defs = lookup(
-    module.{{ component.name }}.azure_endpoint_{{ cep_key }}, 
-    "routes", 
+    module.{{ component.name }}.azure_endpoint_{{ cep_key }},
+    "routes",
     [{
       patterns = ["/{{ component.name }}/*"]
     }]
@@ -46,9 +46,9 @@ locals {
       length(
         local.fd_{{ endpoint.key }}_{{ component.name }}_route_defs
       )
-    ) : 
+    ) :
     i => element(
-      local.fd_{{ endpoint.key }}_{{ component.name }}_route_defs, 
+      local.fd_{{ endpoint.key }}_{{ component.name }}_route_defs,
       i
     )
   }
@@ -75,6 +75,15 @@ resource "azurerm_frontdoor" "app-service" {
   frontend_endpoint {
     name                              = {{ endpoint.key|tf }}
     host_name                         = {{ endpoint.url|tf }}
+    {% if endpoint.azure.waf_policy_id %}
+    web_application_firewall_policy_link_id = endpoint.azure.waf_policy_id
+    {% endif %}
+
+    {% if endpoint.azure.session_affinity_enabled %}
+    session_affinity_enabled = endpoint.azure.session_affinity_enabled
+    session_affinity_ttl_seconds = endpoint.azure.session_affinity_ttl_seconds
+    {% endif %}
+
   }
   {% endfor %}
 

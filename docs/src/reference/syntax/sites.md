@@ -35,13 +35,14 @@ endpoints:
   internal:
     url: internal-api.tst.mach-example.net
     zone: tst.mach-example.net
-    throttling_burst_limit: 5000
-    throttling_rate_limit: 10000
-    enable_cdn: true
+    aws:
+      throttling_burst_limit: 5000
+      throttling_rate_limit: 10000
+      enable_cdn: true
 ```
 
 - **`url`** - (Required) url of the endpoint
-- `zone` - DNS zone to use, if missing it's determined based on the given `url`  
+- `zone` - DNS zone to use, if missing it's determined based on the given `url`
 - `throttling_burst_limit` - Set burst limit for API Gateway endpoints
 - `throttling_rate_limit` - Set burst limit for API Gateway endpoints
 - `enable_cdn` - Defaults to false. Sets a CDN in front of this endpoint for better global availability. For AWS creates a CloudFront distribution
@@ -120,7 +121,7 @@ channels:
       en-GB: Our main distribution channel
 ```
 
-- **`key`** - (Required) 
+- **`key`** - (Required)
 - **`roles`** - (Required) List of [channel roles](https://docs.commercetools.com/http-api-projects-channels#channelroleenum).<br>
     Can be one of `InventorySupply`, `ProductDistribution`, `OrderExport`, `OrderImport` or `Primary`
 - `name` - Name of the channel. Localized string [^1]
@@ -159,7 +160,7 @@ zones:
 
 - **`country`** - (Required) Two-digit country codes as per [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2)
 - `state` - State
-  
+
 ### taxes
 
 Defines tax rates for various countries but will only create a single tax category.
@@ -367,7 +368,7 @@ Example:
     ```
 === "Default overwrite"
     ```yaml
-    # Here we configure the default service plan to run Premium 
+    # Here we configure the default service plan to run Premium
     # and also offer a service plan running Windows
     service_plans:
       default:

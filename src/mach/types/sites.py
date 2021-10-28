@@ -28,7 +28,6 @@ __all__ = [
     "ApolloFederationSettings",
     "AWSProvider",
     "Endpoint",
-    "EndpointEncoder",
     "CommercetoolsStore",
     "CommercetoolsChannel",
     "CommercetoolsTax",
@@ -73,16 +72,30 @@ class AWSProvider(JsonSchemaMixin):
     name: str
     region: str
 
+@dataclass_json
+@dataclass
+class AzureEndpoint(JsonSchemaMixin):
+    session_affinity_enabled: Optional[bool] = fields.default(False)
+    session_affinity_ttl_seconds: Optional[int] = fields.default(0)
+    waf_policy_id: Optional[str] = fields.none()
+
 
 @dataclass_json
 @dataclass
-class Endpoint:
-    url: str
-    key: str = field(metadata=config(exclude=lambda x: True))
-    zone: Optional[str] = fields.none()
+class AWSEndpoint(JsonSchemaMixin):
     throttling_burst_limit: Optional[int] = fields.none()
     throttling_rate_limit: Optional[int] = fields.none()
     enable_cdn: Optional[bool] = fields.default(False)
+
+
+@dataclass_json
+@dataclass
+class Endpoint(JsonSchemaMixin):
+    url: str
+    key: str = field(metadata=config(exclude=lambda x: True))
+    zone: Optional[str] = fields.none()
+    aws: Optional[AWSEndpoint] = fields.none()
+    azure: Optional[AzureEndpoint] = fields.none()
 
     # To be set by the parser
     components: List["Component"] = fields.list_()
@@ -120,15 +133,6 @@ class Endpoint:
                 self.zone = utils.dns_zone_from_url(self.url)
             except ValueError as e:
                 raise ValidationError(f"Could not determine DNS zone: {e}")
-
-
-class EndpointEncoder(FieldEncoder):
-    @property
-    def json_schema(self):
-        return {"type": "string"}
-
-
-JsonSchemaMixin.register_field_encoders({Endpoint: EndpointEncoder()})
 
 
 @dataclass_json
@@ -446,7 +450,7 @@ class Site(JsonSchemaMixin):
     @property
     def has_cdn_endpoint(self) -> bool:
         """Check if there is an endpoint with a cdn enabled."""
-        return any(ep.enable_cdn for ep in self.used_endpoints)
+        return any(ep.aws.enable_cdn for ep in self.used_endpoints)
 
     @property
     def used_custom_endpoints(self) -> List[Endpoint]:

@@ -243,12 +243,35 @@
         "dns_resource_group": {
           "type": "string"
         },
+        "ssl_key_vault": {
+          "$ref": "#/definitions/FrontdoorSslConfig"
+        },
         "suppress_changes": {
           "type": "boolean",
           "default": false
         }
       },
       "description": "Frontdoor settings."
+    },
+    "FrontdoorSslConfig": {
+      "type": "object",
+      "required": [
+        "name",
+        "resource_group",
+        "secret_name"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "resource_group": {
+          "type": "string"
+        },
+        "secret_name": {
+          "type": "string"
+        }
+      },
+      "description": "FrontdoorSslConfig(name: str, resource_group: str, secret_name: str)"
     },
     "ServicePlan": {
       "type": "object",
@@ -273,9 +296,13 @@
         "dedicated_resource_group": {
           "type": "boolean",
           "default": false
+        },
+        "per_site_scaling": {
+          "type": "boolean",
+          "default": false
         }
       },
-      "description": "ServicePlan(kind: str, tier: str, size: str, capacity: Union[int, NoneType] = None, dedicated_resource_group: bool = <factory>)"
+      "description": "ServicePlan(kind: str, tier: str, size: str, capacity: Union[int, NoneType] = None, dedicated_resource_group: bool = <factory>, per_site_scaling: bool = <factory>)"
     },
     "ContentfulConfig": {
       "type": "object",
@@ -321,7 +348,7 @@
         "endpoints": {
           "type": "object",
           "additionalProperties": {
-            "type": "string"
+            "$ref": "#/definitions/Endpoint"
           },
           "default": {}
         },
@@ -355,6 +382,144 @@
         }
       },
       "description": "Site definition."
+    },
+    "Endpoint": {
+      "type": "object",
+      "required": [
+        "url",
+        "key"
+      ],
+      "properties": {
+        "url": {
+          "type": "string"
+        },
+        "key": {
+          "type": "string"
+        },
+        "zone": {
+          "type": "string"
+        },
+        "aws": {
+          "$ref": "#/definitions/AWSEndpoint"
+        },
+        "azure": {
+          "$ref": "#/definitions/AzureEndpoint"
+        },
+        "components": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Component"
+          },
+          "default": []
+        }
+      },
+      "description": "Endpoint(url: str, key: str, zone: Union[str, NoneType] = None, aws: Union[mach.types.sites.AWSEndpoint, NoneType] = None, azure: Union[mach.types.sites.AzureEndpoint, NoneType] = None, components: List[ForwardRef('Component')] = <factory>)"
+    },
+    "AWSEndpoint": {
+      "type": "object",
+      "properties": {
+        "throttling_burst_limit": {
+          "type": "integer"
+        },
+        "throttling_rate_limit": {
+          "type": "integer"
+        },
+        "enable_cdn": {
+          "type": "boolean",
+          "default": false
+        }
+      },
+      "description": "AWSEndpoint(throttling_burst_limit: Union[int, NoneType] = None, throttling_rate_limit: Union[int, NoneType] = None, enable_cdn: Union[bool, NoneType] = <factory>)"
+    },
+    "AzureEndpoint": {
+      "type": "object",
+      "properties": {
+        "session_affinity_enabled": {
+          "type": "boolean",
+          "default": false
+        },
+        "session_affinity_ttl_seconds": {
+          "type": "integer",
+          "default": 0
+        },
+        "waf_policy_id": {
+          "type": "string"
+        }
+      },
+      "description": "AzureEndpoint(session_affinity_enabled: Union[bool, NoneType] = <factory>, session_affinity_ttl_seconds: Union[int, NoneType] = <factory>, waf_policy_id: Union[str, NoneType] = None)"
+    },
+    "Component": {
+      "type": "object",
+      "required": [
+        "name"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "variables": {
+          "type": "object",
+          "default": {}
+        },
+        "secrets": {
+          "type": "object",
+          "default": {}
+        },
+        "store_variables": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object"
+          },
+          "default": {}
+        },
+        "store_secrets": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object"
+          },
+          "default": {}
+        },
+        "health_check_path": {
+          "type": "string"
+        },
+        "sentry": {
+          "$ref": "#/definitions/SentryDsn"
+        },
+        "azure": {
+          "$ref": "#/definitions/ComponentAzureConfig"
+        }
+      },
+      "description": "Component configuration."
+    },
+    "SentryDsn": {
+      "type": "object",
+      "properties": {
+        "dsn": {
+          "type": "string"
+        },
+        "project": {
+          "type": "string"
+        },
+        "rate_limit_window": {
+          "type": "integer"
+        },
+        "rate_limit_count": {
+          "type": "integer"
+        }
+      },
+      "description": "Specific sentry DSN settings."
+    },
+    "ComponentAzureConfig": {
+      "type": "object",
+      "properties": {
+        "service_plan": {
+          "type": "string"
+        },
+        "short_name": {
+          "type": "string"
+        }
+      },
+      "description": "ComponentAzureConfig(service_plan: Union[str, NoneType] = None, short_name: Union[str, NoneType] = None)"
     },
     "CommercetoolsSettings": {
       "type": "object",
@@ -399,6 +564,13 @@
           "type": "array",
           "items": {
             "$ref": "#/definitions/CommercetoolsTax"
+          },
+          "default": []
+        },
+        "tax_categories": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/CommercetoolsTaxCategory"
           },
           "default": []
         },
@@ -497,9 +669,36 @@
         },
         "name": {
           "type": "string"
+        },
+        "included_in_price": {
+          "type": "boolean",
+          "default": true
         }
       },
       "description": "commercetools tax definition."
+    },
+    "CommercetoolsTaxCategory": {
+      "type": "object",
+      "required": [
+        "key",
+        "name"
+      ],
+      "properties": {
+        "key": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "rates": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/CommercetoolsTax"
+          },
+          "default": []
+        }
+      },
+      "description": "commercetools tax categories definition."
     },
     "CommercetoolsStore": {
       "type": "object",
@@ -781,79 +980,6 @@
         }
       },
       "description": "AWS provider configuration."
-    },
-    "Component": {
-      "type": "object",
-      "required": [
-        "name"
-      ],
-      "properties": {
-        "name": {
-          "type": "string"
-        },
-        "variables": {
-          "type": "object",
-          "default": {}
-        },
-        "secrets": {
-          "type": "object",
-          "default": {}
-        },
-        "store_variables": {
-          "type": "object",
-          "additionalProperties": {
-            "type": "object"
-          },
-          "default": {}
-        },
-        "store_secrets": {
-          "type": "object",
-          "additionalProperties": {
-            "type": "object"
-          },
-          "default": {}
-        },
-        "health_check_path": {
-          "type": "string"
-        },
-        "sentry": {
-          "$ref": "#/definitions/SentryDsn"
-        },
-        "azure": {
-          "$ref": "#/definitions/ComponentAzureConfig"
-        }
-      },
-      "description": "Component configuration."
-    },
-    "SentryDsn": {
-      "type": "object",
-      "properties": {
-        "dsn": {
-          "type": "string"
-        },
-        "project": {
-          "type": "string"
-        },
-        "rate_limit_window": {
-          "type": "integer"
-        },
-        "rate_limit_count": {
-          "type": "integer"
-        }
-      },
-      "description": "Specific sentry DSN settings."
-    },
-    "ComponentAzureConfig": {
-      "type": "object",
-      "properties": {
-        "service_plan": {
-          "type": "string"
-        },
-        "short_name": {
-          "type": "string"
-        }
-      },
-      "description": "ComponentAzureConfig(service_plan: Union[str, NoneType] = None, short_name: Union[str, NoneType] = None)"
     },
     "ComponentConfig": {
       "type": "object",
