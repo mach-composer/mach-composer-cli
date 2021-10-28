@@ -72,6 +72,7 @@ class AWSProvider(JsonSchemaMixin):
     name: str
     region: str
 
+
 @dataclass_json
 @dataclass
 class AzureEndpoint(JsonSchemaMixin):
