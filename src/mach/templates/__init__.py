@@ -172,8 +172,8 @@ def azure_region_short(value):
 
 
 def azure_frontend_endpoint_name(value: Endpoint):
-    if value.azure and value.azure.frontend_endpoint_name:
-        return render_tfvalue(value.azure.frontend_endpoint_name)
+    if value.azure and value.azure.internal_name:
+        return render_tfvalue(value.azure.internal_name)
     return render_tfvalue(value.key)
 
 
