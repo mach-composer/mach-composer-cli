@@ -8,13 +8,16 @@
   - `${var.}` to be used with the `--var-file` command line option
   - `${component.}` to use component output values
   - `${env.}` to include environment variables in the configuration file
-- Added `enable_cdn` setting for endpoints, ignored if not AWS. Creates a CDN in front of an endpoint.
 
 **AWS**
 - Upgraded Terraform AWS provider to [`3.28.0`](https://github.com/hashicorp/terraform-provider-aws/blob/main/CHANGELOG.md#3500-july-15-2021)
+- Add AWS specific endpoint options;
+  - `enable_cdn` creates a CDN in front of an endpoint
+  - `throttling_burst_limit` and `throttling_rate_limit` controls throttling on the API gateway
 
 **Azure**
 
+- Upgraded Terraform Azure provider to [`2.68.0`](https://github.com/terraform-providers/terraform-provider-azurerm/blob/master/CHANGELOG.md#2680-july-16-2021)
 - Add extra Frontdoor frontend_endpoint options:
   - session affinity
   - waf policy support
@@ -23,9 +26,13 @@
   - Health probe settings
   - Custom host address and ports
   - Caching options
-- Upgraded Terraform Azure provider to [`2.68.0`](https://github.com/terraform-providers/terraform-provider-azurerm/blob/master/CHANGELOG.md#2680-july-16-2021)
 - Include `frontend_endpoint` in ignore list when `suppress_changes` is used
 - Add Frontdoor `ssl_key_vault` option to supply your own SSL certificate for your endpoints
+- Add Azure specific endpoint options:
+  - `internal_name` Overwrites the frontend endpoint name
+  - `waf_policy_id` Defines the Web Application Firewall policy ID for the endpoint
+  - `session_affinity_enabled`  Whether to allow session affinity
+  - `session_affinity_ttl_seconds` The TTL to use in seconds for session affinity
 - Add new `service_plans` option `per_site_scaling`
 - Fix: set correct root-level DNS record (`@`) when endpoint URL is the same as the zone
 
