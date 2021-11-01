@@ -10,7 +10,7 @@
   - `${env.}` to include environment variables in the configuration file
 
 **AWS**
-- Upgraded Terraform AWS provider to [`3.28.0`](https://github.com/hashicorp/terraform-provider-aws/blob/main/CHANGELOG.md#3500-july-15-2021)
+- Upgraded Terraform AWS provider to [`3.63.0`](https://github.com/hashicorp/terraform-provider-aws/blob/main/CHANGELOG.md#3630-october-14-2021)
 - Add AWS specific endpoint options;
   - `enable_cdn` creates a CDN in front of an endpoint
   - `throttling_burst_limit` and `throttling_rate_limit` controls throttling on the API gateway

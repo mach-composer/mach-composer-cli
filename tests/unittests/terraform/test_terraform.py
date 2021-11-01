@@ -23,7 +23,7 @@ def test_generate_terraform(parsed_config: types.MachConfig, tf_mock):
                     }
                 ]
             },
-            {"required_providers": [{"aws": [{"version": "~> 3.50.0"}]}]},
+            {"required_providers": [{"aws": [{"version": "~> 3.63.0"}]}]},
         ],
         "provider": [{"aws": {"region": ["eu-central-1"]}}],
         "locals": [{"tags": [{"Environment": "test", "Site": "unittest-nl"}]}],
