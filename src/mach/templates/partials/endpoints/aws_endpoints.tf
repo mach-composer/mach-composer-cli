@@ -15,13 +15,13 @@ resource "aws_apigatewayv2_stage" "{{ endpoint.key|slugify }}_default" {
   api_id                = aws_apigatewayv2_api.{{ endpoint.key|slugify }}_gateway.id
   auto_deploy           = true
 
-  {% if endpoint.throttling_burst_limit or endpoint.throttling_burst_limit -%}
+  {% if endpoint.aws.throttling_burst_limit or endpoint.aws.throttling_burst_limit -%}
   default_route_settings {
-    {% if endpoint.throttling_burst_limit %}
-    throttling_burst_limit = {{ endpoint.throttling_burst_limit }}
+    {% if endpoint.aws.throttling_burst_limit %}
+    throttling_burst_limit = {{ endpoint.aws.throttling_burst_limit }}
     {% endif %}
-    {% if endpoint.throttling_rate_limit %}
-    throttling_rate_limit = {{ endpoint.throttling_rate_limit }}
+    {% if endpoint.aws.throttling_rate_limit %}
+    throttling_rate_limit = {{ endpoint.aws.throttling_rate_limit }}
     {% endif %}
   }{% endif %}
 
@@ -37,7 +37,7 @@ resource "aws_apigatewayv2_stage" "{{ endpoint.key|slugify }}_default" {
     domain_name       = {{ endpoint.url|tf }}
     validation_method = "DNS"
 
-    {% if endpoint.enable_cdn %}
+    {% if endpoint.aws.enable_cdn %}
       provider = aws.mach-cf-us-east-1
     {% endif %}
   }
@@ -59,7 +59,7 @@ resource "aws_apigatewayv2_stage" "{{ endpoint.key|slugify }}_default" {
     zone_id         = data.aws_route53_zone.{{ endpoint.zone|slugify }}.zone_id
   }
 
-  {% if endpoint.enable_cdn %}
+  {% if endpoint.aws.enable_cdn %}
     resource "aws_cloudfront_distribution" "{{ endpoint.key|slugify }}" {
       origin {
         origin_id   = "api-gateway"

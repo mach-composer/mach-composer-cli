@@ -192,6 +192,27 @@
       }
     },
     {
+      "azurerm_dns_cname_record": {
+        "waf": {
+          "name": [
+            "api-waf"
+          ],
+          "zone_name": [
+            "${data.azurerm_dns_zone.waf.name}"
+          ],
+          "resource_group_name": [
+            "mach-shared-we-rg"
+          ],
+          "ttl": [
+            600
+          ],
+          "record": [
+            "${local.frontdoor_domain}"
+          ]
+        }
+      }
+    },
+    {
       "azurerm_frontdoor": {
         "app-service": {
           "name": [
@@ -229,11 +250,23 @@
               "host_name": [
                 "api.us-tst.mach-services.net"
               ]
+            },
+            {
+              "name": [
+                "waf"
+              ],
+              "host_name": [
+                "api-waf.us-tst.mach-services.net"
+              ],
+              "web_application_firewall_policy_link_id": [
+                "${endpoint.azure.waf_policy_id}"
+              ]
             }
           ],
           "depends_on": [
             [
-              "${azurerm_dns_cname_record.public}"
+              "${azurerm_dns_cname_record.public}",
+              "${azurerm_dns_cname_record.waf}"
             ]
           ],
           "routing_rule": [
@@ -254,7 +287,8 @@
               "frontend_endpoints": [
                 [
                   "${local.frontdoor_domain_identifier}",
-                  "public"
+                  "public",
+                  "waf"
                 ]
               ],
               "redirect_configuration": [
@@ -285,6 +319,23 @@
               ],
               "probe_method": [
                 "${lookup(module.payment.azure_endpoint_public,\"health_probe_method\",\"GET\")}"
+              ]
+            },
+            {
+              "name": [
+                "waf-waf-api-hpSettings"
+              ],
+              "path": [
+                "${lookup(module.waf-api.azure_endpoint_public,\"health_probe_path\",\"/\")}"
+              ],
+              "protocol": [
+                "${lookup(module.waf-api.azure_endpoint_public,\"health_probe_protocol\",\"Https\")}"
+              ],
+              "enabled": [
+                "${contains(keys(module.waf-api.azure_endpoint_public),\"health_probe_path\")}"
+              ],
+              "probe_method": [
+                "${lookup(module.waf-api.azure_endpoint_public,\"health_probe_method\",\"GET\")}"
               ]
             }
           ],
@@ -331,6 +382,49 @@
                   }
                 ]
               }
+            },
+            {
+              "routing_rule": {
+                "for_each": [
+                  "${local.fd_waf_waf-api_routes}"
+                ],
+                "content": [
+                  {
+                    "name": [
+                      "waf-waf-api-routing-${lookup(routing_rule.value, \"name\", routing_rule.key)}"
+                    ],
+                    "accepted_protocols": [
+                      [
+                        "Https"
+                      ]
+                    ],
+                    "patterns_to_match": [
+                      "${routing_rule.value.patterns}"
+                    ],
+                    "frontend_endpoints": [
+                      [
+                        "waf"
+                      ]
+                    ],
+                    "forwarding_configuration": [
+                      {
+                        "forwarding_protocol": [
+                          "MatchRequest"
+                        ],
+                        "backend_pool_name": [
+                          "waf-waf-api"
+                        ],
+                        "cache_enabled": [
+                          "${lookup(routing_rule.value,\"cache_enabled\",False)}"
+                        ],
+                        "custom_forwarding_path": [
+                          "${lookup(routing_rule.value,\"custom_forwarding_path\",None)}"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
             }
           ],
           "backend_pool": [
@@ -360,6 +454,33 @@
               "health_probe_name": [
                 "public-payment-hpSettings"
               ]
+            },
+            {
+              "name": [
+                "waf-waf-api"
+              ],
+              "backend": [
+                {
+                  "host_header": [
+                    "${lookup(module.waf-api.azure_endpoint_public,\"host_header\",module.waf-api.azure_endpoint_public.address)}"
+                  ],
+                  "address": [
+                    "${module.waf-api.azure_endpoint_public.address}"
+                  ],
+                  "http_port": [
+                    "${lookup(module.waf-api.azure_endpoint_public,\"http_port\",80)}"
+                  ],
+                  "https_port": [
+                    "${lookup(module.waf-api.azure_endpoint_public,\"https_port\",443)}"
+                  ]
+                }
+              ],
+              "load_balancing_name": [
+                "lbSettings"
+              ],
+              "health_probe_name": [
+                "waf-waf-api-hpSettings"
+              ]
             }
           ]
         }
@@ -370,6 +491,25 @@
         "public": {
           "frontend_endpoint_id": [
             "${azurerm_frontdoor.app-service.frontend_endpoints[\"public\"]}"
+          ],
+          "custom_https_provisioning_enabled": [
+            true
+          ],
+          "custom_https_configuration": [
+            {
+              "certificate_source": [
+                "FrontDoor"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "azurerm_frontdoor_custom_https_configuration": {
+        "waf": {
+          "frontend_endpoint_id": [
+            "${azurerm_frontdoor.app-service.frontend_endpoints[\"waf\"]}"
           ],
           "custom_https_provisioning_enabled": [
             true
@@ -513,7 +653,8 @@
       "endpoints": {
         "value": [
           {
-            "public": "${local.endpoint_url_public}"
+            "public": "${local.endpoint_url_public}",
+            "waf": "${local.endpoint_url_waf}"
           }
         ]
       }
@@ -571,11 +712,20 @@
       ],
       "fd_public_payment_routes": [
         "${{for i in range(length(local.fd_public_payment_route_defs,),) : i => element(local.fd_public_payment_route_defs,,i,)}}"
+      ],
+      "fd_waf_waf-api_route_defs": [
+        "${lookup(module.waf-api.azure_endpoint_public,,\"routes\",,[{'patterns': ['/waf-api/*']}],)}"
+      ],
+      "fd_waf_waf-api_routes": [
+        "${{for i in range(length(local.fd_waf_waf-api_route_defs,),) : i => element(local.fd_waf_waf-api_route_defs,,i,)}}"
       ]
     },
     {
       "endpoint_url_public": [
         "api.us-tst.mach-services.net"
+      ],
+      "endpoint_url_waf": [
+        "api-waf.us-tst.mach-services.net"
       ]
     }
   ],
@@ -583,6 +733,18 @@
     {
       "azurerm_dns_zone": {
         "public": {
+          "name": [
+            "us-tst.mach-services.net"
+          ],
+          "resource_group_name": [
+            "mach-shared-we-rg"
+          ]
+        }
+      }
+    },
+    {
+      "azurerm_dns_zone": {
+        "waf": {
           "name": [
             "us-tst.mach-services.net"
           ],
@@ -689,6 +851,83 @@
         "depends_on": [
           [
             "${azurerm_app_service_plan.functionapps_premium}",
+            "${null_resource.commercetools}"
+          ]
+        ]
+      }
+    },
+    {
+      "waf-api": {
+        "source": [
+          "git::https://github.com/some-organisation/mach-component-payment.git//terraform?ref=0a9a0b5"
+        ],
+        "variables": [
+          {}
+        ],
+        "secrets": [
+          {}
+        ],
+        "component_version": [
+          "0a9a0b5"
+        ],
+        "environment": [
+          "site"
+        ],
+        "site": [
+          "mach-site-us"
+        ],
+        "tags": [
+          "${local.tags}"
+        ],
+        "azure_short_name": [
+          "waf-api"
+        ],
+        "azure_name_prefix": [
+          "${local.name_prefix}"
+        ],
+        "azure_subscription_id": [
+          "${local.subscription_id}"
+        ],
+        "azure_tenant_id": [
+          "${local.tenant_id}"
+        ],
+        "azure_region": [
+          "${local.region}"
+        ],
+        "azure_service_object_ids": [
+          "${local.service_object_ids}"
+        ],
+        "azure_resource_group": [
+          {
+            "name": "${local.resource_group_name}",
+            "location": "${local.resource_group_location}"
+          }
+        ],
+        "azure_endpoint_public": [
+          {
+            "url": "${local.endpoint_url_waf}",
+            "frontdoor_id": "${azurerm_frontdoor.app-service.header_frontdoor_id}"
+          }
+        ],
+        "ct_project_key": [
+          "mach-site-us"
+        ],
+        "ct_api_url": [
+          "https://api.europe-west1.gcp.commercetools.com"
+        ],
+        "ct_auth_url": [
+          "https://auth.europe-west1.gcp.commercetools.com"
+        ],
+        "ct_stores": [
+          {}
+        ],
+        "providers": [
+          {
+            "azurerm": "${azurerm}"
+          }
+        ],
+        "depends_on": [
+          [
             "${null_resource.commercetools}"
           ]
         ]

@@ -1,4 +1,5 @@
 from mach import parse, types
+from mach.types.sites import AWSEndpoint
 
 from tests.unittests.terraform import utils as tf
 
@@ -196,7 +197,9 @@ def test_aws_endpoint_with_cdn_generates_one_us_east_provider(
     config: types.MachConfig, tf_mock
 ):
     config.sites[0].endpoints = [
-        types.Endpoint(key="public", url="api.mach-example.com", enable_cdn=True)
+        types.Endpoint(
+            key="public", url="api.mach-example.com", aws=AWSEndpoint(enable_cdn=True)
+        )
     ]
     config.components[0].endpoints = {
         "main": "public",
