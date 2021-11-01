@@ -29,6 +29,7 @@ def load_filters(env: Environment):
             "tf": render_tfvalue,
             "azure_region_long": azure_region_long,
             "azure_region_short": azure_region_short,
+            "azure_frontend_endpoint_name": azure_frontend_endpoint_name,
             "zone_name": zone_name,
             "slugify": utils.slugify,
             "service_plan_resource_name": service_plan_resource_name,
@@ -168,6 +169,12 @@ def azure_region_short(value):
         return AZURE_REGION_DISPLAY_MAP_SHORT[value]
     except KeyError:
         raise
+
+
+def azure_frontend_endpoint_name(value: Endpoint):
+    if value.azure and value.azure.frontend_endpoint_name:
+        return render_tfvalue(value.azure.frontend_endpoint_name)
+    return render_tfvalue(value.key)
 
 
 def zone_name(value: str) -> str:

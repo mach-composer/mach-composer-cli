@@ -79,6 +79,7 @@ class AzureEndpoint(JsonSchemaMixin):
     session_affinity_enabled: Optional[bool] = fields.default(False)
     session_affinity_ttl_seconds: Optional[int] = fields.default(0)
     waf_policy_id: Optional[str] = fields.none()
+    frontend_endpoint_name: Optional[str] = fields.none()
 
 
 @dataclass_json

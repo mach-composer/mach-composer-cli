@@ -19,7 +19,7 @@ dynamic "routing_rule" {
     patterns_to_match  = routing_rule.value.patterns
     frontend_endpoints = [
       {% if endpoint.url %}
-      {{ endpoint.key|tf }},
+      {{ endpoint|azure_frontend_endpoint_name }},
       {% else %}
       local.frontdoor_domain_identifier,
       {% endif %}

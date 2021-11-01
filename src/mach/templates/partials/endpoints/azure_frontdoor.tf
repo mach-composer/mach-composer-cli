@@ -73,7 +73,7 @@ resource "azurerm_frontdoor" "app-service" {
 
   {% for endpoint in site.used_custom_endpoints %}
   frontend_endpoint {
-    name                              = {{ endpoint.key|tf }}
+    name                              = {{ endpoint|azure_frontend_endpoint_name }}
     host_name                         = {{ endpoint.url|tf }}
     {% if endpoint.azure.waf_policy_id %}
     web_application_firewall_policy_link_id = endpoint.azure.waf_policy_id
@@ -102,7 +102,7 @@ resource "azurerm_frontdoor" "app-service" {
     frontend_endpoints = [
       local.frontdoor_domain_identifier,
       {% for endpoint in site.used_custom_endpoints %}
-      {{ endpoint.key|tf }},
+      {{ endpoint|azure_frontend_endpoint_name }},
       {% endfor %}
     ]
     redirect_configuration {
@@ -138,7 +138,7 @@ data "azurerm_key_vault" "ssl" {
 
 {% for endpoint in site.used_custom_endpoints %}
 resource "azurerm_frontdoor_custom_https_configuration" "{{ endpoint.key|slugify }}" {
-  frontend_endpoint_id              = azurerm_frontdoor.app-service.frontend_endpoints["{{ endpoint.key }}"]
+  frontend_endpoint_id              = azurerm_frontdoor.app-service.frontend_endpoints[{{ endpoint|azure_frontend_endpoint_name }}]
   custom_https_provisioning_enabled = true
 
   custom_https_configuration {
