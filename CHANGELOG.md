@@ -17,7 +17,7 @@
 
 **Azure**
 
-- Upgraded Terraform Azure provider to [`2.68.0`](https://github.com/terraform-providers/terraform-provider-azurerm/blob/master/CHANGELOG.md#2680-july-16-2021)
+- Upgraded Terraform Azure provider to [`2.83.0`](https://github.com/hashicorp/terraform-provider-azurerm/blob/main/CHANGELOG.md#2830-october-29-2021)
 - Add extra Frontdoor frontend_endpoint options:
   - session affinity
   - waf policy support
