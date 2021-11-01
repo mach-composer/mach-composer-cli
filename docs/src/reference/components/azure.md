@@ -88,8 +88,13 @@ output "azure_endpoint_main" {
 output "azure_endpoint_webhooks" {
   value = {
     address = azurerm_app_service.main.default_site_hostname
-    routing_patterns = [
-      "/hooks/*",
+    routes = [
+      {
+        name = "hooks"
+        patterns = [
+          "/hooks/*",
+        ]
+      },
     ]
   }
 }
