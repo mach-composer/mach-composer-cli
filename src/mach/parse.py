@@ -1,4 +1,3 @@
-import os
 import re
 import warnings
 from collections import defaultdict
@@ -21,7 +20,7 @@ from mach.types import (
     TerraformReference,
 )
 from mach.validate import validate_config
-from mach.variables import resolve_variable
+from mach.variables import resolve_env_variable, resolve_variable
 from marshmallow.exceptions import ValidationError
 
 VARIABLE_RE = re.compile(r"^\${(var|env)\.(.*)}$")
@@ -178,14 +177,7 @@ def resolve_variables(obj: Any, vars: dict, vars_encrypted: bool = False):
                 )
             return var_value
         elif type_ == "env":
-            var_value = os.environ.get(var_name, "")
-            if not var_value:
-                msg = (
-                    f"Variable {obj} used but no value found in environment variables."
-                )
-                # TODO: Add possibility by enabling/disabling strict mode using an env var or CLI option
-                raise exceptions.MachError(msg)
-            return var_value
+            return resolve_env_variable(var_name)
         else:
             raise exceptions.MachError(f"Unsupported variables type '{type_}': {obj}")
 

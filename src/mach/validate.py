@@ -1,6 +1,6 @@
 import re
 from itertools import chain
-from typing import List
+from typing import Any, List
 
 import click
 from mach import types
@@ -8,6 +8,19 @@ from mach.__version__ import __version__
 from mach.exceptions import ValidationError
 
 STORE_KEY_RE = re.compile(r"^[\w_-]*$")
+
+
+from mach.variables import EmptyVar
+
+
+def check_variable(val: Any) -> bool:
+    if type(val) == EmptyVar:
+        return True
+    return bool(val)
+
+
+# Short-hand for readability
+c = check_variable
 
 
 def validate_config(config: types.MachConfig, *, ignore_version=True):
@@ -169,13 +182,13 @@ def validate_components(config: types.MachConfig):
 
 
 def validate_sentry_config(config: types.SentryConfig):
-    if not any([config.dsn, config.auth_token]):
+    if not any([c(config.dsn), c(config.auth_token)]):
         raise ValidationError("sentry: Either dsn or auth_token should be set")
 
-    if all([config.dsn, config.auth_token]):
+    if all([c(config.dsn), c(config.auth_token)]):
         raise ValidationError("sentry: Only a dsn or auth_token should be defined")
 
-    if config.auth_token and not any([config.project, config.organization]):
+    if config.auth_token and not any([c(config.project), c(config.organization)]):
         raise ValidationError(
             "sentry: A project and organization should be defined when using an auth_token"
         )

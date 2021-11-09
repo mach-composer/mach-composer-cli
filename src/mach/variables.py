@@ -1,3 +1,4 @@
+import os
 from contextlib import contextmanager
 
 from mach.exceptions import MachError
@@ -5,9 +6,16 @@ from mach.exceptions import MachError
 _ignore_var_not_found = False
 
 
+class EmptyVar(str):
+    pass
+
+
+IGNORED_EMPTY_VAR = EmptyVar("")
+
+
 class VariableNotFound(MachError):
-    def __init__(self, var_name: str):
-        super().__init__(f"Variable {var_name} not found in variables")
+    def __init__(self, var_name: str, pool_name="variables"):
+        super().__init__(f"Variable {var_name} not found in {pool_name}")
 
 
 def resolve_variable(var, variables):
@@ -15,8 +23,19 @@ def resolve_variable(var, variables):
         return _resolve_variable(var, variables)
     except VariableNotFound:
         if _ignore_var_not_found:
-            return ""
+            return IGNORED_EMPTY_VAR
         raise
+
+
+def resolve_env_variable(var):
+    var_value = os.environ.get(var, "")
+    if not var_value:
+        if _ignore_var_not_found:
+            return IGNORED_EMPTY_VAR
+
+        # TODO: Add possibility by enabling/disabling strict mode using an env var or CLI option
+        raise VariableNotFound(var, "environment")
+    return var_value
 
 
 def _resolve_variable(var, variables):
