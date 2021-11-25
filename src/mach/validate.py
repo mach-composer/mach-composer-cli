@@ -6,11 +6,9 @@ import click
 from mach import types
 from mach.__version__ import __version__
 from mach.exceptions import ValidationError
+from mach.variables import EmptyVar
 
 STORE_KEY_RE = re.compile(r"^[\w_-]*$")
-
-
-from mach.variables import EmptyVar
 
 
 def check_variable(val: Any) -> bool:
