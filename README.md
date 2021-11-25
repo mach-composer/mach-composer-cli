@@ -44,7 +44,7 @@ Read our [getting started guide](https://docs.machcomposer.io/gettingstarted.htm
 ```yaml
 ---
 mach_composer:
-  version: 1.0.0
+  version: '1.1'
 global:
   environment: test
   cloud: aws
@@ -65,15 +65,18 @@ sites:
       client_id: ...
       client_secret: ...
       scopes: manage_project:my-site-tst manage_api_clients:my-site-tst view_api_clients:my-site-tst
-      languages:
-        - en-GB
-        - nl-NL
-      currencies:
-        - GBP
-        - EUR
-      countries:
-        - GB
-        - NL
+      token_url: https://auth.europe-west1.gcp.commercetools.com
+      api_url: https://api.europe-west1.gcp.commercetools.com
+      project_settings:
+        languages:
+          - en-GB
+          - nl-NL
+        currencies:
+          - GBP
+          - EUR
+        countries:
+          - GB
+          - NL
     components:
       - name: payment
         variables:
