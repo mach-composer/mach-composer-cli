@@ -10,14 +10,14 @@
   - `${env.}` to include environment variables in the configuration file
 
 **AWS**
-- Upgraded Terraform AWS provider to [`3.63.0`](https://github.com/hashicorp/terraform-provider-aws/blob/main/CHANGELOG.md#3630-october-14-2021)
+- Upgraded Terraform AWS provider to [`3.66.0`](https://github.com/hashicorp/terraform-provider-aws/blob/main/CHANGELOG.md#3660-november-18-2021)
 - Add AWS specific endpoint options;
   - `enable_cdn` creates a CDN in front of an endpoint
   - `throttling_burst_limit` and `throttling_rate_limit` controls throttling on the API gateway
 
 **Azure**
 
-- Upgraded Terraform Azure provider to [`2.83.0`](https://github.com/hashicorp/terraform-provider-azurerm/blob/main/CHANGELOG.md#2830-october-29-2021)
+- Upgraded Terraform Azure provider to [`2.86.0`](https://github.com/hashicorp/terraform-provider-azurerm/blob/main/CHANGELOG.md#2860-november-19-2021)
 - Add extra Frontdoor frontend_endpoint options:
   - session affinity
   - waf policy support

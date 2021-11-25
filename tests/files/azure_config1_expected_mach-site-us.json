@@ -25,7 +25,7 @@
         {
           "azurerm": [
             {
-              "version": "~> 2.83.0"
+              "version": "~> 2.86.0"
             }
           ],
           "commercetools": [

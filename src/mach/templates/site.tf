@@ -32,13 +32,13 @@ terraform {
   required_providers {
     {% if site.aws %}
     aws = {
-      version = "~> {{ general_config.terraform_config.providers.aws or '3.63.0' }}"
+      version = "~> {{ general_config.terraform_config.providers.aws or '3.66.0' }}"
     }
     {% endif %}
 
     {% if site.azure %}
     azurerm = {
-      version = "~> {{ general_config.terraform_config.providers.azure or '2.83.0' }}"
+      version = "~> {{ general_config.terraform_config.providers.azure or '2.86.0' }}"
     }
     {% endif %}
     {% if site.commercetools %}
