@@ -1,3 +1,4 @@
+import os
 import re
 import warnings
 from collections import defaultdict
@@ -348,11 +349,18 @@ def resolve_site_components(config: MachConfig) -> MachConfig:
     return config
 
 
+def absolute_component_source(rel_path):
+    result = abspath(rel_path)
+    if os.name == "nt":
+        result = result.replace("\\", "/")
+    return result
+
+
 def resolve_component_definitions(config: MachConfig):
     for comp in config.components:
         # Terraform needs absolute paths to modules
         if comp.source.startswith("."):
-            comp.source = abspath(comp.source)
+            comp.source = absolute_component_source(comp.source)
 
         if not comp.integrations:
             # If no integrations are given, set the Cloud integrations as default
