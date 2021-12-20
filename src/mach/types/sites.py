@@ -91,7 +91,7 @@ class AWSEndpoint(JsonSchemaMixin):
     disable_execute_api_endpoint: Optional[bool] = fields.default(False)
 
     def __post_init__(self):
-        """Force disable_execute_api_endpoint to False when CDN is used """
+        """Force disable_execute_api_endpoint to False when CDN is used."""
         if self.enable_cdn:
             self.disable_execute_api_endpoint = False
 
