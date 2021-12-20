@@ -142,6 +142,7 @@ class Endpoint(JsonSchemaMixin):
             except ValueError as e:
                 raise ValidationError(f"Could not determine DNS zone: {e}")
 
+
 @dataclass_json
 @dataclass
 class CommercetoolsStore(JsonSchemaMixin):
