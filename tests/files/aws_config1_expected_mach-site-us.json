@@ -157,6 +157,9 @@
           ],
           "protocol_type": [
             "HTTP"
+          ],
+          "disable_execute_api_endpoint": [
+            "${endpoint.aws.disable_execute_api_endpoint}"
           ]
         }
       }
@@ -293,6 +296,12 @@
         "source": [
           "git::https://github.com/some-organisation/mach-component-payment.git//terraform?ref=0a9a0b5"
         ],
+        "variables": [
+          {}
+        ],
+        "secrets": [
+          {}
+        ],
         "component_version": [
           "0a9a0b5"
         ],
@@ -304,12 +313,6 @@
         ],
         "tags": [
           "${local.tags}"
-        ],
-        "variables": [
-          {}
-        ],
-        "secrets": [
-          {}
         ],
         "aws_endpoint_public": [
           {
@@ -347,6 +350,14 @@
         "source": [
           "git::https://github.com/some-organisation/mach-component-api-extensions.git//terraform?ref=a4bbb28"
         ],
+        "variables": [
+          {
+            "ORDER_PREFIX": "MACH-"
+          }
+        ],
+        "secrets": [
+          {}
+        ],
         "component_version": [
           "a4bbb28"
         ],
@@ -358,14 +369,6 @@
         ],
         "tags": [
           "${local.tags}"
-        ],
-        "variables": [
-          {
-            "ORDER_PREFIX": "MACH-"
-          }
-        ],
-        "secrets": [
-          {}
         ],
         "sentry_dsn": [
           "${sentry_key.api-extensions.dsn_secret}"

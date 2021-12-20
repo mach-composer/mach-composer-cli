@@ -2,6 +2,7 @@
 resource "aws_apigatewayv2_api" "{{ endpoint.key|slugify }}_gateway" {
   name                       = "{{ site.identifier }}-{{ endpoint.key|slugify }}-api"
   protocol_type              = "HTTP"
+  disable_execute_api_endpoint = endpoint.aws.disable_execute_api_endpoint
 }
 
 resource "aws_apigatewayv2_route" "{{ endpoint.key|slugify }}_application" {

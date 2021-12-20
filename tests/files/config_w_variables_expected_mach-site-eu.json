@@ -160,6 +160,9 @@
           ],
           "protocol_type": [
             "HTTP"
+          ],
+          "disable_execute_api_endpoint": [
+            "${endpoint.aws.disable_execute_api_endpoint}"
           ]
         }
       }

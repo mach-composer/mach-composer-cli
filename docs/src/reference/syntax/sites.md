@@ -54,11 +54,13 @@ aws:
   throttling_burst_limit: 5000
   throttling_rate_limit: 10000
   enable_cdn: true
+
 ```
 
 - `throttling_burst_limit` - Set burst limit for API Gateway endpoints
 - `throttling_rate_limit` - Set burst limit for API Gateway endpoints
 - `enable_cdn` - Defaults to false. Sets a CDN in front of this endpoint for better global availability. For AWS creates a CloudFront distribution
+- `disable_execute_api_endpoint` - Defaults to false and can't be set when using `enable_cdn`
 
 ### azure
 Example:

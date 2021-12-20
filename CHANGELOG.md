@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.2 (....)
+
+**AWS**
+- Add AWS specific endpoint options;
+  - `disable_execute_api_endpoint` disable default domain when using a custom domain.
+
 ## 1.1 (2021-11-25)
 
 **General**

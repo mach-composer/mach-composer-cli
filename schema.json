@@ -427,9 +427,13 @@
         "enable_cdn": {
           "type": "boolean",
           "default": false
+        },
+        "disable_execute_api_endpoint": {
+          "type": "boolean",
+          "default": false
         }
       },
-      "description": "AWSEndpoint(throttling_burst_limit: Union[int, NoneType] = None, throttling_rate_limit: Union[int, NoneType] = None, enable_cdn: Union[bool, NoneType] = <factory>)"
+      "description": "AWSEndpoint(throttling_burst_limit: Union[int, NoneType] = None, throttling_rate_limit: Union[int, NoneType] = None, enable_cdn: Union[bool, NoneType] = <factory>, disable_execute_api_endpoint: Union[bool, NoneType] = <factory>)"
     },
     "AzureEndpoint": {
       "type": "object",
@@ -444,9 +448,12 @@
         },
         "waf_policy_id": {
           "type": "string"
+        },
+        "internal_name": {
+          "type": "string"
         }
       },
-      "description": "AzureEndpoint(session_affinity_enabled: Union[bool, NoneType] = <factory>, session_affinity_ttl_seconds: Union[int, NoneType] = <factory>, waf_policy_id: Union[str, NoneType] = None)"
+      "description": "AzureEndpoint(session_affinity_enabled: Union[bool, NoneType] = <factory>, session_affinity_ttl_seconds: Union[int, NoneType] = <factory>, waf_policy_id: Union[str, NoneType] = None, internal_name: Union[str, NoneType] = None)"
     },
     "Component": {
       "type": "object",

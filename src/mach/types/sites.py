@@ -88,6 +88,12 @@ class AWSEndpoint(JsonSchemaMixin):
     throttling_burst_limit: Optional[int] = fields.none()
     throttling_rate_limit: Optional[int] = fields.none()
     enable_cdn: Optional[bool] = fields.default(False)
+    disable_execute_api_endpoint: Optional[bool] = fields.default(False)
+
+    def __post_init__(self):
+        """Force disable_execute_api_endpoint to False when CDN is used """
+        if self.enable_cdn:
+            self.disable_execute_api_endpoint = False
 
 
 @dataclass_json
@@ -135,7 +141,6 @@ class Endpoint(JsonSchemaMixin):
                 self.zone = utils.dns_zone_from_url(self.url)
             except ValueError as e:
                 raise ValidationError(f"Could not determine DNS zone: {e}")
-
 
 @dataclass_json
 @dataclass
