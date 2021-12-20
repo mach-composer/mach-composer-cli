@@ -3,6 +3,7 @@
 ## 1.2 (....)
 
 **AWS**
+- Upgraded Terraform AWS provider to [`3.70.0`](https://github.com/hashicorp/terraform-provider-aws/blob/main/CHANGELOG.md#3700-december-16-2021)
 - Add AWS specific endpoint options;
   - `disable_execute_api_endpoint` disable default domain when using a custom domain.
 
