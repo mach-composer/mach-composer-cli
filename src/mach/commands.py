@@ -10,6 +10,7 @@ from mach import git, parse, updater
 from mach.build import build_packages
 from mach.exceptions import MachError
 from mach.terraform import apply_terraform, generate_terraform, plan_terraform
+from mach.variables import ignore_variable_not_found
 
 
 class Command(click.Command):
@@ -266,7 +267,10 @@ def update(
 def components(file: str):
     """List all components."""
     files = get_input_files(file)
-    configs = parse.parse_configs(files)
+
+    with ignore_variable_not_found():
+        configs = parse.parse_configs(files)
+
     for config in configs:
         click.echo(f"{config.file}:")
         for component in config.components:
@@ -286,7 +290,10 @@ def components(file: str):
 def sites(file: str):
     """List all sites."""
     files = get_input_files(file)
-    configs = parse.parse_configs(files)
+
+    with ignore_variable_not_found():
+        configs = parse.parse_configs(files)
+
     for config in configs:
         click.echo(f"{config.file}:")
         for site in config.sites:

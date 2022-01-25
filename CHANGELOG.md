@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2 (unreleased)
+
+- Ignore missing variables when running `mach sites` and `mach components`
+
 ## 1.1 (2021-11-25)
 
 **General**
