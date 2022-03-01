@@ -7,6 +7,7 @@ from typing import List, Optional
 import click
 from mach import bootstrap as _bootstrap
 from mach import git, parse, updater
+from mach.__version__ import __version__
 from mach.build import build_packages
 from mach.exceptions import MachError
 from mach.terraform import apply_terraform, generate_terraform, plan_terraform
@@ -28,6 +29,7 @@ class Group(click.Group):
 
 
 @click.group(cls=Group)
+@click.version_option(__version__)
 def mach():
     pass
 
