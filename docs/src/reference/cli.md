@@ -14,6 +14,7 @@ Commands:
   bootstrap   Bootstraps a configuration or component.
   components  List all components.
   generate    Generate the Terraform files.
+  init        Init the Terraform directory.
   plan        Output the deploy plan.
   sites       List all sites.
   update      Update all (or a given) component.
@@ -77,6 +78,22 @@ Generate the Terraform files.
 
 ```bash
 mach generate -f main.yml
+```
+
+**Options**
+
+- `--file` or `-f TEXT` YAML file to parse. If not set parse all *.yml files.
+- `--var-file` YAML file with variables to be used in the configuration file.
+- `--site` or `-s TEXT` Site to parse. If not set parse all sites.
+- `--output-path TEXT` Output path, defaults to `cwd`/deployments.
+- `--ignore-version` Skip MACH composer version check
+
+
+## `init`
+Initiliaze the Terraform directory.
+
+```bash
+mach init -f main.yml
 ```
 
 **Options**

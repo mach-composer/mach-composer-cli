@@ -110,6 +110,10 @@ To generate the files:
 
 `mach generate -f main.yml`
 
+To init Terraform (optional):
+
+`mach init`
+
 To plan Terraform:
 
 `mach plan`
