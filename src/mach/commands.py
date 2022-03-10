@@ -10,7 +10,12 @@ from mach import git, parse, updater
 from mach.__version__ import __version__
 from mach.build import build_packages
 from mach.exceptions import MachError
-from mach.terraform import apply_terraform, generate_terraform, plan_terraform
+from mach.terraform import (
+    apply_terraform,
+    generate_terraform,
+    init_terraform,
+    plan_terraform,
+)
 from mach.variables import ignore_variable_not_found
 
 
@@ -93,6 +98,14 @@ def generate(file, site, configs, *args, **kwargs):
     """Generate the Terraform files."""
     for config in configs:
         generate_terraform(config, site=site)
+
+
+@mach.command()
+@terraform_command
+def init(file, site, configs, *args, **kwargs):
+    """Initialize site directories Terraform files."""
+    for config in configs:
+        init_terraform(config, site=site)
 
 
 @mach.command()
