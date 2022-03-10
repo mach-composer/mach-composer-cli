@@ -48,6 +48,8 @@ sites:
     aws:
       account_id: 940853598234
       region: us-west-1
+      default_tags:
+        managedby: terraform
     commercetools:
       project_key: mach-site-us
       client_id: 6SWM8ttjAYll-f9dopjdt

@@ -19,6 +19,7 @@ from .shared import ComponentAzureConfig, ServicePlan
 TerraformVariables = Dict[str, Any]
 StoreVariables = Dict[str, TerraformVariables]
 LocalizedString = Dict[str, str]
+Tags = Dict[str, str]
 
 if TYPE_CHECKING:
     from .components import ComponentConfig
@@ -71,6 +72,7 @@ class AWSProvider(JsonSchemaMixin):
 
     name: str
     region: str
+    default_tags: Tags = fields.dict_()
 
 
 @dataclass_json
@@ -380,6 +382,7 @@ class SiteAWSSettings(JsonSchemaMixin):
     account_id: int
     region: str
     deploy_role_name: Optional[str] = fields.none()
+    default_tags: Tags = fields.dict_()
     extra_providers: Optional[List[AWSProvider]] = fields.list_()
 
 
