@@ -54,10 +54,10 @@ def render_tfvalue(value):
         values = ",".join([render_tfvalue(val) for val in value])
         return f"[{values}]"
     if isinstance(value, dict):
-        values = ",\n".join(
+        values = "\n".join(
             [f"{key} = {render_tfvalue(val)}" for key, val in value.items()]
         )
-        return f"{{{values}}}"
+        return f"{{\n{values}\n}}"
     return do_mark_safe(f'"{value}"')
 
 

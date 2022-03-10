@@ -4,6 +4,9 @@
 
 - Ignore missing variables when running `mach sites` and `mach components`
 
+**AWS**
+- Add support for default tags on provider level
+
 ## 1.1 (2021-11-25)
 
 **General**

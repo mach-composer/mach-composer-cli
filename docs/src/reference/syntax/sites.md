@@ -444,6 +444,8 @@ aws:
   account_id: 1234567890
   region: eu-west-1
   deploy_role_name: deploy
+  default_tags:
+    owner: terraform
   extra_providers:
     - name: email
       region: eu-west-1
@@ -452,6 +454,7 @@ aws:
 - **`account_id`** - (Required) AWS account ID for this site
 - **`region`** - AWS region to deploy site in
 - `deploy_role_name` - The [IAM role](./prerequisites/aws#iam-deploy-role) name needed for deployment
+- `default_tags` - Default tags set at provider level
 - `extra_providers`
 
 ## components

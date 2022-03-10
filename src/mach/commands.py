@@ -107,7 +107,7 @@ def generate(file, site, configs, *args, **kwargs):
     "-c",
     "--component",
     multiple=True,
-    default=False,
+    default=[],
     help="",
 )
 @click.option(
@@ -148,7 +148,7 @@ def plan(file, site, configs, with_sp_login, component, reuse, *args, **kwargs):
     "-c",
     "--component",
     multiple=True,
-    default=False,
+    default=[],
     help="",
 )
 @click.option(

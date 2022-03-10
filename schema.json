@@ -444,9 +444,12 @@
         },
         "waf_policy_id": {
           "type": "string"
+        },
+        "internal_name": {
+          "type": "string"
         }
       },
-      "description": "AzureEndpoint(session_affinity_enabled: Union[bool, NoneType] = <factory>, session_affinity_ttl_seconds: Union[int, NoneType] = <factory>, waf_policy_id: Union[str, NoneType] = None)"
+      "description": "AzureEndpoint(session_affinity_enabled: Union[bool, NoneType] = <factory>, session_affinity_ttl_seconds: Union[int, NoneType] = <factory>, waf_policy_id: Union[str, NoneType] = None, internal_name: Union[str, NoneType] = None)"
     },
     "Component": {
       "type": "object",
@@ -955,6 +958,13 @@
         "deploy_role_name": {
           "type": "string"
         },
+        "default_tags": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "default": {}
+        },
         "extra_providers": {
           "type": "array",
           "items": {
@@ -977,6 +987,13 @@
         },
         "region": {
           "type": "string"
+        },
+        "default_tags": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "default": {}
         }
       },
       "description": "AWS provider configuration."
