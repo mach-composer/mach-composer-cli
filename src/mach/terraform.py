@@ -48,6 +48,19 @@ def _clean_tf(content: str) -> str:
     return re.sub(r"\{(\s*)\}", "{}", content)
 
 
+def init_terraform(config: MachConfig, *, site: str = None):
+    """Terraform init for all generated sites."""
+    sites = _filter_sites(config.sites, site)
+    for s in sites:
+        site_dir = config.deployment_path / Path(s.identifier)
+        if not site_dir.is_dir():
+            click.echo(f"Could not find site directory {site_dir}")
+            continue
+
+        click.echo(f"Terraform init for {site_dir.name}")
+        run_terraform("init", site_dir)
+
+
 def plan_terraform(
     config: MachConfig,
     *,
