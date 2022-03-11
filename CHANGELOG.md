@@ -4,6 +4,7 @@
 
 - Ignore missing variables when running `mach sites` and `mach components`
 - Add terraform init command support
+- Add --destroy flag to plan and apply command
 
 **AWS**
 - Add support for default tags on provider level

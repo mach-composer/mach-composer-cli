@@ -183,7 +183,7 @@ def plan(
     "--destroy",
     default=False,
     is_flag=True,
-    help="Destroy option is a convenient way to destroy all remote objects managed by this mach config (This is no reversable)", # noqa
+    help="Destroy option is a convenient way to destroy all remote objects managed by this mach config", # noqa
 )
 @terraform_command
 def apply(
