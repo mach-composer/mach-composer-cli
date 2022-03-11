@@ -68,6 +68,7 @@ def plan_terraform(
     components: List[str] = [],
     with_sp_login: bool = False,
     reuse=False,
+    destroy=False,
 ):
     """Terraform init and plan for all generated sites."""
     sites = _filter_sites(config.sites, site)
@@ -86,6 +87,10 @@ def plan_terraform(
             azure_sp_login()
 
         cmd = ["plan"]
+
+        if destroy:
+            cmd += ["-destroy"]
+
         for component in components:
             cmd.append(f"-target=module.{component}")
 
@@ -100,6 +105,7 @@ def apply_terraform(
     with_sp_login: bool = False,
     auto_approve: bool = False,
     reuse=False,
+    destroy=False,
 ):
     """Terraform apply for all generated sites."""
     sites = _filter_sites(config.sites, site)
@@ -118,6 +124,10 @@ def apply_terraform(
             azure_sp_login()
 
         cmd = ["apply"]
+
+        if destroy:
+            cmd += ["-destroy"]
+
         if auto_approve:
             cmd += ["-auto-approve"]
 

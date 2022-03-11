@@ -129,8 +129,16 @@ def init(file, site, configs, *args, **kwargs):
     is_flag=True,
     help="Supress a terraform init for improved speed (not recommended for production usage)",
 )
+@click.option(
+    "--destroy",
+    default=False,
+    is_flag=True,
+    help="Destroy option is a convenient way to destroy all remote objects managed by this mach config", # noqa
+)
 @terraform_command
-def plan(file, site, configs, with_sp_login, component, reuse, *args, **kwargs):
+def plan(
+    file, site, configs, with_sp_login, component, reuse, destroy, *args, **kwargs
+):
     """Output the deploy plan."""
     for config in configs:
         generate_terraform(config, site=site)
@@ -140,6 +148,7 @@ def plan(file, site, configs, with_sp_login, component, reuse, *args, **kwargs):
             components=component,
             with_sp_login=with_sp_login,
             reuse=reuse,
+            destroy=destroy,
         )
 
 
@@ -170,6 +179,12 @@ def plan(file, site, configs, with_sp_login, component, reuse, *args, **kwargs):
     default=False,
     help="Supress a terraform init for improved speed (not recommended for production usage)",
 )
+@click.option(
+    "--destroy",
+    default=False,
+    is_flag=True,
+    help="Destroy option is a convenient way to destroy all remote objects managed by this mach config", # noqa
+)
 @terraform_command
 def apply(
     file,
@@ -179,6 +194,7 @@ def apply(
     auto_approve,
     component,
     reuse,
+    destroy,
     *args,
     **kwargs,
 ):
@@ -193,6 +209,7 @@ def apply(
             with_sp_login=with_sp_login,
             auto_approve=auto_approve,
             reuse=reuse,
+            destroy=destroy,
         )
 
 

@@ -40,6 +40,7 @@ mach apply --auto-approve -f main.yml
 - `--output-path TEXT` Output path, defaults to `cwd`/deployments`.
 - `--reuse` Supress a terraform init for improved speed (not recommended for production usage)
 - `--ignore-version` Skip MACH composer version check
+- `--destroy` Destroy option is a convenient way to destroy all remote objects managed by this mach config
 
 
 ## `bootstrap`
@@ -121,6 +122,7 @@ mach plan -f main.yml
 - `--output-path TEXT` Output path, defaults to `cwd`/deployments.
 - `--reuse` Supress a terraform init for improved speed (not recommended for production usage)
 - `--ignore-version` Skip MACH composer version check
+- `--destroy` Destroy option is a convenient way to destroy all remote objects managed by this mach config
 
 
 ## `sites`
