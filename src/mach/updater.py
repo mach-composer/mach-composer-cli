@@ -1,3 +1,4 @@
+import concurrent.futures
 import os
 import re
 import subprocess
@@ -15,6 +16,7 @@ VERSION_RE = re.compile(r"(\s*version: )([\"']?.*[\"']?)")
 
 ROOT_BLOCK_START = re.compile(r"^\w+")
 
+MAX_WORKERS = 4
 
 Updates = List[Tuple[ComponentConfig, str]]
 
@@ -121,15 +123,17 @@ def _fetch_changes(updater_input: UpdaterInput) -> Updates:
         components = updater_input.data
 
     updates: Updates = []
-    for component in components:
-        click.echo(f"Updates for {component.name}...")
+
+    def _inner_update(component):
+        outputs = [f"Updates for {component.name}..."]
 
         match = re.match(r"^git::(.*)", component.source)
         if not match:
-            click.echo(
+            outputs.append(
                 f"  Cannot check {component.name} component since it doesn't have a Git source defined"  # noqa
             )
-            continue
+            click.echo("\n".join(outputs))
+            return
 
         component_dir = os.path.join(cache_dir, component.name)
         repo = match.group(1)
@@ -140,15 +144,19 @@ def _fetch_changes(updater_input: UpdaterInput) -> Updates:
 
         commits = git.history(component_dir, component.version, branch=component.branch)
         if not commits:
-            click.echo("  No updates\n")
-            continue
+            outputs.append("  No updates\n")
+            click.echo("\n".join(outputs))
+            return
 
         for commit in commits:
-            click.echo(f"  {commit.id}: {commit.msg}")
+            outputs.append(f"  {commit.id}: {commit.msg}")
 
-        click.echo("")
-
+        outputs.append("")
+        click.echo("\n".join(outputs))
         updates.append((component, commits[0].id))
+
+    with concurrent.futures.ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
+        executor.map(_inner_update, components)
 
     return updates
 
