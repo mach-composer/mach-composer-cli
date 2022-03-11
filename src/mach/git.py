@@ -2,8 +2,8 @@ import os
 import re
 import subprocess
 from dataclasses import dataclass
-from typing import List, Optional
 from email.utils import parseaddr
+from typing import List, Optional
 
 import click
 from mach import exceptions
@@ -79,7 +79,11 @@ def history(dir: str, from_ref: str, *, branch: Optional[str] = "") -> List[Comm
         commit_id, author, date, message = line.split("|", 3)
         author, _ = parseaddr(author)
         commits.append(
-            Commit(id=_clean_commit_id(commit_id), author=author, msg=_clean_commit_msg(message))
+            Commit(
+                id=_clean_commit_id(commit_id),
+                author=author,
+                msg=_clean_commit_msg(message),
+            )
         )
 
     return commits
