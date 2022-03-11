@@ -136,7 +136,9 @@ def init(file, site, configs, *args, **kwargs):
     help="Destroy option is a convenient way to destroy all remote objects managed by this mach config (This is no reversable)",
 )
 @terraform_command
-def plan(file, site, configs, with_sp_login, component, reuse, destroy, *args, **kwargs):
+def plan(
+    file, site, configs, with_sp_login, component, reuse, destroy, *args, **kwargs
+):
     """Output the deploy plan."""
     for config in configs:
         generate_terraform(config, site=site)
@@ -146,7 +148,7 @@ def plan(file, site, configs, with_sp_login, component, reuse, destroy, *args, *
             components=component,
             with_sp_login=with_sp_login,
             reuse=reuse,
-            destroy=destroy
+            destroy=destroy,
         )
 
 
@@ -207,7 +209,7 @@ def apply(
             with_sp_login=with_sp_login,
             auto_approve=auto_approve,
             reuse=reuse,
-            destroy=destroy
+            destroy=destroy,
         )
 
 
