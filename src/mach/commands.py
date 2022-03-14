@@ -105,6 +105,7 @@ def generate(file, site, configs, *args, **kwargs):
 def init(file, site, configs, *args, **kwargs):
     """Initialize site directories Terraform files."""
     for config in configs:
+        generate_terraform(config, site=site)
         init_terraform(config, site=site)
 
 
