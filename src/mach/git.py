@@ -2,6 +2,7 @@ import os
 import re
 import subprocess
 from dataclasses import dataclass
+from email.utils import parseaddr
 from typing import List, Optional
 
 import click
@@ -25,6 +26,7 @@ class GitError(exceptions.MachError):
 class Commit:
     id: str
     msg: str
+    author: str
 
 
 def commit(message: str):
@@ -75,8 +77,13 @@ def history(dir: str, from_ref: str, *, branch: Optional[str] = "") -> List[Comm
     commits = []
     for line in lines:
         commit_id, author, date, message = line.split("|", 3)
+        author, _ = parseaddr(author)
         commits.append(
-            Commit(id=_clean_commit_id(commit_id), msg=_clean_commit_msg(message))
+            Commit(
+                id=_clean_commit_id(commit_id),
+                author=author,
+                msg=_clean_commit_msg(message),
+            )
         )
 
     return commits

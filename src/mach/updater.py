@@ -149,7 +149,7 @@ def _fetch_changes(updater_input: UpdaterInput) -> Updates:
             return
 
         for commit in commits:
-            outputs.append(f"  {commit.id}: {commit.msg}")
+            outputs.append(f"  {commit.id}: {commit.msg} <{commit.author}>")
 
         outputs.append("")
         click.echo("\n".join(outputs))
