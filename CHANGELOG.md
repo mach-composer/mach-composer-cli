@@ -2,12 +2,21 @@
 
 ## 1.2 (unreleased)
 
+**general**
+- Add `mach init` command
 - Ignore missing variables when running `mach sites` and `mach components`
-- Add terraform init command support
-- Add --destroy flag to plan and apply command
+- Add `--destroy` flag to the `plan` and `apply` commands
 
 **AWS**
 - Add support for default tags on provider level
+  ```yaml
+  aws:
+    account_id: 123456789
+    region: eu-central-1
+    default_tags:
+      environment: test
+      owner: john
+  ```
 
 ## 1.1 (2021-11-25)
 
