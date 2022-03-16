@@ -2,9 +2,10 @@ import re
 import textwrap
 import warnings
 from collections import defaultdict
+from dataclasses import dataclass
 from os.path import abspath, basename, splitext
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Tuple
 
 import click
 from mach import exceptions, yaml
@@ -52,6 +53,22 @@ def parse_components(file: str):
     return components
 
 
+@dataclass
+class VariablesFile:
+    path: str
+    vars: dict
+    encrypted: bool
+
+    @classmethod
+    def from_file(cls, path: str):
+        try:
+            vars, vars_encrypted = yaml.load(path)
+        except yaml.YAMLError as e:
+            raise exceptions.ParseError(f"Could not parse variables file:\n{e}")
+
+        return cls(path=path, vars=vars, encrypted=vars_encrypted)
+
+
 def parse_configs(
     files: List[str],
     output_path: str = None,
@@ -60,14 +77,7 @@ def parse_configs(
     var_file: str = "",
 ) -> List[MachConfig]:
     """Parse and validate configurations."""
-    vars = {}
-    vars_encrypted = False
-
-    if var_file:
-        try:
-            vars, vars_encrypted = yaml.load(var_file)
-        except yaml.YAMLError as e:
-            raise exceptions.ParseError(f"Could not parse variables file:\n{e}")
+    vars = VariablesFile.from_file(var_file) if var_file else None
 
     configs = []
     for file in files:
@@ -77,13 +87,11 @@ def parse_configs(
                 output_path,
                 ignore_version=ignore_version,
                 vars=vars,
-                vars_encrypted=vars_encrypted,
             )
         except exceptions.ParseError as e:
             click.echo(textwrap.indent(str(e), "  "))
             continue
 
-        config.variables_path = var_file
         configs.append(config)
 
     return configs
@@ -94,12 +102,18 @@ def parse_and_validate(
     output_path: str = None,
     *,
     ignore_version=True,
-    vars={},
+    vars: VariablesFile = None,
     vars_encrypted=False,
 ) -> MachConfig:
     """Parse and validate configuration."""
-    config = parse_config_from_file(file, vars=vars, vars_encrypted=vars_encrypted)
+    yaml_content, encrypted = yaml.load(file)
+    if not vars:
+        vars = get_config_vars(yaml_content)
+
+    config = parse_config_from_yaml(yaml_content, vars=vars)
+    config.file_encrypted = encrypted
     config.file = file
+
     validate_config(config, ignore_version=ignore_version)
 
     if output_path:
@@ -110,20 +124,37 @@ def parse_and_validate(
     return config
 
 
-def parse_config_from_file(file: str, *, vars={}, vars_encrypted=False) -> MachConfig:
-    """Parse file into MachConfig object."""
-    click.echo(f"Parsing {file}...")
-    dictionary_config, encrypted = yaml.load(file)
+def get_config_vars(yaml_content: dict) -> VariablesFile:
+    var_file = yaml_content.get("mach_composer", {}).get("variables_file", None)
+    if not var_file:
+        return None
 
+    return VariablesFile.from_file(var_file)
+
+
+def parse_config_from_file(file: str, *, vars: VariablesFile = None) -> MachConfig:
+    click.echo(f"Parsing {file}...")
+    yaml_content, encrypted = yaml.load(file)
+    config = parse_config_from_yaml(yaml_content, vars=vars)
+    config.file_encrypted = encrypted
+    config.file = file
+    return config
+
+
+def parse_config_from_yaml(
+    yaml_content: dict, *, vars: VariablesFile = None
+) -> MachConfig:
+    """Parse file into MachConfig object."""
     try:
         with warnings.catch_warnings():
             # Suppress a 'Unknown type ForwardRef('Component')' warning from dataclasses_json
             warnings.simplefilter("ignore")
-            config = MachConfig.schema(infer_missing=True).load(dictionary_config)  # type: ignore
+            config = MachConfig.schema(infer_missing=True).load(yaml_content)  # type: ignore
 
-        config.file_encrypted = encrypted
-        config.variables = vars
-        config.variables_encrypted = vars_encrypted
+        if vars:
+            config.variables = vars.vars
+            config.variables_encrypted = vars.encrypted
+            config.variables_path = vars.path
 
     except KeyError as e:
         # Most probably a missing value in the configuration.

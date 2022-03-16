@@ -8,6 +8,7 @@
   This allows you to run things like `mach apply` or `mach update` without having to specify the `-f main.yml` option if you only have one valid MACH configuration file in your directory. Fixes #150
 - Ignore missing variables when running `mach sites` and `mach components`
 - Add `--destroy` flag to the `plan` and `apply` commands
+- Add `variables_file` option to the `mach_composer` configuration block to define a variable file
 - Show commit author in `mach update` output
 
 **AWS**
