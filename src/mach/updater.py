@@ -45,7 +45,7 @@ def update_file(
 ):
     try:
         with ignore_variable_not_found():
-            config = parse.parse_and_validate(file)
+            config = parse.parse_config_from_file(file)
         data = UpdaterInput(config, file)
     except exceptions.ParseError as e:
         # We might have a components yml as input, try to parse that
