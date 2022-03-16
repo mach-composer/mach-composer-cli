@@ -4,6 +4,8 @@
 
 **general**
 - Add `mach init` command
+- Skip non-MACH configuration files when processing all yaml files in a directory.<br>
+  This allows you to run things like `mach apply` or `mach update` without having to specify the `-f main.yml` option if you only have one valid MACH configuration file in your directory. Fixes #150
 - Ignore missing variables when running `mach sites` and `mach components`
 - Add `--destroy` flag to the `plan` and `apply` commands
 

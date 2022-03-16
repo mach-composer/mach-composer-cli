@@ -1,4 +1,5 @@
 import re
+import textwrap
 import warnings
 from collections import defaultdict
 from os.path import abspath, basename, splitext
@@ -70,13 +71,18 @@ def parse_configs(
 
     configs = []
     for file in files:
-        config = parse_and_validate(
-            file,
-            output_path,
-            ignore_version=ignore_version,
-            vars=vars,
-            vars_encrypted=vars_encrypted,
-        )
+        try:
+            config = parse_and_validate(
+                file,
+                output_path,
+                ignore_version=ignore_version,
+                vars=vars,
+                vars_encrypted=vars_encrypted,
+            )
+        except exceptions.ParseError as e:
+            click.echo(textwrap.indent(str(e), "  "))
+            continue
+
         config.variables_path = var_file
         configs.append(config)
 
@@ -94,7 +100,6 @@ def parse_and_validate(
     """Parse and validate configuration."""
     config = parse_config_from_file(file, vars=vars, vars_encrypted=vars_encrypted)
     config.file = file
-    click.echo(f"Parsed {file} into config")
     validate_config(config, ignore_version=ignore_version)
 
     if output_path:

@@ -1,6 +1,7 @@
 import glob
 import subprocess
 import sys
+import textwrap
 from functools import update_wrapper
 from typing import List, Optional
 
@@ -9,7 +10,7 @@ from mach import bootstrap as _bootstrap
 from mach import git, parse, updater
 from mach.__version__ import __version__
 from mach.build import build_packages
-from mach.exceptions import MachError
+from mach.exceptions import MachError, ParseError
 from mach.terraform import (
     apply_terraform,
     generate_terraform,
@@ -75,6 +76,10 @@ def terraform_command(f):
         configs = parse.parse_configs(
             files, output_path, ignore_version=ignore_version, var_file=var_file
         )
+
+        if not configs:
+            raise click.ClickException("No valid MACH configurations found")
+
         try:
             result = f(
                 file=file,
@@ -134,7 +139,7 @@ def init(file, site, configs, *args, **kwargs):
     "--destroy",
     default=False,
     is_flag=True,
-    help="Destroy option is a convenient way to destroy all remote objects managed by this mach config", # noqa
+    help="Destroy option is a convenient way to destroy all remote objects managed by this mach config",  # noqa
 )
 @terraform_command
 def plan(
@@ -184,7 +189,7 @@ def plan(
     "--destroy",
     default=False,
     is_flag=True,
-    help="Destroy option is a convenient way to destroy all remote objects managed by this mach config", # noqa
+    help="Destroy option is a convenient way to destroy all remote objects managed by this mach config",  # noqa
 )
 @terraform_command
 def apply(
@@ -214,6 +219,7 @@ def apply(
         )
 
 
+# flake8: noqa: C901
 @mach.command()
 @click.option(
     "-f",
@@ -268,13 +274,17 @@ def update(
         component, version = component.split("@")
 
     for file in get_input_files(file):
-        updater.update_file(
-            file,
-            component_name=component,
-            new_version=version,
-            verbose=verbose,
-            check_only=check,
-        )
+        try:
+            updater.update_file(
+                file,
+                component_name=component,
+                new_version=version,
+                verbose=verbose,
+                check_only=check,
+            )
+        except ParseError as e:
+            click.echo(textwrap.indent(str(e), "  "))
+            continue
 
         if commit:
             git.add(file)
