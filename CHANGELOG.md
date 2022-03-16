@@ -9,6 +9,7 @@
 - Ignore missing variables when running `mach sites` and `mach components`
 - Add `--destroy` flag to the `plan` and `apply` commands
 - Add `variables_file` option to the `mach_composer` configuration block to define a variable file
+- Show commit author in `mach update` output
 
 **AWS**
 - Add support for default tags on provider level
