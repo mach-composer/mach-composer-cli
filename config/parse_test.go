@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/davecgh/go-spew/spew"
 	"github.com/lithammer/dedent"
 	"github.com/stretchr/testify/assert"
 )
@@ -24,6 +23,12 @@ func TestParse(t *testing.T) {
           cloud: aws
         sites:
         - identifier: my-site
+          endpoints:
+            main: api.my-site.nl
+            internal:
+              url: internal-api.my-site.nl
+              throttling_burst_limit: 5000
+              throttling_rate_limit: 10000
           commercetools:
             project_key: my-site
             client_id: "<client-id>"
@@ -39,19 +44,21 @@ func TestParse(t *testing.T) {
               countries:
                 - GB
                 - NL
-            aws:
-              account_id: 123456789
-              region: eu-central-1
-            components:
-            - name: your-component
-              variables:
-                FOO_VAR: my-value
-              secrets:
-                MY_SECRET: secretvalue
+          aws:
+            account_id: 123456789
+            region: eu-central-1
+          components:
+          - name: your-component
+            variables:
+              FOO_VAR: my-value
+            secrets:
+              MY_SECRET: secretvalue
         components:
         - name: your-component
           source: "git::https://github.com/<username>/<your-component>.git//terraform"
           version: 0.1.0
+          endpoints:
+            internal: internal
           integrations:
             - aws
             - commercetools
@@ -62,33 +69,58 @@ func TestParse(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	spew.Dump(config)
 
 	expected := &Root{
+		MachComposer: MachComposer{
+			Version: "1.0.0",
+		},
 		Global: Global{
 			Environment: "test",
 			Cloud:       "aws",
+			TerraformConfig: TerraformConfig{
+				AwsRemoteState: &AWSTFState{
+					Bucket:    "your bucket",
+					KeyPrefix: "mach",
+				},
+			},
 		},
 		Sites: []Site{
 			{
 				Name:       "",
 				Identifier: "my-site",
-				CommercetoolsSettings: CommercetoolsSettings{
+				RawEndpoints: map[string]interface{}{
+					"main": "api.my-site.nl",
+					"internal": map[string]interface{}{
+						"throttling_burst_limit": 5000,
+						"throttling_rate_limit":  10000,
+						"url":                    "internal-api.my-site.nl",
+					},
+				},
+				Commercetools: &CommercetoolsSettings{
 					ProjectKey:   "my-site",
 					ClientID:     "<client-id>",
 					ClientSecret: "<client-secret>",
 					Scopes:       "manage_api_clients:my-site manage_project:my-site view_api_clients:my-site",
+					ProjectSettings: &CommercetoolsProjectSettings{
+						Languages:  []string{"en-GB", "nl-NL"},
+						Currencies: []string{"GBP", "EUR"},
+						Countries:  []string{"GB", "NL"},
+					},
 				},
 				Components: []SiteComponent{
 					{
 						Name: "your-component",
-						Variables: map[string]string{
+						Variables: map[string]interface{}{
 							"FOO_VAR": "my-value",
 						},
-						Secrets: map[string]string{
+						Secrets: map[string]interface{}{
 							"MY_SECRET": "secretvalue",
 						},
 					},
+				},
+				AWS: &SiteAWS{
+					AccountID: "123456789",
+					Region:    "eu-central-1",
 				},
 			},
 		},
@@ -98,6 +130,9 @@ func TestParse(t *testing.T) {
 				Source:       "git::https://github.com/<username>/<your-component>.git//terraform",
 				Version:      "0.1.0",
 				Integrations: []string{"aws", "commercetools"},
+				Endpoints: map[string]string{
+					"internal": "internal",
+				},
 			},
 		},
 	}

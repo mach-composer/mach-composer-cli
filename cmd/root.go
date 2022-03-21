@@ -20,6 +20,7 @@ func Execute() error {
 
 func init() {
 	rootCmd.AddCommand(applyCmd)
+	rootCmd.AddCommand(initCmd)
 	rootCmd.AddCommand(generateCmd)
 	rootCmd.AddCommand(planCmd)
 	rootCmd.AddCommand(updateCmd)
