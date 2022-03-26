@@ -24,7 +24,7 @@ func TerraformApplySite(ctx context.Context, cfg *config.Root, site *config.Site
 }
 
 func RunTerraform(ctx context.Context, cwd string, args ...string) {
-	logrus.Debug("Running: terraform %s\n", strings.Join(args, " "))
+	logrus.Debugf("Running: terraform %s\n", strings.Join(args, " "))
 	cmd := exec.CommandContext(
 		ctx,
 		"terraform",
