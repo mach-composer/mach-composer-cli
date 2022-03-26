@@ -40,7 +40,7 @@ func GetLastVersionGit(ctx context.Context, c *config.Component, origin string) 
 	source, err := parseGitSource(c.Source)
 
 	if err != nil {
-		return "", fmt.Errorf("cannot check %s component since it doesn't have a Git source defined\n", c.Name)
+		return "", fmt.Errorf("cannot check %s component since it doesn't have a Git source defined", c.Name)
 	}
 
 	fetchGitRepository(ctx, source, cacheDir)
