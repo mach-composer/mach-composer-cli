@@ -4,13 +4,13 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/lithammer/dedent"
+	"github.com/labd/mach-composer-go/utils"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestParse(t *testing.T) {
 
-	data := []byte(dedent.Dedent(`
+	data := []byte(utils.TrimIndent(`
         ---
         mach_composer:
           version: 1.0.0
