@@ -1,9 +1,11 @@
 package generator
 
 import (
+	"errors"
 	"log"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 
 	"github.com/hashicorp/hcl/v2/hclparse"
@@ -29,8 +31,11 @@ func WriteFiles(cfg *config.Root, target string) (map[string]string, error) {
 			panic(err)
 		}
 
-		// Validate and format file
+		// Format and validate the file
 		formatted := FormatFile([]byte(body))
+		if err := ValidateFile(formatted); err != nil {
+			panic(err)
+		}
 
 		if err := os.MkdirAll(filepath.Join(sitesPath, site.Identifier), 0700); err != nil {
 			panic(err)
@@ -46,18 +51,42 @@ func WriteFiles(cfg *config.Root, target string) (map[string]string, error) {
 }
 
 func FormatFile(src []byte) []byte {
+	// Trim whitespaces prefix
+	regex := regexp.MustCompile(`(?m)^\s*`)
+	src = regex.ReplaceAll(src, []byte(""))
+
+	// Trim whitespace suffix
+	regex = regexp.MustCompile(`(?m)\s*$`)
+	src = regex.ReplaceAll(src, []byte(""))
+
+	// Close empty curly blocks on same line
+	regex = regexp.MustCompile(`(?m){$\s+}$`)
+	src = regex.ReplaceAll(src, []byte("{}"))
+
+	// Close empty array blocks on same line
+	regex = regexp.MustCompile(`(?m)\[$\s+\]$`)
+	src = regex.ReplaceAll(src, []byte("[]"))
+
+	// Return re-formatted version
+	src = hclwrite.Format(src)
+
+	// Insert newline after closing curly brace
+	regex = regexp.MustCompile("(?m)^}$")
+	src = regex.ReplaceAll(src, []byte("}\n"))
+
+	return src
+}
+
+func ValidateFile(src []byte) error {
 	parser := hclparse.NewParser()
 
-	// Validate the generated hcl
 	_, diags := parser.ParseHCL(src, "site.tf")
 	if diags.HasErrors() {
 		log.Println("Generate HCL has errors:")
 		for _, err := range diags.Errs() {
 			log.Println(err)
 		}
-		return src
+		return errors.New("generated HCL is invalid")
 	}
-
-	// Return re-formatted version
-	return hclwrite.Format(src)
+	return nil
 }

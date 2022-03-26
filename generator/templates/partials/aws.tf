@@ -1,3 +1,5 @@
+# Configuring AWS
+
 provider "aws" {
   region  = {{ aws.Region|tf }}
   {% if aws.deploy_role_name %}

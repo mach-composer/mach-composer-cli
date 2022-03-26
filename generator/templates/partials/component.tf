@@ -1,5 +1,5 @@
 {%- set definition = component.Definition -%}
-
+# Module: {{ component.Name }}
 {% if "sentry" in definition.Integrations and global.SentryConfig.AuthToken -%}
 resource "sentry_key" "{{ component.Name }}" {
   organization = {{ global.SentryConfig.Organization|tf }}
