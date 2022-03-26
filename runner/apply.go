@@ -2,12 +2,12 @@ package runner
 
 import (
 	"context"
-	"log"
 	"os"
 	"os/exec"
 	"strings"
 
 	"github.com/labd/mach-composer-go/config"
+	"github.com/sirupsen/logrus"
 )
 
 func TerraformApply(cfg *config.Root, locations map[string]string) {
@@ -24,7 +24,7 @@ func TerraformApplySite(ctx context.Context, cfg *config.Root, site *config.Site
 }
 
 func RunTerraform(ctx context.Context, cwd string, args ...string) {
-	log.Printf("Running: terraform %s\n", strings.Join(args, " "))
+	logrus.Debug("Running: terraform %s\n", strings.Join(args, " "))
 	cmd := exec.CommandContext(
 		ctx,
 		"terraform",
@@ -38,5 +38,4 @@ func RunTerraform(ctx context.Context, cwd string, args ...string) {
 	if err != nil {
 		panic(err)
 	}
-
 }

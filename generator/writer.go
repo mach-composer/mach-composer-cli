@@ -2,7 +2,6 @@ package generator
 
 import (
 	"errors"
-	"log"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -11,6 +10,7 @@ import (
 	"github.com/hashicorp/hcl/v2/hclparse"
 	"github.com/hashicorp/hcl/v2/hclwrite"
 	"github.com/labd/mach-composer-go/config"
+	"github.com/sirupsen/logrus"
 )
 
 func WriteFiles(cfg *config.Root, target string) (map[string]string, error) {
@@ -24,7 +24,7 @@ func WriteFiles(cfg *config.Root, target string) (map[string]string, error) {
 		site := cfg.Sites[i]
 
 		filename := filepath.Join(sitesPath, site.Identifier, "site.tf")
-		log.Printf("Generating %s\n", filename)
+		logrus.Infof("Generating %s\n", filename)
 
 		body, err := Render(cfg, &site)
 		if err != nil {
@@ -82,9 +82,9 @@ func ValidateFile(src []byte) error {
 
 	_, diags := parser.ParseHCL(src, "site.tf")
 	if diags.HasErrors() {
-		log.Println("Generate HCL has errors:")
+		logrus.Error("Generate HCL has errors:")
 		for _, err := range diags.Errs() {
-			log.Println(err)
+			logrus.Errorln(err)
 		}
 		return errors.New("generated HCL is invalid")
 	}
