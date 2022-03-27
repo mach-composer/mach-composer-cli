@@ -37,7 +37,7 @@ brews:
     tap:
       owner: labd
       name: homebrew-{{ .ProjectName }}
-    url_template: https://github.com/labd/mach-composer-go/releases/download/{{ .Version }}/{{ .ArtifactName }}
+    url_template: https://github.com/labd/mach-composer-go/releases/download/v{{ .Version }}/{{ .ArtifactName }}
     commit_author:
       name: goreleaserbot
       email: opensource@labdigital.nl
