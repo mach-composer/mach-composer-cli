@@ -10,7 +10,7 @@ import (
 
 func TestRender(t *testing.T) {
 
-	cfg := config.Root{
+	cfg := config.MachConfig{
 		MachComposer: config.MachComposer{
 			Version: "1.0.0",
 		},

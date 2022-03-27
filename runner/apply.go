@@ -10,7 +10,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func TerraformApply(cfg *config.Root, locations map[string]string) {
+func TerraformApply(cfg *config.MachConfig, locations map[string]string) {
 	ctx := context.Background()
 
 	for i := range cfg.Sites {
@@ -19,9 +19,9 @@ func TerraformApply(cfg *config.Root, locations map[string]string) {
 	}
 }
 
-func TerraformApplySite(ctx context.Context, cfg *config.Root, site *config.Site, path string) {
 	RunTerraform(ctx, path, "init")
 }
+func TerraformApplySite(ctx context.Context, cfg *config.MachConfig, site *config.Site, path string) {
 
 func RunTerraform(ctx context.Context, cwd string, args ...string) {
 	logrus.Debugf("Running: terraform %s\n", strings.Join(args, " "))

@@ -2,7 +2,7 @@ package config
 
 import "strings"
 
-type Root struct {
+type MachConfig struct {
 	Filename     string
 	MachComposer MachComposer `yaml:"mach_composer"`
 	Global       Global       `yaml:"global"`

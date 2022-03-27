@@ -33,7 +33,7 @@ func init() {
 
 func applyFunc(args []string) error {
 
-	configs := make(map[string]*config.Root)
+	configs := make(map[string]*config.MachConfig)
 	allPaths := make(map[string]map[string]string)
 
 	// Note that we do this in multiple passes to minimize ending up with

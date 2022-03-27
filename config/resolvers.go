@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-func Process(cfg *Root) {
+func Process(cfg *MachConfig) {
 
 	// resolve_variables(config, config.variables, config.variables_encrypted)
 	// parse_global_config(config)
@@ -16,7 +16,7 @@ func Process(cfg *Root) {
 
 }
 
-func ResolveComponentDefinitions(cfg *Root) {
+func ResolveComponentDefinitions(cfg *MachConfig) {
 	for _, c := range cfg.Components {
 
 		// Terraform needs absolute paths to modules
@@ -39,7 +39,7 @@ func ResolveComponentDefinitions(cfg *Root) {
 	}
 }
 
-func ResolveSiteConfigs(cfg *Root) {
+func ResolveSiteConfigs(cfg *MachConfig) {
 	ResolveSentryConfig(cfg)
 	ResolveSiteComponents(cfg)
 
@@ -48,7 +48,7 @@ func ResolveSiteConfigs(cfg *Root) {
 	}
 }
 
-func ResolveSiteComponents(cfg *Root) {
+func ResolveSiteComponents(cfg *MachConfig) {
 	components := make(map[string]*Component, len(cfg.Components))
 	for i, c := range cfg.Components {
 		components[c.Name] = &cfg.Components[i]
@@ -80,7 +80,7 @@ func ResolveSiteComponents(cfg *Root) {
 	}
 }
 
-func ResolveSentryConfig(cfg *Root) {
+func ResolveSentryConfig(cfg *MachConfig) {
 	if cfg.Global.SentryConfig != nil {
 		for i := range cfg.Sites {
 			s := &cfg.Sites[i]

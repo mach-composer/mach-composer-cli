@@ -10,7 +10,7 @@ import (
 //go:embed templates/*
 var templates embed.FS
 
-func Render(cfg *config.Root, site *config.Site) (string, error) {
+func Render(cfg *config.MachConfig, site *config.Site) (string, error) {
 	templateSet := pongo2.NewSet("", &EmbedLoader{Content: templates})
 
 	registerFilters()

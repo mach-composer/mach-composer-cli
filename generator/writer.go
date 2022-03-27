@@ -13,7 +13,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func WriteFiles(cfg *config.Root, target string) (map[string]string, error) {
+func WriteFiles(cfg *config.MachConfig, target string) (map[string]string, error) {
 
 	path := strings.TrimSuffix(filepath.Base(cfg.Filename), filepath.Ext(cfg.Filename))
 	sitesPath := filepath.Join(target, path)

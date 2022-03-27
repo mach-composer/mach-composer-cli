@@ -9,7 +9,7 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-func Load(filename string) (*Root, error) {
+func Load(filename string) (*MachConfig, error) {
 
 	body, err := ioutil.ReadFile(filename)
 	if err != nil {
@@ -31,13 +31,13 @@ func Load(filename string) (*Root, error) {
 	return cfg, nil
 }
 
-func Parse(data []byte) (*Root, error) {
-	root := Root{}
+func Parse(data []byte) (*MachConfig, error) {
+	cfg := MachConfig{}
 
-	err := yaml.Unmarshal(data, &root)
+	err := yaml.Unmarshal(data, &cfg)
 	if err != nil {
 		log.Fatalf("Unmarshal: %v", err)
 	}
 
-	return &root, nil
+	return &cfg, nil
 }

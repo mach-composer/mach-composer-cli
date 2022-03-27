@@ -21,7 +21,7 @@ type ComponentUpdate struct {
 
 type WorkerJob struct {
 	component *config.Component
-	cfg       *config.Root
+	cfg       *config.MachConfig
 }
 
 func UpdateFile(filename string) {
@@ -40,7 +40,7 @@ func UpdateFile(filename string) {
 	}
 }
 
-func FindUpdates(ctx context.Context, cfg *config.Root, filename string) *UpdateSet {
+func FindUpdates(ctx context.Context, cfg *config.MachConfig, filename string) *UpdateSet {
 	numUpdates := len(cfg.Components)
 	jobs := make(chan WorkerJob, numUpdates)
 	results := make(chan ComponentUpdate, numUpdates)
@@ -98,7 +98,7 @@ func GetLastVersion(ctx context.Context, c *config.Component, origin string) (st
 	return "", errors.New("unrecognized component source")
 }
 
-func WriteUpdates(ctx context.Context, cfg *config.Root, updates *UpdateSet) {
+func WriteUpdates(ctx context.Context, cfg *config.MachConfig, updates *UpdateSet) {
 
 	MachFileWriter(updates)
 }
