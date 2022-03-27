@@ -6,7 +6,7 @@ import (
 	"github.com/labd/mach-composer-go/config"
 )
 
-func TerraformApply(cfg *config.MachConfig, locations map[string]string, reuse bool) {
+func TerraformPlan(cfg *config.MachConfig, locations map[string]string, reuse bool) {
 	ctx := context.Background()
 
 	for i := range cfg.Sites {
@@ -15,13 +15,11 @@ func TerraformApply(cfg *config.MachConfig, locations map[string]string, reuse b
 	}
 }
 
-func TerraformApplySite(ctx context.Context, cfg *config.MachConfig, site *config.Site, path string, reuse bool) {
-
+func TerraformPlanSite(ctx context.Context, cfg *config.MachConfig, site *config.Site, path string, reuse bool) {
 	if !reuse {
 		RunTerraform(ctx, path, "init")
 	}
-
-	cmd := []string{"apply"}
+	cmd := []string{"plan"}
 
 	RunTerraform(ctx, path, cmd...)
 }

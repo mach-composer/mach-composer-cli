@@ -62,7 +62,7 @@ func applyFunc(args []string) error {
 	for _, filename := range generateFlags.fileNames {
 		cfg := configs[filename]
 		paths := allPaths[filename]
-		runner.TerraformApply(cfg, paths)
+		runner.TerraformApply(cfg, paths, applyFlags.reuse)
 	}
 
 	return nil
