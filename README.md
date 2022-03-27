@@ -28,6 +28,15 @@ other hand, by combining those practises we believe it offers an accelerated
 'way in' in terms of embracing modern engineering practises in your
 organisation.
 
+## Installation
+
+### MacOS
+
+```bash
+brew tap labd/mach-composer
+brew install mach-composer
+```
+
 ## Getting started
 
 Read our [getting started guide](https://docs.machcomposer.io/gettingstarted.html)
