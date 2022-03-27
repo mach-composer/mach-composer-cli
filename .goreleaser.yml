@@ -31,3 +31,20 @@ changelog:
     exclude:
       - "^docs:"
       - "^test:"
+
+brews:
+  - name: "{{ .ProjectName }}"
+    tap:
+      owner: labd
+      name: homebrew-{{ .ProjectName }}
+    url_template: https://github.com/labd/mach-composer-go/releases/download/{{ .Version }}/{{ .ArtifactName }}
+    commit_author:
+      name: goreleaserbot
+      email: opensource@labdigital.nl
+    homepage: "https://machcomposer.io/"
+    description: "MACH composer is a framework that you use to orchestrate andextend modern digital commerce & experience platforms, based on MACH technologies and cloud native services.."
+    license: "MIT"
+    dependencies:
+      - name: terraform
+      - name: git
+        type: optional
