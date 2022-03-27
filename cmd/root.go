@@ -8,7 +8,7 @@ import (
 var (
 	verbose bool
 	rootCmd = &cobra.Command{
-		Use:   "mach",
+		Use:   "mach-composer",
 		Short: "MACH composer is an orchestration tool for modern MACH ecosystems",
 		Long: `MACH composer is a framework that you use to orchestrate and` +
 			`extend modern digital commerce & experience platforms, based on MACH ` +
