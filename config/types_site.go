@@ -11,8 +11,8 @@ import (
 type Site struct {
 	Name         string
 	Identifier   string
-	RawEndpoints map[string]interface{} `yaml:"endpoints"`
-	Endpoints    []Endpoint             `yaml:"_endpoints"`
+	RawEndpoints map[string]any `yaml:"endpoints"`
+	Endpoints    []Endpoint     `yaml:"_endpoints"`
 
 	Components []SiteComponent `yaml:"components"`
 
@@ -38,7 +38,7 @@ func (s *Site) ResolveEndpoints() {
 			}
 			s.Endpoints = append(s.Endpoints, ep)
 
-		case map[string]interface{}:
+		case map[string]any:
 			// Do an extra serialize/deserialize step here. Simplest solution
 			// for now.
 
@@ -118,8 +118,8 @@ func (s *Site) UsedEndpoints() []Endpoint {
 
 type SiteComponent struct {
 	Name      string
-	Variables map[string]interface{}
-	Secrets   map[string]interface{}
+	Variables map[string]any
+	Secrets   map[string]any
 
 	Definition *Component
 	Sentry     *SentryConfig `yaml:"sentry"`

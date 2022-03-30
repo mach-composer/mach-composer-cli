@@ -88,9 +88,9 @@ func TestParse(t *testing.T) {
 			{
 				Name:       "",
 				Identifier: "my-site",
-				RawEndpoints: map[string]interface{}{
+				RawEndpoints: map[string]any{
 					"main": "api.my-site.nl",
-					"internal": map[string]interface{}{
+					"internal": map[string]any{
 						"throttling_burst_limit": 5000,
 						"throttling_rate_limit":  10000,
 						"url":                    "internal-api.my-site.nl",
@@ -110,10 +110,10 @@ func TestParse(t *testing.T) {
 				Components: []SiteComponent{
 					{
 						Name: "your-component",
-						Variables: map[string]interface{}{
+						Variables: map[string]any{
 							"FOO_VAR": "my-value",
 						},
-						Secrets: map[string]interface{}{
+						Secrets: map[string]any{
 							"MY_SECRET": "secretvalue",
 						},
 					},

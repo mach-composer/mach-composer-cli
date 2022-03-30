@@ -33,7 +33,7 @@ func FilterGetValueByKey(in *pongo2.Value, param *pongo2.Value) (*pongo2.Value, 
 	}
 
 	switch v := val.(type) {
-	case map[string]interface{}:
+	case map[string]any:
 		key := param.String()
 		retval := v[key]
 		return pongo2.AsValue(retval), nil
@@ -124,7 +124,7 @@ func filterTFValue(in *pongo2.Value, param *pongo2.Value) (*pongo2.Value, *pongo
 
 	switch data := in.Interface().(type) {
 
-	case map[interface{}]interface{}:
+	case map[any]any:
 		{
 			items := make([]string, 0)
 			for k, v := range data {
@@ -140,7 +140,7 @@ func filterTFValue(in *pongo2.Value, param *pongo2.Value) (*pongo2.Value, *pongo
 			return pongo2.AsSafeValue(raw), nil
 		}
 
-	case map[string]interface{}:
+	case map[string]any:
 		{
 			items := make([]string, 0)
 			for k, v := range data {

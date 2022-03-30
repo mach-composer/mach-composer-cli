@@ -1,6 +1,6 @@
 module github.com/labd/mach-composer-go
 
-go 1.17
+go 1.18
 
 require (
 	github.com/creasty/defaults v1.5.2
