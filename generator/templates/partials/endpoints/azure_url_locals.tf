@@ -1,14 +1,14 @@
 locals {
-{% for endpoint in site.used_endpoints %}
-endpoint_url_{{ endpoint.key|slugify }} = {% if endpoint.url %}{{ endpoint.url|tf }}{% else %}local.frontdoor_domain{% endif %}
+{% for endpoint in site.UsedEndpoints() %}
+endpoint_url_{{ endpoint.Key|slugify }} = {% if endpoint.URL %}{{ endpoint.URL|tf }}{% else %}local.frontdoor_domain{% endif %}
 
 {% endfor %}
 }
 
 output "endpoints" {
   value = {
-  {% for endpoint in site.used_endpoints -%}
-    {{ endpoint.key|slugify }}: local.endpoint_url_{{ endpoint.key|slugify }}
+  {% for endpoint in site.UsedEndpoints() -%}
+    {{ endpoint.Key|slugify }}: local.endpoint_url_{{ endpoint.Key|slugify }}
   {% endfor %}
   }
 }

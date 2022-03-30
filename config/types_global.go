@@ -1,9 +1,15 @@
 package config
 
+const (
+	Azure = "azure"
+	AWS   = "aws"
+)
+
 type Global struct {
 	Environment string `yaml:"environment"`
 	Cloud       string `yaml:"cloud"`
 
+	Azure           *GlobalAzureConfig  `yaml:"azure"`
 	TerraformConfig TerraformConfig     `yaml:"terraform_config"`
 	AmplienceConfig *AmplienceConfig    `yaml:"amplience"`
 	SentryConfig    *GlobalSentryConfig `yaml:"sentry"`

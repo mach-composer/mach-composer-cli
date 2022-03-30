@@ -1,9 +1,10 @@
 package generator
 
 import (
-	"errors"
+	"fmt"
 
 	"github.com/flosch/pongo2/v5"
+	"github.com/labd/mach-composer-go/config"
 )
 
 var AZURE_REGION_DISPLAY_MAP_SHORT = map[string]string{
@@ -81,10 +82,11 @@ func filterAzureRegionShort(in *pongo2.Value, param *pongo2.Value) (*pongo2.Valu
 	if val, ok := AZURE_REGION_DISPLAY_MAP_SHORT[key]; ok {
 		return pongo2.AsValue(val), nil
 	}
-	return nil, &pongo2.Error{
-		Sender:    "filter:azure_region_short",
-		OrigError: errors.New("region not found"),
-	}
+	return pongo2.AsValue("NOT_FOUND"), nil
+	// return nil, &pongo2.Error{
+	// 	Sender:    "filter:azure_region_short",
+	// 	OrigError: errors.New("region not found"),
+	// }
 }
 
 func filterAzureRegionLong(in *pongo2.Value, param *pongo2.Value) (*pongo2.Value, *pongo2.Error) {
@@ -92,8 +94,31 @@ func filterAzureRegionLong(in *pongo2.Value, param *pongo2.Value) (*pongo2.Value
 	if val, ok := AZURE_REGION_DISPLAY_MAP_LONG[key]; ok {
 		return pongo2.AsValue(val), nil
 	}
-	return nil, &pongo2.Error{
-		Sender:    "filter:azure_region_long",
-		OrigError: errors.New("region not found"),
+	return pongo2.AsValue("NOT_FOUND"), nil
+	// return nil, &pongo2.Error{
+	// 	Sender:    "filter:azure_region_long",
+	// 	OrigError: errors.New("region not found"),
+	// }
+}
+
+func AzureFrontendEndpointName(in *pongo2.Value, param *pongo2.Value) (*pongo2.Value, *pongo2.Error) {
+	val := in.Interface().(config.Endpoint)
+
+	if val.Azure != nil && val.Azure.InternalName != "" {
+		return filterTFValue(pongo2.AsSafeValue(val.Azure.InternalName), nil)
 	}
+	return filterTFValue(pongo2.AsSafeValue(val.Key), nil)
+
+}
+
+// Retreive the resource name for a Azure app service plan.
+// The reason to make this conditional is because of backwards compatability;
+// existing environments already have a `functionapp` resource. We want to keep that intact.
+func AzureServicePlanResourceName(in *pongo2.Value, param *pongo2.Value) (*pongo2.Value, *pongo2.Error) {
+	val := in.String()
+
+	if val == "default" {
+		return pongo2.AsSafeValue("functionapps"), nil
+	}
+	return pongo2.AsSafeValue(fmt.Sprintf("functionapps_%s", val)), nil
 }

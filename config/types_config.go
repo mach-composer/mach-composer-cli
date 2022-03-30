@@ -20,6 +20,8 @@ type Component struct {
 	Version      string `yaml:"version"`
 	Integrations []string
 	Endpoints    map[string]string `yaml:"endpoints"`
+
+	Azure *ComponentAzureConfig `yaml:"azure"`
 }
 
 // UseVersionReference indicates if the module should be referenced with the

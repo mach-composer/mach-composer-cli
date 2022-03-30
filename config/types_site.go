@@ -16,7 +16,8 @@ type Site struct {
 
 	Components []SiteComponent `yaml:"components"`
 
-	AWS *SiteAWS `yaml:"aws,omitempty"`
+	AWS   *SiteAWS           `yaml:"aws,omitempty"`
+	Azure *SiteAzureSettings `yaml:"azure,omitempty"`
 
 	Commercetools *CommercetoolsSettings `yaml:"commercetools"`
 	Amplience     *AmplienceConfig       `yaml:"amplience"`
@@ -140,4 +141,16 @@ func (e *Endpoint) SetDefaults() {
 	if e.Zone == "" && e.URL != "" {
 		e.Zone = ZoneFromURL(e.URL)
 	}
+}
+
+func (e *Endpoint) IsRootDomain() bool {
+	return e.URL == e.Zone
+}
+
+func (e Endpoint) Subdomain() string {
+	if e.URL == "" {
+		return ""
+	}
+
+	return SubdomainFromURL(e.URL)
 }

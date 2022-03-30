@@ -34,7 +34,10 @@ func WriteFiles(cfg *config.MachConfig, target string) (map[string]string, error
 		// Format and validate the file
 		formatted := FormatFile([]byte(body))
 		if err := ValidateFile(formatted); err != nil {
-			panic(err)
+			logrus.Error("The generated terraform code is invalid. " +
+				"This is a bug in mach composer. Please report the issue at " +
+				"https://github.com/labd/mach-composer")
+			// os.Exit(255)
 		}
 
 		if err := os.MkdirAll(filepath.Join(sitesPath, site.Identifier), 0700); err != nil {
@@ -82,9 +85,9 @@ func ValidateFile(src []byte) error {
 
 	_, diags := parser.ParseHCL(src, "site.tf")
 	if diags.HasErrors() {
-		logrus.Error("Generate HCL has errors:")
+		logrus.Debugln("Generate HCL has errors:")
 		for _, err := range diags.Errs() {
-			logrus.Errorln(err)
+			logrus.Debugln(err)
 		}
 		return errors.New("generated HCL is invalid")
 	}

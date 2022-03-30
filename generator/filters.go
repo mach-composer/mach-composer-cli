@@ -17,13 +17,12 @@ func registerFilters() {
 	pongo2.RegisterFilter("tfvalue", filterTFValue)
 	pongo2.RegisterFilter("azure_region_short", filterAzureRegionShort)
 	pongo2.RegisterFilter("azure_region_long", filterAzureRegionLong)
-	pongo2.RegisterFilter("azure_frontend_endpoint_name", filterNoop)
-	pongo2.RegisterFilter("service_plan_resource_name", filterNoop)
+	pongo2.RegisterFilter("azure_frontend_endpoint_name", AzureFrontendEndpointName)
+	pongo2.RegisterFilter("service_plan_resource_name", AzureServicePlanResourceName)
 	pongo2.RegisterFilter("get", FilterGetValueByKey)
 	pongo2.RegisterFilter("render_commercetools_scopes", filterCommercetoolsScopes)
 	pongo2.RegisterFilter("component_endpoint_name", filterComponentEndpointName)
 	pongo2.RegisterFilter("has_cloud_integration", filterHasCloudIntegration)
-	pongo2.RegisterFilter("used_endpoints", filterUsedEndpoints)
 }
 
 func FilterGetValueByKey(in *pongo2.Value, param *pongo2.Value) (*pongo2.Value, *pongo2.Error) {
@@ -52,16 +51,6 @@ func filterNoop(in *pongo2.Value, param *pongo2.Value) (*pongo2.Value, *pongo2.E
 
 func filterSlugify(in *pongo2.Value, param *pongo2.Value) (*pongo2.Value, *pongo2.Error) {
 	return pongo2.AsValue(Slugify(in.String())), nil
-}
-
-// Return only the endpoints that are actually used by the components.
-func filterUsedEndpoints(in *pongo2.Value, param *pongo2.Value) (*pongo2.Value, *pongo2.Error) {
-	return in, nil
-	// val := in.Interface()
-	// site := val.(config.Site)
-
-	// for _, e := range site.Endpoints {
-	// }
 }
 
 func filterReplace(in *pongo2.Value, param *pongo2.Value) (*pongo2.Value, *pongo2.Error) {
@@ -93,14 +82,18 @@ func filterString(in *pongo2.Value, param *pongo2.Value) (*pongo2.Value, *pongo2
 // an output. The endpoint might have a different name in the component itself
 // based on the mappings
 func filterComponentEndpointName(in *pongo2.Value, param *pongo2.Value) (*pongo2.Value, *pongo2.Error) {
+	component := in.Interface().(config.SiteComponent)
+	endpoint := param.Interface().(config.Endpoint)
+	for component_key, ep_key := range component.Definition.Endpoints {
+		if ep_key == endpoint.Key {
+			return pongo2.AsSafeValue(component_key), nil
+		}
 
-	// component := in.Interface().(config.SiteComponent)
-	// for component_key, ep_key in component.endpoints.items():
-	//     if ep_key == endpoint.key:
-	//         return component_key
-	// raise ValueError(f"Endpoint {endpoint.key} not found on {component.name}"
-
-	return in, nil
+	}
+	return nil, &pongo2.Error{
+		Sender:    "filter:render_commercetools_scopes",
+		OrigError: fmt.Errorf("endpoint %s not found on %s", endpoint.Key, component.Name),
+	}
 }
 
 func filterTFValue(in *pongo2.Value, param *pongo2.Value) (*pongo2.Value, *pongo2.Error) {

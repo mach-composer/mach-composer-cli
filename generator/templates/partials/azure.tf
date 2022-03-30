@@ -1,24 +1,24 @@
 {% set azure = site.Azure %}
 
 provider "azurerm" {
-  subscription_id = {{ azure.subscription_id|tf }}
-  tenant_id       = {{ azure.tenant_id|tf }}
+  subscription_id = {{ azure.SubscriptionID|tf }}
+  tenant_id       = {{ azure.TenantID|tf }}
   skip_provider_registration = true
   features {}
 }
 
 
 locals {
-  tenant_id                    = {{ azure.tenant_id|tf }}
-  region                       = {{ azure.region|tf }}
-  subscription_id              = {{ azure.subscription_id|tf }}
-  project_key                  = {{ site.commercetools.project_key|tf }}
+  tenant_id                    = {{ azure.TenantID|tf }}
+  region                       = {{ azure.Region|tf }}
+  subscription_id              = {{ azure.SubscriptionID|tf }}
+  project_key                  = {{ site.Commercetools.ProjectKey|tf }}
 
-  region_short                 = "{{ azure.region|azure_region_short }}"
-  name_prefix                  = format("{{ global.Azure.resources_prefix }}{{ site.identifier|replace:"dev,d"|replace:"tst,t"|replace:"prd,p" }}-%s", local.region_short)
+  region_short                 = "{{ azure.Region|azure_region_short }}"
+  name_prefix                  = format("{{ global.Azure.ResourcesPrefix }}{{ site.Identifier|replace:"dev,d"|replace:"tst,t"|replace:"prd,p" }}-%s", local.region_short)
 
   service_object_ids           = {
-      {% for key, value in azure.service_object_ids.items() %}
+      {% for key, value in azure.ServiceObjectIds %}
           {{ key }} = {{ value|tf }}
       {% endfor %}
   }
@@ -29,20 +29,20 @@ locals {
   }
 }
 
-{% if azure.resource_group %}
+{% if azure.ResourceGroup %}
 data "azurerm_resource_group" "main" {
-  name = {{ azure.resource_group|tf }}
+  name = {{ azure.ResourceGroup|tf }}
 }
 {% else %}
 resource "azurerm_resource_group" "main" {
   name     = format("%s-rg", local.name_prefix)
-  location = "{{ azure.region|azure_region_long }}"
+  location = "{{ azure.Region|azure_region_long }}"
   tags = local.tags
 }
 {% endif %}
 
 locals {
-  {% if azure.resource_group %}
+  {% if azure.ResourceGroup %}
     resource_group_name = data.azurerm_resource_group.main.name
     resource_group_location = data.azurerm_resource_group.main.location
   {% else %}
@@ -52,27 +52,27 @@ locals {
 }
 
 
-{% if azure.alert_group %}
-{% if azure.alert_group.logic_app %}
+{% if azure.AlertGroup %}
+{% if azure.AlertGroup.LogicApp %}
 data "azurerm_logic_app_workflow" "alert_logic_app" {
-  name                = {{ azure.alert_group.logic_app_name|tf }}
-  resource_group_name = {{ azure.alert_group.logic_app_resource_group|tf }}
+  name                = {{ azure.AlertGroup.LogicAppName()|tf }}
+  resource_group_name = {{ azure.AlertGroup.LogicAppResourceGroup()|tf }}
 }
 {% endif %}
 
 resource "azurerm_monitor_action_group" "alert_action_group" {
-  name                = "{{ site.identifier }}-{{ azure.alert_group.name }}"
+  name                = "{{ site.Identifier }}-{{ azure.AlertGroup.Name }}"
   resource_group_name = azurerm_resource_group.main.name
-  short_name          = "{{ azure.alert_group.name|replace:" ,"|replace:"-,"|lower }}"
+  short_name          = "{{ azure.AlertGroup.Name|replace:" ,"|replace:"-,"|lower }}"
 
-  {% for email in azure.alert_group.alert_emails %}
+  {% for email in azure.AlertGroup.AlertEmails %}
   email_receiver {
     name          = {{ email|tf }}
     email_address = {{ email|tf }}
   }
   {% endfor %}
 
-  {% if azure.alert_group.logic_app %}
+  {% if azure.AlertGroup.LogicApp %}
   logic_app_receiver {
       name                    = "Logic app receiver"
       resource_id             = data.azurerm_logic_app_workflow.alert_logic_app.id
@@ -81,10 +81,10 @@ resource "azurerm_monitor_action_group" "alert_action_group" {
   }
   {% endif %}
 
-  {% if azure.alert_group.webhook_url %}
+  {% if azure.AlertGroup.WebhookURL %}
   webhook_receiver {
     name                    = "alert_webhook"
-    service_uri             = {{ azure.alert_group.webhook_url|tf }}
+    service_uri             = {{ azure.AlertGroup.WebhookURL|tf }}
     use_common_alert_schema = true
   }
   {% endif %}

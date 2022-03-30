@@ -3,32 +3,32 @@ locals {
   frontdoor_domain_identifier = replace(local.frontdoor_domain, ".", "-")
 }
 
-{% for endpoint in site.used_custom_endpoints %}
-data "azurerm_dns_zone" "{{ endpoint.key }}" {
-    name                = {{ endpoint.zone|tf }}
-    resource_group_name = {{ site.azure.frontdoor.dns_resource_group|tf }}
+{% for endpoint in site.UsedEndpoints() %}
+data "azurerm_dns_zone" "{{ endpoint.Key }}" {
+    name                = {{ endpoint.Zone|tf }}
+    resource_group_name = {{ site.Azure.Frontdoor.DnsResourceGroup|tf }}
 }
 
-{% if endpoint.is_root_domain %}
-resource "azurerm_dns_a_record" "{{ endpoint.key }}" {
+{% if endpoint.IsRootDomain() %}
+resource "azurerm_dns_a_record" "{{ endpoint.Key }}" {
   name                = "@"
-  zone_name           = data.azurerm_dns_zone.{{ endpoint.key }}.name
-  resource_group_name = {{ site.azure.frontdoor.dns_resource_group|tf }}
+  zone_name           = data.azurerm_dns_zone.{{ endpoint.Key }}.name
+  resource_group_name = {{ site.Azure.Frontdoor.DnsResourceGroup|tf }}
   ttl                 = 600
   target_resource_id  = azurerm_frontdoor.app-service.id
 }
 {% else %}
-resource "azurerm_dns_cname_record" "{{ endpoint.key }}" {
-  name                = {{ endpoint.subdomain|tf }}
-  zone_name           = data.azurerm_dns_zone.{{ endpoint.key }}.name
-  resource_group_name = {{ site.azure.frontdoor.dns_resource_group|tf }}
+resource "azurerm_dns_cname_record" "{{ endpoint.Key }}" {
+  name                = {{ endpoint.Subdomain()|tf }}
+  zone_name           = data.azurerm_dns_zone.{{ endpoint.Key }}.name
+  resource_group_name = {{ azure.Frontdoor.DnsResourceGroup|tf }}
   ttl                 = 600
   record              = local.frontdoor_domain
 }
 {% endif %}
 {% endfor %}
 
-{% if site.used_endpoints %}
+{% if site.UsedEndpoints() %}
 locals {
   {% for endpoint in site.used_custom_endpoints %}
   {% for component in endpoint.components %}
@@ -89,7 +89,7 @@ resource "azurerm_frontdoor" "app-service" {
 
   depends_on = [
     {% for endpoint in site.used_custom_endpoints %}
-    {% if not endpoint.is_root_domain %}
+    {% if not endpoint.IsRootDomain() %}
     azurerm_dns_cname_record.{{ endpoint.key }},
     {% endif %}
     {% endfor %}
@@ -111,7 +111,7 @@ resource "azurerm_frontdoor" "app-service" {
     }
   }
 
-  {% for endpoint in site.used_endpoints %}
+  {% for endpoint in site.UsedEndpoints() %}
   {% include "./azure_frontdoor_endpoint.tf" %}
   {% endfor %}
 
@@ -129,15 +129,15 @@ resource "azurerm_frontdoor" "app-service" {
   {% endif %}
 }
 
-{% if site.azure.frontdoor.ssl_key_vault %}
+{% if site.Azure.Frontdoor.SslKeyVault %}
 data "azurerm_key_vault" "ssl" {
-  name                = {{ site.azure.frontdoor.ssl_key_vault.name|tf }}
-  resource_group_name = {{ site.azure.frontdoor.ssl_key_vault.resource_group|tf }}
+  name                = {{ site.Azure.Frontdoor.SslKeyVault.Name|tf }}
+  resource_group_name = {{ site.Azure.Frontdoor.SslKeyVault.ResourceGroup|tf }}
 }
 {% endif %}
 
-{% for endpoint in site.used_custom_endpoints %}
-resource "azurerm_frontdoor_custom_https_configuration" "{{ endpoint.key|slugify }}" {
+{% for endpoint in site.UsedCustomEndpoints() %}
+resource "azurerm_frontdoor_custom_https_configuration" "{{ endpoint.Key|slugify }}" {
   frontend_endpoint_id              = azurerm_frontdoor.app-service.frontend_endpoints[{{ endpoint|azure_frontend_endpoint_name }}]
   custom_https_provisioning_enabled = true
 
@@ -145,7 +145,7 @@ resource "azurerm_frontdoor_custom_https_configuration" "{{ endpoint.key|slugify
     {% if site.azure.frontdoor.ssl_key_vault %}
     certificate_source                         = "AzureKeyVault"
     azure_key_vault_certificate_vault_id       = data.azurerm_key_vault.ssl.id
-    azure_key_vault_certificate_secret_name    = {{ site.azure.frontdoor.ssl_key_vault.secret_name|tf }}
+    azure_key_vault_certificate_secret_name    = {{ site.Azure.Frontdoor.SslKeyVault.SecretName|tf }}
     {% else %}
     certificate_source                      = "FrontDoor"
     {% endif %}

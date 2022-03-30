@@ -4,6 +4,8 @@ import (
 	"log"
 	"path/filepath"
 	"strings"
+
+	"github.com/sirupsen/logrus"
 )
 
 func Process(cfg *MachConfig) {
@@ -30,16 +32,26 @@ func ResolveComponentDefinitions(cfg *MachConfig) {
 
 		// If no integrations are given, set the Cloud integrations as default
 		if len(c.Integrations) < 1 {
-			if cfg.Global.Cloud == "aws" {
-				c.Integrations = append(c.Integrations, "aws")
-			} else if cfg.Global.Cloud == "azure" {
-				c.Integrations = append(c.Integrations, "azure")
+			if cfg.Global.Cloud == AWS {
+				c.Integrations = append(c.Integrations, AWS)
+			} else if cfg.Global.Cloud == Azure {
+				c.Integrations = append(c.Integrations, Azure)
 			}
 		}
+
+		if cfg.Global.Cloud == Azure {
+			c.Azure = &ComponentAzureConfig{}
+		}
+
+		if c.Azure.ShortName == "" {
+			c.Azure.ShortName = c.Name
+		}
+
 	}
 }
 
 func ResolveSiteConfigs(cfg *MachConfig) {
+	ResolveAzureConfig(cfg)
 	ResolveSentryConfig(cfg)
 	ResolveSiteComponents(cfg)
 
@@ -88,6 +100,31 @@ func ResolveSentryConfig(cfg *MachConfig) {
 				s.Sentry = NewSentryConfigFromGlobal(cfg.Global.SentryConfig)
 			} else {
 				s.Sentry.MergeGlobal(cfg.Global.SentryConfig)
+			}
+		}
+	}
+}
+
+func ResolveAzureConfig(cfg *MachConfig) {
+	if cfg.Global.Cloud != "azure" {
+		return
+	}
+
+	if cfg.Global.SentryConfig != nil {
+		for i := range cfg.Sites {
+			s := &cfg.Sites[i]
+
+			if s.Azure == nil {
+				s.Azure = &SiteAzureSettings{}
+			}
+			s.Azure.Merge(cfg.Global.Azure)
+			if s.Azure.ResourceGroup != "" {
+				logrus.Errorf(
+					"WARNING: resource_group on %s is used (%s). "+
+						"Make sure it wasn't managed by MACH before otherwise "+
+						"the resource group will get deleted.",
+					s.Identifier, s.Azure.ResourceGroup,
+				)
 			}
 		}
 	}
