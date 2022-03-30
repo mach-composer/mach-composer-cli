@@ -41,7 +41,7 @@ func applyFunc(args []string) error {
 
 	// Load and parse all config files
 	for _, filename := range generateFlags.fileNames {
-		cfg, err := config.Load(filename)
+		cfg, err := config.Load(filename, generateFlags.varFile)
 		if err != nil {
 			panic(err)
 		}

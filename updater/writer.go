@@ -2,10 +2,10 @@ package updater
 
 import (
 	"fmt"
-	"io/ioutil"
 	"log"
 	"strings"
 
+	"github.com/labd/mach-composer-go/utils"
 	"github.com/sirupsen/logrus"
 	"gopkg.in/yaml.v3"
 )
@@ -80,14 +80,14 @@ func MachConfigUpdater(src []byte, updates *UpdateSet) []byte {
 // version of the components
 func MachFileWriter(updates *UpdateSet) {
 
-	input, err := ioutil.ReadFile(updates.filename)
+	input, err := utils.AFS.ReadFile(updates.filename)
 	if err != nil {
 		log.Fatalln(err)
 	}
 
 	output := MachConfigUpdater(input, updates)
 
-	err = ioutil.WriteFile(updates.filename, output, 0644)
+	err = utils.AFS.WriteFile(updates.filename, output, 0644)
 	if err != nil {
 		log.Fatalln(err)
 	}

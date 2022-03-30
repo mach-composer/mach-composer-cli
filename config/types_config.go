@@ -1,6 +1,10 @@
 package config
 
-import "strings"
+import (
+	"strings"
+
+	"gopkg.in/yaml.v3"
+)
 
 type MachConfig struct {
 	Filename     string
@@ -8,6 +12,16 @@ type MachConfig struct {
 	Global       Global       `yaml:"global"`
 	Sites        []Site       `yaml:"sites"`
 	Components   []Component  `yaml:"components"`
+
+	Variables *Variables
+}
+
+type _RawMachConfig struct {
+	Filename     string
+	MachComposer MachComposer `yaml:"mach_composer"`
+	Global       Global       `yaml:"global"`
+	Sites        yaml.Node    `yaml:"sites"`
+	Components   yaml.Node    `yaml:"components"`
 }
 
 type MachComposer struct {

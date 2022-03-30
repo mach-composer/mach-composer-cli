@@ -27,7 +27,7 @@ func init() {
 
 func generateFunc(args []string) error {
 	for _, filename := range generateFlags.fileNames {
-		cfg, err := config.Load(filename)
+		cfg, err := config.Load(filename, generateFlags.varFile)
 		if err != nil {
 			panic(err)
 		}

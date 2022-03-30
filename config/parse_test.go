@@ -1,7 +1,6 @@
 package config
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/labd/mach-composer-go/utils"
@@ -51,6 +50,8 @@ func TestParse(t *testing.T) {
           - name: your-component
             variables:
               FOO_VAR: my-value
+			  BAR_VAR: ${var.foo}
+			  MULTIPLE_VARS: ${var.foo.bar} ${var.bar.foo}
             secrets:
               MY_SECRET: secretvalue
         components:
@@ -64,8 +65,11 @@ func TestParse(t *testing.T) {
             - commercetools
     `))
 
-	fmt.Println(string(data))
-	config, err := Parse(data)
+	vars := Variables{}
+	vars.Set("foo", "foobar")
+	vars.Set("foo.bar", "1")
+	vars.Set("bar.foo", "2")
+	config, err := Parse(data, &vars)
 	if err != nil {
 		t.Error(err)
 	}
@@ -111,7 +115,9 @@ func TestParse(t *testing.T) {
 					{
 						Name: "your-component",
 						Variables: map[string]any{
-							"FOO_VAR": "my-value",
+							"FOO_VAR":       "my-value",
+							"BAR_VAR":       "foobar",
+							"MULTIPLE_VARS": "1 2",
 						},
 						Secrets: map[string]any{
 							"MY_SECRET": "secretvalue",

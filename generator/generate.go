@@ -21,7 +21,11 @@ func Render(cfg *config.MachConfig, site *config.Site) (string, error) {
 
 	var tpl = pongo2.Must(templateSet.FromFile("site.tf"))
 
-	out, err := tpl.Execute(pongo2.Context{"global": cfg.Global, "site": site})
+	out, err := tpl.Execute(pongo2.Context{
+		"global":    cfg.Global,
+		"site":      site,
+		"variables": cfg.Variables,
+	})
 
 	if err != nil {
 		panic(err)

@@ -1,7 +1,6 @@
 package generator
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/labd/mach-composer-go/config"
@@ -79,6 +78,5 @@ func TestRender(t *testing.T) {
 
 	body, err := Render(&cfg, &cfg.Sites[0])
 	assert.NoError(t, err)
-
-	fmt.Println(body)
+	assert.NotEmpty(t, body)
 }

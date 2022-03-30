@@ -26,7 +26,7 @@ type WorkerJob struct {
 
 func UpdateFile(filename string) {
 	ctx := context.Background()
-	cfg, err := config.Load(filename)
+	cfg, err := config.Load(filename, "")
 	if err != nil {
 		panic(err)
 	}

@@ -40,7 +40,7 @@ terraform {
     }
     {% endif -%}
 
-    {%- if config.variables_encrypted %}
+    {%- if variables.Encrypted %}
     sops = {
       source = "carlpett/sops"
       version = "~> 0.5"

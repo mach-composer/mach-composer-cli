@@ -28,9 +28,9 @@ terraform {
 
 {% include "partials/providers.tf" %}
 
-{% if config.variables_encrypted %}
+{% if variables.Encrypted %}
 data "local_file" "variables" {
-  filename = "variables.yml"
+  filename = "{{ variables.Filepath }}"
 }
 
 data "sops_external" "variables" {
