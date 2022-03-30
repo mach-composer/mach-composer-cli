@@ -43,7 +43,7 @@ func ResolveComponentDefinitions(cfg *MachConfig) {
 			c.Azure = &ComponentAzureConfig{}
 		}
 
-		if c.Azure.ShortName == "" {
+		if c.Azure != nil && c.Azure.ShortName == "" {
 			c.Azure.ShortName = c.Name
 		}
 

@@ -45,10 +45,6 @@ func FilterGetValueByKey(in *pongo2.Value, param *pongo2.Value) (*pongo2.Value, 
 	}
 }
 
-func filterNoop(in *pongo2.Value, param *pongo2.Value) (*pongo2.Value, *pongo2.Error) {
-	return in, nil
-}
-
 func filterSlugify(in *pongo2.Value, param *pongo2.Value) (*pongo2.Value, *pongo2.Error) {
 	return pongo2.AsValue(Slugify(in.String())), nil
 }
