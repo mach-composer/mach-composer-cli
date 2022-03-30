@@ -10,7 +10,7 @@ builds:
   flags:
     - -trimpath
   ldflags:
-    - '-s -w -X main.version={{.Version}} -X main.commit={{.Commit}} -X main.date={{.CommitDate}}'
+    - '-s -w -X "github.com/labd/mach-composer-go/utils.Version={{.Version}}" -X github.com/labd/mach-composer-go/utils.Commit={{.Commit}} -X github.com/labd/mach-composer-go/utils.Date={{.CommitDate}}'
   goos:
     - freebsd
     - windows
