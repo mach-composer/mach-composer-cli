@@ -8,7 +8,8 @@ import (
 )
 
 var planFlags struct {
-	reuse bool
+	reuse      bool
+	components []string
 }
 
 var planCmd = &cobra.Command{
@@ -29,6 +30,7 @@ var planCmd = &cobra.Command{
 func init() {
 	registerGenerateFlags(planCmd)
 	planCmd.Flags().BoolVarP(&planFlags.reuse, "reuse", "", false, "Supress a terraform init for improved speed (not recommended for production usage)")
+	planCmd.Flags().StringArrayVarP(&planFlags.components, "component", "c", []string{}, "")
 }
 
 func planFunc(args []string) error {
@@ -59,10 +61,13 @@ func planFunc(args []string) error {
 	}
 
 	// Plan the generate files
+	options := &runner.PlanOptions{
+		Reuse: planFlags.reuse,
+	}
 	for _, filename := range generateFlags.fileNames {
 		cfg := configs[filename]
 		paths := allPaths[filename]
-		runner.TerraformPlan(cfg, paths, planFlags.reuse)
+		runner.TerraformPlan(cfg, paths, options)
 	}
 
 	return nil

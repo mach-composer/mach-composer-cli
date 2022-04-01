@@ -8,7 +8,10 @@ import (
 )
 
 var applyFlags struct {
-	reuse bool
+	reuse       bool
+	autoApprove bool
+	destroy     bool
+	components  []string
 }
 
 var applyCmd = &cobra.Command{
@@ -29,6 +32,9 @@ var applyCmd = &cobra.Command{
 func init() {
 	registerGenerateFlags(applyCmd)
 	applyCmd.Flags().BoolVarP(&applyFlags.reuse, "reuse", "", false, "Supress a terraform init for improved speed (not recommended for production usage)")
+	applyCmd.Flags().BoolVarP(&applyFlags.autoApprove, "auto-approve", "", false, "Supress a terraform init for improved speed (not recommended for production usage)")
+	applyCmd.Flags().BoolVarP(&applyFlags.destroy, "destroy", "", false, "Destroy option is a convenient way to destroy all remote objects managed by this mach config")
+	applyCmd.Flags().StringArrayVarP(&applyFlags.components, "component", "c", []string{}, "")
 }
 
 func applyFunc(args []string) error {
@@ -59,10 +65,15 @@ func applyFunc(args []string) error {
 	}
 
 	// Apply the generate files
+	options := &runner.ApplyOptions{
+		Destroy:     applyFlags.destroy,
+		Reuse:       applyFlags.reuse,
+		AutoApprove: applyFlags.autoApprove,
+	}
 	for _, filename := range generateFlags.fileNames {
 		cfg := configs[filename]
 		paths := allPaths[filename]
-		runner.TerraformApply(cfg, paths, applyFlags.reuse)
+		runner.TerraformApply(cfg, paths, options)
 	}
 
 	return nil
