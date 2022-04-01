@@ -69,7 +69,7 @@ func loadVariables(filename string) (*Variables, error) {
 
 	if yamlIsEncrypted(body) {
 		logrus.Debug("Detected SOPS encryption; decrypting...")
-		body, err = decryptYaml(body)
+		body, err = DecryptYaml(filename)
 		if err != nil {
 			panic(err)
 		}
@@ -123,11 +123,6 @@ func yamlIsEncrypted(data []byte) bool {
 		return true
 	}
 	return false
-}
-
-func decryptYaml(data []byte) ([]byte, error) {
-	return data, nil
-
 }
 
 // InterpolateVars interpolates the variables within the values of the given
