@@ -5,6 +5,7 @@ import (
 	"os"
 	"os/exec"
 	"strings"
+	"syscall"
 
 	"github.com/sirupsen/logrus"
 )
@@ -19,9 +20,13 @@ func RunTerraform(ctx context.Context, cwd string, args ...string) {
 	cmd.Dir = cwd
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
+	cmd.SysProcAttr = &syscall.SysProcAttr{
+		Foreground: true,
+	}
+
 	err := cmd.Run()
 
 	if err != nil {
-		panic(err)
+		logrus.Fatalf("terraform command exited: terraform %s (in %s)", strings.Join(args, " "), cwd)
 	}
 }
