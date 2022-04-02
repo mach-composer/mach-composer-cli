@@ -60,6 +60,7 @@ provider "aws" {
   }
   {% endfor %}
 
+  {{ site.used_endpoints }}
   {% for endpoint in site.used_endpoints %}
     {% include 'partials/endpoints/aws_endpoints.tf' %}
   {% endfor %}
