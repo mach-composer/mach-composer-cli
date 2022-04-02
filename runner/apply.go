@@ -12,6 +12,7 @@ type ApplyOptions struct {
 	Destroy     bool
 	AutoApprove bool
 	Components  []string
+	Site        string
 }
 
 func TerraformApply(cfg *config.MachConfig, locations map[string]string, options *ApplyOptions) {
@@ -19,6 +20,11 @@ func TerraformApply(cfg *config.MachConfig, locations map[string]string, options
 
 	for i := range cfg.Sites {
 		site := cfg.Sites[i]
+
+		if options.Site != "" && site.Identifier != options.Site {
+			continue
+		}
+
 		TerraformApplySite(ctx, cfg, &site, locations[site.Identifier], options)
 	}
 }

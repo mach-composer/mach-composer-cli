@@ -13,15 +13,24 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func WriteFiles(cfg *config.MachConfig, target string) (map[string]string, error) {
+type GenerateOptions struct {
+	OutputPath string
+	Site       string
+}
+
+func WriteFiles(cfg *config.MachConfig, options *GenerateOptions) (map[string]string, error) {
 
 	path := strings.TrimSuffix(filepath.Base(cfg.Filename), filepath.Ext(cfg.Filename))
-	sitesPath := filepath.Join(target, path)
+	sitesPath := filepath.Join(options.OutputPath, path)
 
 	locations := map[string]string{}
 
 	for i := range cfg.Sites {
 		site := cfg.Sites[i]
+
+		if options.Site != "" && site.Identifier != options.Site {
+			continue
+		}
 
 		filename := filepath.Join(sitesPath, site.Identifier, "site.tf")
 		logrus.Infof("Generating %s\n", filename)

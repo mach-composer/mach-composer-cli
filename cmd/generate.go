@@ -26,13 +26,17 @@ func init() {
 }
 
 func generateFunc(args []string) error {
+	genOptions := &generator.GenerateOptions{
+		OutputPath: generateFlags.outputPath,
+		Site:       generateFlags.siteName,
+	}
 	for _, filename := range generateFlags.fileNames {
 		cfg, err := config.Load(filename, generateFlags.varFile)
 		if err != nil {
 			panic(err)
 		}
 
-		_, err = generator.WriteFiles(cfg, generateFlags.outputPath)
+		_, err = generator.WriteFiles(cfg, genOptions)
 		if err != nil {
 			panic(err)
 		}

@@ -55,9 +55,13 @@ func applyFunc(args []string) error {
 	}
 
 	// Write the generate files for each config
+	genOptions := &generator.GenerateOptions{
+		OutputPath: generateFlags.outputPath,
+		Site:       generateFlags.siteName,
+	}
 	for _, filename := range generateFlags.fileNames {
 		cfg := configs[filename]
-		paths, err := generator.WriteFiles(cfg, generateFlags.outputPath)
+		paths, err := generator.WriteFiles(cfg, genOptions)
 		if err != nil {
 			panic(err)
 		}
@@ -69,6 +73,7 @@ func applyFunc(args []string) error {
 		Destroy:     applyFlags.destroy,
 		Reuse:       applyFlags.reuse,
 		AutoApprove: applyFlags.autoApprove,
+		Site:        generateFlags.siteName,
 	}
 	for _, filename := range generateFlags.fileNames {
 		cfg := configs[filename]
