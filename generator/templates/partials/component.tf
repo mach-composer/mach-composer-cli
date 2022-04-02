@@ -77,17 +77,17 @@ module "{{ component.Name }}" {
 
   {% endif %}
 
-  {% if "contentful" in component.Integrations %}
+  {% if "contentful" in definition.Integrations %}
     contentful_space_id = contentful_space.space.id
   {% endif %}
 
-  {% if "amplience" in component.Integrations %}
-    amplience_client_id = {{ site.amplience.client_id|tf }}
-    amplience_client_secret = {{ site.amplience.client_secret|tf }}
-    amplience_hub_id = {{ site.amplience.hub_id|tf }}
+  {% if "amplience" in definition.Integrations %}
+    amplience_client_id = {{ site.Amplience.ClientID|tf }}
+    amplience_client_secret = {{ site.Amplience.ClientSecret|tf }}
+    amplience_hub_id = {{ site.Amplience.HubID|tf }}
   {% endif %}
 
-  {% if "apollo_federation" in component.Integrations %}
+  {% if "apollo_federation" in definition.Integrations %}
     apollo_federation = {
       api_key       = {{ site.apollo_federation.api_key|tf }}
       graph         = {{ site.apollo_federation.graph|tf }}
@@ -109,10 +109,10 @@ module "{{ component.Name }}" {
     {% if site.AWS and component.Endpoint %}
     aws_apigatewayv2_api.{{ component.Endpoint|slugify }}_gateway,
     {% endif %}
-    {% if site.azure and component.Azure.service_plan %}
-    {% if component.azure.service_plan == 'default' %}
+    {% if site.Azure and component.Azure.ServicePlan %}
+    {% if component.Azure.ServicePlan == "default" %}
     azurerm_app_service_plan.functionapps,{% else %}
-    azurerm_app_service_plan.functionapps_{{ component.azure.service_plan }},{% endif %}
+    azurerm_app_service_plan.functionapps_{{ component.Azure.ServicePlan }},{% endif %}
     {% endif %}
     {% if site.Commercetools %}
     null_resource.commercetools,

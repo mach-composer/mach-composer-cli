@@ -2,8 +2,10 @@ package config
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/creasty/defaults"
+	"github.com/labd/mach-composer-go/utils"
 	"gopkg.in/yaml.v3"
 )
 
@@ -97,8 +99,8 @@ func (s *Site) EndpointComponents() map[string][]SiteComponent {
 	// Check if we need to add a default endpoint
 	endpoints := make(map[string][]SiteComponent)
 	for _, c := range s.Components {
-		for key := range c.Definition.Endpoints {
-			endpoints[key] = append(endpoints[key], c)
+		for _, value := range c.Definition.Endpoints {
+			endpoints[value] = append(endpoints[value], c)
 		}
 	}
 	return endpoints
@@ -114,6 +116,26 @@ func (s *Site) UsedEndpoints() []Endpoint {
 		}
 	}
 	return result
+}
+
+func (s *Site) DnsZones() []string {
+	result := []string{}
+	endpoints := s.UsedEndpoints()
+	for i := range endpoints {
+		result = append(result, endpoints[i].Zone)
+	}
+	return utils.UniqueStrings(result)
+}
+
+// Check if there is an endpoint with a cdn enabled.
+func (s *Site) HasCdnEndpoint() bool {
+	endpoints := s.UsedEndpoints()
+	for _, ep := range endpoints {
+		if ep.AWS != nil && ep.AWS.EnableCDN {
+			return true
+		}
+	}
+	return false
 }
 
 type SiteComponent struct {

@@ -2,60 +2,60 @@
 
 provider "aws" {
   region  = {{ aws.Region|tf }}
-  {% if aws.deploy_role_name %}
+  {% if aws.DeployRoleName %}
   assume_role {
-    role_arn = "arn:aws:iam::{{ aws.account_id }}:role/{{ aws.deploy_role_name }}"
+    role_arn = "arn:aws:iam::{{ aws.AccountID }}:role/{{ aws.DeployRoleName }}"
   }
   {% endif %}
-  {% if aws.default_tags %}
+  {% if aws.DefaultTags %}
   default_tags {
-      tags = {{ aws.default_tags|tf }}
+      tags = {{ aws.DefaultTags|tf }}
   }
   {% endif %}
 }
 
-{% for provider in aws.extra_providers %}
+{% for provider in aws.ExtraProviders %}
 provider "aws" {
-  alias   = {{ provider.name|tf }}
-  region  = {{ provider.region|tf }}
+  alias   = {{ provider.Name|tf }}
+  region  = {{ provider.Region|tf }}
 
-  {% if aws.deploy_role_name %}
+  {% if aws.DeployRoleName %}
   assume_role {
-    role_arn = "arn:aws:iam::{{ aws.account_id }}:role/{{ aws.deploy_role_name }}"
+    role_arn = "arn:aws:iam::{{ aws.AccountID }}:role/{{ aws.DeployRoleName }}"
   }
   {% endif %}
-  {% if provider.default_tags %}
+  {% if provider.DefaultTags %}
   default_tags {
-      tags = {{ provider.default_tags|tf }}
+      tags = {{ provider.DefaultTags|tf }}
   }
-  {% elif aws.default_tags %}
+  {% elif aws.DefaultTags %}
   default_tags {
-      tags = {{ aws.default_tags|tf }}
+      tags = {{ aws.DefaultTags|tf }}
   }
   {% endif %}
 }
 {% endfor %}
 
-{% if site.has_cdn_endpoint %}
+{% if site.HasCdnEndpoint() %}
 provider "aws" {
   alias   = "mach-cf-us-east-1"
   region  = "us-east-1"
 
-  {% if aws.deploy_role_name %}
+  {% if aws.DeployRoleName %}
   assume_role {
-    role_arn = "arn:aws:iam::{{ aws.account_id }}:role/{{ aws.deploy_role_name }}"
+    role_arn = "arn:aws:iam::{{ aws.AccountID }}:role/{{ aws.DeployRoleName }}"
   }
   {% endif %}
-  {% if aws.default_tags %}
+  {% if aws.DefaultTags %}
   default_tags {
-      tags = {{ aws.default_tags|tf }}
+      tags = {{ aws.DefaultTags|tf }}
   }
   {% endif %}
 }
 {% endif %}
 
 {% if site.UsedEndpoints() %}
-  {% for zone in site.dns_zones %}
+  {% for zone in site.DnsZones() %}
   data "aws_route53_zone" "{{ zone|slugify }}" {
     name = "{{ zone }}"
   }

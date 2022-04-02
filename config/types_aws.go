@@ -14,7 +14,9 @@ type SiteAWS struct {
 	AccountID string `yaml:"account_id"`
 	Region    string `yaml:"region"`
 
-	ExtraProviders []AWSProvider `yaml:"extra_providers"`
+	DeployRoleName string            `yaml:"deploy_role_name"`
+	ExtraProviders []AWSProvider     `yaml:"extra_providers"`
+	DefaultTags    map[string]string `yaml:"default_tags"`
 }
 
 type AWSProvider struct {

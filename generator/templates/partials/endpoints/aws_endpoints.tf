@@ -5,7 +5,7 @@ resource "aws_apigatewayv2_api" "{{ endpoint.Key|slugify }}_gateway" {
 }
 
 resource "aws_apigatewayv2_route" "{{ endpoint.Key|slugify }}_application" {
-  api_id    = aws_apigatewayv2_api.{{ endpoint.key|slugify }}_gateway.id
+  api_id    = aws_apigatewayv2_api.{{ endpoint.Key|slugify }}_gateway.id
   route_key = "$default"
 }
 
