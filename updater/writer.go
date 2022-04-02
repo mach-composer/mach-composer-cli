@@ -14,7 +14,7 @@ type MachConfig struct {
 	Components yaml.Node
 }
 
-func MachConfigUpdater(src []byte, updates *UpdateSet) []byte {
+func MachConfigUpdater(src []byte, updateSet *UpdateSet) []byte {
 	data := MachConfig{}
 	err := yaml.Unmarshal(src, &data)
 	if err != nil {
@@ -40,8 +40,8 @@ func MachConfigUpdater(src []byte, updates *UpdateSet) []byte {
 	// `version` tag and use the line number to change the value in the source
 	// document (lines list)
 	lines := SplitLines(string(src))
-	for _, c := range updates.components {
-		node, ok := nodes[c.component.Name]
+	for _, c := range updateSet.updates {
+		node, ok := nodes[c.Component.Name]
 		if !ok {
 			logrus.Warn("Component with update not found in yaml file")
 			continue
@@ -53,12 +53,12 @@ func MachConfigUpdater(src []byte, updates *UpdateSet) []byte {
 				// The value is in the node after this node. Assume it's always
 				// sequential
 				vn := node.Content[i+1]
-				if vn.Value != c.component.Version {
+				if vn.Value != c.Component.Version {
 					log.Fatal("Unexpected version")
 				}
 
 				// Make sure the version is always quoted
-				replacement := c.version
+				replacement := c.LastVersion
 				if lines[vn.Line-1][vn.Column-1] != '"' {
 					replacement = fmt.Sprintf(`"%s"`, replacement)
 				}

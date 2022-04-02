@@ -10,13 +10,8 @@ import (
 )
 
 type UpdateSet struct {
-	filename   string
-	components []ComponentUpdate
-}
-
-type ComponentUpdate struct {
-	component *config.Component
-	version   string
+	filename string
+	updates  []ChangeSet
 }
 
 type WorkerJob struct {
@@ -31,10 +26,10 @@ func UpdateFile(filename string) {
 		panic(err)
 	}
 
-	updates := FindUpdates(ctx, cfg, filename)
-	if len(updates.components) > 0 {
-		logrus.Infof("%d components have updates available", len(updates.components))
-		WriteUpdates(ctx, cfg, updates)
+	updateSet := FindUpdates(ctx, cfg, filename)
+	if len(updateSet.updates) > 0 {
+		logrus.Infof("%d components have updates available", len(updateSet.updates))
+		WriteUpdates(ctx, cfg, updateSet)
 	} else {
 		logrus.Info("No changes detected")
 	}
@@ -43,7 +38,7 @@ func UpdateFile(filename string) {
 func FindUpdates(ctx context.Context, cfg *config.MachConfig, filename string) *UpdateSet {
 	numUpdates := len(cfg.Components)
 	jobs := make(chan WorkerJob, numUpdates)
-	results := make(chan ComponentUpdate, numUpdates)
+	results := make(chan *ChangeSet, numUpdates)
 
 	logrus.Infof("Checking if there are updates for %d components", numUpdates)
 
@@ -51,15 +46,12 @@ func FindUpdates(ctx context.Context, cfg *config.MachConfig, filename string) *
 	for i := 0; i < 4; i++ {
 		go func() {
 			for j := range jobs {
-				version, err := GetLastVersion(ctx, j.component, j.cfg.Filename)
+				cs, err := GetLastVersion(ctx, j.component, j.cfg.Filename)
 				if err != nil {
 					panic(err)
 				}
 
-				results <- ComponentUpdate{
-					component: j.component,
-					version:   version,
-				}
+				results <- cs
 			}
 		}()
 	}
@@ -73,29 +65,28 @@ func FindUpdates(ctx context.Context, cfg *config.MachConfig, filename string) *
 	}
 	close(jobs)
 
-	// Process results
+	// Process results as we receive them from the channel
 	updates := UpdateSet{
 		filename: filename,
 	}
-
 	for i := 0; i < numUpdates; i++ {
-		res := <-results
-		if res.version != res.component.Version {
-			updates.components = append(updates.components, ComponentUpdate{
-				component: res.component,
-				version:   res.version,
-			})
+		changeset := <-results
+
+		OutputChanges(changeset)
+
+		if changeset.HasChanges() {
+			updates.updates = append(updates.updates, *changeset)
 		}
 	}
 
 	return &updates
 }
 
-func GetLastVersion(ctx context.Context, c *config.Component, origin string) (string, error) {
+func GetLastVersion(ctx context.Context, c *config.Component, origin string) (*ChangeSet, error) {
 	if strings.HasPrefix(c.Source, "git:") {
 		return GetLastVersionGit(ctx, c, origin)
 	}
-	return "", errors.New("unrecognized component source")
+	return nil, errors.New("unrecognized component source")
 }
 
 func WriteUpdates(ctx context.Context, cfg *config.MachConfig, updates *UpdateSet) {

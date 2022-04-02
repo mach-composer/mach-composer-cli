@@ -29,27 +29,27 @@ func TestMachConfigUpdater(t *testing.T) {
 
 	updates := &UpdateSet{
 		filename: "foo.yml",
-		components: []ComponentUpdate{
+		updates: []ChangeSet{
 			{
-				component: &config.Component{
+				Component: &config.Component{
 					Name:    "your-component",
 					Version: "0.1.0",
 				},
-				version: "new-version",
+				LastVersion: "new-version",
 			},
 			{
-				component: &config.Component{
+				Component: &config.Component{
 					Name:    "foobar",
 					Version: "version",
 				},
-				version: "quoted",
+				LastVersion: "quoted",
 			},
 			{
-				component: &config.Component{
+				Component: &config.Component{
 					Name:    "errror",
 					Version: "not-in-file",
 				},
-				version: "quoted",
+				LastVersion: "quoted",
 			},
 		},
 	}

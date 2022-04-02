@@ -10,6 +10,7 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
+	"syscall"
 
 	"github.com/labd/mach-composer-go/config"
 	"github.com/sirupsen/logrus"
@@ -35,22 +36,29 @@ type gitCommit struct {
 	Message string
 }
 
-func GetLastVersionGit(ctx context.Context, c *config.Component, origin string) (string, error) {
+func GetLastVersionGit(ctx context.Context, c *config.Component, origin string) (*ChangeSet, error) {
 	cacheDir := getGitCachePath(origin)
 	source, err := parseGitSource(c.Source)
 
 	if err != nil {
-		return "", fmt.Errorf("cannot check %s component since it doesn't have a Git source defined", c.Name)
+		return nil, fmt.Errorf("cannot check %s component since it doesn't have a Git source defined", c.Name)
 	}
 
 	fetchGitRepository(ctx, source, cacheDir)
 	commits := loadGitHistory(ctx, source, c.Version, "HEAD", cacheDir)
 
-	if len(commits) < 1 {
-		return c.Version, nil
+	cs := &ChangeSet{
+		Changes:   commits,
+		Component: c,
 	}
 
-	return commits[0].Commit, nil
+	if len(commits) < 1 {
+		cs.LastVersion = c.Version
+	} else {
+		cs.LastVersion = commits[0].Commit
+	}
+
+	return cs, nil
 }
 
 func getGitCachePath(origin string) string {
@@ -149,6 +157,9 @@ func runGit(ctx context.Context, cwd string, args ...string) []byte {
 		args...,
 	)
 	cmd.Dir = cwd
+	cmd.SysProcAttr = &syscall.SysProcAttr{
+		Foreground: true,
+	}
 	output, err := cmd.CombinedOutput()
 	if err != nil {
 		panic(err)
