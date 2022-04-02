@@ -128,6 +128,9 @@ func yamlIsEncrypted(data []byte) bool {
 // InterpolateVars interpolates the variables within the values of the given
 // MACH Config in-place.
 func InterpolateVars(raw *_RawMachConfig, vars *Variables) {
+	if vars == nil {
+		panic("Vars cannot be nil")
+	}
 	interpolateNode(&raw.Sites, vars)
 	interpolateNode(&raw.Components, vars)
 }

@@ -50,7 +50,9 @@ func Parse(data []byte, vars *Variables) (*MachConfig, error) {
 		log.Fatalf("Unmarshal: %v", err)
 	}
 
-	InterpolateVars(intermediate, vars)
+	if vars != nil {
+		InterpolateVars(intermediate, vars)
+	}
 
 	cfg := &MachConfig{
 		Filename:     intermediate.Filename,
