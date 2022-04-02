@@ -3,7 +3,6 @@ package generator
 import (
 	"errors"
 	"fmt"
-	"log"
 	"strings"
 
 	"github.com/flosch/pongo2/v5"
@@ -22,7 +21,6 @@ func registerFilters() {
 	pongo2.RegisterFilter("get", FilterGetValueByKey)
 	pongo2.RegisterFilter("render_commercetools_scopes", filterCommercetoolsScopes)
 	pongo2.RegisterFilter("component_endpoint_name", filterComponentEndpointName)
-	pongo2.RegisterFilter("has_cloud_integration", filterHasCloudIntegration)
 }
 
 func FilterGetValueByKey(in *pongo2.Value, param *pongo2.Value) (*pongo2.Value, *pongo2.Error) {
@@ -177,25 +175,4 @@ func filterCommercetoolsScopes(in *pongo2.Value, param *pongo2.Value) (*pongo2.V
 
 	result := pongo2.AsSafeValue(fmt.Sprintf("[\n  %s\n]", strings.Join(sl, "")))
 	return result, nil
-}
-
-func filterHasCloudIntegration(in *pongo2.Value, param *pongo2.Value) (*pongo2.Value, *pongo2.Error) {
-	val := in.Interface()
-
-	switch v := val.(type) {
-	case config.SiteComponent:
-		{
-			if v.Definition == nil {
-				log.Fatalf("Component %s was not resolved properly (missing definition)", v.Name)
-			}
-			for _, i := range v.Definition.Integrations {
-				if i == "aws" || i == "azure" {
-					return pongo2.AsValue(true), nil
-				}
-			}
-			return pongo2.AsValue(false), nil
-		}
-	}
-	return in, nil
-
 }

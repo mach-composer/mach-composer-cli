@@ -17,7 +17,7 @@ resource "sentry_key" "{{ component.Name }}" {
 module "{{ component.Name }}" {
   source            = "{{ definition.Source|safe }}{% if definition.UseVersionReference() %}?ref={{ definition.Version }}{% endif %}"
 
-  {% if component|has_cloud_integration or component.Variables %}
+  {% if component.HasCloudIntegration() || component.Variables %}
   variables = {
     {% for key, value in component.Variables -%}
     {{ key }} = {{ value|tfvalue }}
@@ -25,7 +25,7 @@ module "{{ component.Name }}" {
   }
   {% endif %}
 
-  {% if component|has_cloud_integration or component.Secrets -%}
+  {% if component.HasCloudIntegration() || component.Secrets -%}
   secrets = {
     {% for key, value in component.Secrets -%}
     {{ key }} = {{ value|tfvalue }}
@@ -33,7 +33,7 @@ module "{{ component.Name }}" {
   }
   {%- endif %}
 
-  {% if component|has_cloud_integration -%}
+  {% if component.HasCloudIntegration() -%}
   component_version       = {{ definition.Version|tf }}
   environment             = {{ global.Environment|tf }}
   site                    = "{{ site.Identifier }}"
