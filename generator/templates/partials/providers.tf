@@ -1,4 +1,3 @@
-terraform {
   required_providers {
     {%- if site.AWS %}
     aws = {
@@ -47,4 +46,3 @@ terraform {
     }
     {%- endif %}
   }
-}

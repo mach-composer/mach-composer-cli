@@ -1,5 +1,3 @@
-{% set contentful = site.contentful %}
-
 provider "contentful" {
   cma_token       = {{ contentful.cma_token|tf }}
   organization_id = {{ contentful.organization_id|tf }}

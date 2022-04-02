@@ -41,11 +41,11 @@ module "{{ component.Name }}" {
   {%- endif %}
 
   {% if "azure" in definition.Integrations -%}
-  {% include "./component_azure_variables.tf" with definition=definition %}
+  {% include "./partials/component_azure_variables.tf" with definition=definition %}
   {%- endif %}
 
   {% if "aws" in definition.Integrations -%}
-  {% include "./component_aws_variables.tf" with definition=definition %}
+  {% include "./partials/component_aws_variables.tf" with definition=definition %}
   {%- endif %}
 
   {% if "sentry" in definition.Integrations %}

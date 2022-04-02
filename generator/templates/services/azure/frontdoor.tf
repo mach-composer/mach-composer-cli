@@ -112,7 +112,7 @@ resource "azurerm_frontdoor" "app-service" {
   }
 
   {% for endpoint in site.UsedEndpoints() %}
-  {% include "./azure_frontdoor_endpoint.tf" %}
+  {% include "./frontdoor_endpoint.tf" %}
   {% endfor %}
 
   {% if site.azure.frontdoor.suppress_changes %}

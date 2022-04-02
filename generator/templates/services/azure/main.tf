@@ -1,5 +1,3 @@
-{% set azure = site.Azure %}
-
 provider "azurerm" {
   subscription_id = {{ azure.SubscriptionID|tf }}
   tenant_id       = {{ azure.TenantID|tf }}
@@ -91,7 +89,7 @@ resource "azurerm_monitor_action_group" "alert_action_group" {
 }
 {% endif %}
 
-{% include "./endpoints/azure_frontdoor.tf" %}
-{% include "./endpoints/azure_url_locals.tf" %}
+{% include "./frontdoor.tf" %}
+{% include "./url_locals.tf" %}
 
-{% include "./azure_app_service_plans.tf" %}
+{% include "./app_service_plans.tf" %}
