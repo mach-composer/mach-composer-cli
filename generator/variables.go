@@ -18,7 +18,7 @@ func ParseTemplateVariable(val string) (string, error) {
 		parts := strings.SplitN(match[1], ".", 3)
 		if len(parts) < 3 {
 			return "", fmt.Errorf(
-				"Invalid variable '%s'; "+
+				"invalid variable '%s'; "+
 					"When using a ${component...} variable it has to consist of 2 parts; "+
 					"component-name.output-name",
 				match[1])
