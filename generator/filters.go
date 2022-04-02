@@ -7,6 +7,7 @@ import (
 
 	"github.com/flosch/pongo2/v5"
 	"github.com/labd/mach-composer-go/config"
+	"github.com/sirupsen/logrus"
 )
 
 func registerFilters() {
@@ -92,16 +93,20 @@ func filterComponentEndpointName(in *pongo2.Value, param *pongo2.Value) (*pongo2
 
 func filterTFValue(in *pongo2.Value, param *pongo2.Value) (*pongo2.Value, *pongo2.Error) {
 	if in.IsString() {
-		val := pongo2.AsSafeValue(fmt.Sprintf(`"%s"`, in.String()))
-		return val, nil
+		val, err := ParseTemplateVariable(in.String())
+		if err != nil {
+			logrus.Fatal(err.Error())
+		}
+		res := pongo2.AsSafeValue(fmt.Sprintf(`"%s"`, val))
+		return res, nil
 	}
 	if in.IsInteger() {
-		val := pongo2.AsSafeValue(fmt.Sprintf("%d", in.Integer()))
-		return val, nil
+		res := pongo2.AsSafeValue(fmt.Sprintf("%d", in.Integer()))
+		return res, nil
 	}
 	if in.IsFloat() {
-		val := pongo2.AsSafeValue(fmt.Sprintf("%f", in.Float()))
-		return val, nil
+		res := pongo2.AsSafeValue(fmt.Sprintf("%f", in.Float()))
+		return res, nil
 	}
 	if in.IsBool() {
 		if in.IsTrue() {
