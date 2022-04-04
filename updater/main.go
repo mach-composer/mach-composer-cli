@@ -3,23 +3,19 @@ package updater
 import (
 	"context"
 	"errors"
+	"fmt"
 	"strings"
 
 	"github.com/labd/mach-composer-go/config"
 	"github.com/sirupsen/logrus"
 )
 
-type UpdateSet struct {
-	filename string
-	updates  []ChangeSet
-}
-
 type WorkerJob struct {
 	component *config.Component
 	cfg       *config.MachConfig
 }
 
-func UpdateFile(filename string) {
+func UpdateFile(filename string) *UpdateSet {
 	ctx := context.Background()
 	cfg, err := config.Load(filename, "")
 	if err != nil {
@@ -33,6 +29,8 @@ func UpdateFile(filename string) {
 	} else {
 		logrus.Info("No changes detected")
 	}
+
+	return updateSet
 }
 
 func FindUpdates(ctx context.Context, cfg *config.MachConfig, filename string) *UpdateSet {
@@ -72,7 +70,8 @@ func FindUpdates(ctx context.Context, cfg *config.MachConfig, filename string) *
 	for i := 0; i < numUpdates; i++ {
 		changeset := <-results
 
-		OutputChanges(changeset)
+		output := OutputChanges(changeset)
+		fmt.Print(output)
 
 		if changeset.HasChanges() {
 			updates.updates = append(updates.updates, *changeset)
