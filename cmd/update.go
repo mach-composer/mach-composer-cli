@@ -15,6 +15,7 @@ import (
 var updateFlags struct {
 	fileNames     []string
 	check         bool
+	components    []string
 	commit        bool
 	commitMessage string
 }
@@ -71,7 +72,7 @@ func updateFunc(args []string) error {
 		multipleFiles := len(changes) > 1
 		commitMessage := updateFlags.commitMessage
 
-		for fn, _ := range changes {
+		for fn := range changes {
 			filenames = append(filenames, fn)
 		}
 
