@@ -23,6 +23,7 @@ var updateFlags struct {
 var updateCmd = &cobra.Command{
 	Use:   "update",
 	Short: "Update all (or a given) component.",
+	Args:  cobra.MaximumNArgs(2),
 	PreRun: func(cmd *cobra.Command, args []string) {
 		if len(generateFlags.fileNames) < 1 {
 			matches, err := filepath.Glob("./*.yml")
@@ -54,12 +55,27 @@ func init() {
 func updateFunc(args []string) error {
 	changes := map[string]string{}
 
+	componentName := ""
+	componentVersion := ""
+
+	if len(args) > 0 {
+		componentName = args[0]
+		if len(args) > 1 {
+			componentVersion = args[1]
+		}
+	}
+
 	for _, filename := range updateFlags.fileNames {
-		updateSet := updater.UpdateFile(filename)
+		updateSet := updater.UpdateFile(filename, componentName, componentVersion)
 
 		if updateSet.HasChanges() {
-			changes[filename] = updateSet.ChangeLog()
+			if componentName == "" {
+				changes[filename] = updateSet.ChangeLog()
+			} else {
+				changes[filename] = updateSet.ComponentChangeLog(componentName)
+			}
 		}
+
 	}
 
 	if len(changes) < 1 {
@@ -69,7 +85,6 @@ func updateFunc(args []string) error {
 	// git commit
 	if updateFlags.commit {
 		filenames := []string{}
-		multipleFiles := len(changes) > 1
 		commitMessage := updateFlags.commitMessage
 
 		for fn := range changes {
@@ -78,21 +93,27 @@ func updateFunc(args []string) error {
 
 		// Generate commit message if not passed
 		if updateFlags.commitMessage == "" {
-			var cm strings.Builder
-			for fn, msg := range changes {
-				if multipleFiles {
-					fmt.Fprintf(&cm, "Changes for %s:\n", fn)
-					cm.WriteString(msg)
-					fmt.Fprintln(&cm, "")
-				} else {
-					cm.WriteString(msg)
-				}
-			}
-			commitMessage = cm.String()
+			commitMessage = generateCommitMessage(changes)
 		}
 
 		ctx := context.Background()
 		updater.Commit(ctx, filenames, commitMessage)
 	}
 	return nil
+}
+
+func generateCommitMessage(changes map[string]string) string {
+	multipleFiles := len(changes) > 1
+	var cm strings.Builder
+
+	for fn, msg := range changes {
+		if multipleFiles {
+			fmt.Fprintf(&cm, "Changes for %s:\n", fn)
+			cm.WriteString(msg)
+			fmt.Fprintln(&cm, "")
+		} else {
+			cm.WriteString(msg)
+		}
+	}
+	return cm.String()
 }

@@ -149,9 +149,6 @@ func cleanCommitID(commit string) string {
 }
 
 func Commit(ctx context.Context, fileNames []string, message string) {
-
-	fmt.Println(fileNames)
-	fmt.Println(message)
 	args := []string{"commit"}
 	args = append(args, fileNames...)
 	args = append(args, "-m", message)
@@ -172,6 +169,7 @@ func runGit(ctx context.Context, cwd string, args ...string) []byte {
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {
+		logrus.Info(string(output))
 		panic(err)
 	}
 
