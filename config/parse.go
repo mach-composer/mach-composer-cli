@@ -27,7 +27,7 @@ func Load(filename string, varFilename string) (*MachConfig, error) {
 	}
 
 	if !ValidateConfig(body) {
-		return nil, fmt.Errorf("Failed to load config %s due to errors", filename)
+		return nil, fmt.Errorf("failed to load config %s due to errors", filename)
 	}
 
 	cfg, err := Parse(body, vars)
