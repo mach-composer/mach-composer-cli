@@ -1,6 +1,80 @@
 package config
 
-import "strings"
+import (
+	"strings"
+
+	"github.com/sirupsen/logrus"
+)
+
+var AZURE_REGION_DISPLAY_MAP_SHORT = map[string]string{
+	"eastasia":           "ea",
+	"southeastasia":      "sea",
+	"centralus":          "cus",
+	"eastus":             "eus",
+	"eastus2":            "eus2",
+	"westus":             "wus",
+	"northcentralus":     "ncus",
+	"southcentralus":     "scus",
+	"northeurope":        "ne",
+	"westeurope":         "we",
+	"japanwest":          "jw",
+	"japaneast":          "je",
+	"brazilsouth":        "bs",
+	"australiaeast":      "ae",
+	"australiasoutheast": "ase",
+	"southindia":         "si",
+	"centralindia":       "ci",
+	"westindia":          "wi",
+	"canadacentral":      "cc",
+	"canadaeast":         "ce",
+	"uksouth":            "us",
+	"ukwest":             "uw",
+	"westcentralus":      "wc",
+	"westus2":            "wus2",
+	"koreacentral":       "kc",
+	"koreasouth":         "ks",
+	"francecentral":      "fc",
+	"francesouth":        "fs",
+	"australiacentral":   "ac",
+	"australiacentral2":  "ac2",
+	"southafricanorth":   "san",
+	"southafricawest":    "saw",
+}
+
+var AZURE_REGION_DISPLAY_MAP_LONG = map[string]string{
+	"eastasia":           "East Asia",
+	"southeastasia":      "Southeast Asia",
+	"centralus":          "Central US",
+	"eastus":             "East US",
+	"eastus2":            "East US 2",
+	"westus":             "West US",
+	"northcentralus":     "North Central US",
+	"southcentralus":     "South Central US",
+	"northeurope":        "North Europe",
+	"westeurope":         "West Europe",
+	"japanwest":          "Japan West",
+	"japaneast":          "Japan East",
+	"brazilsouth":        "Brazil South",
+	"australiaeast":      "Australia East",
+	"australiasoutheast": "Australia Southeast",
+	"southindia":         "South India",
+	"centralindia":       "Central India",
+	"westindia":          "West India",
+	"canadacentral":      "Canada Central",
+	"canadaeast":         "Canada East",
+	"uksouth":            "UK South",
+	"ukwest":             "UK West",
+	"westcentralus":      "West Central US",
+	"westus2":            "West US 2",
+	"koreacentral":       "Korea Central",
+	"koreasouth":         "Korea South",
+	"francecentral":      "France Central",
+	"francesouth":        "France South",
+	"australiacentral":   "Australia Central",
+	"australiacentral2":  "Australia Central 2",
+	"southafricanorth":   "South Africa North",
+	"southafricawest":    "South Africa West",
+}
 
 // Azure storage account state backend configuration.
 type AzureTFState struct {
@@ -36,20 +110,6 @@ type SiteAzureSettings struct {
 	ServicePlans     map[string]AzureServicePlan `yaml:"service_plans"`
 }
 
-type ComponentAzureConfig struct {
-	ServicePlan string `yaml:"service_plan"`
-	ShortName   string `yaml:"short_name"`
-}
-
-// func (c *ComponentAzureConfig) Merge() {
-// 	if c.ServicePlan == "" {
-// 		c.ServicePlan = config.ServicePlan
-// 	}
-// 	if c.ShortName == "" {
-// 		c.ShortName = config.ShortName
-// 	}
-// }
-
 func (a *SiteAzureSettings) Merge(c *GlobalAzureConfig) {
 	if a.Frontdoor == nil {
 		a.Frontdoor = c.Frontdoor
@@ -72,6 +132,36 @@ func (a *SiteAzureSettings) Merge(c *GlobalAzureConfig) {
 		a.ServicePlans[k] = v
 	}
 }
+
+func (a *SiteAzureSettings) ShortRegionName() string {
+	if val, ok := AZURE_REGION_DISPLAY_MAP_SHORT[a.Region]; ok {
+		return val
+	}
+	logrus.Fatalf("No short name for region %s", a.Region)
+	return ""
+}
+
+func (a *SiteAzureSettings) LongRegionName() string {
+	if val, ok := AZURE_REGION_DISPLAY_MAP_LONG[a.Region]; ok {
+		return val
+	}
+	logrus.Fatalf("No long name for region %s", a.Region)
+	return ""
+}
+
+type ComponentAzureConfig struct {
+	ServicePlan string `yaml:"service_plan"`
+	ShortName   string `yaml:"short_name"`
+}
+
+// func (c *ComponentAzureConfig) Merge() {
+// 	if c.ServicePlan == "" {
+// 		c.ServicePlan = config.ServicePlan
+// 	}
+// 	if c.ShortName == "" {
+// 		c.ShortName = config.ShortName
+// 	}
+// }
 
 type AzureEndpoint struct {
 	SessionAffinityEnabled bool   `yaml:"session_affinity_enabled"`

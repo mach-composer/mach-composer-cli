@@ -12,11 +12,11 @@ import (
 
 func registerFilters() {
 	pongo2.RegisterFilter("string", filterString)
+	pongo2.RegisterFilter("short_prefix", filterShortPrefix)
 	pongo2.RegisterFilter("slugify", filterSlugify)
+	pongo2.RegisterFilter("remove", filterRemove)
 	pongo2.RegisterFilter("tf", filterTFValue)
 	pongo2.RegisterFilter("tfvalue", filterTFValue)
-	pongo2.RegisterFilter("azure_region_short", filterAzureRegionShort)
-	pongo2.RegisterFilter("azure_region_long", filterAzureRegionLong)
 	pongo2.RegisterFilter("azure_frontend_endpoint_name", AzureFrontendEndpointName)
 	pongo2.RegisterFilter("service_plan_resource_name", AzureServicePlanResourceName)
 	pongo2.RegisterFilter("get", FilterGetValueByKey)
@@ -48,18 +48,41 @@ func filterSlugify(in *pongo2.Value, param *pongo2.Value) (*pongo2.Value, *pongo
 	return pongo2.AsValue(Slugify(in.String())), nil
 }
 
-func filterReplace(in *pongo2.Value, param *pongo2.Value) (*pongo2.Value, *pongo2.Error) {
-	items := strings.Split(param.String(), ",")
-
-	if len(items) != 2 {
+func filterRemove(in *pongo2.Value, param *pongo2.Value) (*pongo2.Value, *pongo2.Error) {
+	if !in.IsString() {
 		return nil, &pongo2.Error{
-			Sender:    "filter:replace",
-			OrigError: errors.New("replace needs two arguments"),
+			Sender:    "filter:remove",
+			OrigError: errors.New("filter only applicable on strings"),
+		}
+	}
+	if !param.IsString() {
+		return nil, &pongo2.Error{
+			Sender:    "filter:remove",
+			OrigError: errors.New("filter requires a param"),
 		}
 	}
 
-	output := strings.Replace(in.String(), items[0], items[1], -1)
+	output := strings.Replace(in.String(), param.String(), "", -1)
 	return pongo2.AsValue(output), nil
+}
+
+// Specific function created to be backwards compatible with Python version
+// It replaces env names with 1 letter codes.
+// TODO: Research why/if this is still needed
+func filterShortPrefix(in *pongo2.Value, param *pongo2.Value) (*pongo2.Value, *pongo2.Error) {
+	if !in.IsString() {
+		return nil, &pongo2.Error{
+			Sender:    "filter:short_string",
+			OrigError: errors.New("filter only applicable on strings"),
+		}
+	}
+
+	val := in.String()
+	val = strings.Replace(val, "dev", "d", -1)
+	val = strings.Replace(val, "tst", "t", -1)
+	val = strings.Replace(val, "acc", "a", -1)
+	val = strings.Replace(val, "prd", "p", -1)
+	return pongo2.AsValue(val), nil
 }
 
 func filterString(in *pongo2.Value, param *pongo2.Value) (*pongo2.Value, *pongo2.Error) {
