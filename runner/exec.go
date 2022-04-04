@@ -5,8 +5,8 @@ import (
 	"os"
 	"os/exec"
 	"strings"
-	"syscall"
 
+	"github.com/labd/mach-composer-go/utils"
 	"github.com/sirupsen/logrus"
 )
 
@@ -20,9 +20,7 @@ func RunTerraform(ctx context.Context, cwd string, args ...string) {
 	cmd.Dir = cwd
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
-	cmd.SysProcAttr = &syscall.SysProcAttr{
-		Foreground: true,
-	}
+	utils.CmdSetForegrond(cmd)
 
 	err := cmd.Run()
 

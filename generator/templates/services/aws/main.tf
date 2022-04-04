@@ -62,9 +62,9 @@ provider "aws" {
   {% endfor %}
 
   {% for endpoint in site.UsedEndpoints() %}
-    {% include "./endpoints/aws_endpoints.tf" %}
+    {% include "./endpoints.tf" %}
   {% endfor %}
-  {% include "./endpoints/aws_url_locals.tf" %}
+  {% include "./url_locals.tf" %}
 {% endif %}
 
 locals {

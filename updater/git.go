@@ -10,9 +10,9 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
-	"syscall"
 
 	"github.com/labd/mach-composer-go/config"
+	"github.com/labd/mach-composer-go/utils"
 	"github.com/sirupsen/logrus"
 )
 
@@ -157,9 +157,8 @@ func runGit(ctx context.Context, cwd string, args ...string) []byte {
 		args...,
 	)
 	cmd.Dir = cwd
-	cmd.SysProcAttr = &syscall.SysProcAttr{
-		Foreground: true,
-	}
+	utils.CmdSetForegrond(cmd)
+
 	output, err := cmd.CombinedOutput()
 	if err != nil {
 		panic(err)

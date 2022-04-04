@@ -124,7 +124,7 @@ func (s *Site) DnsZones() []string {
 	for i := range endpoints {
 		result = append(result, endpoints[i].Zone)
 	}
-	return utils.UniqueStrings(result)
+	return utils.UniqueSlice(result)
 }
 
 // Check if there is an endpoint with a cdn enabled.

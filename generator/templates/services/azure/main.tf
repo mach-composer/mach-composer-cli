@@ -1,5 +1,3 @@
-{% set azure = site.Azure %}
-
 provider "azurerm" {
   subscription_id = {{ azure.SubscriptionID|tf }}
   tenant_id       = {{ azure.TenantID|tf }}
@@ -7,15 +5,14 @@ provider "azurerm" {
   features {}
 }
 
-
 locals {
   tenant_id                    = {{ azure.TenantID|tf }}
   region                       = {{ azure.Region|tf }}
   subscription_id              = {{ azure.SubscriptionID|tf }}
   project_key                  = {{ site.Commercetools.ProjectKey|tf }}
 
-  region_short                 = "{{ azure.Region|azure_region_short }}"
-  name_prefix                  = format("{{ global.Azure.ResourcesPrefix }}{{ site.Identifier|replace:"dev,d"|replace:"tst,t"|replace:"prd,p" }}-%s", local.region_short)
+  region_short                 = "{{ azure.ShortRegionName() }}"
+  name_prefix                  = format("{{ global.Azure.ResourcesPrefix }}{{ site.Identifier|short_prefix }}-%s", local.region_short)
 
   service_object_ids           = {
       {% for key, value in azure.ServiceObjectIds %}
@@ -36,7 +33,7 @@ data "azurerm_resource_group" "main" {
 {% else %}
 resource "azurerm_resource_group" "main" {
   name     = format("%s-rg", local.name_prefix)
-  location = "{{ azure.Region|azure_region_long }}"
+  location = "{{ azure.LongRegionName() }}"
   tags = local.tags
 }
 {% endif %}
@@ -63,7 +60,7 @@ data "azurerm_logic_app_workflow" "alert_logic_app" {
 resource "azurerm_monitor_action_group" "alert_action_group" {
   name                = "{{ site.Identifier }}-{{ azure.AlertGroup.Name }}"
   resource_group_name = azurerm_resource_group.main.name
-  short_name          = "{{ azure.AlertGroup.Name|replace:" ,"|replace:"-,"|lower }}"
+  short_name          = "{{ azure.AlertGroup.Name|remove:","|remove:"-"|lower }}"
 
   {% for email in azure.AlertGroup.AlertEmails %}
   email_receiver {
@@ -91,7 +88,7 @@ resource "azurerm_monitor_action_group" "alert_action_group" {
 }
 {% endif %}
 
-{% include "./endpoints/azure_frontdoor.tf" %}
-{% include "./endpoints/azure_url_locals.tf" %}
+{% include "./frontdoor.tf" %}
+{% include "./url_locals.tf" %}
 
-{% include "./azure_app_service_plans.tf" %}
+{% include "./app_service_plans.tf" %}

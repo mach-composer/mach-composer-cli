@@ -1,6 +1,7 @@
 package config
 
 import (
+	"fmt"
 	"log"
 	"path/filepath"
 
@@ -23,6 +24,10 @@ func Load(filename string, varFilename string) (*MachConfig, error) {
 	body, err := utils.AFS.ReadFile(filename)
 	if err != nil {
 		panic(err)
+	}
+
+	if !ValidateConfig(body) {
+		return nil, fmt.Errorf("failed to load config %s due to errors", filename)
 	}
 
 	cfg, err := Parse(body, vars)
@@ -50,7 +55,9 @@ func Parse(data []byte, vars *Variables) (*MachConfig, error) {
 		log.Fatalf("Unmarshal: %v", err)
 	}
 
-	InterpolateVars(intermediate, vars)
+	if vars != nil {
+		InterpolateVars(intermediate, vars)
+	}
 
 	cfg := &MachConfig{
 		Filename:     intermediate.Filename,

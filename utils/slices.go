@@ -1,8 +1,8 @@
 package utils
 
-func UniqueStrings(input []string) []string {
-	u := make([]string, 0, len(input))
-	m := make(map[string]bool)
+func UniqueSlice[T comparable](input []T) []T {
+	u := make([]T, 0, len(input))
+	m := make(map[T]bool)
 
 	for _, val := range input {
 		if _, ok := m[val]; !ok {

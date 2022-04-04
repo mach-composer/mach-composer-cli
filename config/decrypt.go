@@ -5,8 +5,8 @@ import (
 	"os"
 	"os/exec"
 	"strings"
-	"syscall"
 
+	"github.com/labd/mach-composer-go/utils"
 	"github.com/sirupsen/logrus"
 )
 
@@ -34,8 +34,6 @@ func RunSops(ctx context.Context, cwd string, args ...string) ([]byte, error) {
 	)
 	cmd.Dir = cwd
 	cmd.Stderr = os.Stderr
-	cmd.SysProcAttr = &syscall.SysProcAttr{
-		Foreground: true,
-	}
+	utils.CmdSetForegrond(cmd)
 	return cmd.Output()
 }
