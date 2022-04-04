@@ -6,6 +6,8 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/labd/mach-composer-go/config"
+	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
 
@@ -31,7 +33,14 @@ func preprocessGenerateFlags() {
 		if err != nil {
 			log.Fatal(err)
 		}
-		generateFlags.fileNames = matches
+
+		for _, m := range matches {
+			if generateFlags.varFile == "" && (m == "variables.yml" || m == "variables.yaml") {
+				generateFlags.varFile = m
+			} else {
+				generateFlags.fileNames = append(generateFlags.fileNames, m)
+			}
+		}
 		if len(generateFlags.fileNames) < 1 {
 			fmt.Println("No .yml files found")
 			os.Exit(1)
@@ -48,4 +57,19 @@ func preprocessGenerateFlags() {
 			generateFlags.outputPath = filepath.Join(value, "deployments")
 		}
 	}
+}
+
+// LoadConfig loads all config files. This means it validates and parses
+// the yaml file.
+func LoadConfigs() map[string]*config.MachConfig {
+	configs := make(map[string]*config.MachConfig)
+	for _, filename := range generateFlags.fileNames {
+		cfg, err := config.Load(filename, generateFlags.varFile)
+		if err != nil {
+			logrus.Error(err.Error())
+			os.Exit(1)
+		}
+		configs[filename] = cfg
+	}
+	return configs
 }

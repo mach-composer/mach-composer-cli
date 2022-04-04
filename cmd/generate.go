@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"github.com/labd/mach-composer-go/config"
 	"github.com/labd/mach-composer-go/generator"
 	"github.com/spf13/cobra"
 )
@@ -30,13 +29,12 @@ func generateFunc(args []string) error {
 		OutputPath: generateFlags.outputPath,
 		Site:       generateFlags.siteName,
 	}
-	for _, filename := range generateFlags.fileNames {
-		cfg, err := config.Load(filename, generateFlags.varFile)
-		if err != nil {
-			panic(err)
-		}
 
-		_, err = generator.WriteFiles(cfg, genOptions)
+	configs := LoadConfigs()
+	for _, filename := range generateFlags.fileNames {
+		cfg := configs[filename]
+
+		_, err := generator.WriteFiles(cfg, genOptions)
 		if err != nil {
 			panic(err)
 		}

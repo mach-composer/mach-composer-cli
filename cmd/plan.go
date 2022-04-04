@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"github.com/labd/mach-composer-go/config"
 	"github.com/labd/mach-composer-go/generator"
 	"github.com/labd/mach-composer-go/runner"
 	"github.com/spf13/cobra"
@@ -35,20 +34,8 @@ func init() {
 
 func planFunc(args []string) error {
 
-	configs := make(map[string]*config.MachConfig)
+	configs := LoadConfigs()
 	allPaths := make(map[string]map[string]string)
-
-	// Note that we do this in multiple passes to minimize ending up with
-	// half broken runs. We could in the future also run some parts in parallel
-
-	// Load and parse all config files
-	for _, filename := range generateFlags.fileNames {
-		cfg, err := config.Load(filename, generateFlags.varFile)
-		if err != nil {
-			panic(err)
-		}
-		configs[filename] = cfg
-	}
 
 	// Write the generate files for each config
 	genOptions := &generator.GenerateOptions{
