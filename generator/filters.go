@@ -150,41 +150,38 @@ func filterTFValue(in *pongo2.Value, param *pongo2.Value) (*pongo2.Value, *pongo
 
 	switch data := in.Interface().(type) {
 
-	case map[any]any:
-		{
-			items := make([]string, 0)
-			for k, v := range data {
-				formatted, err := filterTFValue(pongo2.AsSafeValue(v), nil)
-				if err != nil {
-					continue
-				}
-
-				items = append(items, fmt.Sprintf("\t\t%v = %s,", k, formatted))
-			}
-
-			raw := fmt.Sprintf("{\n%s\n\t}", strings.Join(items, "\n"))
-			return pongo2.AsSafeValue(raw), nil
-		}
+	case map[string]string:
+		return formatMap(data)
 
 	case map[string]any:
-		{
-			items := make([]string, 0)
-			for k, v := range data {
-				formatted, err := filterTFValue(pongo2.AsSafeValue(v), nil)
-				if err != nil {
-					continue
-				}
+		return formatMap(data)
 
-				items = append(items, fmt.Sprintf("  %v = %s", k, formatted))
-			}
-
-			raw := fmt.Sprintf("{\n%s\n\t}", strings.Join(items, "\n"))
-			return pongo2.AsSafeValue(raw), nil
+	case map[any]any:
+		// Should not be neccessary if the formatMap is fixed
+		items := make(map[string]any, 0)
+		for k, v := range data {
+			items[fmt.Sprint(k)] = v
 		}
+		return formatMap(items)
+
 	default:
 		return pongo2.AsValue(data), nil
 	}
 
+}
+
+func formatMap[K comparable, V any](data map[K]V) (*pongo2.Value, *pongo2.Error) {
+	items := make([]string, 0)
+	for k, v := range data {
+		formatted, err := filterTFValue(pongo2.AsSafeValue(v), nil)
+		if err != nil {
+			continue
+		}
+		items = append(items, fmt.Sprintf("\t\t%v = %s,", k, formatted))
+	}
+
+	raw := fmt.Sprintf("{\n%s\n\t}", strings.Join(items, "\n"))
+	return pongo2.AsSafeValue(raw), nil
 }
 
 func filterCommercetoolsScopes(in *pongo2.Value, param *pongo2.Value) (*pongo2.Value, *pongo2.Error) {

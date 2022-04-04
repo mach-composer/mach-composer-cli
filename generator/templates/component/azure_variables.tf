@@ -1,4 +1,4 @@
-{% set azure = component.Definition.Azure %}
+{% set azure = definition.Azure %}
 ### azure related
 azure_short_name              = "{{ azure.ShortName }}"
 azure_name_prefix             = local.name_prefix

@@ -25,10 +25,6 @@ var renderer TemplateRenderer
 func init() {
 	registerFilters()
 
-	// TODO: these filter differ from the current mach-composer python version
-	// due to jinja2 vs pongo2 limitations. Needs more research
-	pongo2.RegisterFilter("replace", filterReplace)
-
 	renderer.templateSet = pongo2.NewSet("", &EmbedLoader{Content: templates})
 	renderer.servicesTemplate = pongo2.Must(renderer.templateSet.FromFile("services.tf"))
 	renderer.componentTemplate = pongo2.Must(renderer.templateSet.FromFile("component.tf"))
@@ -84,9 +80,10 @@ func RenderServices(cfg *config.MachConfig, site *config.Site) (string, error) {
 
 func RenderComponent(cfg *config.MachConfig, site *config.Site, component *config.SiteComponent) (string, error) {
 	return renderer.componentTemplate.Execute(pongo2.Context{
-		"global":    cfg.Global,
-		"site":      site,
-		"variables": cfg.Variables,
-		"component": component,
+		"global":     cfg.Global,
+		"site":       site,
+		"variables":  cfg.Variables,
+		"component":  component,
+		"definition": component.Definition,
 	})
 }
