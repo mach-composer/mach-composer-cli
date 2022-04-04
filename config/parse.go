@@ -1,6 +1,7 @@
 package config
 
 import (
+	"fmt"
 	"log"
 	"path/filepath"
 
@@ -23,6 +24,10 @@ func Load(filename string, varFilename string) (*MachConfig, error) {
 	body, err := utils.AFS.ReadFile(filename)
 	if err != nil {
 		panic(err)
+	}
+
+	if !ValidateConfig(body) {
+		return nil, fmt.Errorf("Failed to load config %s due to errors", filename)
 	}
 
 	cfg, err := Parse(body, vars)
