@@ -77,7 +77,7 @@ func GetSchemaVersion(data []byte) (int, error) {
 		return val, err
 	}
 
-	return 0, errors.New("No valid version identifier found")
+	return 0, errors.New("no valid version identifier found")
 }
 
 func Parse(data []byte, vars *Variables) (*MachConfig, error) {

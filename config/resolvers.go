@@ -1,11 +1,11 @@
 package config
 
 import (
+	"fmt"
 	"log"
+	"os"
 	"path/filepath"
 	"strings"
-
-	"github.com/sirupsen/logrus"
 )
 
 func Process(cfg *MachConfig) {
@@ -119,7 +119,8 @@ func ResolveAzureConfig(cfg *MachConfig) {
 			}
 			s.Azure.Merge(cfg.Global.Azure)
 			if s.Azure.ResourceGroup != "" {
-				logrus.Errorf(
+				fmt.Fprintf(
+					os.Stderr,
 					"WARNING: resource_group on %s is used (%s). "+
 						"Make sure it wasn't managed by MACH before otherwise "+
 						"the resource group will get deleted.",

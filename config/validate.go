@@ -31,14 +31,15 @@ func ValidateConfig(data []byte, version int) bool {
 
 	result, err := gojsonschema.Validate(*schemaLoader, *docLoader)
 	if err != nil {
-		panic(err)
+		fmt.Fprintln(os.Stderr, err.Error())
+		os.Exit(1)
 	}
 
 	// Deal with result
 	if !result.Valid() {
-		logrus.Error("The document is not valid:")
+		fmt.Fprintln(os.Stderr, "The config is not valid:")
 		for _, desc := range result.Errors() {
-			logrus.Errorf(" - %s\n", desc)
+			fmt.Fprintf(os.Stderr, " - %s\n", desc)
 		}
 		return false
 	}

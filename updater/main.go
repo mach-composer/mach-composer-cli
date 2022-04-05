@@ -4,10 +4,10 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"os"
 	"strings"
 
 	"github.com/labd/mach-composer-go/config"
-	"github.com/sirupsen/logrus"
 )
 
 type WorkerJob struct {
@@ -33,7 +33,7 @@ func UpdateFile(filename, componentName, componentVersion string) *UpdateSet {
 		}
 
 		if component == nil {
-			logrus.Infof("No component found with name %s", componentName)
+			fmt.Fprintf(os.Stderr, "No component found with name %s", componentName)
 			return nil
 		}
 	}
@@ -57,24 +57,22 @@ func UpdateFile(filename, componentName, componentVersion string) *UpdateSet {
 					},
 				},
 			}
-			logrus.Infof("Setting component %s to version %s", component.Name, componentVersion)
+			fmt.Printf("Setting component %s to version %s\n", component.Name, componentVersion)
 		} else {
 			updateSet = FindSpecificUpdate(ctx, cfg, filename, component)
 			if updateSet.HasChanges() {
-				logrus.Infof("Updating component %s to version %s", component.Name, updateSet.updates[0].LastVersion)
+				fmt.Printf("Updating component %s to version %s\n", component.Name, updateSet.updates[0].LastVersion)
 			} else {
-				logrus.Infof("No updates for component %s", component.Name)
+				fmt.Printf("No updates for component %s\n", component.Name)
 			}
 		}
 	} else {
 		updateSet = FindUpdates(ctx, cfg, filename, component)
-		logrus.Infof("%d components have updates available", len(updateSet.updates))
+		fmt.Printf("%d components have updates available\n", len(updateSet.updates))
 	}
 
 	if len(updateSet.updates) > 0 {
 		WriteUpdates(ctx, cfg, updateSet)
-	} else {
-		logrus.Info("No changes detected")
 	}
 
 	return updateSet
@@ -85,7 +83,7 @@ func FindUpdates(ctx context.Context, cfg *config.MachConfig, filename string, c
 	jobs := make(chan WorkerJob, numUpdates)
 	results := make(chan *ChangeSet, numUpdates)
 
-	logrus.Infof("Checking if there are updates for %d components", numUpdates)
+	fmt.Printf("Checking if there are updates for %d components\n", numUpdates)
 
 	// Start 4 workers
 	for i := 0; i < 4; i++ {

@@ -169,8 +169,8 @@ func runGit(ctx context.Context, cwd string, args ...string) []byte {
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {
-		logrus.Info(string(output))
-		panic(err)
+		fmt.Fprintln(os.Stderr, string(output))
+		os.Exit(1)
 	}
 
 	return output

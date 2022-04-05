@@ -2,6 +2,7 @@ package generator
 
 import (
 	"errors"
+	"fmt"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -33,7 +34,7 @@ func WriteFiles(cfg *config.MachConfig, options *GenerateOptions) (map[string]st
 		}
 
 		filename := filepath.Join(sitesPath, site.Identifier, "site.tf")
-		logrus.Infof("Generating %s\n", filename)
+		fmt.Printf("Generating %s\n", filename)
 
 		body, err := Render(cfg, &site)
 		if err != nil {

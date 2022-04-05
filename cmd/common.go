@@ -7,7 +7,6 @@ import (
 	"path/filepath"
 
 	"github.com/labd/mach-composer-go/config"
-	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
 
@@ -66,7 +65,7 @@ func LoadConfigs() map[string]*config.MachConfig {
 	for _, filename := range generateFlags.fileNames {
 		cfg, err := config.Load(filename, generateFlags.varFile)
 		if err != nil {
-			logrus.Error(err.Error())
+			fmt.Fprintln(os.Stderr, err.Error())
 			os.Exit(1)
 		}
 		configs[filename] = cfg
