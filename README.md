@@ -98,21 +98,21 @@ components:
 
 To generate the files:
 
-`mach generate # generates all available configs.`
+`mach-composer generate # generates all available configs.`
 
-`mach generate -f main.yml`
+`mach-composer generate -f main.yml`
 
 To init Terraform (optional):
 
-`mach init`
+`mach-composer init`
 
 To plan Terraform:
 
-`mach plan`
+`mach-composer plan`
 
 To apply Terraform config:
 
-`mach apply`
+`mach-composer apply`
 
 ### Checking for updates
 
@@ -120,4 +120,4 @@ MACH can check your components for available updates.
 
 To do this, run:
 
-`mach update -f main.yml`
+`mach-composer update -f main.yml`

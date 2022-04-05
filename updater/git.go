@@ -148,6 +148,14 @@ func cleanCommitID(commit string) string {
 	return commit[:7]
 }
 
+func Commit(ctx context.Context, fileNames []string, message string) {
+	args := []string{"commit"}
+	args = append(args, fileNames...)
+	args = append(args, "-m", message)
+
+	runGit(ctx, ".", args...)
+}
+
 // runGit executes the git command
 func runGit(ctx context.Context, cwd string, args ...string) []byte {
 	logrus.Debugf("Running: git %s\n", strings.Join(args, " "))
@@ -161,6 +169,7 @@ func runGit(ctx context.Context, cwd string, args ...string) []byte {
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {
+		logrus.Info(string(output))
 		panic(err)
 	}
 
