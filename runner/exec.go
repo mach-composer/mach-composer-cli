@@ -20,6 +20,7 @@ func RunTerraform(ctx context.Context, cwd string, args ...string) {
 	cmd.Dir = cwd
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
+	cmd.Env = os.Environ()
 	utils.CmdSetForegrond(cmd)
 
 	err := cmd.Run()
