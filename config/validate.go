@@ -2,8 +2,9 @@ package config
 
 import (
 	"embed"
+	"fmt"
+	"os"
 
-	"github.com/sirupsen/logrus"
 	"github.com/xeipuuv/gojsonschema"
 	"gopkg.in/yaml.v3"
 )
@@ -11,9 +12,14 @@ import (
 //go:embed schemas/*
 var schemas embed.FS
 
-func ValidateConfig(data []byte) bool {
+func ValidateConfig(data []byte, version int) bool {
 
-	schemaLoader, err := loadSchema()
+	if version != 1 {
+		fmt.Fprintf(os.Stderr, "Config version %d is unsupported. Only version 1 is supported.\n", version)
+		return false
+	}
+
+	schemaLoader, err := loadSchema(version)
 	if err != nil {
 		panic(err)
 	}
@@ -39,9 +45,9 @@ func ValidateConfig(data []byte) bool {
 	return true
 }
 
-func loadSchema() (*gojsonschema.JSONLoader, error) {
+func loadSchema(version int) (*gojsonschema.JSONLoader, error) {
 
-	body, err := schemas.ReadFile("schemas/schema-1.yaml")
+	body, err := schemas.ReadFile(fmt.Sprintf("schemas/schema-%d.yaml", version))
 	if err != nil {
 		return nil, err
 	}

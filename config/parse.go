@@ -1,9 +1,12 @@
 package config
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	"path/filepath"
+	"strconv"
+	"strings"
 
 	"github.com/creasty/defaults"
 	"github.com/labd/mach-composer-go/utils"
@@ -26,7 +29,12 @@ func Load(filename string, varFilename string) (*MachConfig, error) {
 		panic(err)
 	}
 
-	if !ValidateConfig(body) {
+	schemaVersion, err := GetSchemaVersion(body)
+	if err != nil {
+		return nil, err
+	}
+
+	if !ValidateConfig(body, schemaVersion) {
 		return nil, fmt.Errorf("failed to load config %s due to errors", filename)
 	}
 
@@ -44,6 +52,32 @@ func Load(filename string, varFilename string) (*MachConfig, error) {
 	Process(cfg)
 
 	return cfg, nil
+}
+
+func GetSchemaVersion(data []byte) (int, error) {
+
+	type PartialMachConfig struct {
+		MachComposer MachComposer `yaml:"mach_composer"`
+	}
+
+	// Decode the yaml in an intermediate config file
+	intermediate := &PartialMachConfig{}
+	err := yaml.Unmarshal(data, intermediate)
+	if err != nil {
+		return 0, err
+	}
+
+	v := intermediate.MachComposer.Version
+	if val, err := strconv.Atoi(v); err == nil {
+		return val, err
+	}
+
+	parts := strings.SplitN(v, ".", 2)
+	if val, err := strconv.Atoi(parts[0]); err == nil {
+		return val, err
+	}
+
+	return 0, errors.New("No valid version identifier found")
 }
 
 func Parse(data []byte, vars *Variables) (*MachConfig, error) {
