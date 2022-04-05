@@ -10,7 +10,7 @@ builds:
   flags:
     - -trimpath
   ldflags:
-    - '-s -w -X "github.com/labd/mach-composer-go/utils.Version={{.Version}}" -X github.com/labd/mach-composer-go/utils.Commit={{.Commit}} -X github.com/labd/mach-composer-go/utils.Date={{.CommitDate}}'
+    - '-s -w -X "github.com/labd/mach-composer/utils.Version={{.Version}}" -X github.com/labd/mach-composer/utils.Commit={{.Commit}} -X github.com/labd/mach-composer/utils.Date={{.CommitDate}}'
   goos:
     - freebsd
     - windows
@@ -37,7 +37,7 @@ brews:
     tap:
       owner: labd
       name: homebrew-{{ .ProjectName }}
-    url_template: https://github.com/labd/mach-composer-go/releases/download/v{{ .Version }}/{{ .ArtifactName }}
+    url_template: https://github.com/labd/mach-composer/releases/download/v{{ .Version }}/{{ .ArtifactName }}
     commit_author:
       name: goreleaserbot
       email: opensource@labdigital.nl

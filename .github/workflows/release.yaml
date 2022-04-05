@@ -106,8 +106,8 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v1
         with:
-          push: false  # Disabled for now
-          cache_froms: docker.pkg.github.com/labd/mach-composer/mach:${{ steps.prep.outputs.cache-from-tag }}
+          push: true
+          cache_froms: ghcr.io/labd/mach-composer/mach:${{ steps.prep.outputs.cache-from-tag }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
           registry: docker.pkg.github.com
