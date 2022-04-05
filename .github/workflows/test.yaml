@@ -31,6 +31,6 @@ jobs:
     - name: Build binaries
       uses: goreleaser/goreleaser-action@v2
       with:
-        args: build --rm-dist
+        args: build --rm-dist --snapshot
     - name: Upload to codecov
       uses: codecov/codecov-action@v1.0.6
