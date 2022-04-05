@@ -8,12 +8,6 @@ FROM alpine:3.14
 COPY --from=builder /code/dist/mach-composer_linux_amd64/mach-composer /usr/local/bin
 
 ENV SOPS_VERSION=3.7.2
-ENV AZURE_CLI_VERSION=2.26.1
-
-FROM alpine:3.14
-COPY --from=builder mach-composer /usr/local/bin
-
-ENV SOPS_VERSION=3.7.2
 ENV AZURE_CLI_VERSION=2.34.1
 ENV TERRAFORM_VERSION=1.1.3
 ENV TERRAFORM_EXTERNAL_VERSION=2.2.2
