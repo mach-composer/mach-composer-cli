@@ -1,5 +1,17 @@
 # Changelog
 
+## 2.0.0 (2022-04-05)
+Rewrite of the Python codebase to Go. Goal is to make it easier to distribute
+mach-composer in a cross-platform way.
+
+A number of features which were minimal used are removed.
+  - The `mach bootstrap` command is no longer present. It was a simple wrapper
+    around Python cookiecutter. This can still be used separately
+  - The `mach sites` and `mach components` commands since they were unused.
+  - The `--with-sp-login` is removed. This flags used to run `az login`. If this
+    is needed it needs to be run before mach-composer is run.
+
+
 ## 1.2 (unreleased)
 
 **general**
