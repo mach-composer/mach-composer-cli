@@ -18,13 +18,13 @@ func RunTerraform(ctx context.Context, cwd string, args ...string) {
 		args...,
 	)
 	cmd.Dir = cwd
-	cmd.Stdout = os.Stdout
+
 	cmd.Stderr = os.Stderr
+	cmd.Stdout = os.Stdout
 	cmd.Env = os.Environ()
 	utils.CmdSetForegrond(cmd)
 
 	err := cmd.Run()
-
 	if err != nil {
 		logrus.Fatalf("terraform command exited: terraform %s (in %s)", strings.Join(args, " "), cwd)
 	}
