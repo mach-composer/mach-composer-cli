@@ -25,6 +25,9 @@ RUN apk add --no-cache --virtual .build-deps g++ libffi-dev openssl-dev wget unz
 # For Azure
 RUN apk add python3-dev py3-pip py3-bcrypt py3-pynacl
 
+# Update pip so that we can install a wheel of cryptography
+RUN python3 -m pip install --upgrade pip
+
 # Install Azure CLI
 RUN pip --no-cache-dir install azure-cli==${AZURE_CLI_VERSION}
 
