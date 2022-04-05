@@ -5,7 +5,6 @@ WORKDIR /code/
 RUN goreleaser build --single-target --skip-validate
 
 FROM alpine:3.14
-COPY --from=builder /code/dist/mach-composer_linux_amd64/mach-composer /usr/local/bin
 
 ENV SOPS_VERSION=3.7.2
 ENV AZURE_CLI_VERSION=2.34.1
@@ -125,5 +124,7 @@ RUN cd /tmp && \
     rm -rf /tmp/* && \
     rm -rf /var/cache/apk/* && \
     rm -rf /var/tmp/*
+
+COPY --from=builder /code/dist/mach-composer_linux_amd64/mach-composer /usr/local/bin
 
 ENTRYPOINT ["mach-composer"]
