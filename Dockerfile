@@ -1,16 +1,15 @@
-ARG PYTHON_VERSION="3.8.11"
+FROM goreleaser/goreleaser:v1.7.0 AS builder
 
-FROM golang:1.15.6 AS go-builder
-# RUN go get -d -v golang.org/x/net/html
-RUN GO111MODULE=on go get -u go.mozilla.org/sops/v3/cmd/sops@v3.7.1 && \
-    cd $GOPATH/pkg/mod/go.mozilla.org/sops/v3@v3.7.1 && \
-    make install
+COPY . /code/
+WORKDIR /code/
+RUN goreleaser build --single-target --skip-validate
 
+FROM alpine:3.14
+COPY --from=builder /code/dist/mach-composer_linux_amd64/mach-composer /usr/local/bin
 
-FROM python:${PYTHON_VERSION}-alpine
-COPY --from=go-builder /go/bin/sops /usr/bin/
-
+ENV SOPS_VERSION=3.7.2
 ENV AZURE_CLI_VERSION=2.26.1
+
 ENV TERRAFORM_VERSION=0.14.5
 ENV TERRAFORM_EXTERNAL_VERSION=1.2.0
 ENV TERRAFORM_AZURE_VERSION=2.86.0
@@ -24,14 +23,16 @@ ENV TERRAFORM_SENTRY_VERSION=0.6.0
 RUN apk add --no-cache --virtual .build-deps g++ libffi-dev openssl-dev wget unzip make \
     && apk add bash ca-certificates git libc6-compat openssl openssh-client jq curl
 
+# For Azure
+RUN apk add python3-dev py3-pip py3-bcrypt py3-pynacl
+
 # Install Azure CLI
 RUN pip --no-cache-dir install azure-cli==${AZURE_CLI_VERSION}
 
-# Pre-install Terreform plugins
-ENV TF_PLUGIN_CACHE_DIR=/root/.terraform.d/plugin-cache
-ENV TERRAFORM_PLUGINS_PATH=/root/.terraform.d/plugins/linux_amd64
-RUN mkdir -p ${TF_PLUGIN_CACHE_DIR}
-RUN mkdir -p ${TERRAFORM_PLUGINS_PATH}
+# Install SOPS
+RUN cd /tmp && \
+    wget https://github.com/mozilla/sops/releases/download/v${SOPS_VERSION}/sops-v${SOPS_VERSION}.linux.amd64 && \
+    /usr/bin/install sops-v3.7.2.linux.amd64 /usr/local/bin/sops
 
 # Install terraform
 RUN cd /tmp && \
@@ -41,7 +42,21 @@ RUN cd /tmp && \
     rm -rf /var/cache/apk/* && \
     rm -rf /var/tmp/*
 
+# Create non-root user
+RUN adduser mach-composer \
+    --disabled-password
 
+RUN mkdir /code && mkdir /deployments && chown mach-composer /code /deployments
+
+USER mach-composer
+WORKDIR /home/mach-composer
+
+
+# Pre-install Terreform plugins
+ENV TF_PLUGIN_CACHE_DIR=/home/mach-composer/.terraform.d/plugin-cache
+ENV TERRAFORM_PLUGINS_PATH=/home/mach-composer/.terraform.d/plugins/linux_amd64
+RUN mkdir -p ${TF_PLUGIN_CACHE_DIR}
+RUN mkdir -p ${TERRAFORM_PLUGINS_PATH}
 
 # Install null provider
 RUN cd /tmp && \
@@ -107,18 +122,4 @@ RUN cd /tmp && \
     rm -rf /var/cache/apk/* && \
     rm -rf /var/tmp/*
 
-RUN mkdir /code
-RUN mkdir /deployments
-WORKDIR /code
-
-ADD requirements.txt .
-RUN pip install -r requirements.txt
-COPY src /code/src/
-ADD MANIFEST.in .
-ADD setup.cfg .
-ADD setup.py .
-RUN python setup.py bdist_wheel && pip install dist/mach_composer-$(python setup.py --version)-py3-none-any.whl
-
-RUN apk del .build-deps
-
-ENTRYPOINT ["mach"]
+ENTRYPOINT ["mach-composer"]
