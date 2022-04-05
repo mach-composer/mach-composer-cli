@@ -49,7 +49,7 @@ on how to deploy your MACH stack with MACH composer.
 ```yaml
 ---
 mach_composer:
-  version: '1.1'
+  version: 1
 global:
   environment: test
   cloud: aws
