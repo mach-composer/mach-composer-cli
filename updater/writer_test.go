@@ -3,8 +3,8 @@ package updater
 import (
 	"testing"
 
-	"github.com/labd/mach-composer-go/config"
-	"github.com/labd/mach-composer-go/utils"
+	"github.com/labd/mach-composer/config"
+	"github.com/labd/mach-composer/utils"
 	"github.com/stretchr/testify/assert"
 )
 

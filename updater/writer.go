@@ -5,7 +5,7 @@ import (
 	"log"
 	"strings"
 
-	"github.com/labd/mach-composer-go/utils"
+	"github.com/labd/mach-composer/utils"
 	"github.com/sirupsen/logrus"
 	"gopkg.in/yaml.v3"
 )

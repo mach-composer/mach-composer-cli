@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/flosch/pongo2/v5"
-	"github.com/labd/mach-composer-go/config"
+	"github.com/labd/mach-composer/config"
 )
 
 func AzureFrontendEndpointName(in *pongo2.Value, param *pongo2.Value) (*pongo2.Value, *pongo2.Error) {

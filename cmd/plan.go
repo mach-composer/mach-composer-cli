@@ -1,8 +1,8 @@
 package cmd
 
 import (
-	"github.com/labd/mach-composer-go/generator"
-	"github.com/labd/mach-composer-go/runner"
+	"github.com/labd/mach-composer/generator"
+	"github.com/labd/mach-composer/runner"
 	"github.com/spf13/cobra"
 )
 

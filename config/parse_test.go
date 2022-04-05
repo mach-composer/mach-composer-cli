@@ -3,7 +3,7 @@ package config
 import (
 	"testing"
 
-	"github.com/labd/mach-composer-go/utils"
+	"github.com/labd/mach-composer/utils"
 	"github.com/stretchr/testify/assert"
 )
 

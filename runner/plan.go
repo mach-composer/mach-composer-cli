@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/labd/mach-composer-go/config"
+	"github.com/labd/mach-composer/config"
 	"github.com/sirupsen/logrus"
 )
 

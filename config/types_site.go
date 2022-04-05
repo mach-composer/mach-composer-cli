@@ -5,7 +5,7 @@ import (
 	"log"
 
 	"github.com/creasty/defaults"
-	"github.com/labd/mach-composer-go/utils"
+	"github.com/labd/mach-composer/utils"
 	"gopkg.in/yaml.v3"
 )
 

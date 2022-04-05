@@ -3,7 +3,7 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/labd/mach-composer-go/utils"
+	"github.com/labd/mach-composer/utils"
 	"github.com/spf13/cobra"
 )
 

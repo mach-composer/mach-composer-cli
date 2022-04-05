@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/labd/mach-composer-go/config"
+	"github.com/labd/mach-composer/config"
 )
 
 type UpdateSet struct {

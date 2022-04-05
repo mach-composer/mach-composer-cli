@@ -7,7 +7,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/labd/mach-composer-go/config"
+	"github.com/labd/mach-composer/config"
 )
 
 type WorkerJob struct {

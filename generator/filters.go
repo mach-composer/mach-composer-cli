@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"github.com/flosch/pongo2/v5"
-	"github.com/labd/mach-composer-go/config"
+	"github.com/labd/mach-composer/config"
 	"github.com/sirupsen/logrus"
 )
 

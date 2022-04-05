@@ -6,7 +6,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/labd/mach-composer-go/config"
+	"github.com/labd/mach-composer/config"
 	"github.com/spf13/cobra"
 )
 
