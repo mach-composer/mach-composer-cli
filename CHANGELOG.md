@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.0.2 (2022-04-05)
+- Pass environment variables to terraform command
+
+
 ## 2.0.1 (2022-04-05)
 - Add aws-cli to the Docker container
 
