@@ -22,6 +22,9 @@ ENV TERRAFORM_SENTRY_VERSION=0.7.0
 RUN apk add --no-cache --virtual .build-deps g++ libffi-dev openssl-dev wget unzip make \
     && apk add bash ca-certificates git libc6-compat openssl openssh-client jq curl
 
+# For AWS
+RUN apk add --update aws-cli
+
 # For Azure
 RUN apk add python3-dev py3-pip py3-bcrypt py3-pynacl
 
@@ -48,11 +51,10 @@ RUN cd /tmp && \
 RUN adduser mach-composer \
     --disabled-password
 
-RUN mkdir /code && mkdir /deployments && chown mach-composer /code /deployments
+RUN mkdir /code /deployments && chown mach-composer /code /deployments
 
 USER mach-composer
 WORKDIR /home/mach-composer
-
 
 # Pre-install Terreform plugins
 ENV TF_PLUGIN_CACHE_DIR=/home/mach-composer/.terraform.d/plugin-cache

@@ -39,6 +39,7 @@ CI/CD settings;
           runs-on: ubuntu-latest
           container:
             image: docker.pkg.github.com/labd/mach-composer/mach:2.0.0
+            options: --user 1001
             credentials:
               username: ${{ secrets.GITHUB_USER }}
               password: ${{ secrets.GITHUB_TOKEN }}
