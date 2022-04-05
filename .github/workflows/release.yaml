@@ -74,7 +74,7 @@ jobs:
       - name: Prepare
         id: prep
         run: |
-          DOCKER_IMAGE=mach-composer
+          DOCKER_IMAGE=mach
           VERSION=noop
           if [[ $GITHUB_REF == refs/tags/* ]]; then
           VERSION=${GITHUB_REF#refs/tags/ | sed -r 's#^v##' }
