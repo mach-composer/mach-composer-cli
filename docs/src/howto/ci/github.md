@@ -1,6 +1,7 @@
 # Deploy using GitHub Actions
 
-This section will describe how to setup your CI/CD pipeline using GitHub Actions including some examples.
+This section will describe how to setup your CI/CD pipeline using GitHub Actions
+including some examples.
 
 ## MACH stack deployment
 
@@ -8,7 +9,8 @@ How to set up the deployment process for your MACH configuration.
 
 ### Providing credentials
 
-For an deployment we have to make sure the following variables set in the GitLab CI/CD settings;
+For an deployment we have to make sure the following variables set in the GitLab
+CI/CD settings;
 
 - [Personal access token](#create-access-token)
 - AWS or Azure credentials
@@ -16,7 +18,8 @@ For an deployment we have to make sure the following variables set in the GitLab
 #### Create access token
 1. Create a [personal access token](https://docs.github.com/en/free-pro-team@latest/github/authenticating-to-github/creating-a-personal-access-token)<br>
    Make sure this has the `repo` permission
-2. Set the personal access token credentials as secrets in your MACH configuration repo settings.
+2. Set the personal access token credentials as secrets in your MACH
+   configuration repo settings.
 
 !!! note "Permissions needed"
       We need `repo` to have access to any private repositories so that MACH can pull in the components during deployment.
@@ -35,7 +38,7 @@ For an deployment we have to make sure the following variables set in the GitLab
         mach:
           runs-on: ubuntu-latest
           container:
-            image: docker.pkg.github.com/labd/mach-composer/mach:0.4.3
+            image: docker.pkg.github.com/labd/mach-composer/mach:2.0.0
             credentials:
               username: ${{ secrets.GITHUB_USER }}
               password: ${{ secrets.GITHUB_TOKEN }}
@@ -44,10 +47,10 @@ For an deployment we have to make sure the following variables set in the GitLab
           - run: |
               echo -e "machine github.com\nlogin ${{ secrets.GITHUB_USER }}\npassword ${{ secrets.GITHUB_TOKEN }}" > ~/.netrc
             name: Prepare credentials
-          - run: mach apply --auto-approve
+          - run: mach-composer apply --auto-approve
             name: Apply
             env:
-              AWS_DEFAULT_REGION: eu-central-1 
+              AWS_DEFAULT_REGION: eu-central-1
               AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
               AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       ```
@@ -64,7 +67,7 @@ For an deployment we have to make sure the following variables set in the GitLab
         mach:
           runs-on: ubuntu-latest
           container:
-            image: docker.pkg.github.com/labd/mach-composer/mach:0.4.3
+            image: docker.pkg.github.com/labd/mach-composer/mach:2.0.0
             credentials:
               username: ${{ secrets.GITHUB_USER }}
               password: ${{ secrets.GITHUB_TOKEN }}
@@ -73,7 +76,7 @@ For an deployment we have to make sure the following variables set in the GitLab
           - run: |
               echo -e "machine github.com\nlogin ${{ secrets.GITHUB_USER }}\npassword ${{ secrets.GITHUB_TOKEN }}" > ~/.netrc
             name: Prepare credentials
-          - run: mach apply --auto-approve --with-sp-login
+          - run: mach-composer apply --auto-approve --with-sp-login
             name: Apply
             env:
               ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
@@ -84,7 +87,8 @@ For an deployment we have to make sure the following variables set in the GitLab
 
 ## Component deployment
 
-For the component CI pipeline we need to be able to test, package and upload the function app ZIP file.
+For the component CI pipeline we need to be able to test, package and upload the
+function app ZIP file.
 
 ### Example
 

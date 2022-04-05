@@ -54,7 +54,7 @@ sites:
 components:
   - name: payment
     source: git::ssh://git@github.com/your-project/components/payment-component.git//terraform
-    endpoints: 
+    endpoints:
       main: main
     version: e638e57
 ```
@@ -66,13 +66,13 @@ See [Syntax](../../reference/syntax/index.md) for all configuration options.
 You can deploy your current configuration by running
 
 ```bash
-$ mach apply
+$ mach-composer apply
 ```
 
 If you wish to review the changes before applying them, run
 
 ```bash
-$ mach plan
+$ mach-composer plan
 ```
 
 !!! tip "Using Docker image"

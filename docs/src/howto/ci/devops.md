@@ -63,7 +63,7 @@ We need to be able to provide the following environment variables:
 - `ARM_CLIENT_SECRET`
 - `ARM_SUBSCRIPTION_ID`
 - `ARM_TENANT_ID`
-  
+
 In this case, we're going to store the `ARM_CLIENT_ID` and `ARM_CLIENT_SECRET` in the KeyVault, so we don't have to hard code it in the pipeline.
 
 ```bash
@@ -117,7 +117,7 @@ steps:
     -e ARM_CLIENT_SECRET=$(DevOpsClientSecret) \
     -e ARM_SUBSCRIPTION_ID=$SP_SUBSCRIPTION_ID \
     -e ARM_TENANT_ID=$SP_TENANT_ID \
-    docker.pkg.github.com/labd/mach-composer/mach:0.4.2 \
+    docker.pkg.github.com/labd/mach-composer/mach:2.0.0 \
     apply --with-sp-login --auto-approve -f main.yml
   displayName: Apply
 ```

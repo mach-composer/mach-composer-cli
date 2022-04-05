@@ -1,24 +1,46 @@
 # Designing your Tenancy model
 
-When using MACH composer, chances are you want to manage multiple use-cases with it, from a single basis. At least, this is what MACH composer is intended for: building platforms that span many use-cases that share a big part of how they are built. 
+When using MACH composer, chances are you want to manage multiple use-cases with
+it, from a single basis. At least, this is what MACH composer is intended for:
+building platforms that span many use-cases that share a big part of how they
+are built.
 
-MACH composer allows you to orchestrate multi-tenant environments and implement use-case specific requirements where needed, without sacrificing the scalability (and perhaps more importantly, its maintainability) for it.
+MACH composer allows you to orchestrate multi-tenant environments and implement
+use-case specific requirements where needed, without sacrificing the scalability
+(and perhaps more importantly, its maintainability) for it.
 
-That being said, this isn't a 'wild card' to just add as many project/environments/etc that you wish. We always recommend to apply the principle: use the lowest possible number of environments, as each of them will come with additional complexity, management overhead and cost. 
+That being said, this isn't a 'wild card' to just add as many
+project/environments/etc that you wish. We always recommend to apply the
+principle: use the lowest possible number of environments, as each of them will
+come with additional complexity, management overhead and cost.
 
-The less environments, the better - while of course always making sure that 'it fits'. If there are good reasons to setup additional environments, then set them up instead of trying to fit a square into a circle.
+The less environments, the better - while of course always making sure that 'it
+fits'. If there are good reasons to setup additional environments, then set them
+up instead of trying to fit a square into a circle.
 
 !!! info "Multi tenancy"
-    When we talk about the Tenancy model, we explain how we implement multi-tenancy within a MACH composer project. Multi tenancy is used to serve many use-cases, from a single platform. Typical use-cases are multi-brand, multi-country and multi-country environments, that require some 'context' at the application level, to separate one environment from the other, to facilitate the organisation working with the system.
+    When we talk about the Tenancy model, we explain how we implement
+    multi-tenancy within a MACH composer project. Multi tenancy is used to serve
+    many use-cases, from a single platform. Typical use-cases are multi-brand,
+    multi-country and multi-country environments, that require some 'context' at
+    the application level, to separate one environment from the other, to
+    facilitate the organisation working with the system.
 
-    Conways law comes into play here: *Any organisation that designs a system (defined broadly) will produce a design whose structure is a copy of the organisation's communication structure.* ([source](https://en.wikipedia.org/wiki/Conway%27s_law)).
+    Conways law comes into play here: *Any organisation that designs a system
+    (defined broadly) will produce a design whose structure is a copy of the
+    organisation's communication structure.*
+    ([source](https://en.wikipedia.org/wiki/Conway%27s_law)).
 
-    Usually the tenancy model of a MACH composer platform, ends up being a reflection of how the organisation that uses it is structured.
+    Usually the tenancy model of a MACH composer platform, ends up being a
+    reflection of how the organisation that uses it is structured.
 
 
 ## MACH systems tenancy
 
-MACH systems (such as commercetools, contentful or Amplience) are usually multi-tenant by default. They often have a 'single platform' that hosts all of their customers. And within customer accounts, they provide structures and controls to design a sane structure that matches your organisational needs.
+MACH systems (such as commercetools, contentful or Amplience) are usually
+multi-tenant by default. They often have a 'single platform' that hosts all of
+their customers. And within customer accounts, they provide structures and
+controls to design a sane structure that matches your organisational needs.
 
 
 ### commercetools tenancy
@@ -46,11 +68,18 @@ MACH systems (such as commercetools, contentful or Amplience) are usually multi-
 *Things to be aware of:*
 
 1. Known limitations when scaling commercetools `projects` across use-cases:
-    - Currently, commercetools is implementing `assortments` in their product catalogue, which will enable you to create store-specific assortments (and thus catalogues). Currently this is not supported yet, but expected in Q1 2021
-    - The Merchant Center does not always provide the `store` 'context'. This means that managers of store A might be able to see resources of store B.
-        - If this is a problem, this might be a reason to create an additional `project` instead of solving it with a `store`
-2. When hosting multiple commercetools regions, commercetools might incur extra costs depending on the region (prices may differ).
-3. Extra costs might be incurred for extra `projects` that are created in your commercetools organisation. This is usually contract-bound.
+    - Currently, commercetools is implementing `assortments` in their product
+      catalogue, which will enable you to create store-specific assortments (and
+      thus catalogues). Currently this is not supported yet, but expected in Q1
+      2021
+    - The Merchant Center does not always provide the `store` 'context'. This
+      means that managers of store A might be able to see resources of store B.
+        - If this is a problem, this might be a reason to create an additional
+          `project` instead of solving it with a `store`
+2. When hosting multiple commercetools regions, commercetools might incur extra
+   costs depending on the region (prices may differ).
+3. Extra costs might be incurred for extra `projects` that are created in your
+   commercetools organisation. This is usually contract-bound.
     - This includes setting up non-production (dev, test, qa) `projects` in commercetools
 
 
@@ -78,13 +107,21 @@ MACH systems (such as commercetools, contentful or Amplience) are usually multi-
 *Things to be aware of:*
 
 1. Content can be shared across repositories, but not across hubs.
-    - If you have multiple brands and want to share the content across brands and possibly across channels and locales, you may choose to have one hub and several repositories.
-    - If you have multiple brands and do not wish share content between them, or simply wish to keep the content entirely separate, then the multiple hub approach is one to consider.
+    - If you have multiple brands and want to share the content across brands
+      and possibly across channels and locales, you may choose to have one hub and
+      several repositories.
+    - If you have multiple brands and do not wish share content between them, or
+      simply wish to keep the content entirely separate, then the multiple hub
+      approach is one to consider.
 2. Extra costs might be incurred for extra `hubs` that are created.
 
 ## Cloud provider tenancy
 
-Cloud provider tenancy is aimend at partitioning the platform to a level where certain resources are grouped together logically, and securely. Structuring this suffifient, will allow you to scale the platform across many users and (3rd) parties working on it, while limiting the 'attack surface' in case any environment would be compromised.
+Cloud provider tenancy is aimend at partitioning the platform to a level where
+certain resources are grouped together logically, and securely. Structuring this
+suffifient, will allow you to scale the platform across many users and (3rd)
+parties working on it, while limiting the 'attack surface' in case any
+environment would be compromised.
 
 
 ### AWS tenancy
@@ -94,11 +131,14 @@ How to structure an AWS environment?
 In short:
 
 1. Follow [AWS account best practices](https://aws.amazon.com/organizations/getting-started/best-practices/).
-2. Create **one AWS account per commercetools project** that you create, which hosts all of the AWS resources tied to that commercetools project.
-3. Create one dedicated '*service*' or '*shared*' account that hosts shared resources like component artifacts and centralized routing.
+2. Create **one AWS account per commercetools project** that you create, which
+   hosts all of the AWS resources tied to that commercetools project.
+3. Create one dedicated '*service*' or '*shared*' account that hosts shared
+   resources like component artifacts and centralized routing.
 
 !!! tip ""
-      See the instructions on [how to setup AWS](../../tutorial/aws/step-3-setup-aws-services.md) to get a good overview of the way a typical MACH-ready AWS environment is set up
+      See the instructions on [how to setup AWS](../../tutorial/aws/step-3-setup-aws-services.md)
+      to get a good overview of the way a typical MACH-ready AWS environment is set up
 
 ### Azure tenancy
 
@@ -111,10 +151,17 @@ In short:
 3. Have all resources per site be created in their own separate Azure Resource Group. MACH composer will do this for you automatically. [^1]
 
 !!! tip ""
-      See the instructions on [how to setup Azure](../../tutorial/azure/step-3-setup-azure.md) to get a good overview of the way a typical MACH-ready Azure environment is set up
+      See the instructions on [how to setup Azure](../../tutorial/azure/step-3-setup-azure.md)
+      to get a good overview of the way a typical MACH-ready Azure environment
+      is set up
 ## Building 'context aware' components
 
 !!! TODO
-    Describe how to build components (microservices) that are able to work across tenancy contexts; i.e. they should be parameterised with context-settings, as well as able to 'detect' what store is currently active, for example.
+    Describe how to build components (microservices) that are able to work
+    across tenancy contexts; i.e. they should be parameterised with
+    context-settings, as well as able to 'detect' what store is currently
+    active, for example.
 
-[^1]: You can overwrite this behaviour by creating a Resource Group yourself and define them using the [`resource_group`](../../reference/syntax/sites.md#azure) option
+[^1]: You can overwrite this behaviour by creating a Resource Group yourself and
+      define them using the [`resource_group`](../../reference/syntax/sites.md#azure)
+      option

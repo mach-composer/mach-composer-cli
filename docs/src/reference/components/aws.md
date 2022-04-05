@@ -1,20 +1,28 @@
 # AWS components
 
-All components within a AWS-based MACH configuration are automatically considered to have a 'aws' integration by default. Only if 'aws' is explicitely omitted from the `integrations` definition, it won't require any AWS-specific variables.
+All components within a AWS-based MACH configuration are automatically
+considered to have a 'aws' integration by default. Only if 'aws' is explicitely
+omitted from the `integrations` definition, it won't require any AWS-specific
+variables.
 
 To be able to create the resources needed, a couple of extra [Terraform variables](#terraform-variables) are set by MACH.
 
-In addition to this, the component itself is responsible for [packaging and deploying](#packaging-and-deploying) the correct assets in case of a Lambda function.
+In addition to this, the component itself is responsible for
+[packaging and deploying](#packaging-and-deploying) the correct assets in case
+of a Lambda function.
 
 ## Terraform variables
 
-In addition to the [base variables](./structure.md#required-variables) AWS components don't require additional variables, unless an `endpoint` is expected (and set in the configuration).
+In addition to the [base variables](./structure.md#required-variables) AWS
+components don't require additional variables, unless an `endpoint` is
+expected (and set in the configuration).
 
 ### With `endpoints`
 
 In order to support the [`endpoints`](../../topics/deployment/config/aws.md#http-routing) attribute on the component, the component needs to define what endpoints it expects.
 
-For example, if the component requires two endpoints (`main` and `webhooks`) to be set, the following variables needs to be defined:
+For example, if the component requires two endpoints (`main` and `webhooks`) to
+be set, the following variables needs to be defined:
 
 ```terraform
 variable "aws_endpoint_main" {
@@ -36,12 +44,15 @@ variable "aws_endpoint_webhooks" {
 
 ## Packaging and deploying
 
-AWS Lambda functions need to be uploaded to a S3 bucket. From there AWS Lambda will run the functions for you once instructed by the Terraform deployment.
+AWS Lambda functions need to be uploaded to a S3 bucket. From there AWS Lambda
+will run the functions for you once instructed by the Terraform deployment.
 
-[Read more](../../topics/deployment/components.md#on-aws) about AWS component deployments.
+[Read more](../../topics/deployment/components.md#on-aws) about AWS component
+deployments.
 
 ### Configure runtime
-When defining your AWS Lambda function resource, you can reference back to the asset that is deployed:
+When defining your AWS Lambda function resource, you can reference back to the
+asset that is deployed:
 
 ```terraform
 resource "aws_lambda_function" "example" {

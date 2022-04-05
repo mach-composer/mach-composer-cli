@@ -90,16 +90,16 @@ role_arn = arn:aws:iam::<service-account-id>:role/mach
 You can deploy your current configuration by running
 
 ```bash
-$ mach apply
+$ mach-composer apply
 ```
 
 !!! tip "Providing AWS credentials"
-    How you provide the AWS credentials is dependent on your local setup. 
-    
-    For example; you could invoke this with `AWS_DEFAULT_PROFILE=your-project-tst mach apply` or with [aws-vault](https://github.com/99designs/aws-vault):
+    How you provide the AWS credentials is dependent on your local setup.
+
+    For example; you could invoke this with `AWS_DEFAULT_PROFILE=your-project-tst mach-composer apply` or with [aws-vault](https://github.com/99designs/aws-vault):
 
     ```bash
-    aws-vault exec your-project-tst -- mach apply
+    aws-vault exec your-project-tst -- mach-composer apply
     ```
 
 
@@ -125,7 +125,10 @@ $ curl https://cytbsqhtp5.execute-api.eu-central-1.amazonaws.com/api/healthcheck
 
 ## Example files
 
-You can find example files needed for preparing the infrastructure and a configuration file [on GitHub](https://github.com/labd/mach-composer/tree/master/examples/aws) in the [/examples](https://github.com/labd/mach-composer/tree/master/examples/aws) directory
+You can find example files needed for preparing the infrastructure and a
+configuration file [on GitHub](https://github.com/labd/mach-composer/tree/master/examples/aws) in the
+[/examples](https://github.com/labd/mach-composer/tree/master/examples/aws)
+directory
 
 ## Further reading
 

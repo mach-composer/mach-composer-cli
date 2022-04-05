@@ -83,9 +83,11 @@ locals {
 
 ## Using store secrets
 
-For the store secrets you can use the same technique as for the [store variables](#using-store-variables). This especially will be sufficient for most cases when implementing for Azure.
+For the store secrets you can use the same technique as for the [store variables](#using-store-variables).
+This especially will be sufficient for most cases when implementing for Azure.
 
-On AWS it might be a better option to combine secrets per store into one secrets value to avoid too much latency when fetching those secrets.
+On AWS it might be a better option to combine secrets per store into one secrets
+value to avoid too much latency when fetching those secrets.
 
 ### AWS
 

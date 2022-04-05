@@ -2,13 +2,15 @@
 
 ## Creating a component
 
-The easiest way to get started with a component is by using the [`mach bootstrap`](../reference/cli.md#bootstrap) command:
+The easiest way to get started with a component is by using the
+[`mach-composer bootstrap`](../reference/cli.md#bootstrap) command:
 
 ```bash
-$ mach bootstrap component
+$ mach-composer bootstrap component
 ```
 
-This will generate a new project including a README file on how to get started and include it in your MACH configuration.
+This will generate a new project including a README file on how to get started
+and include it in your MACH configuration.
 
 ## Adding it to your stack
 
@@ -16,14 +18,17 @@ A component can be added to your MACH stack by including it in your MACH configu
 
 It should be present in your:
 
-1. [Component definitions](../reference/syntax/components.md) so that MACH knows where to find your component
-2. [Site component configuration](../reference/syntax/sites.md#components) to include it in your MACH stack add site-specific configuration
+1. [Component definitions](../reference/syntax/components.md) so that MACH knows
+    where to find your component
+2. [Site component configuration](../reference/syntax/sites.md#components) to
+    include it in your MACH stack add site-specific configuration
 
 The [tutorial](../tutorial/aws/step-6-create-mach-stack.md) includes an example of a configuration file with a component implemented.
 
 ## Using Serverless framework
 
-The 'function'-part of a MACH component can easily be integrated with the [serverless framework](https://www.serverless.com) for "*zero-friction serverless development*".
+The 'function'-part of a MACH component can easily be integrated with the
+[serverless framework](https://www.serverless.com) for "*zero-friction serverless development*".
 
 This gives you a couple of features:
 

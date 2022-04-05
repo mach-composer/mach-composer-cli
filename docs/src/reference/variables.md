@@ -13,7 +13,7 @@ The following types are supported;
 
 ```yaml
 mach_composer:
-  version: 1.0.0
+  version: 1
 global:
   environment: ${env.MACH_ENVIRONMENT}
   cloud: aws
@@ -71,7 +71,7 @@ components:
 This can be used for using values from a *variables file*. This variable file must be set by using the [`--var-file` CLI option](./cli.md#apply):
 
 ```bash
-mach apply -f main.yml --var-file variables.yml
+mach-composer apply -f main.yml --var-file variables.yml
 ```
 
 From the [example](#example) above, the following configuration line:
@@ -79,7 +79,7 @@ From the [example](#example) above, the following configuration line:
 stripe_secret_key: ${var.stripe_secret}
 ```
 
-will use the `stripe_secret` value from the given variables file. 
+will use the `stripe_secret` value from the given variables file.
 
 !!! info ""
     These values can be nested, so it's possible to define a `${var.site1.stripe.secret_key}` with your `variables.yml` looking like:
@@ -106,7 +106,7 @@ Use environment variables in your MACH configuration:
 
 ```bash
 export MACH_ENVIRONMENT=test
-mach apply
+mach-composer apply
 ```
 
 Will replace `${env.MACH_ENVIRONMENT}` in our [example](#example) with `test`.

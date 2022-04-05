@@ -1,6 +1,7 @@
 # Deploy using GitLab CI/CD
 
-This section will describe how to setup your CI/CD pipeline using GitLab including some examples.
+This section will describe how to setup your CI/CD pipeline using GitLab
+including some examples.
 
 ## MACH stack deployment
 
@@ -9,7 +10,7 @@ How to set up the deployment process for your MACH configuration.
 ### Providing cloud credentials
 
 We have to make sure the the necessary AWS or Azure credentials are set in the GitLab CI/CD settings;
-  
+
 ![CI/CD variables](../../_img/deployment/gitlab/variables.png)
 
 ### Access to component repositories
@@ -44,7 +45,7 @@ To speed up deployments and avoid re-downloads of each provider and module, we c
         paths:
          - $CI_PROJECT_DIR/tf-cache
         key: $CI_PROJECT_ID
-        
+
       variables:
         AWS_DEFAULT_REGION: $AWS_DEFAULT_REGION
         AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID
@@ -61,12 +62,12 @@ To speed up deployments and avoid re-downloads of each provider and module, we c
 
       deploy:
         script:
-          - mach apply --auto-approve -f $CI_PROJECT_DIR/main.yml
+          - mach-composer apply --auto-approve -f $CI_PROJECT_DIR/main.yml
       ```
 === "Azure"
       ```yaml
       ---
-      image: docker.pkg.github.com/labd/mach-composer/mach:0.4
+      image: docker.pkg.github.com/labd/mach-composer/mach:2.0.0
 
       cache:
         paths:
@@ -90,7 +91,7 @@ To speed up deployments and avoid re-downloads of each provider and module, we c
 
       deploy:
         script:
-          - mach apply --auto-approve --with-sp-login -f $CI_PROJECT_DIR/main.yml
+          - mach-composer apply --auto-approve --with-sp-login -f $CI_PROJECT_DIR/main.yml
       ```
 
 ## Component deployment
@@ -117,7 +118,7 @@ Example GitLab CI configuration
   test:
     image: python:3.7.5
     stage: test
-    script: 
+    script:
       - pip install -r requirements_dev.txt
       - py.test tests/ --cov=. --cov-report=term-missing --cov-report=xml:reports/coverage.xml --junit-xml=reports/junit.xml
     artifacts:
@@ -130,7 +131,7 @@ Example GitLab CI configuration
 
   build:
     stage: build
-    script: 
+    script:
       - make pack
     artifacts:
       paths:
@@ -139,7 +140,7 @@ Example GitLab CI configuration
 
   deploy:
     stage: deploy
-    script: 
+    script:
       - az login --service-principal -u $AZURE_SP_CLIENT_ID -p $AZURE_SP_CLIENT_SECRET --tenant $AZURE_SP_TENANT_ID
       - az account set --subscription $AZURE_SP_SUBSCRIPTION_ID
       - make upload

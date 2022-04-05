@@ -1,6 +1,8 @@
 # Apply Apollo Federation
 
-A common use-case when having multiple components (and/or external SaaS services) with a GraphQL API is to expose the APIs using a [federated gateway](https://www.apollographql.com/docs/federation/).
+A common use-case when having multiple components (and/or external SaaS
+services) with a GraphQL API is to expose the APIs using a [federated
+gateway](https://www.apollographql.com/docs/federation/).
 
 This setup consists of two things:
 
@@ -10,9 +12,12 @@ This setup consists of two things:
 
 ## Managed Apollo Federation Gateway setup
 
-The Gateway components needs to implement the `ApolloGateway` and be connected to the Apollo Studio configured in the [Site configuration](../reference/syntax/sites.md#apollo_federation).
+The Gateway components needs to implement the `ApolloGateway` and be connected
+to the Apollo Studio configured in the [Site
+configuration](../reference/syntax/sites.md#apollo_federation).
 
-Any component that uses the [Apollo Federation integration](../reference/components/structure.md#apollo-federation) must have the following Terraform variable defined:
+Any component that uses the [Apollo Federation integration](../reference/components/structure.md#apollo-federation)
+must have the following Terraform variable defined:
 
 ```terraform
 variable "apollo_federation" {
@@ -33,17 +38,20 @@ APOLLO_GRAPH_VARIANT = var.apollo_federation.graph_variant
 
 ## Downstream federated services apollo integration
 
-Once a component is deployed (either added to your MACH stack or updated) it needs to update its schema in the Apollo Federation.
+Once a component is deployed (either added to your MACH stack or updated) it
+needs to update its schema in the Apollo Federation.
 
 To do so we need to make this update call part of our deployment processes.
 
 !!! important "Apollo CLI"
-    Make sure the [Apollo CLI](https://www.apollographql.com/docs/devtools/cli/) is available in the context where you're running mach.
+    Make sure the [Apollo CLI](https://www.apollographql.com/docs/devtools/cli/)
+    is available in the context where you're running mach.
 
 ### Updating a downstream service
 
 While there are some [edge cases](https://www.apollographql.com/docs/federation/managed-federation/deployment/#pushing-configuration-updates-safely),
-in general you want to push after the new service is completely deployed. An example on how to do this:
+in general you want to push after the new service is completely deployed. An
+example on how to do this:
 
 ```terraform
 locals {

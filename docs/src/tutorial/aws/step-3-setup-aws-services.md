@@ -25,7 +25,7 @@ For this account we will create a;
 - In your AWS console, go to **My Organization** and choose **Add accounts**
 - For your new account choose a name like `your-project-srv` or `your-project-shared`
 - As **IAM role name** enter `admin` [^1]
-  
+
 ![New account](../../_img/tutorial/aws-create-account.png){: style="max-width: 600px"}
 
 !!! info "No root AWS account yet?"
@@ -113,7 +113,8 @@ In order to move the current (local) state file to the bucket, perform this one-
 ```bash
 $ terraform init -force-copy
 ```
-Now the state is stored in the S3 bucket, and the DynamoDB table will be used to lock the state to prevent concurrent modification.
+Now the state is stored in the S3 bucket, and the DynamoDB table will be used to
+lock the state to prevent concurrent modification.
 
 !!! tip "Next: step 4"
     Next we'll setup the [AWS account for a MACH stack](step-4-setup-aws-site.md).

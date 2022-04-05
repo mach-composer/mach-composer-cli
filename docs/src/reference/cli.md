@@ -1,23 +1,29 @@
 # CLI Reference
 
+
 MACH composer's command line interface allows you to peform the following actions:
 
 ```bash
-$ mach
-Usage: mach [OPTIONS] COMMAND [ARGS]...
+$ mach-composer
 
-Options:
-  --help  Show this message and exit.
+Usage:
+  mach-composer [command]
 
-Commands:
+Available Commands:
   apply       Apply the configuration.
-  bootstrap   Bootstraps a configuration or component.
-  components  List all components.
+  completion  Generate the autocompletion script for the specified shell
   generate    Generate the Terraform files.
-  init        Init the Terraform directory.
-  plan        Output the deploy plan.
-  sites       List all sites.
+  help        Help about any command
+  init        Initialize site directories Terraform files.
+  plan        Plan the configuration.
   update      Update all (or a given) component.
+  version     Return version information of the mach-composer cli
+
+Flags:
+  -h, --help      help for mach-composer
+      --verbose   Verbose output.
+
+Use "mach-composer [command] --help" for more information about a command.
 ```
 
 
@@ -26,7 +32,7 @@ Commands:
 Apply the configuration.
 
 ```bash
-mach apply --auto-approve -f main.yml
+mach-composer apply --auto-approve -f main.yml
 ```
 
 **Options**
@@ -42,52 +48,6 @@ mach apply --auto-approve -f main.yml
 - `--ignore-version` Skip MACH composer version check
 - `--destroy` Destroy option is a convenient way to destroy all remote objects managed by this mach config
 
-
-## `bootstrap`
-
-Usage: `mach bootstrap [OPTIONS] [config|component]`
-
-Bootstraps a configuration or component.
-
-```bash
-# To start a wizard to create a new configuration file
-mach bootstrap config
-
-# To start a wizard to create a new component
-mach bootstrap component
-```
-
-**Options**
-
-- `--output` or `-o TEXT` Output file or directory.
-- `--cookiecutter` or `-c TEXT` cookiecutter repository to generate from.
-
-
-## `components`
-List all components.
-
-```bash
-mach components -f main.yml
-```
-
-**Options**
-
-- `--file` or `-f TEXT` YAML file to read. If not set parse all *.yml files.
-
-## `generate`
-Generate the Terraform files.
-
-```bash
-mach generate -f main.yml
-```
-
-**Options**
-
-- `--file` or `-f TEXT` YAML file to parse. If not set parse all *.yml files.
-- `--var-file` YAML file with variables to be used in the configuration file.
-- `--site` or `-s TEXT` Site to parse. If not set parse all sites.
-- `--output-path TEXT` Output path, defaults to `cwd`/deployments.
-- `--ignore-version` Skip MACH composer version check
 
 
 ## `init`
@@ -125,17 +85,6 @@ mach plan -f main.yml
 - `--destroy` Destroy option is a convenient way to destroy all remote objects managed by this mach config
 
 
-## `sites`
-List all sites.
-
-```bash
-mach sites -f main.yml
-```
-
-**Options**
-
-- `--file` or `-f TEXT` YAML file to read. If not set parse all *.yml files.
-
 ## `update`
 
 Usage: `mach update [OPTIONS] [COMPONENT] [VERSION]`
@@ -152,9 +101,6 @@ mach update --check
 
 # To update a specific component and create a commit message
 mach update pim-importer v1.2.0 -c
-
-# You can also use the "@" delimiter for component version
-mach update pim-importer@v1.2.0 -c
 ```
 
 **Options**
