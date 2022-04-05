@@ -77,7 +77,7 @@ jobs:
           DOCKER_IMAGE=mach
           VERSION=noop
           if [[ $GITHUB_REF == refs/tags/* ]]; then
-          VERSION=${GITHUB_REF#refs/tags/ | sed -r 's#^v##' }
+          VERSION=$(echo ${GITHUB_REF#refs/tags/} | sed -r 's#^v##g')
           elif [[ $GITHUB_REF == refs/heads/* ]]; then
           VERSION=$(echo ${GITHUB_REF#refs/heads/} | sed -r 's#/+#-#g')
           if [ "${{ github.event.repository.default_branch }}" = "$VERSION" ]; then
