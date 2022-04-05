@@ -1,3 +1,5 @@
+[![MACH composer](https://github.com/labd/mach-composer/blob/master/docs/src/_img/logo.png?raw=true)](https://docs.machcomposer.io)
+
 **Documentation:** [docs.machcomposer.io](https://docs.machcomposer.io)
 
 MACH composer is a framework that you use to orchestrate and extend modern
