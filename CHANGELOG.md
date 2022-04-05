@@ -10,6 +10,10 @@ A number of features which were minimal used are removed.
   - The `mach sites` and `mach components` commands since they were unused.
   - The `--with-sp-login` is removed. This flags used to run `az login`. If this
     is needed it needs to be run before mach-composer is run.
+  - The `--ignore-version` flag is removed. The version in the config file now
+    indicates a schema version. Only version 1 is supported and updates within
+    this schema version should always be backwards compatible.
+
 
 
 ## 1.2 (unreleased)
