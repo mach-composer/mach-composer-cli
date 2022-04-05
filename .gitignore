@@ -1,26 +1,12 @@
-# Generated content
-*.egg-info
-deployments
-build/
+deployments/
 dist/
-
-
-# Test output
-/.coverage*
-/reports/
-/.pytest_cache/
-/.mypy_cache/
-/.docker_tag
-/.tox
 
 # Docs
 /docs/build
 
-
 # Editor files
 /.idea
 /.vscode
-
 
 # File extensions
 .DS_Store
@@ -30,9 +16,7 @@ __pycache__
 .version
 /.python-version
 
-# Go version
-dist/
-deployments/
+# binaries
 mach-composer
 mach-composer-go
 main
