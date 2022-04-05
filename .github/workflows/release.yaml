@@ -1,0 +1,115 @@
+name: Create release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  goreleaser:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Set up Go
+        uses: WillAbides/setup-go-faster@v1.7.0
+        with:
+          go-version: 1.18
+      - name: Run GoReleaser
+        uses: goreleaser/goreleaser-action@v2
+        with:
+          version: latest
+          args: release --rm-dist
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_PAT }}
+      - uses: actions/upload-artifact@v3
+        with:
+          name: mach-composer
+          path: dist/*
+
+
+  docker:
+    if: ${{ startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/master' || github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/main' }}
+    needs: [goreleaser]
+    name: Build and push docker image
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v2
+      # - name: Docker meta
+      #   id: meta
+      #   uses: docker/metadata-action@v3
+      #   with:
+      #     # list of Docker images to use as base name for tags
+      #     images: |
+      #       labd/mach-composer/mach
+      #     # generate Docker tags based on the following events/attributes
+      #     tags: |
+      #       type=ref,event=branch
+      #       type=semver,pattern={{version}}
+      #       type=semver,pattern={{major}}.{{minor}}
+      #       type=semver,pattern={{major}}
+      #       type=sha
+      # - name: Set up Docker Buildx
+      #   uses: docker/setup-buildx-action@v1
+      # - name: Login to GitHub packages
+      #   uses: docker/login-action@v1
+      #   with:
+      #     registry: docker.pkg.github.com
+      #     username: ${{ github.repository_owner }}
+      #     password: ${{ secrets.GITHUB_TOKEN }}
+      #     logout: false
+      # - name: Push to GitHub Packages
+      #   uses: docker/build-push-action@v2
+      #   with:
+      #     context: .
+      #     pull: true
+      #     push: true
+      #     cache-from: type=registry,ref=labd/mach-composer/mach:latest
+      #     cache-to: type=inline
+      #     tags: ${{ steps.meta.outputs.tags }}
+      #     labels: ${{ steps.meta.outputs.labels }}
+      - name: Prepare
+        id: prep
+        run: |
+          DOCKER_IMAGE=mach
+          VERSION=noop
+          if [[ $GITHUB_REF == refs/tags/* ]]; then
+          VERSION=${GITHUB_REF#refs/tags/}
+          elif [[ $GITHUB_REF == refs/heads/* ]]; then
+          VERSION=$(echo ${GITHUB_REF#refs/heads/} | sed -r 's#/+#-#g')
+          if [ "${{ github.event.repository.default_branch }}" = "$VERSION" ]; then
+              VERSION=edge
+          fi
+          fi
+          CACHE_FROM_TAG="${VERSION}"
+          TAGS="${VERSION}"
+          if [[ $VERSION =~ ^(v)?[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$ ]]; then
+          MINOR=${VERSION%.*}
+          MAJOR=${MINOR%.*}
+          TAGS="$TAGS,${MINOR},${MAJOR},latest"
+          CACHE_FROM_TAG="latest"
+          elif [ "${{ github.event_name }}" = "push" ]; then
+          TAGS="$TAGS,sha-${GITHUB_SHA::8}"
+          fi
+          echo ::set-output name=version::${VERSION}
+          echo ::set-output name=tags::${TAGS}
+          echo ::set-output name=cache-from-tag::${CACHE_FROM_TAG}
+          echo ::set-output name=created::$(date -u +'%Y-%m-%dT%H:%M:%SZ')
+          echo $VERSION
+      - name: Login to docker.pkg.github.com
+        run: docker login -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }} docker.pkg.github.com
+      - name: Pull cache from docker.pkg.github.com
+        run: docker pull docker.pkg.github.com/labd/mach-composer/mach:${{ steps.prep.outputs.cache-from-tag }} || true
+      - name: Build and push
+        uses: docker/build-push-action@v1
+        with:
+          push: false  # Disabled for now
+          cache_froms: docker.pkg.github.com/labd/mach-composer/mach:${{ steps.prep.outputs.cache-from-tag }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          registry: docker.pkg.github.com
+          repository: labd/mach-composer/mach
+          tags: ${{ steps.prep.outputs.tags }}

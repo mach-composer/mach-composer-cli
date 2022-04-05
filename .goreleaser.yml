@@ -1,0 +1,50 @@
+project_name: mach-composer
+
+builds:
+- env:
+    # goreleaser does not work with CGO, it could also complicate
+    # usage by users in CI/CD systems like Terraform Cloud where
+    # they are unable to install libraries.
+    - CGO_ENABLED=0
+  mod_timestamp: '{{ .CommitTimestamp }}'
+  flags:
+    - -trimpath
+  ldflags:
+    - '-s -w -X "github.com/labd/mach-composer-go/utils.Version={{.Version}}" -X github.com/labd/mach-composer-go/utils.Commit={{.Commit}} -X github.com/labd/mach-composer-go/utils.Date={{.CommitDate}}'
+  goos:
+    - freebsd
+    - windows
+    - linux
+    - darwin
+  goarch:
+    - amd64
+    - arm
+    - arm64
+
+checksum:
+  name_template: '{{ .ProjectName }}_{{ .Version }}_SHA256SUMS'
+  algorithm: sha256
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
+
+brews:
+  - name: "{{ .ProjectName }}"
+    tap:
+      owner: labd
+      name: homebrew-{{ .ProjectName }}
+    url_template: https://github.com/labd/mach-composer-go/releases/download/v{{ .Version }}/{{ .ArtifactName }}
+    commit_author:
+      name: goreleaserbot
+      email: opensource@labdigital.nl
+    homepage: "https://machcomposer.io/"
+    description: "MACH composer is a framework that you use to orchestrate andextend modern digital commerce & experience platforms, based on MACH technologies and cloud native services.."
+    license: "MIT"
+    dependencies:
+      - name: terraform
+      - name: git
+        type: optional
