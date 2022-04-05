@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.0.1 (2022-04-05)
+- Add aws-cli to the Docker container
+
+
 ## 2.0.0 (2022-04-05)
 Rewrite of the Python codebase to Go. Goal is to make it easier to distribute
 mach-composer in a cross-platform way.
