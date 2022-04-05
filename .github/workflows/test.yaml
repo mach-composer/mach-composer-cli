@@ -28,5 +28,9 @@ jobs:
         cache-key: ${{ matrix.go-version }}
     - name: Run tests
       run: go test -race -coverprofile=coverage.txt -covermode=atomic -coverpkg=./... -v ./...
+    - name: Build binaries
+      uses: goreleaser/goreleaser-action@v2
+      with:
+        args: build --rm-dist
     - name: Upload to codecov
       uses: codecov/codecov-action@v1.0.6
