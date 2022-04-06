@@ -1,0 +1,43 @@
+package runner
+
+import (
+	"crypto/sha256"
+	"fmt"
+	"io"
+	"io/ioutil"
+	"log"
+	"os"
+	"path/filepath"
+	"strings"
+)
+
+func GetHash(path string) string {
+
+	// Loop through all *.tf files
+	files, err := ioutil.ReadDir(path)
+	if err != nil {
+		panic(err)
+	}
+
+	h := sha256.New()
+
+	for _, f := range files {
+		filename := filepath.Join(path, f.Name())
+		if !strings.HasSuffix(filename, ".tf") {
+			continue
+		}
+		f, err := os.Open(filename)
+		if err != nil {
+			panic(err)
+		}
+		defer f.Close()
+
+		if _, err := io.Copy(h, f); err != nil {
+			log.Fatal(err)
+		}
+
+	}
+
+	return fmt.Sprintf("%x", h.Sum(nil))
+
+}
