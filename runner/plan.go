@@ -31,7 +31,6 @@ func TerraformPlan(cfg *config.MachConfig, locations map[string]string, options 
 func TerraformPlanSite(ctx context.Context, cfg *config.MachConfig, site *config.Site, path string, options *PlanOptions) {
 	logrus.Debugf("Running terraform plan for site %s", site.Identifier)
 
-	siteHash := GetHash(path)
 	if !options.Reuse {
 		RunTerraform(ctx, path, "init")
 	}
@@ -41,7 +40,13 @@ func TerraformPlanSite(ctx context.Context, cfg *config.MachConfig, site *config
 		cmd = append(cmd, fmt.Sprintf("-target=module.%s", component))
 	}
 
-	cmd = append(cmd, fmt.Sprintf("-out=%s.tfplan", siteHash[:7]))
+	filename := GeneratePlanName(path)
+	cmd = append(cmd, fmt.Sprintf("-out=%s", filename))
 
 	RunTerraform(ctx, path, cmd...)
+}
+
+func GeneratePlanName(path string) string {
+	siteHash := GetHash(path)
+	return fmt.Sprintf("%s.tfplan", siteHash[:7])
 }

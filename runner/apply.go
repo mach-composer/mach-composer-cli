@@ -3,6 +3,8 @@ package runner
 import (
 	"context"
 	"fmt"
+	"os"
+	"path/filepath"
 
 	"github.com/labd/mach-composer/config"
 )
@@ -49,5 +51,20 @@ func TerraformApplySite(ctx context.Context, cfg *config.MachConfig, site *confi
 		cmd = append(cmd, fmt.Sprintf("-target=module.%s", component))
 	}
 
+	// If there is a plan then we should use it.
+	if val := TerraformPlanDetect(path); val != "" {
+		cmd = append(cmd, val)
+	}
+
 	RunTerraform(ctx, path, cmd...)
+}
+
+func TerraformPlanDetect(path string) string {
+	filename := GeneratePlanName(path)
+	filepath := filepath.Join(path, filename)
+
+	if _, err := os.Stat(filepath); err == nil {
+		return filename
+	}
+	return ""
 }
