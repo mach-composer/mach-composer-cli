@@ -39,5 +39,7 @@ func TerraformPlanSite(ctx context.Context, cfg *config.MachConfig, site *config
 		cmd = append(cmd, fmt.Sprintf("-target=module.%s", component))
 	}
 
+	cmd = append(cmd, "-out=tfplan")
+
 	RunTerraform(ctx, path, cmd...)
 }
