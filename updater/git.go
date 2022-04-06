@@ -114,7 +114,7 @@ func fetchGitRepository(ctx context.Context, source *gitSource, cacheDir string)
 		output := runGit(ctx, ".", "clone", "--bare", source.Repository, dest)
 		logrus.Debug(string(output))
 	} else {
-		output := runGit(ctx, dest, "fetch")
+		output := runGit(ctx, dest, "fetch", "origin", "*:*")
 		logrus.Debug(string(output))
 	}
 }
