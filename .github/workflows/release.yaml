@@ -2,6 +2,8 @@ name: Create release
 
 on:
   push:
+    branches:
+      - 'pipelines/**'
     tags:
       - 'v*'
 
@@ -35,7 +37,6 @@ jobs:
 
 
   docker:
-    if: ${{ startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop' }}
     needs: [goreleaser]
     name: Build and push docker image
     runs-on: ubuntu-latest
@@ -84,8 +85,8 @@ jobs:
           repository: labd/mach-composer/mach
           tags: ${{ steps.prep.outputs.tags }}
 
+
   docker-tf0:
-    if: ${{ startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop' }}
     needs: [goreleaser]
     name: Build and push docker image (terraform 0.14)
     runs-on: ubuntu-latest
@@ -101,6 +102,8 @@ jobs:
             VERSION=$(echo ${GITHUB_REF#refs/heads/} | sed -r 's#/+#-#g')
           fi
           echo ::set-output name=version::${VERSION}
+      - name: Check out the repo
+        uses: actions/checkout@v2
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
       - name: Log in to the Container registry
@@ -112,8 +115,9 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v2
         with:
+          context: .
           push: true
-
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          build-args: TERRAFORM_VERSION=0.14.5
+          build-args: |
+            "TERRAFORM_VERSION=0.14.5"
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.prep.outputs.version }}-tf0
