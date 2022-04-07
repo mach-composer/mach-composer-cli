@@ -87,22 +87,22 @@ jobs:
   docker-tf0:
     if: ${{ startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop' }}
     needs: [goreleaser]
-    name: Build and push docker image
+    name: Build and push docker image (terraform 0.14)
     runs-on: ubuntu-latest
     steps:
-      - name: Check out the repo
-        uses: actions/checkout@v2
       - name: Prepare
         id: prep
         run: |
           DOCKER_IMAGE=mach
           VERSION=noop
           if [[ $GITHUB_REF == refs/tags/* ]]; then
-          VERSION=$(echo ${GITHUB_REF#refs/tags/} | sed -r 's#^v##g')
+            VERSION=$(echo ${GITHUB_REF#refs/tags/} | sed -r 's#^v##g')
           elif [[ $GITHUB_REF == refs/heads/* ]]; then
-          VERSION=$(echo ${GITHUB_REF#refs/heads/} | sed -r 's#/+#-#g')
+            VERSION=$(echo ${GITHUB_REF#refs/heads/} | sed -r 's#/+#-#g')
           fi
           echo ::set-output name=version::${VERSION}
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
       - name: Log in to the Container registry
         uses: docker/login-action@v1
         with:
@@ -113,6 +113,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           push: true
+
           github-token: ${{ secrets.GITHUB_TOKEN }}
           build-args: TERRAFORM_VERSION=0.14.5
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.prep.outputs.version }}-tf0
