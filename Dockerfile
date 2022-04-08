@@ -107,5 +107,6 @@ RUN cd /tmp && \
     rm -rf /tmp/*
 
 COPY --from=builder /code/dist/mach-composer_linux_amd64/mach-composer /usr/local/bin
+RUN ln -s /usr/local/bin/mach-composer /usr/local/bin/mach
 
 ENTRYPOINT ["mach-composer"]
