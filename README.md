@@ -44,7 +44,7 @@ Read our [getting started guide](https://docs.machcomposer.io/gettingstarted.htm
 ```yaml
 ---
 mach_composer:
-  version: '1.1'
+  version: '1.2'
 global:
   environment: test
   cloud: aws
