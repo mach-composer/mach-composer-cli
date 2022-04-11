@@ -24,7 +24,7 @@ A number of features which were minimal used are removed.
 
 
 
-## 1.2 (unreleased)
+## 1.2 (2022-04-11)
 
 **general**
 - Add `mach init` command
@@ -34,8 +34,12 @@ A number of features which were minimal used are removed.
 - Add `--destroy` flag to the `plan` and `apply` commands
 - Add `variables_file` option to the `mach_composer` configuration block to define a variable file
 - Show commit author in `mach update` output
+- Upgraded commercetools provider to [`0.30.0`](https://github.com/labd/terraform-provider-commercetools/blob/main/CHANGELOG.md#v0300-2021-08-04)
+- Upgraded Amplience provider to [`0.3.7`](https://github.com/labd/terraform-provider-amplience/blob/main/CHANGELOG.md#v037-2022-03-14)
+- Upgraded Azure provider to [`2.99.0`](https://github.com/hashicorp/terraform-provider-azurerm/blob/main/CHANGELOG-v2.md#2990-march-11-2022)
 
 **AWS**
+- Upgraded Terraform AWS provider to [`3.74.1`](https://github.com/hashicorp/terraform-provider-aws/blob/main/CHANGELOG.md#3741-february-7-2022)
 - Add support for default tags on provider level
   ```yaml
   aws:
@@ -45,6 +49,7 @@ A number of features which were minimal used are removed.
       environment: test
       owner: john
   ```
+
 
 ## 1.1 (2021-11-25)
 
