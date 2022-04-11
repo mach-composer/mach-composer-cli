@@ -44,7 +44,7 @@ terraform {
     {% if site.commercetools %}
     commercetools = {
       source = "labd/commercetools"
-      version = "~> {{ general_config.terraform_config.providers.commercetools or '0.29.3' }}"
+      version = "~> {{ general_config.terraform_config.providers.commercetools or '0.30.0' }}"
     }
     {% endif %}
     {% if site.contentful %}

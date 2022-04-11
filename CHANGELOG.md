@@ -10,6 +10,7 @@
 - Add `--destroy` flag to the `plan` and `apply` commands
 - Add `variables_file` option to the `mach_composer` configuration block to define a variable file
 - Show commit author in `mach update` output
+- Upgraded commercetools provider to [`0.30.0`](https://github.com/labd/terraform-provider-commercetools/blob/main/CHANGELOG.md#v0300-2021-08-04)
 
 **AWS**
 - Upgraded Terraform AWS provider to [`3.74.1`](https://github.com/hashicorp/terraform-provider-aws/blob/main/CHANGELOG.md#3741-february-7-2022)
