@@ -28,7 +28,7 @@
         {
           "aws": [
             {
-              "version": "~> 3.66.0"
+              "version": "~> 3.74.1"
             }
           ],
           "commercetools": [

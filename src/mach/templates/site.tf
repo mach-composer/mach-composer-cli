@@ -32,7 +32,7 @@ terraform {
   required_providers {
     {% if site.aws %}
     aws = {
-      version = "~> {{ general_config.terraform_config.providers.aws or '3.66.0' }}"
+      version = "~> {{ general_config.terraform_config.providers.aws or '3.74.1' }}"
     }
     {% endif %}
 

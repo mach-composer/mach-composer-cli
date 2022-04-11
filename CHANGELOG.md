@@ -12,6 +12,7 @@
 - Show commit author in `mach update` output
 
 **AWS**
+- Upgraded Terraform AWS provider to [`3.74.1`](https://github.com/hashicorp/terraform-provider-aws/blob/main/CHANGELOG.md#3741-february-7-2022)
 - Add support for default tags on provider level
   ```yaml
   aws:
