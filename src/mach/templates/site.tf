@@ -38,7 +38,7 @@ terraform {
 
     {% if site.azure %}
     azurerm = {
-      version = "~> {{ general_config.terraform_config.providers.azure or '2.86.0' }}"
+      version = "~> {{ general_config.terraform_config.providers.azure or '2.99.0' }}"
     }
     {% endif %}
     {% if site.commercetools %}
