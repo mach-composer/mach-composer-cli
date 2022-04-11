@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.2.1 (2022-04-11)
+- Add ability to define a custom provider version including the version operator, for example;
+  ```yaml
+  providers:
+    commercetools: =1.0.0-pre.3
+  ```
+
 ## 1.2 (2022-04-11)
 
 **general**

@@ -32,37 +32,37 @@ terraform {
   required_providers {
     {% if site.aws %}
     aws = {
-      version = "~> {{ general_config.terraform_config.providers.aws or '3.74.1' }}"
+      version = "{{ general_config.terraform_config.providers.aws|render_tf_provider('3.74.1') }}"
     }
     {% endif %}
 
     {% if site.azure %}
     azurerm = {
-      version = "~> {{ general_config.terraform_config.providers.azure or '2.99.0' }}"
+      version = "{{ general_config.terraform_config.providers.azure|render_tf_provider('2.99.0') }}"
     }
     {% endif %}
     {% if site.commercetools %}
     commercetools = {
       source = "labd/commercetools"
-      version = "~> {{ general_config.terraform_config.providers.commercetools or '0.30.0' }}"
+      version = "{{ general_config.terraform_config.providers.commercetools|render_tf_provider('0.30.0') }}"
     }
     {% endif %}
     {% if site.contentful %}
     contentful = {
       source = "labd/contentful"
-      version = "~> {{ general_config.terraform_config.providers.contentful or '0.1.0' }}"
+      version = "{{ general_config.terraform_config.providers.contentful|render_tf_provider('0.1.0') }}"
     }
     {% endif %}
     {% if site.amplience %}
     amplience = {
       source = "labd/amplience"
-      version = "~> {{ general_config.terraform_config.providers.amplience or '0.3.7' }}"
+      version = "{{ general_config.terraform_config.providers.amplience|render_tf_provider('0.3.7') }}"
     }
     {% endif %}
     {% if general_config.sentry.managed %}
     sentry = {
       source = "jianyuan/sentry"
-      version = "~> {{ general_config.terraform_config.providers.sentry or '0.6.0' }}"
+      version = "{{ general_config.terraform_config.providers.sentry|render_tf_provider('0.6.0') }}"
     }
     {% endif %}
     {% if config.variables_encrypted %}

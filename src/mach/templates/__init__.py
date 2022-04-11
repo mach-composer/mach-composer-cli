@@ -1,6 +1,6 @@
 import os
 import re
-from typing import List
+from typing import List, Optional
 
 from jinja2 import Environment, FileSystemLoader
 from jinja2.filters import do_mark_safe
@@ -34,6 +34,7 @@ def load_filters(env: Environment):
             "slugify": utils.slugify,
             "service_plan_resource_name": service_plan_resource_name,
             "render_commercetools_scopes": render_commercetools_scopes,
+            "render_tf_provider": render_tf_provider,
             "component_endpoint_name": component_endpoint_name,
         }
     )
@@ -214,6 +215,15 @@ def render_commercetools_scopes(
             scopes.append(f'"{scope}:{project_key}:{store_key}",')
 
     return "[\n" + "".join(scopes) + "\n]"
+
+
+TF_PROVIDER_RE = re.compile("([!=<>~]*)(.*)")
+
+
+def render_tf_provider(value: Optional[str], default_version: str):
+    match = TF_PROVIDER_RE.match(value or default_version)
+    operator, version = match.groups()
+    return f"{operator or '~>'} {version}"
 
 
 def component_endpoint_name(
