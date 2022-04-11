@@ -56,7 +56,7 @@ terraform {
     {% if site.amplience %}
     amplience = {
       source = "labd/amplience"
-      version = "~> {{ general_config.terraform_config.providers.amplience or '0.2.2' }}"
+      version = "~> {{ general_config.terraform_config.providers.amplience or '0.3.7' }}"
     }
     {% endif %}
     {% if general_config.sentry.managed %}
