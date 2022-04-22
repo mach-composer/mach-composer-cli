@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.1.0 (2022-04-22)
+- Add back support to update sops encrypted config files
+- Properly implement the `--check` flag on `update` command
+
+
 ## 2.0.2 (2022-04-05)
 - Pass environment variables to terraform command
 
