@@ -15,8 +15,7 @@ type WorkerJob struct {
 	cfg       *config.MachConfig
 }
 
-func UpdateFile(filename, componentName, componentVersion string) *UpdateSet {
-	ctx := context.Background()
+func UpdateFile(ctx context.Context, filename, componentName, componentVersion string, writeChanges bool) *UpdateSet {
 	cfg, err := config.Load(filename, "")
 	if err != nil {
 		panic(err)
@@ -71,7 +70,7 @@ func UpdateFile(filename, componentName, componentVersion string) *UpdateSet {
 		fmt.Printf("%d components have updates available\n", len(updateSet.updates))
 	}
 
-	if len(updateSet.updates) > 0 {
+	if writeChanges && len(updateSet.updates) > 0 {
 		WriteUpdates(ctx, cfg, updateSet)
 	}
 

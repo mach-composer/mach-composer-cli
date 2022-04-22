@@ -53,6 +53,7 @@ func init() {
 }
 
 func updateFunc(args []string) error {
+	ctx := context.Background()
 	changes := map[string]string{}
 
 	componentName := ""
@@ -65,10 +66,13 @@ func updateFunc(args []string) error {
 		}
 	}
 
+	// Iterate through all yaml files and update them all.
+	writeChanges := !updateFlags.check
 	for _, filename := range updateFlags.fileNames {
-		updateSet := updater.UpdateFile(filename, componentName, componentVersion)
 
-		if updateSet.HasChanges() {
+		updateSet := updater.UpdateFile(ctx, filename, componentName, componentVersion, writeChanges)
+
+		if writeChanges && updateSet.HasChanges() {
 			if componentName == "" {
 				changes[filename] = updateSet.ChangeLog()
 			} else {
