@@ -3,11 +3,8 @@ package config
 import (
 	"context"
 	"os"
-	"os/exec"
-	"strings"
 
 	"github.com/labd/mach-composer/utils"
-	"github.com/sirupsen/logrus"
 )
 
 // DecryptYaml takes a filename and returns the decrypted yaml.
@@ -22,18 +19,5 @@ func DecryptYaml(filename string) ([]byte, error) {
 		return nil, err
 	}
 
-	return RunSops(ctx, wd, "-d", filename, "--output-type=yaml")
-}
-
-func RunSops(ctx context.Context, cwd string, args ...string) ([]byte, error) {
-	logrus.Debugf("Running: sops %s\n", strings.Join(args, " "))
-	cmd := exec.CommandContext(
-		ctx,
-		"sops",
-		args...,
-	)
-	cmd.Dir = cwd
-	cmd.Stderr = os.Stderr
-	utils.CmdSetForegrond(cmd)
-	return cmd.Output()
+	return utils.RunSops(ctx, wd, "-d", filename, "--output-type=yaml")
 }

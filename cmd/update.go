@@ -70,7 +70,11 @@ func updateFunc(args []string) error {
 	writeChanges := !updateFlags.check
 	for _, filename := range updateFlags.fileNames {
 
-		updateSet := updater.UpdateFile(ctx, filename, componentName, componentVersion, writeChanges)
+		updateSet, err := updater.UpdateFile(ctx, filename, componentName, componentVersion, writeChanges)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Failed to update %s: %v\n", filename, err.Error())
+			os.Exit(1)
+		}
 
 		if writeChanges && updateSet.HasChanges() {
 			if componentName == "" {

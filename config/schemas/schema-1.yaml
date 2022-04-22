@@ -3,6 +3,7 @@ description: Main MACH configuration object.
 additionalProperties: false
 type: object
 properties:
+
   mach_composer:
     $ref: '#/definitions/MachComposerConfig'
   global:
@@ -15,6 +16,9 @@ properties:
     type: array
     items:
       $ref: '#/definitions/ComponentConfig'
+
+  sops:
+    type: object
 
 definitions:
 

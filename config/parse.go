@@ -98,6 +98,11 @@ func Parse(data []byte, vars *Variables) (*MachConfig, error) {
 		MachComposer: intermediate.MachComposer,
 		Global:       intermediate.Global,
 	}
+
+	if intermediate.Sops.Kind == yaml.MappingNode {
+		cfg.IsEncrypted = true
+	}
+
 	err = intermediate.Sites.Decode(&cfg.Sites)
 	if err != nil {
 		log.Fatalf("Decode: %v", err)

@@ -13,7 +13,8 @@ type MachConfig struct {
 	Sites        []Site       `yaml:"sites"`
 	Components   []Component  `yaml:"components"`
 
-	Variables *Variables
+	Variables   *Variables
+	IsEncrypted bool
 }
 
 type _RawMachConfig struct {
@@ -22,6 +23,7 @@ type _RawMachConfig struct {
 	Global       Global       `yaml:"global"`
 	Sites        yaml.Node    `yaml:"sites"`
 	Components   yaml.Node    `yaml:"components"`
+	Sops         yaml.Node    `yaml:"sops"`
 }
 
 type MachComposer struct {

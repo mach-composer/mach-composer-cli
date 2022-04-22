@@ -15,10 +15,10 @@ type WorkerJob struct {
 	cfg       *config.MachConfig
 }
 
-func UpdateFile(ctx context.Context, filename, componentName, componentVersion string, writeChanges bool) *UpdateSet {
+func UpdateFile(ctx context.Context, filename, componentName, componentVersion string, writeChanges bool) (*UpdateSet, error) {
 	cfg, err := config.Load(filename, "")
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	// Find the component if defined in the config
@@ -33,7 +33,7 @@ func UpdateFile(ctx context.Context, filename, componentName, componentVersion s
 
 		if component == nil {
 			fmt.Fprintf(os.Stderr, "No component found with name %s", componentName)
-			return nil
+			return nil, nil
 		}
 	}
 
@@ -74,7 +74,7 @@ func UpdateFile(ctx context.Context, filename, componentName, componentVersion s
 		WriteUpdates(ctx, cfg, updateSet)
 	}
 
-	return updateSet
+	return updateSet, nil
 }
 
 func FindUpdates(ctx context.Context, cfg *config.MachConfig, filename string, component *config.Component) *UpdateSet {
@@ -149,5 +149,9 @@ func GetLastVersion(ctx context.Context, c *config.Component, origin string) (*C
 }
 
 func WriteUpdates(ctx context.Context, cfg *config.MachConfig, updates *UpdateSet) {
-	MachFileWriter(updates)
+	if cfg.IsEncrypted {
+		SopsFileWriter(cfg, updates)
+	} else {
+		MachFileWriter(updates)
+	}
 }
