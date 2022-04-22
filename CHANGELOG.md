@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.1.1 (2022-04-22)
+- Don't crash when running `mach-composer apply` without `--auto-approve`
+
+
 ## 2.1.0 (2022-04-22)
 - Add back support to update sops encrypted config files
 - Properly implement the `--check` flag on `update` command
