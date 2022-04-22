@@ -57,9 +57,11 @@ func MachConfigUpdater(src []byte, updateSet *UpdateSet) []byte {
 					log.Fatal("Unexpected version")
 				}
 
-				// Make sure the version is always quoted
+				// Make sure the version is always quoted. This is currently not
+				// super robust.
 				replacement := c.LastVersion
-				if lines[vn.Line-1][vn.Column-1] != '"' {
+				firstChar := lines[vn.Line-1][vn.Column-1]
+				if firstChar != '"' && firstChar != '\'' {
 					replacement = fmt.Sprintf(`"%s"`, replacement)
 				}
 
