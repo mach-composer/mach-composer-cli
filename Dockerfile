@@ -39,7 +39,7 @@ RUN apk add --no-cache --virtual .build-deps g++ libffi-dev openssl-dev wget unz
 # Install SOPS
 RUN cd /tmp && \
     wget https://github.com/mozilla/sops/releases/download/v${SOPS_VERSION}/sops-v${SOPS_VERSION}.linux.amd64 && \
-    /usr/bin/install sops-v3.7.2.linux.amd64 /usr/local/bin/sops && \
+    /usr/bin/install sops-v${SOPS_VERSION}.linux.amd64 /usr/local/bin/sops && \
     rm -rf /tmp/*
 
 # Install terraform
