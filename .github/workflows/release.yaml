@@ -90,6 +90,11 @@ jobs:
     needs: [goreleaser]
     name: Build and push docker image (terraform 0.14)
     runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 4
+      matrix:
+        TERRAFORM_VERSION: ["0.14.5", "1.2"]
+        PROVIDER: ["full", "aws", "azure"]
     steps:
       - name: Prepare
         id: prep
@@ -119,5 +124,6 @@ jobs:
           push: true
           github-token: ${{ secrets.GITHUB_TOKEN }}
           build-args: |
-            "TERRAFORM_VERSION=0.14.5"
-          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.prep.outputs.version }}-tf0
+            "TERRAFORM_VERSION=${{ TERRAFORM_VERSION }}"
+            "PROVIDER=${{ PROVIDER }}"
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.prep.outputs.version }}-${{ PROVIDER }}-tf${{ TERRAFORM_VERSION }}
