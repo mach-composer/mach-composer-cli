@@ -31,6 +31,20 @@ func TerraformApply(cfg *config.MachConfig, locations map[string]string, options
 	}
 }
 
+func TerraformProxy(cfg *config.MachConfig, locations map[string]string, siteName string, cmd []string) {
+	ctx := context.Background()
+
+	for i := range cfg.Sites {
+		site := cfg.Sites[i]
+
+		if siteName != "" && site.Identifier != siteName {
+			continue
+		}
+
+		RunTerraform(ctx, locations[site.Identifier], cmd...)
+	}
+}
+
 func TerraformApplySite(ctx context.Context, cfg *config.MachConfig, site *config.Site, path string, options *ApplyOptions) {
 
 	if !options.Reuse {
