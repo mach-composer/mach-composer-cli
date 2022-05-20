@@ -271,6 +271,12 @@ Example:
 
 ### frontend
 
+!!! warning
+This functionality is deprecated and will be removed soon.
+
+Create your own frontend tokens in the commercetools Merchant Center. 
+Once this functionality is removed the generated frontend tokens will be automatically deleted on rollout.
+
 Example:
 ```yaml
 frontend:
