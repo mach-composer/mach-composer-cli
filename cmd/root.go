@@ -33,6 +33,7 @@ func init() {
 	rootCmd.AddCommand(initCmd)
 	rootCmd.AddCommand(planCmd)
 	rootCmd.AddCommand(updateCmd)
+	rootCmd.AddCommand(validateCmd)
 	rootCmd.AddCommand(terraformCmd)
 	rootCmd.AddCommand(versionCmd)
 }

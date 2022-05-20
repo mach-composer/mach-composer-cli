@@ -2,6 +2,7 @@
 
 ## 2.2 (unreleased)
 - Deprecate `commercetools.frontend` block, will be removed in a later release.
+- Add `mach-composer validate` command to validate configuration
 
 ## 2.1.1 (2022-04-22)
 - Don't crash when running `mach-composer apply` without `--auto-approve`
