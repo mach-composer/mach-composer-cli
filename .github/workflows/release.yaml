@@ -89,12 +89,12 @@ jobs:
 
   docker-tf0:
     needs: [goreleaser]
-    name: Build and push docker image (terraform 0.14)
+    name: Build and push docker image (matrix)
     runs-on: ubuntu-latest
     strategy:
       max-parallel: 6
       matrix:
-        TERRAFORM_VERSION: ["0.14.5", "1.2"]
+        TERRAFORM_VERSION: ["0.14.5", "1.1.7"]
         PROVIDER: ["full", "aws", "azure"]
     steps:
       - name: Prepare
