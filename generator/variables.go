@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-var varRegex = regexp.MustCompile(`\${((?:var|env|component)(?:\.[^\}]+)+)}`)
+var varRegex = regexp.MustCompile(`\${(component(?:\.[^\}]+)+)}`)
 
 func ParseTemplateVariable(val string) (string, error) {
 	matches := varRegex.FindAllStringSubmatch(val, 20)

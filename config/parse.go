@@ -3,7 +3,6 @@ package config
 import (
 	"errors"
 	"fmt"
-	"log"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -22,6 +21,8 @@ func Load(filename string, varFilename string) (*MachConfig, error) {
 		if err != nil {
 			panic(err)
 		}
+	} else {
+		vars = NewVariables()
 	}
 
 	body, err := utils.AFS.ReadFile(filename)
@@ -86,11 +87,14 @@ func Parse(data []byte, vars *Variables) (*MachConfig, error) {
 	intermediate := &_RawMachConfig{}
 	err := yaml.Unmarshal(data, intermediate)
 	if err != nil {
-		log.Fatalf("Unmarshal: %v", err)
+		return nil, fmt.Errorf("failed to unmarshall yaml: %w", err)
 	}
 
 	if vars != nil {
-		InterpolateVars(intermediate, vars)
+		err := InterpolateVars(intermediate, vars)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	cfg := &MachConfig{
@@ -105,12 +109,12 @@ func Parse(data []byte, vars *Variables) (*MachConfig, error) {
 
 	err = intermediate.Sites.Decode(&cfg.Sites)
 	if err != nil {
-		log.Fatalf("Decode: %v", err)
+		return nil, fmt.Errorf("decoding error: %w", err)
 	}
 
 	intermediate.Components.Decode(&cfg.Components)
 	if err != nil {
-		log.Fatalf("Decode: %v", err)
+		return nil, fmt.Errorf("decoding error: %w", err)
 	}
 
 	return cfg, nil
