@@ -21,8 +21,6 @@ func Load(filename string, varFilename string) (*MachConfig, error) {
 		if err != nil {
 			panic(err)
 		}
-	} else {
-		vars = NewVariables()
 	}
 
 	body, err := utils.AFS.ReadFile(filename)
@@ -48,7 +46,6 @@ func Load(filename string, varFilename string) (*MachConfig, error) {
 		panic(err)
 	}
 
-	cfg.Variables = vars
 	cfg.Filename = filepath.Base(filename)
 	Process(cfg)
 
@@ -90,11 +87,20 @@ func Parse(data []byte, vars *Variables) (*MachConfig, error) {
 		return nil, fmt.Errorf("failed to unmarshall yaml: %w", err)
 	}
 
-	if vars != nil {
-		err := InterpolateVars(intermediate, vars)
+	if vars == nil && intermediate.MachComposer.VariablesFile != "" {
+		vars, err = loadVariables(intermediate.MachComposer.VariablesFile)
 		if err != nil {
-			return nil, err
+			panic(err)
 		}
+	}
+
+	if vars == nil {
+		vars = NewVariables()
+	}
+
+	varErr := InterpolateVars(intermediate, vars)
+	if varErr != nil {
+		return nil, varErr
 	}
 
 	cfg := &MachConfig{
@@ -102,6 +108,8 @@ func Parse(data []byte, vars *Variables) (*MachConfig, error) {
 		MachComposer: intermediate.MachComposer,
 		Global:       intermediate.Global,
 	}
+
+	cfg.Variables = vars
 
 	if intermediate.Sops.Kind == yaml.MappingNode {
 		cfg.IsEncrypted = true

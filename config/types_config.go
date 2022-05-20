@@ -36,7 +36,8 @@ type _RawMachConfig struct {
 }
 
 type MachComposer struct {
-	Version string
+	Version       string
+	VariablesFile string `yaml:"variables_file"`
 }
 
 type Component struct {

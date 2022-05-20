@@ -30,6 +30,8 @@ definitions:
     properties:
       version:
         type: string
+      variables_file:
+        type: string
 
   GlobalConfig:
     type: object

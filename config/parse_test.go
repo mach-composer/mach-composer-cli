@@ -141,6 +141,15 @@ func TestParse(t *testing.T) {
 				},
 			},
 		},
+		Variables: &Variables{
+			vars: map[string]string{
+				"bar.foo": "2",
+				"foo":     "foobar",
+				"foo.bar": "1",
+			},
+			Filepath:  "",
+			Encrypted: false,
+		},
 	}
 	assert.Equal(t, expected, config)
 }
