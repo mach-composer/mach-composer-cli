@@ -125,6 +125,6 @@ jobs:
           push: true
           github-token: ${{ secrets.GITHUB_TOKEN }}
           build-args: |
-            "TERRAFORM_VERSION=${{ TERRAFORM_VERSION }}"
-            "PROVIDER=${{ PROVIDER }}"
-          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.prep.outputs.version }}-${{ PROVIDER }}-tf${{ TERRAFORM_VERSION }}
+            "TERRAFORM_VERSION=${{ matrix.TERRAFORM_VERSION }}"
+            "PROVIDER=${{ matrix.PROVIDER }}"
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.prep.outputs.version }}-${{ matrix.PROVIDER }}-tf${{ matrix.TERRAFORM_VERSION }}
