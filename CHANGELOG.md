@@ -1,10 +1,12 @@
 # Changelog
 
 ## 2.2 (unreleased)
-- Upgrade Terraform providers in golang version of the MACH composer to match the 1.2 release:
-  - Upgraded commercetools provider to 0.30.0
-  - Upgraded Amplience provider to 0.3.7
-  - Upgraded Azure provider to 2.99.0
+- Fixed inconsistencies between 1.2 and 2.x:
+  - Upgrade Terraform providers in golang version of the MACH composer to match the 1.2 release:
+    - Upgraded commercetools provider to 0.30.0
+    - Upgraded Amplience provider to 0.3.7
+    - Upgraded Azure provider to 2.99.0
+  - Add `variables_file` option to the `mach_composer` configuration block to define a variable file
 - Deprecate `commercetools.frontend` block, will be removed in a later release.
 
 ## 2.1.1 (2022-04-22)
