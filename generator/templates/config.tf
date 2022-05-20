@@ -26,7 +26,7 @@ terraform {
   required_providers {
     {%- if site.AWS %}
     aws = {
-      version = "~> {{ global.TerraformConfig.providers.aws|default:"3.47.1" }}"
+      version = "~> {{ global.TerraformConfig.providers.aws|default:"3.74.1" }}"
     }
     {% endif -%}
 
