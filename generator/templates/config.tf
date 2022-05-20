@@ -26,20 +26,20 @@ terraform {
   required_providers {
     {%- if site.AWS %}
     aws = {
-      version = "~> {{ global.TerraformConfig.providers.aws|default:"3.66.0" }}"
+      version = "~> {{ global.TerraformConfig.providers.aws|default:"3.47.1" }}"
     }
     {% endif -%}
 
     {%- if site.Azure %}
     azurerm = {
-      version = "~> {{ global.TerraformConfig.providers.azure|default:"2.86.0" }}"
+      version = "~> {{ global.TerraformConfig.providers.azure|default:"2.99.0" }}"
     }
     {% endif -%}
 
     {%- if site.Commercetools %}
     commercetools = {
       source = "labd/commercetools"
-      version = "~> {{ global.TerraformConfig.Providers.Commercetools|default:'0.29.3' }}"
+      version = "~> {{ global.TerraformConfig.Providers.Commercetools|default:'0.30.0' }}"
     }
     {% endif -%}
 
@@ -53,7 +53,7 @@ terraform {
     {%- if site.Amplience %}
     amplience = {
       source = "labd/amplience"
-      version = "~> {{ global.TerraformConfig.Providers.Amplience|default:'0.2.2' }}"
+      version = "~> {{ global.TerraformConfig.Providers.Amplience|default:'0.3.7' }}"
     }
     {% endif -%}
 

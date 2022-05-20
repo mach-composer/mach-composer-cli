@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.2 (unreleased)
+- Upgrade Terraform providers in golang version of the MACH composer to match the 1.2 release:
+  - Upgraded commercetools provider to 0.30.0
+  - Upgraded Amplience provider to 0.3.7
+  - Upgraded Azure provider to 2.99.0
+
 ## 2.1.1 (2022-04-22)
 - Don't crash when running `mach-composer apply` without `--auto-approve`
 
