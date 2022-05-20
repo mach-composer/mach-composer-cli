@@ -38,7 +38,7 @@ type CommercetoolsProjectSettings struct {
 }
 
 type CommercetoolsFrontendSettings struct {
-	CreateCredentials bool     `yaml:"create_credentials" default:"true"`
+	CreateCredentials bool     `yaml:"create_credentials" default:"false"`
 	PermissionScopes  []string `yaml:"permission_scopes"`
 }
 
