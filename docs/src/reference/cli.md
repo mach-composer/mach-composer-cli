@@ -111,3 +111,18 @@ mach-composer update pim-importer v1.2.0 -c
 - `--check` Only checks for updates, doesnt change files.
 - `--commit` or `-c` Automatically commits the change.
 
+## `validate`
+Validate the MACH composer configuration.
+
+```bash
+mach-composer validate -f main.yml -s some-site
+```
+
+**Options**
+
+- `--file` or `-f TEXT` YAML file to parse. If not set parse all *.yml files.
+- `--ignore-version`    Skip MACH composer version check
+- `--output-path TEXT`  Output path, defaults to `cwd`/deployments.
+- `--reuse`             Suppress a terraform init for improved speed (not recommended for production usage)
+- `--site` or `-s TEXT` Site to parse. If not set parse all sites.
+- `--var-file`          Use a variable file to parse the configuration with.
