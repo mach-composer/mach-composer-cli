@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - 'pipelines/**'
-      - 'feature/provider_targeted_images'
     tags:
       - 'v*'
 
@@ -58,7 +57,7 @@ jobs:
         run: |
           DOCKER_IMAGE=mach
           VERSION=noop
-          TERRAFORM_VERSION=${{ matrix.terraform-version }}
+          TERRAFORM_VERSION=${{ matrix.terraform_version }}
           TERRAFORM=${TERRAFORM_VERSION%.*}
 
           SUFFIX=""
@@ -106,6 +105,6 @@ jobs:
           registry: docker.pkg.github.com
           repository: labd/mach-composer/mach
           build-args: |
-            "TERRAFORM_VERSION=${{ matrix.terraform-version }}"
+            "TERRAFORM_VERSION=${{ matrix.terraform_version }}"
             "PROVIDER=${{ matrix.provider }}"
           tags: ${{ steps.prep.outputs.tags }}
