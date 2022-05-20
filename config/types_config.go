@@ -17,6 +17,15 @@ type MachConfig struct {
 	IsEncrypted bool
 }
 
+func (c *MachConfig) HasSite(ident string) bool {
+	for i := range c.Sites {
+		if c.Sites[i].Identifier == ident {
+			return true
+		}
+	}
+	return false
+}
+
 type _RawMachConfig struct {
 	Filename     string
 	MachComposer MachComposer `yaml:"mach_composer"`

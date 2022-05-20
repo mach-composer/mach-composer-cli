@@ -10,12 +10,24 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var generateFlags struct {
+type GenerateFlags struct {
 	fileNames     []string
 	siteName      string
 	ignoreVersion bool
 	outputPath    string
 	varFile       string
+}
+
+var generateFlags GenerateFlags
+
+func (gf GenerateFlags) ValidateSite(configs map[string]*config.MachConfig) {
+	for _, filename := range generateFlags.fileNames {
+		cfg := configs[filename]
+		if gf.siteName != "" && !cfg.HasSite(gf.siteName) {
+			fmt.Fprintf(os.Stderr, "No site found with identifier: %s\n", gf.siteName)
+			os.Exit(1)
+		}
+	}
 }
 
 func registerGenerateFlags(cmd *cobra.Command) {

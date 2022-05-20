@@ -41,6 +41,8 @@ func applyFunc(args []string) error {
 	allPaths := make(map[string]map[string]string)
 	configs := LoadConfigs()
 
+	generateFlags.ValidateSite(configs)
+
 	// Note that we do this in multiple passes to minimize ending up with
 	// half broken runs. We could in the future also run some parts in parallel
 
