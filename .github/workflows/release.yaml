@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - 'pipelines/**'
+      - 'feature/provider_targeted_images'
     tags:
       - 'v*'
 
