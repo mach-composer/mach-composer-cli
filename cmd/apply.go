@@ -66,6 +66,7 @@ func applyFunc(args []string) error {
 		Reuse:       applyFlags.reuse,
 		AutoApprove: applyFlags.autoApprove,
 		Site:        generateFlags.siteName,
+		Components:  applyFlags.components,
 	}
 	for _, filename := range generateFlags.fileNames {
 		cfg := configs[filename]
