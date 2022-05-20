@@ -17,6 +17,7 @@ Available Commands:
   init        Initialize site directories Terraform files.
   plan        Plan the configuration.
   update      Update all (or a given) component.
+  validate    Validate MACH composer configuration
   version     Return version information of the mach-composer cli
 
 Flags:
@@ -44,17 +45,17 @@ mach-composer apply --auto-approve -f main.yml
 - `--site` or `-s TEXT` Site to apply. If not set apply all sites.
 - `--component` or `-c TEXT` Specific component to target.
 - `--output-path TEXT` Output path, defaults to `cwd`/deployments`.
-- `--reuse` Supress a terraform init for improved speed (not recommended for production usage)
+- `--reuse` Suppress a terraform init for improved speed (not recommended for production usage)
 - `--ignore-version` Skip MACH composer version check
 - `--destroy` Destroy option is a convenient way to destroy all remote objects managed by this mach config
 
 
 
 ## `init`
-Initiliaze the Terraform directory.
+Initialize the Terraform directory.
 
 ```bash
-mach init -f main.yml
+mach-composer init -f main.yml
 ```
 
 **Options**
@@ -70,7 +71,7 @@ mach init -f main.yml
 Output the deploy plan.
 
 ```bash
-mach plan -f main.yml
+mach-composer plan -f main.yml
 ```
 
 **Options**
@@ -80,14 +81,14 @@ mach plan -f main.yml
 - `--site` or `-s TEXT` Site to generate plan of. If not set generate plans for all sites.
 - `--component` or `-c TEXT` Specific component to target.
 - `--output-path TEXT` Output path, defaults to `cwd`/deployments.
-- `--reuse` Supress a terraform init for improved speed (not recommended for production usage)
+- `--reuse` Suppress a terraform init for improved speed (not recommended for production usage)
 - `--ignore-version` Skip MACH composer version check
 - `--destroy` Destroy option is a convenient way to destroy all remote objects managed by this mach config
 
 
 ## `update`
 
-Usage: `mach update [OPTIONS] [COMPONENT] [VERSION]`
+Usage: `mach-composer update [OPTIONS] [COMPONENT] [VERSION]`
 
 Update all (or a given) component.
 
@@ -97,10 +98,10 @@ component by specifying a component and version.
 
 ```bash
 # To check for updates on all components
-mach update --check
+mach-composer update --check
 
 # To update a specific component and create a commit message
-mach update pim-importer v1.2.0 -c
+mach-composer update pim-importer v1.2.0 -c
 ```
 
 **Options**
