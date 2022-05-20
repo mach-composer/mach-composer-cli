@@ -70,7 +70,7 @@ func preprocessGenerateFlags() {
 	}
 }
 
-// LoadConfig loads all config files. This means it validates and parses
+// LoadConfigs loads all config files. This means it validates and parses
 // the yaml file.
 func LoadConfigs() map[string]*config.MachConfig {
 	configs := make(map[string]*config.MachConfig)

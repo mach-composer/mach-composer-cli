@@ -79,7 +79,7 @@ module "mach_account" {
 ```
 
 !!! info "`deploy_principle_identifiers`"
-    We specify our root account here so it makes it easier for this tutorial to setup credentials to be able to deploy using MACH.
+    We specify our root account here, so it makes it easier for this tutorial to setup credentials to be able to deploy using MACH.
 
 #### `policies.tf`
 

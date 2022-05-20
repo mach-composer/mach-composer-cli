@@ -28,7 +28,7 @@ var planCmd = &cobra.Command{
 
 func init() {
 	registerGenerateFlags(planCmd)
-	planCmd.Flags().BoolVarP(&planFlags.reuse, "reuse", "", false, "Supress a terraform init for improved speed (not recommended for production usage)")
+	planCmd.Flags().BoolVarP(&planFlags.reuse, "reuse", "", false, "Suppress a terraform init for improved speed (not recommended for production usage)")
 	planCmd.Flags().StringArrayVarP(&planFlags.components, "component", "c", []string{}, "")
 }
 

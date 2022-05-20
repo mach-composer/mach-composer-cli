@@ -18,6 +18,6 @@ func RunSops(ctx context.Context, cwd string, args ...string) ([]byte, error) {
 	)
 	cmd.Dir = cwd
 	cmd.Stderr = os.Stderr
-	CmdSetForegrond(cmd)
+	CmdSetForeground(cmd)
 	return cmd.Output()
 }

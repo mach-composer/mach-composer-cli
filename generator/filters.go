@@ -96,7 +96,7 @@ func filterString(in *pongo2.Value, param *pongo2.Value) (*pongo2.Value, *pongo2
 	return in, nil
 }
 
-// Take an component and an site-endpoint, and return a Terraform reference to
+// Take a component and a site-endpoint, and return a Terraform reference to
 // an output. The endpoint might have a different name in the component itself
 // based on the mappings
 func filterComponentEndpointName(in *pongo2.Value, param *pongo2.Value) (*pongo2.Value, *pongo2.Error) {
@@ -157,7 +157,7 @@ func filterTFValue(in *pongo2.Value, param *pongo2.Value) (*pongo2.Value, *pongo
 		return formatMap(data)
 
 	case map[any]any:
-		// Should not be neccessary if the formatMap is fixed
+		// Should not be necessary if the formatMap is fixed
 		items := make(map[string]any, 0)
 		for k, v := range data {
 			items[fmt.Sprint(k)] = v
