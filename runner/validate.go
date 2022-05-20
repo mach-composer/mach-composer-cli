@@ -33,5 +33,7 @@ func TerraformValidateSite(ctx context.Context, cfg *config.MachConfig, site *co
 	}
 	cmd := []string{"validate"}
 
+	logrus.Infoln("Validating configuration...")
+
 	RunTerraform(ctx, path, cmd...)
 }
