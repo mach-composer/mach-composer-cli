@@ -89,7 +89,7 @@ func LoadConfigs() map[string]*config.MachConfig {
 // CheckDeprecations warns if features have been deprecated
 func CheckDeprecations(cfg *config.MachConfig) {
 	for _, site := range cfg.Sites {
-		if site.Commercetools.Frontend != nil {
+		if site.Commercetools != nil && site.Commercetools.Frontend != nil {
 			fmt.Println("[WARN] Site", site.Identifier, "commercetools frontend block is deprecated and will be removed soon")
 		}
 	}
