@@ -34,8 +34,8 @@ func FilterGetValueByKey(in *pongo2.Value, param *pongo2.Value) (*pongo2.Value, 
 	switch v := val.(type) {
 	case map[string]any:
 		key := param.String()
-		retval := v[key]
-		return pongo2.AsValue(retval), nil
+		retVal := v[key]
+		return pongo2.AsValue(retVal), nil
 	}
 
 	return nil, &pongo2.Error{
@@ -102,9 +102,9 @@ func filterString(in *pongo2.Value, param *pongo2.Value) (*pongo2.Value, *pongo2
 func filterComponentEndpointName(in *pongo2.Value, param *pongo2.Value) (*pongo2.Value, *pongo2.Error) {
 	component := in.Interface().(config.SiteComponent)
 	endpoint := param.Interface().(config.Endpoint)
-	for component_key, ep_key := range component.Definition.Endpoints {
-		if ep_key == endpoint.Key {
-			return pongo2.AsSafeValue(component_key), nil
+	for componentKey, epKey := range component.Definition.Endpoints {
+		if epKey == endpoint.Key {
+			return pongo2.AsSafeValue(componentKey), nil
 		}
 
 	}

@@ -61,9 +61,9 @@ func TerraformApplySite(ctx context.Context, cfg *config.MachConfig, site *confi
 
 func TerraformPlanDetect(path string) string {
 	filename := GeneratePlanName(path)
-	filepath := filepath.Join(path, filename)
+	filePath := filepath.Join(path, filename)
 
-	if _, err := os.Stat(filepath); err == nil {
+	if _, err := os.Stat(filePath); err == nil {
 		return filename
 	}
 	return ""
