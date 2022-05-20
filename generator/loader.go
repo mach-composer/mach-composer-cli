@@ -17,8 +17,8 @@ func (l *EmbedLoader) Abs(base, name string) string {
 }
 
 func (l *EmbedLoader) Get(path string) (io.Reader, error) {
-	fullpath := filepath.Join("templates", path)
-	f, err := l.Content.Open(fullpath)
+	fullPath := filepath.Join("templates", path)
+	f, err := l.Content.Open(fullPath)
 	if err != nil {
 		return nil, err
 	}

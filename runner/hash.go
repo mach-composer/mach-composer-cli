@@ -30,12 +30,13 @@ func GetHash(path string) string {
 		if err != nil {
 			panic(err)
 		}
-		defer f.Close()
 
 		if _, err := io.Copy(h, f); err != nil {
+			f.Close()
 			log.Fatal(err)
 		}
 
+		f.Close()
 	}
 
 	return fmt.Sprintf("%x", h.Sum(nil))

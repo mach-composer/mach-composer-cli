@@ -8,7 +8,7 @@ In AWS we need two accounts:
 In this step we'll create the first one, the service account.
 
 !!! tip "Tenancy model"
-      As described in the [tenenacy model](../../topics/architecture/tenancy.md#aws-tenancy), we advice to setup your MACH environment by creating **one service AWS account** containing shared resources and create an **AWS account per stack**.
+      As described in the [tenancy model](../../topics/architecture/tenancy.md#aws-tenancy), we advice to setup your MACH environment by creating **one service AWS account** containing shared resources and create an **AWS account per stack**.
 
       This way, all resources are strictly separated from eachother.
 
@@ -99,7 +99,7 @@ module "shared-config" {
 ```
 
 !!! info "`allow_assume_deploy_role`"
-    We specify our root account here so it makes it easier for this tutorial to setup credentials to be able to deploy the components.
+    We specify our root account here, so it makes it easier for this tutorial to setup credentials to be able to deploy the components.
 
 ### 3. Terraform apply
 

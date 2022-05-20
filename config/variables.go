@@ -1,6 +1,7 @@
 package config
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"regexp"
@@ -25,30 +26,31 @@ func NewVariables() *Variables {
 	return vars
 }
 
-func (v *Variables) Get(key string) string {
-
+func (v *Variables) Get(key string) (string, error) {
 	if strings.HasPrefix(key, "var.") {
 		trimmedKey := key[4:]
+
 		result, ok := v.vars[trimmedKey]
 		if !ok {
-			logrus.Warningf("no variable %s", trimmedKey)
+			return "", fmt.Errorf("missing variable %s", key)
 		}
 
 		if v.Encrypted {
-			return fmt.Sprintf(
+			result := fmt.Sprintf(
 				`${data.sops_external.variables.data["%s"]}`, trimmedKey)
+			return result, nil
 		}
 
-		return result
+		return result, nil
 	}
 
 	if strings.HasPrefix(key, "env.") {
 		trimmedKey := key[4:]
-		return os.Getenv(trimmedKey)
+		return os.Getenv(trimmedKey), nil
 	}
 
 	logrus.Warningf("Unsupported variables type %s", key)
-	return ""
+	return "", nil
 }
 
 func (v *Variables) Set(key string, value string) {
@@ -127,21 +129,30 @@ func yamlIsEncrypted(data []byte) bool {
 
 // InterpolateVars interpolates the variables within the values of the given
 // MACH Config in-place.
-func InterpolateVars(raw *_RawMachConfig, vars *Variables) {
+func InterpolateVars(raw *_RawMachConfig, vars *Variables) error {
 	if vars == nil {
-		panic("Vars cannot be nil")
+		return errors.New("vars cannot be nil")
 	}
-	interpolateNode(&raw.Sites, vars)
-	interpolateNode(&raw.Components, vars)
+
+	if err := interpolateNode(&raw.Sites, vars); err != nil {
+		return err
+	}
+	if err := interpolateNode(&raw.Components, vars); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // Recursive function to replace the
-func interpolateNode(node *yaml.Node, vars *Variables) {
+func interpolateNode(node *yaml.Node, vars *Variables) error {
 	if node.Kind == yaml.ScalarNode {
-		if val, replaced := interpolateValue(node.Value, vars); replaced {
+		if val, replaced, err := interpolateValue(node.Value, vars); err != nil {
+			return err
+		} else if replaced {
 			node.Value = val
 		}
-		return
+		return nil
 	}
 
 	// Loop through the content if available to update childs
@@ -152,20 +163,27 @@ func interpolateNode(node *yaml.Node, vars *Variables) {
 			continue
 		}
 
-		interpolateNode(node.Content[i], vars)
+		err := interpolateNode(node.Content[i], vars)
+		if err != nil {
+			return err
+		}
 	}
+	return nil
 }
 
-func interpolateValue(val string, vars *Variables) (string, bool) {
+func interpolateValue(val string, vars *Variables) (string, bool, error) {
 	matches := varRegex.FindAllStringSubmatch(val, 20)
 	if len(matches) == 0 {
-		return val, false
+		return val, false, nil
 	}
 
 	for _, match := range matches {
-		replacement := vars.Get(match[1])
+		replacement, err := vars.Get(match[1])
+		if err != nil {
+			return "", false, err
+		}
 		val = strings.ReplaceAll(val, match[0], replacement)
 	}
 
-	return val, true
+	return val, true, nil
 }

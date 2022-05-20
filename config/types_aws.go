@@ -1,6 +1,6 @@
 package config
 
-// AWS S3 bucket state backend configuration.
+// AWSTFState AWS S3 bucket state backend configuration.
 type AWSTFState struct {
 	Bucket    string `yaml:"bucket"`
 	KeyPrefix string `yaml:"key_prefix"`

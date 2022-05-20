@@ -9,7 +9,7 @@ import (
 	"github.com/labd/mach-composer/utils"
 )
 
-// MachFileWriter updates the contents of a mach file with the updated
+// SopsFileWriter updates the contents of a mach file with the updated
 // version of the components
 func SopsFileWriter(cfg *config.MachConfig, updates *UpdateSet) {
 

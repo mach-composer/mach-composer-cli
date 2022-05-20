@@ -271,6 +271,12 @@ Example:
 
 ### frontend
 
+!!! warning
+This functionality is deprecated and will be removed soon.
+
+Create your own frontend tokens in the commercetools Merchant Center. 
+Once this functionality is removed the generated frontend tokens will be automatically deleted on rollout.
+
 Example:
 ```yaml
 frontend:
@@ -453,13 +459,13 @@ aws:
 
 - **`account_id`** - (Required) AWS account ID for this site
 - **`region`** - AWS region to deploy site in
-- `deploy_role_name` - The [IAM role](./prerequisites/aws#iam-deploy-role) name needed for deployment
+- `deploy_role_name` - The IAM role name needed for deployment
 - `default_tags` - Default tags set at provider level
 - `extra_providers`
 
 ## components
 
-Configures the components for the site. The must reference a defined component (defined in the [component definitions](#components))
+Configures the components for the site. They must reference a defined component (defined in the [component definitions](#components))
 
 Example:
 

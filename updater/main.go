@@ -112,13 +112,13 @@ func FindUpdates(ctx context.Context, cfg *config.MachConfig, filename string, c
 		filename: filename,
 	}
 	for i := 0; i < numUpdates; i++ {
-		changeset := <-results
+		changeSet := <-results
 
-		output := OutputChanges(changeset)
+		output := OutputChanges(changeSet)
 		fmt.Print(output)
 
-		if changeset.HasChanges() {
-			updates.updates = append(updates.updates, *changeset)
+		if changeSet.HasChanges() {
+			updates.updates = append(updates.updates, *changeSet)
 		}
 	}
 
@@ -126,17 +126,17 @@ func FindUpdates(ctx context.Context, cfg *config.MachConfig, filename string, c
 }
 
 func FindSpecificUpdate(ctx context.Context, cfg *config.MachConfig, filename string, component *config.Component) *UpdateSet {
-	changeset, err := GetLastVersion(ctx, component, cfg.Filename)
+	changeSet, err := GetLastVersion(ctx, component, cfg.Filename)
 	if err != nil {
 		panic(err)
 	}
 
-	output := OutputChanges(changeset)
+	output := OutputChanges(changeSet)
 	fmt.Print(output)
 
 	updates := UpdateSet{
 		filename: cfg.Filename,
-		updates:  []ChangeSet{*changeset},
+		updates:  []ChangeSet{*changeSet},
 	}
 	return &updates
 }

@@ -11,7 +11,6 @@ var generateCmd = &cobra.Command{
 	PreRun: func(cmd *cobra.Command, args []string) {
 		preprocessGenerateFlags()
 	},
-
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if err := generateFunc(args); err != nil {
 			return err

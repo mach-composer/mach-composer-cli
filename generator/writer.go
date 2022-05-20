@@ -19,8 +19,7 @@ type GenerateOptions struct {
 	Site       string
 }
 
-func WriteFiles(cfg *config.MachConfig, options *GenerateOptions) (map[string]string, error) {
-
+func FileLocations(cfg *config.MachConfig, options *GenerateOptions) map[string]string {
 	path := strings.TrimSuffix(filepath.Base(cfg.Filename), filepath.Ext(cfg.Filename))
 	sitesPath := filepath.Join(options.OutputPath, path)
 
@@ -28,12 +27,23 @@ func WriteFiles(cfg *config.MachConfig, options *GenerateOptions) (map[string]st
 
 	for i := range cfg.Sites {
 		site := cfg.Sites[i]
+		locations[site.Identifier] = filepath.Join(sitesPath, site.Identifier)
+	}
+	return locations
+}
+
+func WriteFiles(cfg *config.MachConfig, options *GenerateOptions) (map[string]string, error) {
+	locations := FileLocations(cfg, options)
+	for i := range cfg.Sites {
+		site := cfg.Sites[i]
 
 		if options.Site != "" && site.Identifier != options.Site {
 			continue
 		}
 
-		filename := filepath.Join(sitesPath, site.Identifier, "site.tf")
+		path := locations[site.Identifier]
+		filename := filepath.Join(path, "site.tf")
+
 		fmt.Printf("Generating %s\n", filename)
 
 		body, err := Render(cfg, &site)
@@ -50,7 +60,7 @@ func WriteFiles(cfg *config.MachConfig, options *GenerateOptions) (map[string]st
 			// os.Exit(255)
 		}
 
-		if err := os.MkdirAll(filepath.Join(sitesPath, site.Identifier), 0700); err != nil {
+		if err := os.MkdirAll(path, 0700); err != nil {
 			panic(err)
 		}
 
@@ -58,7 +68,6 @@ func WriteFiles(cfg *config.MachConfig, options *GenerateOptions) (map[string]st
 			panic(err)
 		}
 
-		locations[site.Identifier] = filepath.Dir(filename)
 	}
 	return locations, nil
 }

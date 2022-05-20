@@ -70,7 +70,7 @@ func preprocessGenerateFlags() {
 	}
 }
 
-// LoadConfig loads all config files. This means it validates and parses
+// LoadConfigs loads all config files. This means it validates and parses
 // the yaml file.
 func LoadConfigs() map[string]*config.MachConfig {
 	configs := make(map[string]*config.MachConfig)
@@ -80,7 +80,17 @@ func LoadConfigs() map[string]*config.MachConfig {
 			fmt.Fprintln(os.Stderr, err.Error())
 			os.Exit(1)
 		}
+		CheckDeprecations(cfg)
 		configs[filename] = cfg
 	}
 	return configs
+}
+
+// CheckDeprecations warns if features have been deprecated
+func CheckDeprecations(cfg *config.MachConfig) {
+	for _, site := range cfg.Sites {
+		if site.Commercetools.Frontend != nil {
+			fmt.Println("[WARN] Site", site.Identifier, "commercetools frontend block is deprecated and will be removed soon")
+		}
+	}
 }

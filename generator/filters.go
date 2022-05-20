@@ -34,8 +34,8 @@ func FilterGetValueByKey(in *pongo2.Value, param *pongo2.Value) (*pongo2.Value, 
 	switch v := val.(type) {
 	case map[string]any:
 		key := param.String()
-		retval := v[key]
-		return pongo2.AsValue(retval), nil
+		retVal := v[key]
+		return pongo2.AsValue(retVal), nil
 	}
 
 	return nil, &pongo2.Error{
@@ -96,15 +96,15 @@ func filterString(in *pongo2.Value, param *pongo2.Value) (*pongo2.Value, *pongo2
 	return in, nil
 }
 
-// Take an component and an site-endpoint, and return a Terraform reference to
+// Take a component and a site-endpoint, and return a Terraform reference to
 // an output. The endpoint might have a different name in the component itself
 // based on the mappings
 func filterComponentEndpointName(in *pongo2.Value, param *pongo2.Value) (*pongo2.Value, *pongo2.Error) {
 	component := in.Interface().(config.SiteComponent)
 	endpoint := param.Interface().(config.Endpoint)
-	for component_key, ep_key := range component.Definition.Endpoints {
-		if ep_key == endpoint.Key {
-			return pongo2.AsSafeValue(component_key), nil
+	for componentKey, epKey := range component.Definition.Endpoints {
+		if epKey == endpoint.Key {
+			return pongo2.AsSafeValue(componentKey), nil
 		}
 
 	}
@@ -157,7 +157,7 @@ func filterTFValue(in *pongo2.Value, param *pongo2.Value) (*pongo2.Value, *pongo
 		return formatMap(data)
 
 	case map[any]any:
-		// Should not be neccessary if the formatMap is fixed
+		// Should not be necessary if the formatMap is fixed
 		items := make(map[string]any, 0)
 		for k, v := range data {
 			items[fmt.Sprint(k)] = v

@@ -1,6 +1,6 @@
 package config
 
-// Global Sentry configuration.
+// GlobalSentryConfig global Sentry configuration.
 type GlobalSentryConfig struct {
 	DSN             string `yaml:"dsn"`
 	RateLimitWindow int    `yaml:"rate_limit_window"`
@@ -11,7 +11,7 @@ type GlobalSentryConfig struct {
 	Organization    string `yaml:"organization"`
 }
 
-// SiteSentryConfig is for site specific sentry DSN settings
+// SentryConfig is for site specific sentry DSN settings
 type SentryConfig struct {
 	DSN             string `yaml:"dsn"`
 	RateLimitWindow int    `yaml:"rate_limit_window"`
