@@ -32,7 +32,7 @@ func (v *Variables) Get(key string) (string, error) {
 
 		result, ok := v.vars[trimmedKey]
 		if !ok {
-			return "", fmt.Errorf("missing variable %s\n", key)
+			return "", fmt.Errorf("missing variable %s", key)
 		}
 
 		if v.Encrypted {
