@@ -76,7 +76,7 @@ var AZURE_REGION_DISPLAY_MAP_LONG = map[string]string{
 	"southafricawest":    "South Africa West",
 }
 
-// Azure storage account state backend configuration.
+// AzureTFState Azure storage account state backend configuration.
 type AzureTFState struct {
 	ResourceGroup  string `yaml:"resource_group"`
 	StorageAccount string `yaml:"storage_account"`
@@ -95,7 +95,7 @@ type GlobalAzureConfig struct {
 	ServicePlans     map[string]AzureServicePlan `yaml:"service_plans"`
 }
 
-// Site-specific Azure settings
+// SiteAzureSettings Site-specific Azure settings
 type SiteAzureSettings struct {
 	Frontdoor  *AzureFrontdoorSettings `yaml:"frontdoor"`
 	AlertGroup *AzureAlertGroup        `yaml:"alert_group"`
@@ -174,9 +174,9 @@ type AzureFrontdoorSettings struct {
 	DnsResourceGroup string                   `yaml:"dns_resource_group"`
 	SslKeyVault      *AzureFrontdoorSslConfig `yaml:"ssl_key_vault"`
 
-	// Undocumented option to workaround some tenacious issues
+	// Undocumented option to work around some tenacious issues
 	// with using Frontdoor in the Azure Terraform provider
-	SupressChanges bool `yaml:"supress_changes"`
+	SuppressChanges bool `yaml:"suppress_changes"`
 }
 
 type AzureFrontdoorSslConfig struct {

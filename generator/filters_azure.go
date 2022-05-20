@@ -17,7 +17,7 @@ func AzureFrontendEndpointName(in *pongo2.Value, param *pongo2.Value) (*pongo2.V
 
 }
 
-// Retreive the resource name for a Azure app service plan.
+// AzureServicePlanResourceName Retrieve the resource name for a Azure app service plan.
 // The reason to make this conditional is because of backwards compatability;
 // existing environments already have a `functionapp` resource. We want to keep that intact.
 func AzureServicePlanResourceName(in *pongo2.Value, param *pongo2.Value) (*pongo2.Value, *pongo2.Error) {

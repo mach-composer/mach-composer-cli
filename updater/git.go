@@ -104,7 +104,7 @@ func parseGitSource(source string) (*gitSource, error) {
 	return result, nil
 }
 
-// fetchRepository clone's or updates the repository. We only need the history
+// fetchGitRepository clones or updates the repository. We only need the history
 // so clone using --bare
 func fetchGitRepository(ctx context.Context, source *gitSource, cacheDir string) {
 	dest := filepath.Join(cacheDir, source.Name)
@@ -165,7 +165,7 @@ func runGit(ctx context.Context, cwd string, args ...string) []byte {
 		args...,
 	)
 	cmd.Dir = cwd
-	utils.CmdSetForegrond(cmd)
+	utils.CmdSetForeground(cmd)
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {

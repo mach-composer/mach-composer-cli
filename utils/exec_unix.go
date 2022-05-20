@@ -10,7 +10,7 @@ import (
 	"github.com/mattn/go-isatty"
 )
 
-func CmdSetForegrond(cmd *exec.Cmd) {
+func CmdSetForeground(cmd *exec.Cmd) {
 	if isatty.IsTerminal(os.Stdout.Fd()) {
 		cmd.SysProcAttr = &syscall.SysProcAttr{
 			Foreground: true,
