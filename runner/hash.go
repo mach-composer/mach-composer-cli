@@ -32,6 +32,7 @@ func GetHash(path string) string {
 		}
 
 		if _, err := io.Copy(h, f); err != nil {
+			f.Close()
 			log.Fatal(err)
 		}
 
