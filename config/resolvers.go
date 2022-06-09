@@ -19,35 +19,39 @@ func Process(cfg *MachConfig) {
 }
 
 func ResolveComponentDefinitions(cfg *MachConfig) {
-	for _, c := range cfg.Components {
-
-		// Terraform needs absolute paths to modules
-		if strings.HasPrefix(c.Source, ".") {
-			if val, err := filepath.Abs(c.Source); err == nil {
-				c.Source = val
-			} else {
-				panic(err)
-			}
-		}
-
-		// If no integrations are given, set the Cloud integrations as default
-		if len(c.Integrations) < 1 {
-			if cfg.Global.Cloud == AWS {
-				c.Integrations = append(c.Integrations, AWS)
-			} else if cfg.Global.Cloud == Azure {
-				c.Integrations = append(c.Integrations, Azure)
-			}
-		}
-
-		if cfg.Global.Cloud == Azure {
-			c.Azure = &ComponentAzureConfig{}
-		}
-
-		if c.Azure != nil && c.Azure.ShortName == "" {
-			c.Azure.ShortName = c.Name
-		}
-
+	for i, _ := range cfg.Components {
+		ResolveComponentDefinition(&cfg.Components[i], cfg)
 	}
+}
+
+func ResolveComponentDefinition(c *Component, cfg *MachConfig) *Component {
+	// Terraform needs absolute paths to modules
+	if strings.HasPrefix(c.Source, ".") {
+		if val, err := filepath.Abs(c.Source); err == nil {
+			c.Source = val
+		} else {
+			panic(err)
+		}
+	}
+
+	// If no integrations are given, set the Cloud integrations as default
+	if len(c.Integrations) < 1 {
+		if cfg.Global.Cloud == AWS {
+			c.Integrations = append(c.Integrations, AWS)
+		} else if cfg.Global.Cloud == Azure {
+			c.Integrations = append(c.Integrations, Azure)
+		}
+	}
+
+	if cfg.Global.Cloud == Azure {
+		c.Azure = &ComponentAzureConfig{}
+	}
+
+	if c.Azure != nil && c.Azure.ShortName == "" {
+		c.Azure.ShortName = c.Name
+	}
+
+	return c
 }
 
 func ResolveSiteConfigs(cfg *MachConfig) {
