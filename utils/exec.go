@@ -2,7 +2,6 @@ package utils
 
 import (
 	"context"
-	"io"
 	"log"
 	"os"
 	"os/exec"
@@ -22,26 +21,11 @@ func RunInteractive(ctx context.Context, command string, cwd string, args ...str
 	cmd.Dir = cwd
 	cmd.Env = os.Environ()
 
-	stdin, err := cmd.StdinPipe()
-	if err != nil {
-		log.Fatalln(err)
-	}
+	cmd.Stderr = os.Stderr
+	cmd.Stdin = os.Stdin
+	cmd.Stdout = os.Stdout
 
-	stdout, err := cmd.StdoutPipe()
-	if err != nil {
-		log.Fatalln(err)
-	}
-
-	stderr, err := cmd.StderrPipe()
-	if err != nil {
-		log.Fatalln(err)
-	}
-
-	go io.Copy(os.Stderr, stderr)
-	go io.Copy(os.Stdout, stdout)
-	go io.Copy(stdin, os.Stdin)
-
-	err = cmd.Start()
+	err := cmd.Start()
 	if err != nil {
 		log.Fatalln(err)
 	}
