@@ -26,41 +26,41 @@ terraform {
   required_providers {
     {%- if site.AWS %}
     aws = {
-      version = "~> {{ global.TerraformConfig.providers.aws|default:"3.74.1" }}"
+      version = "{{ global.TerraformConfig.providers.aws|render_tf_provider:"3.74.1" }}"
     }
     {% endif -%}
 
     {%- if site.Azure %}
     azurerm = {
-      version = "~> {{ global.TerraformConfig.providers.azure|default:"2.99.0" }}"
+      version = "{{ global.TerraformConfig.providers.azure|render_tf_provider:"2.99.0" }}"
     }
     {% endif -%}
 
     {%- if site.Commercetools %}
     commercetools = {
       source = "labd/commercetools"
-      version = "~> {{ global.TerraformConfig.Providers.Commercetools|default:'0.30.0' }}"
+      version = "{{ global.TerraformConfig.Providers.Commercetools|render_tf_provider:'0.30.0' }}"
     }
     {% endif -%}
 
     {%- if site.contentful %}
     contentful = {
       source = "labd/contentful"
-      version = "~> {{ global.TerraformConfig.Providers.Contentful|default:'0.1.0' }}"
+      version = "{{ global.TerraformConfig.Providers.Contentful|render_tf_provider:'0.1.0' }}"
     }
     {% endif -%}
 
     {%- if site.Amplience %}
     amplience = {
       source = "labd/amplience"
-      version = "~> {{ global.TerraformConfig.Providers.Amplience|default:'0.3.7' }}"
+      version = "{{ global.TerraformConfig.Providers.Amplience|render_tf_provider:'0.3.7' }}"
     }
     {% endif -%}
 
     {%- if global.SentryConfig.AuthToken %}
     sentry = {
       source = "jianyuan/sentry"
-      version = "~> {{ global.TerraformConfig.Providers.Sentry|default:'0.6.0' }}"
+      version = "{{ global.TerraformConfig.Providers.Sentry|render_tf_provider:'0.6.0' }}"
     }
     {% endif -%}
 

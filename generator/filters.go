@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"strings"
+	"regexp"
 
 	"github.com/flosch/pongo2/v5"
 	"github.com/labd/mach-composer/config"
@@ -17,6 +18,7 @@ func registerFilters() {
 	pongo2.RegisterFilter("remove", filterRemove)
 	pongo2.RegisterFilter("tf", filterTFValue)
 	pongo2.RegisterFilter("tfvalue", filterTFValue)
+	pongo2.RegisterFilter("render_tf_provider", renderTFProvider)
 	pongo2.RegisterFilter("azure_frontend_endpoint_name", AzureFrontendEndpointName)
 	pongo2.RegisterFilter("service_plan_resource_name", AzureServicePlanResourceName)
 	pongo2.RegisterFilter("get", FilterGetValueByKey)
@@ -167,7 +169,33 @@ func filterTFValue(in *pongo2.Value, param *pongo2.Value) (*pongo2.Value, *pongo
 	default:
 		return pongo2.AsValue(data), nil
 	}
+}
 
+var tfProviderRegex = regexp.MustCompile(`([!=<>~]*)(.*)`)
+
+func renderTFProvider(in *pongo2.Value, defaultValue *pongo2.Value) (*pongo2.Value, *pongo2.Error) {
+	// match = TF_PROVIDER_RE.match(value or default_version)
+    // operator, version = match.groups()
+    // return f"{operator or '~>'} {version}"
+	var val = in.String()
+	var operator string
+
+	if (len(val) == 0) {
+		val = defaultValue.String()
+	}
+
+	match := tfProviderRegex.FindStringSubmatch(val)
+	if match != nil {
+		operator = match[1]
+		val = match[2]
+	}
+
+	if (len(operator) == 0) {
+		operator = "~>"
+	}
+
+	res := pongo2.AsSafeValue(fmt.Sprintf("%s %s", operator, val))
+	return res, nil
 }
 
 func formatMap[K comparable, V any](data map[K]V) (*pongo2.Value, *pongo2.Error) {
