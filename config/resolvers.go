@@ -19,7 +19,7 @@ func Process(cfg *MachConfig) {
 }
 
 func ResolveComponentDefinitions(cfg *MachConfig) {
-	for i, _ := range cfg.Components {
+	for i := range cfg.Components {
 		ResolveComponentDefinition(&cfg.Components[i], cfg)
 	}
 }
