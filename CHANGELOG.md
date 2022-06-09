@@ -7,6 +7,7 @@
     - Upgraded Amplience provider to 0.3.7
     - Upgraded Azure provider to 2.99.0
   - Add `variables_file` option to the `mach_composer` configuration block to define a variable file
+  - Fix auto add cloud integration (aws or azure) when `integration` list is left empty
 - Deprecate `commercetools.frontend` block, will be removed in a later release.
 
 ## 2.1.1 (2022-04-22)
