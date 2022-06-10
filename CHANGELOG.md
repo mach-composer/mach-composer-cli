@@ -1,6 +1,6 @@
 # Changelog
 
-## 2.2 (unreleased)
+## 2.2 (2022-06-10)
 - Fixed inconsistencies between 1.2 and 2.x:
   - Upgrade Terraform providers in golang version of the MACH composer to match the 1.2 release:
     - Upgraded commercetools provider to 0.30.0
