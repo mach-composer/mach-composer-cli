@@ -135,7 +135,7 @@ func TestParse(t *testing.T) {
 				Name:         "your-component",
 				Source:       "git::https://github.com/<username>/<your-component>.git//terraform",
 				Version:      "0.1.0",
-				Branch:       "develop",
+				Branch:       "",
 				Integrations: []string{"aws", "commercetools"},
 				Endpoints: map[string]string{
 					"internal": "internal",
