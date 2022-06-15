@@ -1,5 +1,9 @@
 # Changelog
 
+
+## 1.2.2 (2022-06-15)
+- Upgraded [sentry terraform module](https://registry.terraform.io/providers/jianyuan/sentry/0.8.0) to 0.8.0
+
 ## 1.2.1 (2022-04-11)
 - Add ability to define a custom provider version including the version operator, for example;
   ```yaml

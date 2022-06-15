@@ -19,7 +19,7 @@ ENV TERRAFORM_NULL_VERSION=2.1.2
 ENV TERRAFORM_COMMERCETOOLS_VERSION=0.30.0
 ENV TERRAFORM_CONTENTFUL_VERSION=0.1.0
 ENV TERRAFORM_AMPLIENCE_VERSION=0.3.7
-ENV TERRAFORM_SENTRY_VERSION=0.6.0
+ENV TERRAFORM_SENTRY_VERSION=0.8.0
 
 RUN apk add --no-cache --virtual .build-deps g++ libffi-dev openssl-dev wget unzip make \
     && apk add bash ca-certificates git libc6-compat openssl openssh-client jq curl
