@@ -1,6 +1,8 @@
 package config
 
-import "github.com/creasty/defaults"
+import (
+	"github.com/creasty/defaults"
+)
 
 type CommercetoolsSettings struct {
 	ProjectKey      string                        `yaml:"project_key"`
@@ -27,6 +29,17 @@ func (s *CommercetoolsSettings) SetDefaults() {
 		}
 		s.Frontend.SetDefaults()
 	}
+}
+
+func (s *CommercetoolsSettings) ManagedStores() []CommercetoolsStore {
+	managed := make([]CommercetoolsStore, 0)
+
+	for _, store := range s.Stores {
+		if store.Managed {
+			managed = append(managed, store)
+		}
+	}
+	return managed
 }
 
 type CommercetoolsProjectSettings struct {
@@ -59,7 +72,7 @@ func (s *CommercetoolsFrontendSettings) SetDefaults() {
 type CommercetoolsStore struct {
 	Key                  string
 	Name                 map[string]string
-	Managed              bool
+	Managed              bool `default:"true"`
 	Languages            []string
 	DistributionChannels []string `yaml:"distribution_channels"`
 	SupplyChannels       []string `yaml:"supply_channels"`

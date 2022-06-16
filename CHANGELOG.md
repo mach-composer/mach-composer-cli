@@ -2,9 +2,10 @@
 
 ## 2.2.1 (2022-06-10)
 - Fixed inconsistencies between 1.2 and 2.x:
-  - Add `branch` option to component definitions to be able to perform a `mach
-    update` and stay within a certain branch (during development)
-- Fixed bug introduced in 2.0.0 where custom AWS and Azure provider version definitions weren't picked up
+  - Add `branch` option to component definitions to be able to perform a 
+    `mach update` and stay within a certain branch (during development)
+  - Fixed commercetools `stores` definitions
+  - Fixed bug where custom AWS and Azure provider version definitions weren't picked up
 
 
 ## 2.2 (2022-06-10)
