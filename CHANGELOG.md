@@ -4,6 +4,7 @@
 - Fixed inconsistencies between 1.2 and 2.x:
   - Add `branch` option to component definitions to be able to perform a `mach
     update` and stay within a certain branch (during development)
+  - Fixed commercetools `stores` definitions
 
 
 ## 2.2 (2022-06-10)
