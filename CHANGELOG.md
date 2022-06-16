@@ -4,7 +4,9 @@
 
 - Fixed inconsistencies between 1.2 and 2.x:
   - Skip non-MACH configuration files when processing all yaml files in a directory.<br>
-  This allows you to run things like `mach apply` or `mach update` without having to specify the `-f main.yml` option if you only have one valid MACH configuration file in your directory. Fixes #150
+    This allows you to run things like `mach apply` or `mach update` without having to specify the `-f main.yml` option if you only have one valid MACH configuration file in your directory. Fixes #150
+- Fixed bug introduced in 2.0.0 where custom AWS and Azure provider version definitions weren't picked up
+
 
 ## 2.2 (2022-06-10)
 - Fixed inconsistencies between 1.2 and 2.x:
