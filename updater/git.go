@@ -44,7 +44,7 @@ func GetLastVersionGit(ctx context.Context, c *config.Component, origin string) 
 		return nil, fmt.Errorf("cannot check %s component since it doesn't have a Git source defined", c.Name)
 	}
 
-	var branch string = "HEAD"
+	branch := "HEAD"
 	if c.Branch != "" {
 		branch = c.Branch
 	}
