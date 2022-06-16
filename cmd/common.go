@@ -75,10 +75,12 @@ func preprocessGenerateFlags() {
 func LoadConfigs() map[string]*config.MachConfig {
 	configs := make(map[string]*config.MachConfig)
 	for _, filename := range generateFlags.fileNames {
+		fmt.Printf("Processing %s\n", filename)
+
 		cfg, err := config.Load(filename, generateFlags.varFile)
 		if err != nil {
 			fmt.Fprintln(os.Stderr, err.Error())
-			os.Exit(1)
+			continue
 		}
 		CheckDeprecations(cfg)
 		configs[filename] = cfg

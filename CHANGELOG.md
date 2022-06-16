@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.3 (unreleased)
+
+- Fixed inconsistencies between 1.2 and 2.x:
+  - Skip non-MACH configuration files when processing all yaml files in a directory.<br>
+  This allows you to run things like `mach apply` or `mach update` without having to specify the `-f main.yml` option if you only have one valid MACH configuration file in your directory. Fixes #150
+
 ## 2.2 (2022-06-10)
 - Fixed inconsistencies between 1.2 and 2.x:
   - Upgrade Terraform providers in golang version of the MACH composer to match the 1.2 release:

@@ -38,9 +38,8 @@ func terraformFunc(args []string) error {
 		Site:       generateFlags.siteName,
 	}
 
-	for _, filename := range generateFlags.fileNames {
-		cfg := configs[filename]
-		allPaths[filename] = generator.FileLocations(cfg, genOptions)
+	for _, cfg := range configs {
+		allPaths[cfg.Filename] = generator.FileLocations(cfg, genOptions)
 	}
 
 	for _, filename := range generateFlags.fileNames {

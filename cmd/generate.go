@@ -30,9 +30,7 @@ func generateFunc(args []string) error {
 	}
 
 	configs := LoadConfigs()
-	for _, filename := range generateFlags.fileNames {
-		cfg := configs[filename]
-
+	for _, cfg := range configs {
 		_, err := generator.WriteFiles(cfg, genOptions)
 		if err != nil {
 			panic(err)
