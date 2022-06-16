@@ -26,13 +26,13 @@ terraform {
   required_providers {
     {%- if site.AWS %}
     aws = {
-      version = "{{ global.TerraformConfig.providers.aws|render_tf_provider:"3.74.1" }}"
+      version = "{{ global.TerraformConfig.Providers.AWS|render_tf_provider:"3.74.1" }}"
     }
     {% endif -%}
 
     {%- if site.Azure %}
     azurerm = {
-      version = "{{ global.TerraformConfig.providers.azure|render_tf_provider:"2.99.0" }}"
+      version = "{{ global.TerraformConfig.Providers.Azure|render_tf_provider:"2.99.0" }}"
     }
     {% endif -%}
 
@@ -43,7 +43,7 @@ terraform {
     }
     {% endif -%}
 
-    {%- if site.contentful %}
+    {%- if site.Contentful %}
     contentful = {
       source = "labd/contentful"
       version = "{{ global.TerraformConfig.Providers.Contentful|render_tf_provider:'0.1.0' }}"
