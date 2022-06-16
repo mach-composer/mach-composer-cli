@@ -108,9 +108,6 @@ resource "null_resource" "commercetools" {
     {% if commercetools.Taxes -%}
     commercetools_tax_category.standard,
     {%- endif %}
-    {%- for store in commercetools.Stores %}
-    commercetools_store.{{ store.Key }},
-    {%- endfor -%}
   ]
 }
 
