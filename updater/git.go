@@ -44,8 +44,12 @@ func GetLastVersionGit(ctx context.Context, c *config.Component, origin string) 
 		return nil, fmt.Errorf("cannot check %s component since it doesn't have a Git source defined", c.Name)
 	}
 
+	branch := "HEAD"
+	if c.Branch != "" {
+		branch = c.Branch
+	}
 	fetchGitRepository(ctx, source, cacheDir)
-	commits := loadGitHistory(ctx, source, c.Version, "HEAD", cacheDir)
+	commits := loadGitHistory(ctx, source, c.Version, branch, cacheDir)
 
 	cs := &ChangeSet{
 		Changes:   commits,

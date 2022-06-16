@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.2.1 (2022-06-10)
+- Fixed inconsistencies between 1.2 and 2.x:
+  - Add `branch` option to component definitions to be able to perform a `mach
+    update` and stay within a certain branch (during development)
+
+
 ## 2.2 (2022-06-10)
 - Fixed inconsistencies between 1.2 and 2.x:
   - Upgrade Terraform providers in golang version of the MACH composer to match the 1.2 release:
@@ -10,6 +16,7 @@
   - Fix auto add cloud integration (aws or azure) when `integration` list is left empty
   - Add ability to define a custom provider version including the version operator
 - Deprecate `commercetools.frontend` block, will be removed in a later release.
+
 
 ## 2.1.1 (2022-04-22)
 - Don't crash when running `mach-composer apply` without `--auto-approve`
@@ -41,7 +48,6 @@ A number of features which were minimal used are removed.
   - The `--ignore-version` flag is removed. The version in the config file now
     indicates a schema version. Only version 1 is supported and updates within
     this schema version should always be backwards compatible.
-
 
 
 ## 1.2 (2022-04-11)
