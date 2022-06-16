@@ -4,7 +4,8 @@
 - Fixed inconsistencies between 1.2 and 2.x:
   - Add `branch` option to component definitions to be able to perform a `mach
     update` and stay within a certain branch (during development)
-
+  - Skip non-MACH configuration files when processing all yaml files in a directory.<br>
+    This allows you to run things like `mach apply` or `mach update` without having to specify the `-f main.yml` option if you only have one valid MACH configuration file in your directory. Fixes #150
 
 ## 2.2 (2022-06-10)
 - Fixed inconsistencies between 1.2 and 2.x:

@@ -42,13 +42,12 @@ func planFunc(args []string) error {
 		OutputPath: generateFlags.outputPath,
 		Site:       generateFlags.siteName,
 	}
-	for _, filename := range generateFlags.fileNames {
-		cfg := configs[filename]
+	for _, cfg := range configs {
 		paths, err := generator.WriteFiles(cfg, genOptions)
 		if err != nil {
 			panic(err)
 		}
-		allPaths[filename] = paths
+		allPaths[cfg.Filename] = paths
 	}
 
 	// Plan the generate files
