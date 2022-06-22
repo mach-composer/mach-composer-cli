@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.2.2 (2022-06-22)
+
+- Fix error on 'mach configuration' check on YAML files that gets rendered to list data.
+  This happens when all files are scanned in the directory and one of the YAML file defines a list
+
 ## 1.2.1 (2022-04-11)
 - Add ability to define a custom provider version including the version operator, for example;
   ```yaml

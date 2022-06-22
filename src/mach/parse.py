@@ -5,7 +5,7 @@ from collections import defaultdict
 from dataclasses import dataclass
 from os.path import abspath, basename, splitext
 from pathlib import Path
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List, Union
 
 import click
 from mach import exceptions, yaml
@@ -124,7 +124,10 @@ def parse_and_validate(
     return config
 
 
-def get_config_vars(yaml_content: dict) -> VariablesFile:
+def get_config_vars(yaml_content: Union[Dict, List]) -> VariablesFile:
+    if "mach_composer" not in yaml_content:
+        return None
+
     var_file = yaml_content.get("mach_composer", {}).get("variables_file", None)
     if not var_file:
         return None
