@@ -6,7 +6,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/labd/mach-composer/config"
+	"github.com/labd/mach-composer/internal/config"
 )
 
 type ApplyOptions struct {

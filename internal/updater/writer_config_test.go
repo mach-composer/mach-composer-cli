@@ -3,7 +3,7 @@ package updater
 import (
 	"testing"
 
-	"github.com/labd/mach-composer/config"
+	"github.com/labd/mach-composer/internal/config"
 	"github.com/labd/mach-composer/internal/utils"
 	"github.com/stretchr/testify/assert"
 )

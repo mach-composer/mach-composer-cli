@@ -11,7 +11,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/labd/mach-composer/config"
+	"github.com/labd/mach-composer/internal/config"
 	"github.com/labd/mach-composer/internal/utils"
 	"github.com/sirupsen/logrus"
 )
