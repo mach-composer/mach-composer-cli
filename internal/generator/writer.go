@@ -10,7 +10,7 @@ import (
 
 	"github.com/hashicorp/hcl/v2/hclparse"
 	"github.com/hashicorp/hcl/v2/hclwrite"
-	"github.com/labd/mach-composer/config"
+	"github.com/labd/mach-composer/internal/config"
 	"github.com/sirupsen/logrus"
 )
 
