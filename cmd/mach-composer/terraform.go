@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/labd/mach-composer/generator"
+	"github.com/labd/mach-composer/internal/generator"
 	"github.com/labd/mach-composer/internal/runner"
 	"github.com/spf13/cobra"
 )
