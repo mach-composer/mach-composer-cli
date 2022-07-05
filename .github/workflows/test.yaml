@@ -19,10 +19,18 @@ jobs:
         go-version: ${{ matrix.go-version }}
       id: go
 
+    - name: Set up Go modules cache
+      uses: actions/cache@v2
+      env:
+        cache-name: cache-go-modules
       with:
-        version: "2022.1"
-        install-go: false
-        cache-key: ${{ matrix.go-version }}
+        path: ~/go/pkg/mod
+        key: ${{ runner.os }}-go${{ matrix.go-version }}-build-${{ hashFiles('**/go.sum') }}
+        restore-keys: |
+          ${{ runner.os }}-go${{ matrix.go-version }}-build-${{ env.cache-name }}-
+          ${{ runner.os }}-go${{ matrix.go-version }}-build-
+          ${{ runner.os }}-go${{ matrix.go-version }}-
+
     - name: Run tests
       run: go test -race -coverprofile=coverage.txt -covermode=atomic -coverpkg=./... -v ./...
     - name: Build binaries
