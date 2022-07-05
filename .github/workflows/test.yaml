@@ -41,7 +41,7 @@ jobs:
         make pedantic
         git checkout -- go.mod go.sum
 
-    - name: Create snapshot build
+    - name: Create snapshot binaries
       uses: goreleaser/goreleaser-action@v2
       with:
         version: latest
