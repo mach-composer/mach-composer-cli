@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+
 	"github.com/labd/mach-composer/generator"
 	"github.com/labd/mach-composer/runner"
 	"github.com/spf13/cobra"
@@ -22,7 +24,9 @@ var terraformCmd = &cobra.Command{
 
 func init() {
 	registerGenerateFlags(terraformCmd)
-	terraformCmd.MarkFlagRequired("site")
+	if err := terraformCmd.MarkFlagRequired("site"); err != nil {
+		panic(fmt.Errorf("terraformCmd.MarkFlagRequired: %v", err))
+	}
 }
 
 func terraformFunc(args []string) error {

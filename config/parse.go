@@ -120,8 +120,7 @@ func Parse(data []byte, vars *Variables) (*MachConfig, error) {
 		return nil, fmt.Errorf("decoding error: %w", err)
 	}
 
-	intermediate.Components.Decode(&cfg.Components)
-	if err != nil {
+	if err := intermediate.Components.Decode(&cfg.Components); err != nil {
 		return nil, fmt.Errorf("decoding error: %w", err)
 	}
 
