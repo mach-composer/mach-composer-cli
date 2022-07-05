@@ -199,8 +199,8 @@ var tfProviderRegex = regexp.MustCompile(`([!=<>~]*)(.*)`)
 
 func renderTFProvider(in *pongo2.Value, defaultValue *pongo2.Value) (*pongo2.Value, *pongo2.Error) {
 	// match = TF_PROVIDER_RE.match(value or default_version)
-    // operator, version = match.groups()
-    // return f"{operator or '~>'} {version}"
+	// operator, version = match.groups()
+	// return f"{operator or '~>'} {version}"
 	var val = in.String()
 	var operator string
 
