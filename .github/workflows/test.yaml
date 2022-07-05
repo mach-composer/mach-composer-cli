@@ -44,4 +44,7 @@ jobs:
     - name: Create snapshot build
       uses: goreleaser/goreleaser-action@v2
       with:
+        version: latest
         args: build --rm-dist --snapshot
+      env:
+        GOPATH: ${{ env.GOPATH }}
