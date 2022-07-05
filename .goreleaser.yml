@@ -66,3 +66,12 @@ archives:
       - LICENSE
       - README.md
 
+milestones:
+  -
+    repo:
+      owner: labd
+      name: mach-composer
+    close: true
+    fail_on_error: false
+    name_template: "{{ .Major }}.{{ .Minor }}.{{ .Patch }}"
+
