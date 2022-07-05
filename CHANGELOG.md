@@ -5,6 +5,7 @@
   - Add `branch` option to component definitions to be able to perform a `mach
     update` and stay within a certain branch (during development)
   - Fixed commercetools `stores` definitions
+- Fixed bug introduced in 2.0.0 where custom AWS and Azure provider version definitions weren't picked up
 
 
 ## 2.2 (2022-06-10)
