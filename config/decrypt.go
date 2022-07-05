@@ -4,7 +4,7 @@ import (
 	"context"
 	"os"
 
-	"github.com/labd/mach-composer/utils"
+	"github.com/labd/mach-composer/internal/utils"
 )
 
 // DecryptYaml takes a filename and returns the decrypted yaml.
