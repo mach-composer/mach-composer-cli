@@ -6,14 +6,14 @@ locals {
 {% for endpoint in site.UsedEndpoints() %}
 data "azurerm_dns_zone" "{{ endpoint.Key }}" {
     name                = {{ endpoint.Zone|tf }}
-    resource_group_name = {{ site.Azure.Frontdoor.DnsResourceGroup|tf }}
+    resource_group_name = {{ site.Azure.Frontdoor.DNSResourceGroup|tf }}
 }
 
 {% if endpoint.IsRootDomain() %}
 resource "azurerm_dns_a_record" "{{ endpoint.Key }}" {
   name                = "@"
   zone_name           = data.azurerm_dns_zone.{{ endpoint.Key }}.name
-  resource_group_name = {{ site.Azure.Frontdoor.DnsResourceGroup|tf }}
+  resource_group_name = {{ site.Azure.Frontdoor.DNSResourceGroup|tf }}
   ttl                 = 600
   target_resource_id  = azurerm_frontdoor.app-service.id
 }
@@ -21,7 +21,7 @@ resource "azurerm_dns_a_record" "{{ endpoint.Key }}" {
 resource "azurerm_dns_cname_record" "{{ endpoint.Key }}" {
   name                = {{ endpoint.Subdomain()|tf }}
   zone_name           = data.azurerm_dns_zone.{{ endpoint.Key }}.name
-  resource_group_name = {{ azure.Frontdoor.DnsResourceGroup|tf }}
+  resource_group_name = {{ azure.Frontdoor.DNSResourceGroup|tf }}
   ttl                 = 600
   record              = local.frontdoor_domain
 }

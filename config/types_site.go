@@ -118,7 +118,7 @@ func (s *Site) UsedEndpoints() []Endpoint {
 	return result
 }
 
-func (s *Site) DnsZones() []string {
+func (s *Site) DNSZones() []string {
 	result := []string{}
 	endpoints := s.UsedEndpoints()
 	for i := range endpoints {

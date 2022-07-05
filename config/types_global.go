@@ -21,7 +21,7 @@ type TerraformConfig struct {
 	Providers        TerraformProvider `yaml:"providers"`
 }
 
-// Terraform provider version overwrites.
+// TerraformProvider version overwrites.
 type TerraformProvider struct {
 	AWS           string `yaml:"aws"`
 	Azure         string `yaml:"azure"`

@@ -6,7 +6,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-var AZURE_REGION_DISPLAY_MAP_SHORT = map[string]string{
+var azureRegionDisplayMapShort = map[string]string{
 	"eastasia":           "ea",
 	"southeastasia":      "sea",
 	"centralus":          "cus",
@@ -41,7 +41,7 @@ var AZURE_REGION_DISPLAY_MAP_SHORT = map[string]string{
 	"southafricawest":    "saw",
 }
 
-var AZURE_REGION_DISPLAY_MAP_LONG = map[string]string{
+var azureRegionDisplayMapLon = map[string]string{
 	"eastasia":           "East Asia",
 	"southeastasia":      "Southeast Asia",
 	"centralus":          "Central US",
@@ -134,7 +134,7 @@ func (a *SiteAzureSettings) Merge(c *GlobalAzureConfig) {
 }
 
 func (a *SiteAzureSettings) ShortRegionName() string {
-	if val, ok := AZURE_REGION_DISPLAY_MAP_SHORT[a.Region]; ok {
+	if val, ok := azureRegionDisplayMapShort[a.Region]; ok {
 		return val
 	}
 	logrus.Fatalf("No short name for region %s", a.Region)
@@ -142,7 +142,7 @@ func (a *SiteAzureSettings) ShortRegionName() string {
 }
 
 func (a *SiteAzureSettings) LongRegionName() string {
-	if val, ok := AZURE_REGION_DISPLAY_MAP_LONG[a.Region]; ok {
+	if val, ok := azureRegionDisplayMapLon[a.Region]; ok {
 		return val
 	}
 	logrus.Fatalf("No long name for region %s", a.Region)
@@ -171,7 +171,7 @@ type AzureEndpoint struct {
 }
 
 type AzureFrontdoorSettings struct {
-	DnsResourceGroup string                   `yaml:"dns_resource_group"`
+	DNSResourceGroup string                   `yaml:"dns_resource_group"`
 	SslKeyVault      *AzureFrontdoorSslConfig `yaml:"ssl_key_vault"`
 
 	// Undocumented option to work around some tenacious issues

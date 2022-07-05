@@ -4,7 +4,7 @@ provider "commercetools" {
     project_key   = {{ commercetools.ProjectKey|tf }}
     scopes        = {{ commercetools.Scopes|tf }}
     token_url     = {{ commercetools.TokenURL|tf }}
-    api_url       = {{ commercetools.ApiURL|tf }}
+    api_url       = {{ commercetools.APIURL|tf }}
 }
 
 {% if commercetools.ProjectSettings %}

@@ -1,5 +1,5 @@
 ct_project_key    = {{ site.Commercetools.ProjectKey|tf }}
-ct_api_url        = {{ site.Commercetools.ApiURL|tf }}
+ct_api_url        = {{ site.Commercetools.APIURL|tf }}
 ct_auth_url       = {{ site.Commercetools.TokenURL|tf }}
 
 ct_stores = {
