@@ -17,6 +17,4 @@ __pycache__
 /.python-version
 
 # binaries
-mach-composer
-mach-composer
-main
+./bin
