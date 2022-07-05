@@ -37,10 +37,11 @@ jobs:
         fetch-depth: 0
 
     - name: Run tests
-      run: go test -race -coverprofile=coverage.txt -covermode=atomic -coverpkg=./... -v ./...
-    - name: Build binaries
+      run: |
+        make pedantic
+        git checkout -- go.mod go.sum
+
+    - name: Create snapshot build
       uses: goreleaser/goreleaser-action@v2
       with:
         args: build --rm-dist --snapshot
-    - name: Upload to codecov
-      uses: codecov/codecov-action@v1.0.6
