@@ -10,6 +10,8 @@ import (
 var (
 	name    = "mach-composer"
 	version = "development"
+	commit  = ""
+	date    = ""
 )
 
 var (
