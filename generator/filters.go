@@ -3,8 +3,8 @@ package generator
 import (
 	"errors"
 	"fmt"
-	"strings"
 	"regexp"
+	"strings"
 
 	"github.com/flosch/pongo2/v5"
 	"github.com/labd/mach-composer/config"
