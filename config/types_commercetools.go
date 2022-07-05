@@ -10,7 +10,7 @@ type CommercetoolsSettings struct {
 	ClientSecret    string                        `yaml:"client_secret"`
 	Scopes          string                        `yaml:"scopes"`
 	TokenURL        string                        `yaml:"token_url" default:"https://auth.europe-west1.gcp.commercetools.com"`
-	ApiURL          string                        `yaml:"api_url" default:"https://api.europe-west1.gcp.commercetools.com"`
+	APIURL          string                        `yaml:"api_url" default:"https://api.europe-west1.gcp.commercetools.com"`
 	ProjectSettings *CommercetoolsProjectSettings `yaml:"project_settings"`
 
 	Frontend *CommercetoolsFrontendSettings `yaml:"frontend"`

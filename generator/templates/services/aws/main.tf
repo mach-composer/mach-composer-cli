@@ -55,7 +55,7 @@ provider "aws" {
 {% endif %}
 
 {% if site.UsedEndpoints() %}
-  {% for zone in site.DnsZones() %}
+  {% for zone in site.DNSZones() %}
   data "aws_route53_zone" "{{ zone|slugify }}" {
     name = "{{ zone }}"
   }

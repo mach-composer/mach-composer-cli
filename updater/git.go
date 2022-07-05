@@ -20,7 +20,7 @@ import (
 // author": "%aN <%aE>",
 // date": "%ad",
 // message": "%s",
-const GIT_FORMAT = "%H|%aN <%aE>|%ad|%s"
+const gitFormat = "%H|%aN <%aE>|%ad|%s"
 
 type gitSource struct {
 	URL        string
@@ -127,7 +127,7 @@ func loadGitHistory(ctx context.Context, source *gitSource, baseRef string, bran
 	dest := filepath.Join(cacheDir, source.Name)
 
 	args := []string{
-		"log", branch, fmt.Sprintf(`--pretty=%s`, GIT_FORMAT),
+		"log", branch, fmt.Sprintf(`--pretty=%s`, gitFormat),
 	}
 	if baseRef != "" {
 		args = append(args, fmt.Sprintf("%s...%s", baseRef, branch))
