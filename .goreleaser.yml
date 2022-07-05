@@ -1,5 +1,9 @@
 project_name: mach-composer
 
+before:
+  hooks:
+    - make tidy
+
 builds:
 - env:
     # goreleaser does not work with CGO, it could also complicate
