@@ -17,4 +17,4 @@ __pycache__
 /.python-version
 
 # binaries
-./bin
+/bin
