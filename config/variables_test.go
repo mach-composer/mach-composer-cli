@@ -3,7 +3,7 @@ package config
 import (
 	"testing"
 
-	"github.com/labd/mach-composer/utils"
+	"github.com/labd/mach-composer/internal/utils"
 	"github.com/spf13/afero"
 	"github.com/stretchr/testify/assert"
 )

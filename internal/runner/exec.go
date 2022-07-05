@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/labd/mach-composer/utils"
+	"github.com/labd/mach-composer/internal/utils"
 )
 
 func RunTerraform(ctx context.Context, cwd string, args ...string) {

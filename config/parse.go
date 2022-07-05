@@ -8,7 +8,7 @@ import (
 	"strings"
 
 	"github.com/creasty/defaults"
-	"github.com/labd/mach-composer/utils"
+	"github.com/labd/mach-composer/internal/utils"
 	"gopkg.in/yaml.v3"
 )
 

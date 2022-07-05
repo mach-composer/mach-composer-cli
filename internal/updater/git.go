@@ -12,7 +12,7 @@ import (
 	"strings"
 
 	"github.com/labd/mach-composer/config"
-	"github.com/labd/mach-composer/utils"
+	"github.com/labd/mach-composer/internal/utils"
 	"github.com/sirupsen/logrus"
 )
 

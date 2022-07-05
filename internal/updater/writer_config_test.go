@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/labd/mach-composer/config"
-	"github.com/labd/mach-composer/utils"
+	"github.com/labd/mach-composer/internal/utils"
 	"github.com/stretchr/testify/assert"
 )
 
