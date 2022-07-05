@@ -32,11 +32,11 @@ func GetHash(path string) string {
 		}
 
 		if _, err := io.Copy(h, f); err != nil {
-			f.Close()
+			_ = f.Close() // TODO: handle error
 			log.Fatal(err)
 		}
 
-		f.Close()
+		_ = f.Close() // TODO: handle error
 	}
 
 	return fmt.Sprintf("%x", h.Sum(nil))
