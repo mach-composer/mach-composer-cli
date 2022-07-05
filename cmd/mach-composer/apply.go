@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/labd/mach-composer/generator"
-	"github.com/labd/mach-composer/runner"
+	"github.com/labd/mach-composer/internal/runner"
 	"github.com/spf13/cobra"
 )
 
