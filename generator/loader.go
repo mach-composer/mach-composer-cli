@@ -2,6 +2,7 @@ package generator
 
 import (
 	"bytes"
+	"fmt"
 	"io"
 	"io/fs"
 	"io/ioutil"
@@ -22,7 +23,11 @@ func (l *EmbedLoader) Get(path string) (io.Reader, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer f.Close()
+	defer func() {
+		if err := f.Close(); err != nil {
+			panic(fmt.Errorf("error while closing %s: %v", fullPath, err))
+		}
+	}()
 	b, err := ioutil.ReadAll(f)
 	if err != nil {
 		return nil, err

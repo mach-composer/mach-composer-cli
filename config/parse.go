@@ -115,8 +115,7 @@ func Parse(data []byte, vars *Variables) (*MachConfig, error) {
 		cfg.IsEncrypted = true
 	}
 
-	err = intermediate.Sites.Decode(&cfg.Sites)
-	if err != nil {
+	if err := intermediate.Sites.Decode(&cfg.Sites); err != nil {
 		return nil, fmt.Errorf("decoding error: %w", err)
 	}
 

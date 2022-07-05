@@ -12,18 +12,42 @@ import (
 )
 
 func registerFilters() {
-	pongo2.RegisterFilter("string", filterString)
-	pongo2.RegisterFilter("short_prefix", filterShortPrefix)
-	pongo2.RegisterFilter("slugify", filterSlugify)
-	pongo2.RegisterFilter("remove", filterRemove)
-	pongo2.RegisterFilter("tf", filterTFValue)
-	pongo2.RegisterFilter("tfvalue", filterTFValue)
-	pongo2.RegisterFilter("render_tf_provider", renderTFProvider)
-	pongo2.RegisterFilter("azure_frontend_endpoint_name", AzureFrontendEndpointName)
-	pongo2.RegisterFilter("service_plan_resource_name", AzureServicePlanResourceName)
-	pongo2.RegisterFilter("get", FilterGetValueByKey)
-	pongo2.RegisterFilter("render_commercetools_scopes", filterCommercetoolsScopes)
-	pongo2.RegisterFilter("component_endpoint_name", filterComponentEndpointName)
+	if err := pongo2.RegisterFilter("string", filterString); err != nil {
+		panic(fmt.Errorf("pongo2.RegisterFilter('string'): %v", err))
+	}
+	if err := pongo2.RegisterFilter("short_prefix", filterShortPrefix); err != nil {
+		panic(fmt.Errorf("pongo2.RegisterFilter('short_prefix'): %v", err))
+	}
+	if err := pongo2.RegisterFilter("slugify", filterSlugify); err != nil {
+		panic(fmt.Errorf("pongo2.RegisterFilter('slugify'): %v", err))
+	}
+	if err := pongo2.RegisterFilter("remove", filterRemove); err != nil {
+		panic(fmt.Errorf("pongo2.RegisterFilter('remove'): %v", err))
+	}
+	if err := pongo2.RegisterFilter("tf", filterTFValue); err != nil {
+		panic(fmt.Errorf("pongo2.RegisterFilter('tf'): %v", err))
+	}
+	if err := pongo2.RegisterFilter("tfvalue", filterTFValue); err != nil {
+		panic(fmt.Errorf("pongo2.RegisterFilter('tfvalue'): %v", err))
+	}
+	if err := pongo2.RegisterFilter("render_tf_provider", renderTFProvider); err != nil {
+		panic(fmt.Errorf("pongo2.RegisterFilter('render_tf_provider'): %v", err))
+	}
+	if err := pongo2.RegisterFilter("azure_frontend_endpoint_name", AzureFrontendEndpointName); err != nil {
+		panic(fmt.Errorf("pongo2.RegisterFilter('azure_frontend_endpoint_name'): %v", err))
+	}
+	if err := pongo2.RegisterFilter("service_plan_resource_name", AzureServicePlanResourceName); err != nil {
+		panic(fmt.Errorf("pongo2.RegisterFilter('service_plan_resource_name'): %v", err))
+	}
+	if err := pongo2.RegisterFilter("get", FilterGetValueByKey); err != nil {
+		panic(fmt.Errorf("pongo2.RegisterFilter('get'): %v", err))
+	}
+	if err := pongo2.RegisterFilter("render_commercetools_scopes", filterCommercetoolsScopes); err != nil {
+		panic(fmt.Errorf("pongo2.RegisterFilter('render_commercetools_scopes'): %v", err))
+	}
+	if err := pongo2.RegisterFilter("component_endpoint_name", filterComponentEndpointName); err != nil {
+		panic(fmt.Errorf("pongo2.RegisterFilter('component_endpoint_name'): %v", err))
+	}
 }
 
 func FilterGetValueByKey(in *pongo2.Value, param *pongo2.Value) (*pongo2.Value, *pongo2.Error) {
