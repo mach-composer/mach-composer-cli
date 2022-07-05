@@ -57,3 +57,12 @@ brews:
       - name: terraform
       - name: git
         type: optional
+
+archives:
+  - id: mach-composer
+    name_template: "mach-composer-{{.Version}}-{{.Os}}-{{.Arch}}{{ if .Arm }}v{{.Arm }}{{ end }}"
+    format: tar.gz
+    files:
+      - LICENSE
+      - README.md
+
