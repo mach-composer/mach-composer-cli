@@ -135,6 +135,6 @@ directory
 - See the [CLI reference](../../reference/cli.md#apply) for more deployment options.
 - Setup your CI/CD pipeline on [GitLab](../../howto/ci/gitlab.md), [GitHub](../../howto/ci/github.md) or [Azure DevOps](../../howto/ci/devops.md)
 - [Encrypting your configuration](../../howto/security/encrypt.md) with SOPS
-- How to create a [new MACH component](../../howto/create-component.md)
+- How to create a [new MACH component](../../howto/components/create-component.md)
 - [Architectural Guidance](../../topics/architecture/index.md)
 

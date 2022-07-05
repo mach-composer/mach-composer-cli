@@ -73,7 +73,9 @@ nav:
   - reference/changelog.md
 - How-to:
   - howto/index.md
-  - howto/create-component.md
+  - Components:
+    - howto/components/create-component.md
+    - howto/components/best-practices.md
   - Security:
     - howto/security/handle-secrets.md
     - howto/security/encrypt.md

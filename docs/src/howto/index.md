@@ -1,6 +1,8 @@
 # Overview
 
-- How to [create a MACH component](./create-component.md)
+- Components:
+  - How to [create a MACH component](components/create-component.md)
+  - [Best practices](components/best-practices.md)
 - Security:
     - How to [deal with secrets](./security/handle-secrets.md)
     - How to [encrypt your MACH configuration](./security/encrypt.md)
