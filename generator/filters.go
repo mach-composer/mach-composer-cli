@@ -204,7 +204,7 @@ func renderTFProvider(in *pongo2.Value, defaultValue *pongo2.Value) (*pongo2.Val
 	var val = in.String()
 	var operator string
 
-	if (len(val) == 0) {
+	if len(val) == 0 {
 		val = defaultValue.String()
 	}
 
@@ -214,7 +214,7 @@ func renderTFProvider(in *pongo2.Value, defaultValue *pongo2.Value) (*pongo2.Val
 		val = match[2]
 	}
 
-	if (len(operator) == 0) {
+	if len(operator) == 0 {
 		operator = "~>"
 	}
 
