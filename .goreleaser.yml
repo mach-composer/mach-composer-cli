@@ -51,7 +51,7 @@ brews:
       name: goreleaserbot
       email: opensource@labdigital.nl
     homepage: "https://machcomposer.io/"
-    description: "MACH composer is a framework that you use to orchestrate andextend modern digital commerce & experience platforms, based on MACH technologies and cloud native services.."
+    description: "MACH composer is a framework that you use to orchestrate and extend modern digital commerce & experience platforms, based on MACH technologies and cloud native services.."
     license: "MIT"
     dependencies:
       - name: terraform
