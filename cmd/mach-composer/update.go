@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/labd/mach-composer/updater"
+	"github.com/labd/mach-composer/internal/updater"
 	"github.com/spf13/cobra"
 )
 
