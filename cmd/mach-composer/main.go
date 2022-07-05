@@ -19,7 +19,7 @@ var (
 	rootCmd = &cobra.Command{
 		Use:   name,
 		Short: "MACH composer is an orchestration tool for modern MACH ecosystems",
-		Long: `MACH composer is a framework that you use to orchestrate and` +
+		Long: `MACH composer is a framework that you use to orchestrate and ` +
 			`extend modern digital commerce & experience platforms, based on MACH ` +
 			`technologies and cloud native services.`,
 		PersistentPreRun: func(cmd *cobra.Command, args []string) {
