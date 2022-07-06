@@ -43,7 +43,7 @@ jobs:
       run: |
         make pedantic
         make build
-        git checkout -- go.mod go.sum
+        mkdir -p output
         mv coverage.out output
         mv bin/mach-composer output/mach-composer-${GOOS}-${GOARCH}
 
