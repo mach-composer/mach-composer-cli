@@ -37,15 +37,12 @@ jobs:
         fetch-depth: 0
 
     - name: Run tests
-      env:
-        GOOS: ${{ env.GOOS }}
-        GOARCH: ${{ env.GOARCH }}
       run: |
+        mkdir -p output
         make pedantic
         make build
-        mkdir -p output
         mv coverage.out output
-        mv bin/mach-composer output/mach-composer-${GOOS}-${GOARCH}
+        mv bin/mach-composer output/mach-composer
 
     - name: Upload artifacts
       uses: actions/upload-artifact@v2
