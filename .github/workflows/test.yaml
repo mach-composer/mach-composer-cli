@@ -37,14 +37,18 @@ jobs:
         fetch-depth: 0
 
     - name: Run tests
+      env:
+        GOOS: ${{ env.GOOS }}
+        GOARCH: ${{ env.GOARCH }}
       run: |
         make pedantic
+        make build
         git checkout -- go.mod go.sum
+        mv coverage.out output
+        mv bin/mach-composer output/mach-composer-${GOOS}-${GOARCH}
 
-    - name: Create snapshot binaries
-      uses: goreleaser/goreleaser-action@v2
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v2
       with:
-        version: latest
-        args: build --rm-dist --snapshot
-      env:
-        GOPATH: ${{ env.GOPATH }}
+        name: output
+        path: output/**/*
