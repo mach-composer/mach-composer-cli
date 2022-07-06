@@ -1,5 +1,8 @@
 deployments/
 dist/
+/output
+/coverage.html
+/coverage.out
 
 # Docs
 /docs/build
