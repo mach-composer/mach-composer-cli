@@ -38,10 +38,10 @@ jobs:
 
     - name: Run tests
       run: |
-        mkdir -p output
         make pedantic
         make build
-        cp coverage.out output
+        mkdir -p output
+        cp coverage.out output/coverage.out
         mv bin/mach-composer output/mach-composer
 
     - name: Upload to codecov
