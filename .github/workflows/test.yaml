@@ -41,8 +41,11 @@ jobs:
         mkdir -p output
         make pedantic
         make build
-        mv coverage.out output
+        cp coverage.out output
         mv bin/mach-composer output/mach-composer
+
+    - name: Upload to codecov
+      uses: codecov/codecov-action@v1.0.6
 
     - name: Upload artifacts
       uses: actions/upload-artifact@v2
