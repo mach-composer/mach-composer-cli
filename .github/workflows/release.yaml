@@ -15,7 +15,25 @@ jobs:
   goreleaser:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: ${{ matrix.go-version }}
+        id: go
+
+      - name: Set up Go modules cache
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-go-modules
+        with:
+          path: ~/go/pkg/mod
+          key: ${{ runner.os }}-go${{ matrix.go-version }}-build-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go${{ matrix.go-version }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-go${{ matrix.go-version }}-build-
+            ${{ runner.os }}-go${{ matrix.go-version }}-
+
+      - name: Check out code
         uses: actions/checkout@v2
         with:
           fetch-depth: 0
