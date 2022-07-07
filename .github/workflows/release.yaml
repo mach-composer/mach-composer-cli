@@ -50,11 +50,7 @@ jobs:
           args: release --rm-dist
         env:
           GITHUB_TOKEN: ${{ secrets.GH_PAT }}
-      - uses: actions/upload-artifact@v3
-        with:
-          name: mach-composer
-          path: dist/*
-
+          GOPATH: ${{ env.GOPATH }}
 
   docker:
     needs: [goreleaser]
