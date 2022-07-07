@@ -38,11 +38,11 @@ jobs:
 
     - name: Run tests
       run: |
-        make pedantic
+        make lint cover
         make build
         mkdir -p output
-        cp coverage.out output/coverage.out
         mv bin/mach-composer output/mach-composer
+        cp coverage.out output/coverage.out
 
     - name: Upload to codecov
       uses: codecov/codecov-action@v1.0.6

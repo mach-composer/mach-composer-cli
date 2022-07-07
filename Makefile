@@ -3,7 +3,7 @@ GO := go
 VERSION ?= $(shell git describe --tags --first-parent --abbrev=0 | cut -c 2-)
 GOFLAGS ?= -mod=readonly -ldflags "-s -w -X 'main.version=$(VERSION)-dev' -extldflags '-static'"
 
-check: lint cover
+check: lint test
 
 build: tidy
 	CGO_ENABLED=0 $(GO) build -a -trimpath -tags netgo $(GOFLAGS) -o bin/ ./cmd/...
