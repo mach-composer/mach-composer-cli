@@ -13,7 +13,6 @@ import (
 )
 
 func Load(filename string, varFilename string) (*MachConfig, error) {
-
 	var vars *Variables
 	if varFilename != "" {
 		var err error

@@ -12,7 +12,6 @@ import (
 )
 
 func GetHash(path string) string {
-
 	// Loop through all *.tf files
 	files, err := ioutil.ReadDir(path)
 	if err != nil {

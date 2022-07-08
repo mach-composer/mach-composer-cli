@@ -27,7 +27,6 @@ type Site struct {
 }
 
 func (s *Site) ResolveEndpoints() {
-
 	for k, rv := range s.RawEndpoints {
 		switch v := rv.(type) {
 		case string:

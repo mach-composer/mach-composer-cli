@@ -33,7 +33,6 @@ func init() {
 }
 
 func planFunc(args []string) error {
-
 	configs := LoadConfigs()
 	allPaths := make(map[string]map[string]string)
 
