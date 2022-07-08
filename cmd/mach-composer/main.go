@@ -9,9 +9,9 @@ import (
 
 var (
 	name    = "mach-composer"
-	version = "development"
-	commit  = ""
-	date    = ""
+	version = "dev"
+	commit  = "none"
+	date    = "unknown"
 )
 
 var (
