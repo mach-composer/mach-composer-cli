@@ -13,11 +13,9 @@ import (
 // and adds ~19mb to the generated binary
 func DecryptYaml(filename string) ([]byte, error) {
 	ctx := context.Background()
-
 	wd, err := os.Getwd()
 	if err != nil {
 		return nil, err
 	}
-
 	return utils.RunSops(ctx, wd, "-d", filename, "--output-type=yaml")
 }

@@ -30,7 +30,6 @@ func init() {
 }
 
 func terraformFunc(args []string) error {
-
 	allPaths := make(map[string]map[string]string)
 	configs := LoadConfigs()
 

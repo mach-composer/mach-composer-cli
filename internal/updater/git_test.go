@@ -7,7 +7,6 @@ import (
 )
 
 func TestParseGitSource(t *testing.T) {
-
 	params := []struct {
 		source   string
 		expected *gitSource

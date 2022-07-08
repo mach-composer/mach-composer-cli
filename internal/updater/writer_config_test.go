@@ -9,7 +9,6 @@ import (
 )
 
 func TestMachConfigUpdater(t *testing.T) {
-
 	data := []byte(utils.TrimIndent(`
         ---
         components:

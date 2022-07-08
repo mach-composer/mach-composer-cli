@@ -9,7 +9,6 @@ import (
 )
 
 func Process(cfg *MachConfig) {
-
 	// resolve_variables(config, config.variables, config.variables_encrypted)
 	// parse_global_config(config)
 	// resolve_component_definitions(config)
@@ -89,7 +88,6 @@ func ResolveSiteComponents(cfg *MachConfig) {
 					c.Sentry = NewSentryConfig(site.Sentry)
 				} else {
 					c.Sentry.Merge(site.Sentry)
-
 				}
 			}
 		}

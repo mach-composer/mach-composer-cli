@@ -37,7 +37,6 @@ func init() {
 }
 
 func applyFunc(args []string) error {
-
 	allPaths := make(map[string]map[string]string)
 	configs := LoadConfigs()
 

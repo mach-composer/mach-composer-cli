@@ -8,7 +8,6 @@ import (
 )
 
 func TestParse(t *testing.T) {
-
 	data := []byte(utils.TrimIndent(`
         ---
         mach_composer:
@@ -156,7 +155,6 @@ func TestParse(t *testing.T) {
 }
 
 func TestParseMissingVars(t *testing.T) {
-
 	data := []byte(utils.TrimIndent(`
         ---
         mach_composer:

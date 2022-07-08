@@ -15,6 +15,5 @@ func RunTerraform(ctx context.Context, cwd string, args ...string) {
 			os.Exit(1)
 		}
 	}
-
 	utils.RunInteractive(ctx, "terraform", cwd, args...)
 }
