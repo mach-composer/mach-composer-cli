@@ -39,6 +39,7 @@ jobs:
     - name: Run tests
       run: |
         make lint cover errcheck
+        make build
         mkdir -p output
         mv bin/mach-composer output/mach-composer
         cp coverage.out output/coverage.out
