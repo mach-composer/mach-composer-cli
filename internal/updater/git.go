@@ -139,17 +139,13 @@ func loadGitHistory(ctx context.Context, source *gitSource, baseRef string, bran
 	for _, line := range SplitLines(string(output)) {
 		parts := strings.SplitN(line, "|", 4)
 		commits = append(commits, gitCommit{
-			Commit:  cleanCommitID(parts[0]),
+			Commit:  parts[0][:7],
 			Author:  parts[1],
 			Date:    parts[2],
 			Message: parts[3],
 		})
 	}
 	return commits
-}
-
-func cleanCommitID(commit string) string {
-	return commit[:7]
 }
 
 func Commit(ctx context.Context, fileNames []string, message string) {
