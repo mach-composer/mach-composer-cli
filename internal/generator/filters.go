@@ -27,8 +27,8 @@ func registerFilters() {
 }
 
 // mustRegisterFilter behaves like pongo2.RegisterFilter, but panics on an error.
-func mustRegisterFilter(name string, fn pongo2.FilterFunction) {
-	if err := pongo2.RegisterFilter("string", filterString); err != nil {
+func mustRegisterFilter(name string, filterFunc pongo2.FilterFunction) {
+	if err := pongo2.RegisterFilter(name, filterFunc); err != nil {
 		panic(fmt.Errorf("pongo2.RegisterFilter(%q): %v", name, err))
 	}
 }
