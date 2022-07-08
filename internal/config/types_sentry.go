@@ -1,39 +1,46 @@
 package config
 
-// GlobalSentryConfig global Sentry configuration.
-type GlobalSentryConfig struct {
+// SentryConfigBase is the base sentry config.
+type SentryConfigBase struct {
 	DSN             string `yaml:"dsn"`
 	RateLimitWindow int    `yaml:"rate_limit_window"`
 	RateLimitCount  int    `yaml:"rate_limit_count"`
-	AuthToken       string `yaml:"auth_token"`
-	BaseURL         string `yaml:"base_url"`
-	Project         string `yaml:"project"`
-	Organization    string `yaml:"organization"`
+}
+
+// GlobalSentryConfig global Sentry configuration.
+type GlobalSentryConfig struct {
+	SentryConfigBase
+	AuthToken    string `yaml:"auth_token"`
+	BaseURL      string `yaml:"base_url"`
+	Project      string `yaml:"project"`
+	Organization string `yaml:"organization"`
 }
 
 // SentryConfig is for site specific sentry DSN settings
 type SentryConfig struct {
-	DSN             string `yaml:"dsn"`
-	RateLimitWindow int    `yaml:"rate_limit_window"`
-	RateLimitCount  int    `yaml:"rate_limit_count"`
-	Project         string `yaml:"project"`
+	SentryConfigBase
+	Project string `yaml:"project"`
 }
 
 func NewSentryConfigFromGlobal(c *GlobalSentryConfig) *SentryConfig {
 	return &SentryConfig{
-		DSN:             c.DSN,
-		Project:         c.Project,
-		RateLimitCount:  c.RateLimitCount,
-		RateLimitWindow: c.RateLimitWindow,
+		Project: c.Project,
+		SentryConfigBase: SentryConfigBase{
+			DSN:             c.DSN,
+			RateLimitCount:  c.RateLimitCount,
+			RateLimitWindow: c.RateLimitWindow,
+		},
 	}
 }
 
 func NewSentryConfig(c *SentryConfig) *SentryConfig {
 	return &SentryConfig{
-		DSN:             c.DSN,
-		Project:         c.Project,
-		RateLimitCount:  c.RateLimitCount,
-		RateLimitWindow: c.RateLimitWindow,
+		Project: c.Project,
+		SentryConfigBase: SentryConfigBase{
+			DSN:             c.DSN,
+			RateLimitCount:  c.RateLimitCount,
+			RateLimitWindow: c.RateLimitWindow,
+		},
 	}
 }
 
