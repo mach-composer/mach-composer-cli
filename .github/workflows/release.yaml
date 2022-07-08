@@ -40,7 +40,7 @@ jobs:
 
       - name: Run tests
         run: |
-          make lint test
+          make pedantic
           git checkout -- go.mod go.sum
 
       - name: Release
