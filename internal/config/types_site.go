@@ -117,6 +117,7 @@ func (s *Site) UsedEndpoints() []Endpoint {
 	return result
 }
 
+// DNSZones returns the DNS zones of used endpoints.
 func (s *Site) DNSZones() []string {
 	result := []string{}
 	endpoints := s.UsedEndpoints()
@@ -126,8 +127,8 @@ func (s *Site) DNSZones() []string {
 	return utils.UniqueSlice(result)
 }
 
-// HasCdnEndpoint checks if there is an endpoint with a cdn enabled.
-func (s *Site) HasCdnEndpoint() bool {
+// HasCDNEndpoint checks if there is an endpoint with a CDN enabled.
+func (s *Site) HasCDNEndpoint() bool {
 	endpoints := s.UsedEndpoints()
 	for _, ep := range endpoints {
 		if ep.AWS != nil && ep.AWS.EnableCDN {
