@@ -2,10 +2,9 @@ package main
 
 import (
 	"context"
+	"errors"
 	"fmt"
-	"log"
 	"os"
-	"path/filepath"
 	"strings"
 
 	"github.com/labd/mach-composer/internal/updater"
@@ -13,7 +12,7 @@ import (
 )
 
 var updateFlags struct {
-	fileNames     []string
+	configFile    string
 	check         bool
 	components    []string
 	commit        bool
@@ -25,16 +24,13 @@ var updateCmd = &cobra.Command{
 	Short: "Update all (or a given) component.",
 	Args:  cobra.MaximumNArgs(2),
 	PreRun: func(cmd *cobra.Command, args []string) {
-		if len(generateFlags.fileNames) < 1 {
-			matches, err := filepath.Glob("./*.yml")
-			if err != nil {
-				log.Fatal(err)
-			}
-			generateFlags.fileNames = matches
-			if len(generateFlags.fileNames) < 1 {
-				fmt.Println("No .yml files found")
+		if _, err := os.Stat(generateFlags.configFile); err != nil {
+			if errors.Is(err, os.ErrNotExist) {
+				fmt.Printf("%s: Config file not found\n", generateFlags.configFile)
 				os.Exit(1)
 			}
+			fmt.Printf("error: %s\n", err.Error())
+			os.Exit(1)
 		}
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
@@ -46,7 +42,7 @@ var updateCmd = &cobra.Command{
 }
 
 func init() {
-	updateCmd.Flags().StringArrayVarP(&updateFlags.fileNames, "file", "f", nil, "YAML file to update. If not set update all *.yml files.")
+	updateCmd.Flags().StringVarP(&updateFlags.configFile, "file", "f", "main.yml", "YAML file to update.")
 	updateCmd.Flags().BoolVarP(&updateFlags.check, "check", "", false, "Only checks for updates, doesnt change files.")
 	updateCmd.Flags().BoolVarP(&updateFlags.commit, "commit", "c", false, "Automatically commits the change.")
 	updateCmd.Flags().StringVarP(&updateFlags.commitMessage, "commit-message", "m", "", "Use a custom message for the commit.")
@@ -54,7 +50,6 @@ func init() {
 
 func updateFunc(args []string) error {
 	ctx := context.Background()
-	changes := map[string]string{}
 
 	componentName := ""
 	componentVersion := ""
@@ -66,46 +61,39 @@ func updateFunc(args []string) error {
 		}
 	}
 
-	// Iterate through all yaml files and update them all.
 	writeChanges := !updateFlags.check
-	for _, filename := range updateFlags.fileNames {
 
-		updateSet, err := updater.UpdateFile(ctx, filename, componentName, componentVersion, writeChanges)
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "Failed to update %s: %v\n", filename, err.Error())
-			os.Exit(1)
-		}
-
-		if writeChanges && updateSet.HasChanges() {
-			if componentName == "" {
-				changes[filename] = updateSet.ChangeLog()
-			} else {
-				changes[filename] = updateSet.ComponentChangeLog(componentName)
-			}
-		}
-
+	updateSet, err := updater.UpdateFile(ctx, generateFlags.configFile, componentName, componentVersion, writeChanges)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Failed to update %s: %v\n", generateFlags.configFile, err.Error())
+		os.Exit(1)
 	}
 
-	if len(changes) < 1 {
+	var changes string
+
+	if writeChanges && updateSet.HasChanges() {
+		if componentName == "" {
+			changes = updateSet.ChangeLog()
+		} else {
+			changes = updateSet.ComponentChangeLog(componentName)
+		}
+	}
+
+	if changes == "" {
 		return nil
 	}
 
 	// git commit
 	if updateFlags.commit {
-		filenames := []string{}
 		commitMessage := updateFlags.commitMessage
-
-		for fn := range changes {
-			filenames = append(filenames, fn)
-		}
 
 		// Generate commit message if not passed
 		if updateFlags.commitMessage == "" {
-			commitMessage = generateCommitMessage(changes)
+			commitMessage = generateCommitMessage(map[string]string{generateFlags.configFile: changes})
 		}
 
 		ctx := context.Background()
-		updater.Commit(ctx, filenames, commitMessage)
+		updater.Commit(ctx, []string{generateFlags.configFile}, commitMessage)
 	}
 	return nil
 }

@@ -37,41 +37,27 @@ func init() {
 }
 
 func applyFunc(args []string) error {
-	allPaths := make(map[string]map[string]string)
-	configs := LoadConfigs()
-
-	generateFlags.ValidateSite(configs)
+	cfg := LoadConfig()
+	generateFlags.ValidateSite(cfg)
 
 	// Note that we do this in multiple passes to minimize ending up with
 	// half broken runs. We could in the future also run some parts in parallel
 
-	// Write the generate files for each config
-	genOptions := &generator.GenerateOptions{
+	paths, err := generator.WriteFiles(cfg, &generator.GenerateOptions{
 		OutputPath: generateFlags.outputPath,
 		Site:       generateFlags.siteName,
-	}
-	for _, filename := range generateFlags.fileNames {
-		cfg := configs[filename]
-		paths, err := generator.WriteFiles(cfg, genOptions)
-		if err != nil {
-			panic(err)
-		}
-		allPaths[filename] = paths
+	})
+	if err != nil {
+		return err
 	}
 
-	// Apply the generate files
-	options := &runner.ApplyOptions{
+	runner.TerraformApply(cfg, paths, &runner.ApplyOptions{
 		Destroy:     applyFlags.destroy,
 		Reuse:       applyFlags.reuse,
 		AutoApprove: applyFlags.autoApprove,
 		Site:        generateFlags.siteName,
 		Components:  applyFlags.components,
-	}
-	for _, filename := range generateFlags.fileNames {
-		cfg := configs[filename]
-		paths := allPaths[filename]
-		runner.TerraformApply(cfg, paths, options)
-	}
+	})
 
 	return nil
 }
