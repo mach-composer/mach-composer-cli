@@ -93,7 +93,7 @@ type CommercetoolsTax struct {
 	Country         string
 	Amount          float64
 	Name            string
-	IncludedInPrice bool `yaml:"included_in_price" default:"true"`
+	IncludedInPrice *bool `yaml:"included_in_price" default:"true"`
 }
 
 type CommercetoolsTaxCategory struct {

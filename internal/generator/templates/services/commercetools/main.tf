@@ -54,7 +54,7 @@ resource "commercetools_tax_category_rate" "{{ rate.Name|slugify }}" {
   name = {{ rate.Name|tf }}
   amount = {{ rate.Amount|tf }}
   country = "{{ rate.Country }}"
-  included_in_price = {{ rate.IncludedInPrice|tf }}
+  included_in_price = {{ rate.IncludedInPrice | string | lower }}
 }
   {% endfor %}
 {% endfor %}
