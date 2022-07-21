@@ -17,7 +17,7 @@ func TestRender(t *testing.T) {
 			Environment: "test",
 			Cloud:       "aws",
 			TerraformConfig: config.TerraformConfig{
-				AwsRemoteState: &config.AWSTFState{
+				AWSRemoteState: &config.AWSTFState{
 					Bucket:    "your bucket",
 					KeyPrefix: "mach",
 					Region:    "eu-central-1",

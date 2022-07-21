@@ -17,7 +17,7 @@ type Global struct {
 
 type TerraformConfig struct {
 	AzureRemoteState *AzureTFState     `yaml:"azure_remote_state"`
-	AwsRemoteState   *AWSTFState       `yaml:"aws_remote_state"`
+	AWSRemoteState   *AWSTFState       `yaml:"aws_remote_state"`
 	Providers        TerraformProvider `yaml:"providers"`
 }
 

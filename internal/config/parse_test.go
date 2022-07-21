@@ -81,7 +81,7 @@ func TestParse(t *testing.T) {
 			Environment: "test",
 			Cloud:       "aws",
 			TerraformConfig: TerraformConfig{
-				AwsRemoteState: &AWSTFState{
+				AWSRemoteState: &AWSTFState{
 					Bucket:    "your bucket",
 					KeyPrefix: "mach",
 				},
