@@ -7,7 +7,7 @@ resource "commercetools_store" "{{ store.Key }}" {
     {% endfor %}
   }
   {% if store.Languages %}
-  languages  = [{% for language in store.Languages %}"{{ language }}"{% if not forloop.Last %},{% endif %}{% endfor %}]
+  languages  = [{% for language in store.Languages %}{{ language|tf }}{% if not forloop.Last %},{% endif %}{% endfor %}]
   {% endif %}
 
   {% if store.DistributionChannels %}
