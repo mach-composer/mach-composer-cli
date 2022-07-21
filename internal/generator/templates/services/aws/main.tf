@@ -36,7 +36,7 @@ provider "aws" {
 }
 {% endfor %}
 
-{% if site.HasCdnEndpoint() %}
+{% if site.HasCDNEndpoint() %}
 provider "aws" {
   alias   = "mach-cf-us-east-1"
   region  = "us-east-1"
