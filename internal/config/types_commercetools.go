@@ -47,7 +47,7 @@ type CommercetoolsProjectSettings struct {
 	Currencies []string `yaml:"currencies"`
 	Countries  []string `yaml:"countries"`
 
-	MessagesEnabled bool `yaml:"messages_enabled" default:"true"`
+	MessagesEnabled *bool `yaml:"messages_enabled" default:"true"`
 }
 
 type CommercetoolsFrontendSettings struct {
