@@ -1,8 +1,8 @@
 package main
 
 import (
+	"errors"
 	"fmt"
-	"log"
 	"os"
 	"path/filepath"
 
@@ -11,7 +11,7 @@ import (
 )
 
 type GenerateFlags struct {
-	fileNames     []string
+	configFile    string
 	siteName      string
 	ignoreVersion bool
 	outputPath    string
@@ -20,18 +20,15 @@ type GenerateFlags struct {
 
 var generateFlags GenerateFlags
 
-func (gf GenerateFlags) ValidateSite(configs map[string]*config.MachConfig) {
-	for _, filename := range generateFlags.fileNames {
-		cfg := configs[filename]
-		if gf.siteName != "" && !cfg.HasSite(gf.siteName) {
-			fmt.Fprintf(os.Stderr, "No site found with identifier: %s\n", gf.siteName)
-			os.Exit(1)
-		}
+func (gf GenerateFlags) ValidateSite(cfg *config.MachConfig) {
+	if gf.siteName != "" && !cfg.HasSite(gf.siteName) {
+		fmt.Fprintf(os.Stderr, "No site found with identifier: %s\n", gf.siteName)
+		os.Exit(1)
 	}
 }
 
 func registerGenerateFlags(cmd *cobra.Command) {
-	cmd.Flags().StringArrayVarP(&generateFlags.fileNames, "file", "f", nil, "YAML file to parse. If not set parse all *.yml files.")
+	cmd.Flags().StringVarP(&generateFlags.configFile, "file", "f", "main.yml", "YAML file to parse.")
 	cmd.Flags().StringVarP(&generateFlags.varFile, "var-file", "", "", "Use a variable file to parse the configuration with.")
 	cmd.Flags().StringVarP(&generateFlags.siteName, "site", "s", "", "Site to parse. If not set parse all sites.")
 	cmd.Flags().BoolVarP(&generateFlags.ignoreVersion, "ignore-version", "", false, "Skip MACH composer version check")
@@ -39,25 +36,24 @@ func registerGenerateFlags(cmd *cobra.Command) {
 }
 
 func preprocessGenerateFlags() {
-	if len(generateFlags.fileNames) < 1 {
-		matches, err := filepath.Glob("./*.yml")
-		if err != nil {
-			log.Fatal(err)
+	if _, err := os.Stat(generateFlags.configFile); err != nil {
+		if errors.Is(err, os.ErrNotExist) {
+			fmt.Printf("%s: Config file not found\n", generateFlags.configFile)
+			os.Exit(1)
 		}
-
-		for _, m := range matches {
-			if generateFlags.varFile == "" && (m == "variables.yml" || m == "variables.yaml") {
-				generateFlags.varFile = m
-			} else {
-				generateFlags.fileNames = append(generateFlags.fileNames, m)
+		fmt.Printf("error: %s\n", err.Error())
+		os.Exit(1)
+	}
+	if generateFlags.varFile != "" {
+		if _, err := os.Stat(generateFlags.varFile); err != nil {
+			if errors.Is(err, os.ErrNotExist) {
+				fmt.Printf("%s: Variables file not found\n", generateFlags.varFile)
+				os.Exit(1)
 			}
-		}
-		if len(generateFlags.fileNames) < 1 {
-			fmt.Println("No .yml files found")
+			fmt.Printf("error: %s\n", err.Error())
 			os.Exit(1)
 		}
 	}
-
 	if generateFlags.outputPath == "" {
 		var err error
 		value, err := os.Getwd()
@@ -70,20 +66,15 @@ func preprocessGenerateFlags() {
 	}
 }
 
-// LoadConfigs loads all config files. This means it validates and parses
-// the yaml file.
-func LoadConfigs() map[string]*config.MachConfig {
-	configs := make(map[string]*config.MachConfig)
-	for _, filename := range generateFlags.fileNames {
-		cfg, err := config.Load(filename, generateFlags.varFile)
-		if err != nil {
-			fmt.Fprintln(os.Stderr, err.Error())
-			os.Exit(1)
-		}
-		CheckDeprecations(cfg)
-		configs[filename] = cfg
+// LoadConfig parses and validates the given config file path.
+func LoadConfig() *config.MachConfig {
+	cfg, err := config.Load(generateFlags.configFile, generateFlags.varFile)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err.Error())
+		os.Exit(1)
 	}
-	return configs
+	CheckDeprecations(cfg)
+	return cfg
 }
 
 // CheckDeprecations warns if features have been deprecated

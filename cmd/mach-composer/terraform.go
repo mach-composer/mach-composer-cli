@@ -30,27 +30,15 @@ func init() {
 }
 
 func terraformFunc(args []string) error {
-	allPaths := make(map[string]map[string]string)
-	configs := LoadConfigs()
+	cfg := LoadConfig()
+	generateFlags.ValidateSite(cfg)
 
-	generateFlags.ValidateSite(configs)
-
-	// Write the generate files for each config
-	genOptions := &generator.GenerateOptions{
+	fileLocations := generator.FileLocations(cfg, &generator.GenerateOptions{
 		OutputPath: generateFlags.outputPath,
 		Site:       generateFlags.siteName,
-	}
+	})
 
-	for _, filename := range generateFlags.fileNames {
-		cfg := configs[filename]
-		allPaths[filename] = generator.FileLocations(cfg, genOptions)
-	}
-
-	for _, filename := range generateFlags.fileNames {
-		cfg := configs[filename]
-		paths := allPaths[filename]
-		runner.TerraformProxy(cfg, paths, generateFlags.siteName, args)
-	}
+	runner.TerraformProxy(cfg, fileLocations, generateFlags.siteName, args)
 
 	return nil
 }

@@ -33,33 +33,21 @@ func init() {
 }
 
 func planFunc(args []string) error {
-	configs := LoadConfigs()
-	allPaths := make(map[string]map[string]string)
+	cfg := LoadConfig()
+	generateFlags.ValidateSite(cfg)
 
-	// Write the generate files for each config
-	genOptions := &generator.GenerateOptions{
+	paths, err := generator.WriteFiles(cfg, &generator.GenerateOptions{
 		OutputPath: generateFlags.outputPath,
 		Site:       generateFlags.siteName,
-	}
-	for _, filename := range generateFlags.fileNames {
-		cfg := configs[filename]
-		paths, err := generator.WriteFiles(cfg, genOptions)
-		if err != nil {
-			panic(err)
-		}
-		allPaths[filename] = paths
+	})
+	if err != nil {
+		return err
 	}
 
-	// Plan the generate files
-	options := &runner.PlanOptions{
+	runner.TerraformPlan(cfg, paths, &runner.PlanOptions{
 		Reuse: planFlags.reuse,
 		Site:  generateFlags.siteName,
-	}
-	for _, filename := range generateFlags.fileNames {
-		cfg := configs[filename]
-		paths := allPaths[filename]
-		runner.TerraformPlan(cfg, paths, options)
-	}
+	})
 
 	return nil
 }
