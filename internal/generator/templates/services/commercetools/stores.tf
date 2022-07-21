@@ -7,14 +7,14 @@ resource "commercetools_store" "{{ store.Key }}" {
     {% endfor %}
   }
   {% if store.Languages %}
-  languages  = [{% for language in store.Languages %}"{{ language }}"{% if not loop.last %},{% endif %}{% endfor %}]
+  languages  = [{% for language in store.Languages %}"{{ language }}"{% if not forloop.Last %},{% endif %}{% endfor %}]
   {% endif %}
 
   {% if store.DistributionChannels %}
-  distribution_channels = [{% for dc in store.DistributionChannels %}commercetools_channel.{{ dc }}.key{% if not loop.last %},{% endif %}{% endfor %}]
+  distribution_channels = [{% for dc in store.DistributionChannels %}commercetools_channel.{{ dc }}.key{% if not forloop.Last %},{% endif %}{% endfor %}]
   {% endif %}
   {% if store.SupplyChannels %}
-  supply_channels = [{% for sc in store.SupplyChannels %}commercetools_channel.{{ sc }}.key{% if not loop.last %},{% endif %}{% endfor %}]
+  supply_channels = [{% for sc in store.SupplyChannels %}commercetools_channel.{{ sc }}.key{% if not forloop.Last %},{% endif %}{% endfor %}]
   {% endif %}
 }
 {% endfor %}
