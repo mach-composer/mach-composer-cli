@@ -143,6 +143,9 @@ type SiteComponent struct {
 	Variables map[string]any
 	Secrets   map[string]any
 
+	StoreVariables map[string]any `yaml:"store_variables"`
+	StoreSecrets   map[string]any `yaml:"store_secrets"`
+
 	Definition *Component
 	Sentry     *SentryConfig `yaml:"sentry"`
 }

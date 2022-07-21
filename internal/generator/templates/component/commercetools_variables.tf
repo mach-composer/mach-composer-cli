@@ -7,12 +7,12 @@ ct_stores = {
     {{ store.Key }} =  {
         key = {{ store.Key|tf }}
         variables = {
-            {% for key, value in component.store_variables|get:store.key %}
+            {% for key, value in component.StoreVariables|get:store.Key %}
             {{ key }} = {{ value|tfvalue }}
             {% endfor %}
         }
         secrets = {
-            {% for key, value in component.store_secrets|get:store.key %}
+            {% for key, value in component.StoreSecrets|get:store.Key %}
             {{ key }} = {{ value|tfvalue }}
             {% endfor %}
         }
