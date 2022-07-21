@@ -19,7 +19,7 @@ terraform {
     {%- if aws_config.LockTable -%}
     dynamodb_table = {{ aws_config.LockTable|tf }}
     {% endif -%}
-    encrypt        = {% if aws_config.Encrypt %}true{% else %}false{% endif %}
+    encrypt        = {{ aws_config.Encrypt | string | lower }}
   }
   {%- endif %}
 
