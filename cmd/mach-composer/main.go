@@ -39,6 +39,7 @@ func main() {
 func init() {
 	rootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "", false, "Verbose output.")
 	rootCmd.AddCommand(applyCmd)
+	rootCmd.AddCommand(componentsCmd)
 	rootCmd.AddCommand(generateCmd)
 	rootCmd.AddCommand(initCmd)
 	rootCmd.AddCommand(planCmd)
