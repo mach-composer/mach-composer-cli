@@ -129,10 +129,10 @@ resource "azurerm_frontdoor" "app-service" {
   {% endif %}
 }
 
-{% if site.Azure.Frontdoor.SslKeyVault %}
+{% if site.Azure.Frontdoor.SSLKeyVault %}
 data "azurerm_key_vault" "ssl" {
-  name                = {{ site.Azure.Frontdoor.SslKeyVault.Name|tf }}
-  resource_group_name = {{ site.Azure.Frontdoor.SslKeyVault.ResourceGroup|tf }}
+  name                = {{ site.Azure.Frontdoor.SSLKeyVault.Name|tf }}
+  resource_group_name = {{ site.Azure.Frontdoor.SSLKeyVault.ResourceGroup|tf }}
 }
 {% endif %}
 
@@ -145,7 +145,7 @@ resource "azurerm_frontdoor_custom_https_configuration" "{{ endpoint.Key|slugify
     {% if site.azure.frontdoor.ssl_key_vault %}
     certificate_source                         = "AzureKeyVault"
     azure_key_vault_certificate_vault_id       = data.azurerm_key_vault.ssl.id
-    azure_key_vault_certificate_secret_name    = {{ site.Azure.Frontdoor.SslKeyVault.SecretName|tf }}
+    azure_key_vault_certificate_secret_name    = {{ site.Azure.Frontdoor.SSLKeyVault.SecretName|tf }}
     {% else %}
     certificate_source                      = "FrontDoor"
     {% endif %}
