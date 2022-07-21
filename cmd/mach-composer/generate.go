@@ -24,19 +24,18 @@ func init() {
 }
 
 func generateFunc(args []string) error {
+	cfg := LoadConfig()
+	generateFlags.ValidateSite(cfg)
+
 	genOptions := &generator.GenerateOptions{
 		OutputPath: generateFlags.outputPath,
 		Site:       generateFlags.siteName,
 	}
 
-	configs := LoadConfigs()
-	for _, filename := range generateFlags.fileNames {
-		cfg := configs[filename]
-
-		_, err := generator.WriteFiles(cfg, genOptions)
-		if err != nil {
-			panic(err)
-		}
+	_, err := generator.WriteFiles(cfg, genOptions)
+	if err != nil {
+		return err
 	}
+
 	return nil
 }
