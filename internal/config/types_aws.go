@@ -7,7 +7,7 @@ type AWSTFState struct {
 	Region    string `yaml:"region"`
 	RoleARN   string `yaml:"role_arn"`
 	LockTable string `yaml:"lock_table"`
-	Encrypt   bool   `yaml:"encrypt" default:"true"`
+	Encrypt   *bool  `yaml:"encrypt" default:"true"`
 }
 
 type SiteAWS struct {
