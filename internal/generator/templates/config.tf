@@ -7,8 +7,8 @@ terraform {
     container_name       = {{ azure_config.ContainerName|tf }}
     key                  = "{{ azure_config.StateFolder}}/{{ site.Identifier }}"
   }
-  {% elif global.TerraformConfig.AwsRemoteState %}
-  {%- set aws_config = global.TerraformConfig.AwsRemoteState -%}
+  {% elif global.TerraformConfig.AWSRemoteState %}
+  {%- set aws_config = global.TerraformConfig.AWSRemoteState -%}
   backend "s3" {
     bucket         = {{ aws_config.Bucket|tf }}
     key            = "{{ aws_config.KeyPrefix}}/{{ site.Identifier }}"
