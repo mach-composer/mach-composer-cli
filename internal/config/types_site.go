@@ -21,9 +21,10 @@ type Site struct {
 	AWS   *SiteAWS           `yaml:"aws,omitempty"`
 	Azure *SiteAzureSettings `yaml:"azure,omitempty"`
 
-	Commercetools *CommercetoolsSettings `yaml:"commercetools"`
-	Amplience     *AmplienceConfig       `yaml:"amplience"`
-	Sentry        *SentryConfig          `yaml:"sentry"`
+	Commercetools    *CommercetoolsSettings  `yaml:"commercetools"`
+	Amplience        *AmplienceConfig        `yaml:"amplience"`
+	Sentry           *SentryConfig           `yaml:"sentry"`
+	ApolloFederation *ApolloFederationConfig `yaml:"apollo_federation"`
 }
 
 func (s *Site) ResolveEndpoints() {

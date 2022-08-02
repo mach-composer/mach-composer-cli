@@ -59,9 +59,9 @@ module "{{ component.Name }}" {
 
   {% if "apollo_federation" in definition.Integrations %}
     apollo_federation = {
-      api_key       = {{ site.apollo_federation.api_key|tf }}
-      graph         = {{ site.apollo_federation.graph|tf }}
-      graph_variant = {{ site.apollo_federation.graph_variant|tf }}
+      api_key       = {{ site.ApolloFederation.APIKey|tf }}
+      graph         = {{ site.ApolloFederation.Graph|tf }}
+      graph_variant = {{ site.ApolloFederation.GraphVariant|tf }}
     }
   {% endif %}
 
