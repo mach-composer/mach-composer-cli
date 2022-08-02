@@ -177,7 +177,7 @@ variable "amplience_hub_id" {
 }
 ```
 
-### apollo federation
+### apollo_federation
 
 The following variable is given when the [`apollo_federation` integration](../../topics/integrations/apollo_federation.md) is defined.
 
