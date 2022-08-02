@@ -20,6 +20,7 @@ The configuration file has the following structure:
     - [commercetools](./sites.md#commercetools)
     - [contentful](./sites.md#contentful)
     - [amplience](./sites.md#amplience)
+    - [apollo_federation](./sites.md#apollo_federation)
     - [azure](./sites.md#azure)
     - [aws](./sites.md#aws)
     - [stores](./sites.md#stores)

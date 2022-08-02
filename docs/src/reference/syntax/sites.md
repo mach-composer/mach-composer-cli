@@ -9,7 +9,7 @@ All site definitions.
 - `commercetools` - [commercetools configuration](#commercetools) block
 - `sentry` - [Sentry configuration](#sentry) block
 - `contentful` - [Contentful configuration](#contentful) block
-- `apollo_federation` - [Apollo Federation configuration](#apollo-federation) block
+- `apollo_federation` - [Apollo Federation configuration](#apollo_federation) block
 - `azure` - [Azure](#azure) settings
 - `aws` - [AWS](#aws) settings
 - `components` - [Component configurations](#components)
