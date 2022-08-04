@@ -33,6 +33,7 @@ Make sure that in your runtime settings you set the following environment variab
 
 ```terraform
 APOLLO_KEY = var.apollo_federation.api_key
+APOLLO_GRAPH = var.apollo_federation.graph
 APOLLO_GRAPH_VARIANT = var.apollo_federation.graph_variant
 ```
 
@@ -43,9 +44,9 @@ needs to update its schema in the Apollo Federation.
 
 To do so we need to make this update call part of our deployment processes.
 
-!!! important "Apollo CLI"
-    Make sure the [Apollo CLI](https://www.apollographql.com/docs/devtools/cli/)
-    is available in the context where you're running mach.
+!!! important "The Rover CLI"
+    Make sure the [Rover CLI](https://www.apollographql.com/docs/rover/)
+    is available in the context where you're running mach-composer.
 
 ### Updating a downstream service
 
@@ -55,56 +56,54 @@ example on how to do this:
 
 ```terraform
 locals {
-  # URL which the gateway uses to access this service
-  service_url       = "http://internal.some-gateway.com/some-component/graphql"
-  # Exported schema of the service that is being deployed
-  local_schema_file = "${path.module}/generated/schema.graphql"
-  # identifier of the service for Apollo Studio
-  service_name      = "some-component"
+   # URL which the gateway uses to access this service
+   service_url       = "http://internal.some-gateway.com/some-component/graphql"
+   # Exported schema of the service that is being deployed
+   schema_file = abspath("${path.module}/generated/schema.graphql")
+   # Identifier of the service for Apollo Studio
+   service_name      = "some-component"
+ }
+
+variable "apollo_federation" {
+  type = object({
+    api_key = string
+    graph   = string
+    graph_variant = string
+  })
 }
 
-resource "null_resource" "apollo_push_schema_after_deploy" {
+# For safety, run a check step before publish to prevent any breaking changes
+resource "null_resource" "rover_graph_check" {
   triggers = {
-    schema_hash  = filesha256(local.local_schema_file)
-    service_name = local.service_name
-    graph        = var.apollo_federation.graph
-    variant      = var.apollo_federation.variant
-  }
-
-  provisioner "local-exec" {
-    command = "apollo service:push --localSchemaFile=${local.local_schema_file} --key=${var.apollo_federation.api_key} --graph=${var.apollo_federation.graph} --variant=${var.apollo_federation.graph_variant} --serviceName=${local.serviceName} --serviceURL=${local.service_url}"
-  }
-
-  depends_on = [
-    # list dependencies to make sure this is run before or after deployment of the service, f.e. an ecs service
-    aws_ecs_service.some_component,
-  ]
-}
-```
-
-### Deleting a downstream service
-
-Deleting a service automatically is possible with some [caveats](https://github.com/apollographql/apollo-tooling/issues/2115):
-
-```terraform
-resource "null_resource" "apollo_push_schema_after_deploy" {
-  triggers = {
-    schema_hash = filesha256(local.local_schema_file)
-    # for destroy we can't use local variables, so include them in triggers
-    service_name = local.service_name
-    api_key = var.apollo_federation.api_key
+    checksum = filemd5(local.schema_file)
     graph = var.apollo_federation.graph
-    variant = var.apollo_federation.variant
+    graph_variant = var.apollo_federation.graph_variant
+    service_name = local.service_name
   }
-
   provisioner "local-exec" {
-    command = "apollo service:push --localSchemaFile=${local.local_schema_file} --key=${var.apollo_federation.api_key} --graph=${var.apollo_federation.graph} --variant=${var.apollo_federation.graph_variant} --serviceName=${local.serviceName} --serviceURL=${local.service_url}"
+    command = "rover graph check ${var.apollo_federation.graph}@${var.apollo_federation.graph_variant} --schema - <<EOF\n${file(local.schema_file)}\nEOF"
   }
+}
 
-  # note this command fails if it's the last federated service
+# Publish schema changes to Apollo Studio
+resource "null_resource" "rover_graph_publish" {
+  triggers = {
+    checksum = filemd5(local.schema_file)
+    graph = var.apollo_federation.graph
+    graph_variant = var.apollo_federation.graph_variant
+    service_name = local.service_name
+  }
+  provisioner "local-exec" {
+    command = "rover graph publish ${var.apollo_federation.graph}@${var.apollo_federation.graph_variant} --schema - <<EOF\n${file(local.schema_file)}\nEOF"
+  }
   provisioner "local-exec" {
     when = destroy
-    command = "apollo service:delete --yes --key=${self.triggers.api_key} --serviceName=${self.triggers.service_name} --variant=${self.triggers.variant} || true"
+    command = "rover graph delete ${var.apollo_federation.graph}@${var.apollo_federation.graph_variant} --confirm"
   }
+  depends_on = [
+    null_resource.rover_graph_check,
+    # List dependencies here to make sure the command is executed before/after deployment of a service, f.e. an ECS service.
+    aws_ecs_service.some_component,
+  ]
 }
 ```
