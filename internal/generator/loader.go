@@ -5,8 +5,7 @@ import (
 	"fmt"
 	"io"
 	"io/fs"
-	"io/ioutil"
-	"path/filepath"
+	"path"
 )
 
 type EmbedLoader struct {
@@ -14,11 +13,11 @@ type EmbedLoader struct {
 }
 
 func (l *EmbedLoader) Abs(base, name string) string {
-	return filepath.Join(filepath.Dir(base), name)
+	return path.Join(path.Dir(base), name)
 }
 
-func (l *EmbedLoader) Get(path string) (io.Reader, error) {
-	fullPath := filepath.Join("templates", path)
+func (l *EmbedLoader) Get(p string) (io.Reader, error) {
+	fullPath := path.Join("templates", p)
 	f, err := l.Content.Open(fullPath)
 	if err != nil {
 		return nil, err
@@ -28,7 +27,7 @@ func (l *EmbedLoader) Get(path string) (io.Reader, error) {
 			panic(fmt.Errorf("error while closing %s: %v", fullPath, err))
 		}
 	}()
-	b, err := ioutil.ReadAll(f)
+	b, err := io.ReadAll(f)
 	if err != nil {
 		return nil, err
 	}
