@@ -100,9 +100,9 @@ components:
 
 To generate the files:
 
-`mach-composer generate # generates all available configs.`
+`mach-composer generate # generates config for main.yml`
 
-`mach-composer generate -f main.yml`
+`mach-composer generate -f other-file.yml`
 
 To init Terraform (optional):
 
