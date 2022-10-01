@@ -1,8 +1,14 @@
 # Changelog
 
+## 2.3.0 (2022-10-01)
+- Fix windows version due to wrong handling of the path separator (#182)
+- Restore the `sites` subcommand to output the sites in the config (#178)
+- Restore the `components` subcommand to output the components in the config  (#179)
+- Support only passing one config file and use `main.yml` as default for now (#177)
+
 ## 2.2.1 (2022-06-10)
 - Fixed inconsistencies between 1.2 and 2.x:
-  - Add `branch` option to component definitions to be able to perform a 
+  - Add `branch` option to component definitions to be able to perform a
     `mach update` and stay within a certain branch (during development)
   - Fixed commercetools `stores` definitions
   - Fixed bug where custom AWS and Azure provider version definitions weren't picked up
