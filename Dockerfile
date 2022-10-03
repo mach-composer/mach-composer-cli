@@ -106,7 +106,7 @@ RUN cd /tmp && \
     unzip -n terraform-provider-sentry_${TERRAFORM_SENTRY_VERSION}_linux_amd64.zip -d ${TERRAFORM_PLUGINS_PATH} && \
     rm -rf /tmp/*
 
-COPY --from=builder /code/dist/mach-composer_linux_amd64/mach-composer /usr/local/bin
+COPY --from=builder /code/dist/mach-composer_linux_amd64/bin/mach-composer /usr/local/bin
 RUN ln -s /usr/local/bin/mach-composer /usr/local/bin/mach
 
 ENTRYPOINT ["mach-composer"]
