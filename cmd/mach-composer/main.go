@@ -1,10 +1,12 @@
 package main
 
 import (
-	"fmt"
+	"os"
 
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
+
+	"github.com/labd/mach-composer/cmd/mach-composer/cloudcmd"
 )
 
 var (
@@ -32,13 +34,14 @@ var (
 
 func main() {
 	if err := rootCmd.Execute(); err != nil {
-		panic(fmt.Errorf("execute: %v", err))
+		os.Exit(1)
 	}
 }
 
 func init() {
 	rootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "", false, "Verbose output.")
 	rootCmd.AddCommand(applyCmd)
+	rootCmd.AddCommand(cloudcmd.CloudCmd)
 	rootCmd.AddCommand(componentsCmd)
 	rootCmd.AddCommand(generateCmd)
 	rootCmd.AddCommand(initCmd)

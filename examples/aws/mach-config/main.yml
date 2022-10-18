@@ -1,6 +1,8 @@
 ---
 mach_composer:
   version: '1.1'
+  organization_id: "lab-digital"
+  project_id: "my-aws-example"
 global:
   environment: test
   terraform_config:
@@ -35,6 +37,8 @@ sites:
           FOO_VAR: my-value
         secrets:
           MY_SECRET: secretvalue
+
+
 components:
   - name: your-component
     source: git::https://github.com/<username>/<your-component>.git//terraform
