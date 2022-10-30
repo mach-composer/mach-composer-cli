@@ -32,5 +32,4 @@ func SopsFileWriter(cfg *config.MachConfig, updates *UpdateSet) {
 			fmt.Fprint(os.Stderr, result)
 		}
 	}
-
 }

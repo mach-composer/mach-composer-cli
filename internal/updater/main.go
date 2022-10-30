@@ -43,7 +43,6 @@ func UpdateFile(ctx context.Context, filename, componentName, componentVersion s
 	//  3. both component and version are defined. Just set it manually.
 	var updateSet *UpdateSet
 	if component != nil {
-
 		// If no specific version is defined we auto-detect the last version
 		if componentVersion != "" {
 			updateSet = &UpdateSet{

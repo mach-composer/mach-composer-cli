@@ -67,7 +67,6 @@ func WriteFiles(cfg *config.MachConfig, options *GenerateOptions) (map[string]st
 		if err := os.WriteFile(filename, formatted, 0700); err != nil {
 			panic(err)
 		}
-
 	}
 	return locations, nil
 }

@@ -72,5 +72,4 @@ func TestMachConfigUpdater(t *testing.T) {
 	`))
 
 	assert.EqualValues(t, string(expected), string(output))
-
 }

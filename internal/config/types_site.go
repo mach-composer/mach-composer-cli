@@ -103,7 +103,6 @@ func (s *Site) EndpointComponents() map[string][]SiteComponent {
 		}
 	}
 	return endpoints
-
 }
 
 // UsedEndpoints returns only the endpoints that are actually used by the components.
@@ -160,7 +159,6 @@ func (sc SiteComponent) HasCloudIntegration() bool {
 		}
 	}
 	return false
-
 }
 
 type Endpoint struct {

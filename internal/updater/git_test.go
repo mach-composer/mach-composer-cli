@@ -35,5 +35,4 @@ func TestParseGitSource(t *testing.T) {
 		assert.NoError(t, err)
 		assert.EqualValues(t, p.expected, res)
 	}
-
 }

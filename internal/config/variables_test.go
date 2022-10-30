@@ -9,7 +9,6 @@ import (
 )
 
 func TestVariablesLoad(t *testing.T) {
-
 	utils.FS = afero.NewMemMapFs()
 	utils.AFS = &afero.Afero{Fs: utils.FS}
 

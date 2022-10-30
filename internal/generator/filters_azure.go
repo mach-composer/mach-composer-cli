@@ -14,7 +14,6 @@ func AzureFrontendEndpointName(in *pongo2.Value, param *pongo2.Value) (*pongo2.V
 		return filterTFValue(pongo2.AsSafeValue(val.Azure.InternalName), nil)
 	}
 	return filterTFValue(pongo2.AsSafeValue(val.Key), nil)
-
 }
 
 // AzureServicePlanResourceName Retrieve the resource name for a Azure app service plan.

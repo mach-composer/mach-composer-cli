@@ -157,7 +157,6 @@ func interpolateNode(node *yaml.Node, vars *Variables) error {
 
 	// Loop through the content if available to update childs
 	for i := range node.Content {
-
 		// Skip over keys
 		if node.Kind == yaml.MappingNode && i%2 == 0 {
 			continue

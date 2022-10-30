@@ -13,7 +13,6 @@ import (
 var schemas embed.FS
 
 func ValidateConfig(data []byte, version int) bool {
-
 	if version != 1 {
 		fmt.Fprintf(os.Stderr, "Config version %d is unsupported. Only version 1 is supported.\n", version)
 		return false
@@ -47,7 +46,6 @@ func ValidateConfig(data []byte, version int) bool {
 }
 
 func loadSchema(version int) (*gojsonschema.JSONLoader, error) {
-
 	body, err := schemas.ReadFile(fmt.Sprintf("schemas/schema-%d.yaml", version))
 	if err != nil {
 		return nil, err
@@ -56,7 +54,6 @@ func loadSchema(version int) (*gojsonschema.JSONLoader, error) {
 }
 
 func newYamlLoader(data []byte) (*gojsonschema.JSONLoader, error) {
-
 	var document map[string]interface{}
 	if err := yaml.Unmarshal(data, &document); err != nil {
 		return nil, err
@@ -64,5 +61,4 @@ func newYamlLoader(data []byte) (*gojsonschema.JSONLoader, error) {
 	loader := gojsonschema.NewRawLoader(document)
 
 	return &loader, nil
-
 }

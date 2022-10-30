@@ -14,7 +14,6 @@ func Process(cfg *MachConfig) {
 	// resolve_component_definitions(config)
 	ResolveComponentDefinitions(cfg)
 	ResolveSiteConfigs(cfg)
-
 }
 
 func ResolveComponentDefinitions(cfg *MachConfig) {

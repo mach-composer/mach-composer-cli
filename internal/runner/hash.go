@@ -38,5 +38,4 @@ func GetHash(path string) string {
 	}
 
 	return fmt.Sprintf("%x", h.Sum(nil))
-
 }

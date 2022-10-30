@@ -115,7 +115,6 @@ func filterComponentEndpointName(in *pongo2.Value, param *pongo2.Value) (*pongo2
 		if epKey == endpoint.Key {
 			return pongo2.AsSafeValue(componentKey), nil
 		}
-
 	}
 	return nil, &pongo2.Error{
 		Sender:    "filter:render_commercetools_scopes",
@@ -158,7 +157,6 @@ func filterTFValue(in *pongo2.Value, param *pongo2.Value) (*pongo2.Value, *pongo
 	}
 
 	switch data := in.Interface().(type) {
-
 	case map[string]string:
 		return formatMap(data)
 

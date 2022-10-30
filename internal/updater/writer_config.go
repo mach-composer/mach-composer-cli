@@ -49,7 +49,6 @@ func MachConfigUpdater(src []byte, updateSet *UpdateSet) []byte {
 
 		for i, n := range node.Content {
 			if n.Tag == "!!str" && n.Value == "version" {
-
 				// The value is in the node after this node. Assume it's always
 				// sequential
 				vn := node.Content[i+1]
@@ -81,7 +80,6 @@ func MachConfigUpdater(src []byte, updateSet *UpdateSet) []byte {
 // MachFileWriter updates the contents of a mach file with the updated
 // version of the components
 func MachFileWriter(updates *UpdateSet) {
-
 	input, err := utils.AFS.ReadFile(updates.filename)
 	if err != nil {
 		log.Fatalln(err)
