@@ -14,13 +14,13 @@ jobs:
 
     steps:
     - name: Set up Go
-      uses: actions/setup-go@v2
+      uses: actions/setup-go@v3
       with:
         go-version: ${{ matrix.go-version }}
       id: go
 
     - name: Set up Go modules cache
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       env:
         cache-name: cache-go-modules
       with:
@@ -32,13 +32,16 @@ jobs:
           ${{ runner.os }}-go${{ matrix.go-version }}-
 
     - name: Check out code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         fetch-depth: 0
 
+    - name: golangci-lint
+      uses: golangci/golangci-lint-action@v3
+
     - name: Run tests
       run: |
-        make lint cover errcheck
+        make cover
         make build
         mkdir -p output
         mv bin/mach-composer output/mach-composer
