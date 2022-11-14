@@ -7,8 +7,9 @@ import (
 	"os"
 	"strings"
 
-	"github.com/labd/mach-composer/internal/updater"
 	"github.com/spf13/cobra"
+
+	"github.com/labd/mach-composer/internal/updater"
 )
 
 var updateFlags struct {
@@ -24,9 +25,9 @@ var updateCmd = &cobra.Command{
 	Short: "Update all (or a given) component.",
 	Args:  cobra.MaximumNArgs(2),
 	PreRun: func(cmd *cobra.Command, args []string) {
-		if _, err := os.Stat(generateFlags.configFile); err != nil {
+		if _, err := os.Stat(updateFlags.configFile); err != nil {
 			if errors.Is(err, os.ErrNotExist) {
-				fmt.Printf("%s: Config file not found\n", generateFlags.configFile)
+				fmt.Printf("%s: Config file not found\n", updateFlags.configFile)
 				os.Exit(1)
 			}
 			fmt.Printf("error: %s\n", err.Error())
@@ -63,9 +64,9 @@ func updateFunc(args []string) error {
 
 	writeChanges := !updateFlags.check
 
-	updateSet, err := updater.UpdateFile(ctx, generateFlags.configFile, componentName, componentVersion, writeChanges)
+	updateSet, err := updater.UpdateFile(ctx, updateFlags.configFile, componentName, componentVersion, writeChanges)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Failed to update %s: %v\n", generateFlags.configFile, err.Error())
+		fmt.Fprintf(os.Stderr, "Failed to update %s: %v\n", updateFlags.configFile, err.Error())
 		os.Exit(1)
 	}
 
@@ -89,11 +90,11 @@ func updateFunc(args []string) error {
 
 		// Generate commit message if not passed
 		if updateFlags.commitMessage == "" {
-			commitMessage = generateCommitMessage(map[string]string{generateFlags.configFile: changes})
+			commitMessage = generateCommitMessage(map[string]string{updateFlags.configFile: changes})
 		}
 
 		ctx := context.Background()
-		updater.Commit(ctx, []string{generateFlags.configFile}, commitMessage)
+		updater.Commit(ctx, []string{updateFlags.configFile}, commitMessage)
 	}
 	return nil
 }
