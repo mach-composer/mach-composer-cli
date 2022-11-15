@@ -1,6 +1,6 @@
 module github.com/labd/mach-composer
 
-go 1.18
+go 1.19
 
 replace github.com/mach-composer/mcc-sdk-go => ../mach-composer-cloud/mcc-go-sdk
 
