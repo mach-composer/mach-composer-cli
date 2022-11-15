@@ -2,8 +2,6 @@ module github.com/labd/mach-composer
 
 go 1.19
 
-replace github.com/mach-composer/mcc-sdk-go => ../mach-composer-cloud/mcc-go-sdk
-
 require (
 	github.com/creasty/defaults v1.6.0
 	github.com/davecgh/go-spew v1.1.1
