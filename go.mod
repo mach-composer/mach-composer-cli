@@ -2,6 +2,8 @@ module github.com/labd/mach-composer
 
 go 1.19
 
+// replace github.com/mach-composer/mcc-sdk-go => ../mach-composer-cloud/mcc-go-sdk
+
 require (
 	github.com/creasty/defaults v1.6.0
 	github.com/davecgh/go-spew v1.1.1
@@ -11,7 +13,7 @@ require (
 	github.com/gosimple/unidecode v1.0.1
 	github.com/hashicorp/hcl/v2 v2.13.0
 	github.com/lithammer/dedent v1.1.0
-	github.com/mach-composer/mcc-sdk-go v0.0.1
+	github.com/mach-composer/mcc-sdk-go v0.0.2
 	github.com/mattn/go-isatty v0.0.14
 	github.com/sirupsen/logrus v1.8.1
 	github.com/skratchdot/open-golang v0.0.0-20200116055534-eef842397966
@@ -50,6 +52,7 @@ require (
 	github.com/subosito/gotenv v1.4.1 // indirect
 	github.com/xanzy/ssh-agent v0.3.0 // indirect
 	golang.org/x/crypto v0.0.0-20220517005047-85d78b3ac167 // indirect
+	golang.org/x/exp v0.0.0-20220321173239-a90fa8a75705 // indirect
 	golang.org/x/net v0.1.0 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/protobuf v1.28.0 // indirect
@@ -62,6 +65,7 @@ require (
 	github.com/adrg/xdg v0.4.0
 	github.com/agext/levenshtein v1.2.1 // indirect
 	github.com/apparentlymart/go-textseg/v13 v13.0.0 // indirect
+	github.com/elliotchance/pie/v2 v2.1.0
 	github.com/google/go-cmp v0.5.8 // indirect
 	github.com/grokify/go-pkce v0.2.0
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
