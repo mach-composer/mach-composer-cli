@@ -35,7 +35,7 @@ var updateCmd = &cobra.Command{
 		}
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
-		if err := updateFunc(args); err != nil {
+		if err := updateFunc(cmd.Context(), args); err != nil {
 			return err
 		}
 		return nil
@@ -49,9 +49,7 @@ func init() {
 	updateCmd.Flags().StringVarP(&updateFlags.commitMessage, "commit-message", "m", "", "Use a custom message for the commit.")
 }
 
-func updateFunc(args []string) error {
-	ctx := context.Background()
-
+func updateFunc(ctx context.Context, args []string) error {
 	componentName := ""
 	componentVersion := ""
 
@@ -64,19 +62,26 @@ func updateFunc(args []string) error {
 
 	writeChanges := !updateFlags.check
 
-	updateSet, err := updater.UpdateFile(ctx, updateFlags.configFile, componentName, componentVersion, writeChanges)
+	u, err := updater.NewUpdater(updateFlags.configFile)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Failed to update %s: %v\n", updateFlags.configFile, err.Error())
 		os.Exit(1)
 	}
 
 	var changes string
+	if componentName != "" {
+		u.UpdateComponent(ctx, componentName, componentVersion)
 
-	if writeChanges && updateSet.HasChanges() {
-		if componentName == "" {
-			changes = updateSet.ChangeLog()
-		} else {
+		updateSet := u.GetUpdateSet()
+		if writeChanges && u.Write(ctx) {
 			changes = updateSet.ComponentChangeLog(componentName)
+		}
+	} else {
+		u.UpdateAllComponents(ctx)
+
+		updateSet := u.GetUpdateSet()
+		if writeChanges && u.Write(ctx) {
+			changes = updateSet.ChangeLog()
 		}
 	}
 

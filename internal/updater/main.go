@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"os"
 	"strings"
 
 	"github.com/labd/mach-composer/internal/config"
@@ -15,76 +14,97 @@ type WorkerJob struct {
 	cfg       *config.MachConfig
 }
 
-func UpdateFile(ctx context.Context, filename, componentName, componentVersion string, writeChanges bool) (*UpdateSet, error) {
+type Updater struct {
+	filename string
+	config   *config.MachConfig
+	updates  []ChangeSet
+}
+
+func NewUpdater(filename string) (*Updater, error) {
 	cfg, err := config.Load(filename, "")
 	if err != nil {
 		return nil, err
 	}
 
-	// Find the component if defined in the config
-	var component *config.Component
-	if componentName != "" {
-		for i, c := range cfg.Components {
-			if strings.EqualFold(c.Name, componentName) {
-				component = &cfg.Components[i]
-				break
-			}
-		}
-
-		if component == nil {
-			fmt.Fprintf(os.Stderr, "No component found with name %s", componentName)
-			return nil, nil
-		}
+	result := &Updater{
+		filename: filename,
+		config:   cfg,
 	}
 
-	// Check for updates, we have three options:
-	//  1. no component is defined (and thus no version). Update all components
-	//  2. component is defined but no version. Get last version for component
-	//  3. both component and version are defined. Just set it manually.
-	var updateSet *UpdateSet
-	if component != nil {
-		// If no specific version is defined we auto-detect the last version
-		if componentVersion != "" {
-			updateSet = &UpdateSet{
-				filename: cfg.Filename,
-				updates: []ChangeSet{
-					{
-						LastVersion: componentVersion,
-						Component:   component,
-						Forced:      true,
-					},
-				},
-			}
-			fmt.Printf("Setting component %s to version %s\n", component.Name, componentVersion)
-		} else {
-			updateSet = FindSpecificUpdate(ctx, cfg, filename, component)
-			if updateSet.HasChanges() {
-				fmt.Printf("Updating component %s to version %s\n", component.Name, updateSet.updates[0].LastVersion)
-			} else {
-				fmt.Printf("No updates for component %s\n", component.Name)
-			}
-		}
-	} else {
-		updateSet = FindUpdates(ctx, cfg, filename, component)
-		fmt.Printf("%d components have updates available\n", len(updateSet.updates))
-	}
-
-	if writeChanges && len(updateSet.updates) > 0 {
-		WriteUpdates(ctx, cfg, updateSet)
-	}
-
-	return updateSet, nil
+	return result, nil
 }
 
-func FindUpdates(ctx context.Context, cfg *config.MachConfig, filename string, component *config.Component) *UpdateSet {
+// UpdateAllComponents updates all the components in the config file.
+func (u *Updater) UpdateAllComponents(ctx context.Context) {
+	updateSet := FindUpdates(ctx, u.config, u.filename)
+	u.updates = updateSet.updates
+	fmt.Printf("%d components have updates available\n", len(u.updates))
+}
+
+// UpdateComponent updates a specific component. When the version is empty it
+// will retrieve the last version for the given component.
+func (u *Updater) UpdateComponent(ctx context.Context, name, version string) error {
+	component := u.config.GetComponent(name)
+	if component == nil {
+		return fmt.Errorf("No component found with name %s", name)
+	}
+
+	// If no specific version is defined we auto-detect the last version
+	if version != "" {
+		u.updates = []ChangeSet{
+			{
+				LastVersion: version,
+				Component:   component,
+				Forced:      true,
+			},
+		}
+		fmt.Printf("Setting component %s to version %s\n", component.Name, version)
+		return nil
+	}
+
+	updateSet := FindSpecificUpdate(ctx, u.config, u.filename, component)
+	if updateSet.HasChanges() {
+		fmt.Printf("Updating component %s to version %s\n", component.Name, updateSet.updates[0].LastVersion)
+		u.updates = updateSet.updates
+	} else {
+		fmt.Printf("No updates for component %s\n", component.Name)
+	}
+	return nil
+}
+
+func (u *Updater) GetUpdateSet() *UpdateSet {
+	return &UpdateSet{
+		filename: u.filename,
+		updates:  u.updates,
+	}
+}
+
+func (u *Updater) Write(ctx context.Context) bool {
+	if u.updates == nil || len(u.updates) < 1 {
+		return false
+	}
+
+	updateSet := u.GetUpdateSet()
+	if u.config.IsEncrypted {
+		SopsFileWriter(u.config, updateSet)
+	} else {
+		MachFileWriter(updateSet)
+	}
+
+	return true
+}
+
+func FindUpdates(ctx context.Context, cfg *config.MachConfig, filename string) *UpdateSet {
 	numUpdates := len(cfg.Components)
 	jobs := make(chan WorkerJob, numUpdates)
 	results := make(chan *ChangeSet, numUpdates)
 
 	fmt.Printf("Checking if there are updates for %d components\n", numUpdates)
 
+	const numWorkers = 4
+
 	// Start 4 workers
-	for i := 0; i < 4; i++ {
+	for i := 0; i < numWorkers; i++ {
 		go func() {
 			for j := range jobs {
 				cs, err := GetLastVersion(ctx, j.component, j.cfg.Filename)
@@ -145,12 +165,4 @@ func GetLastVersion(ctx context.Context, c *config.Component, origin string) (*C
 		return GetLastVersionGit(ctx, c, origin)
 	}
 	return nil, errors.New("unrecognized component source")
-}
-
-func WriteUpdates(ctx context.Context, cfg *config.MachConfig, updates *UpdateSet) {
-	if cfg.IsEncrypted {
-		SopsFileWriter(cfg, updates)
-	} else {
-		MachFileWriter(updates)
-	}
 }
