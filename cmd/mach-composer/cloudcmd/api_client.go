@@ -27,16 +27,23 @@ var listApiClientCmd = &cobra.Command{
 
 		data := make([][]string, len(paginator.Results))
 		for i, record := range paginator.Results {
+			lastUsed := "never"
+			if record.LastUsedAt != nil {
+				lastUsed = record.GetLastUsedAt().Format("2006-01-02 15:04:05")
+			}
+
 			data[i] = []string{
 				record.CreatedAt.Local().Format("2006-01-02 15:04:05"),
 				record.ClientId,
 				record.ClientSecret,
+				lastUsed,
+				record.GetDescription(),
 				strings.Join(record.Scope, " "),
 			}
 		}
 
 		writeTable(os.Stdout,
-			[]string{"Created At", "Client ID", "Client Secret", "Scopes"},
+			[]string{"Created At", "Client ID", "Client Secret", "Last Used", "Description", "Scopes"},
 			data,
 		)
 
