@@ -10,17 +10,17 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
+	"time"
+
+	"github.com/go-git/go-git/v5"
+	"github.com/go-git/go-git/v5/plumbing"
+	"github.com/go-git/go-git/v5/plumbing/object"
+	"github.com/go-git/go-git/v5/plumbing/storer"
+	"github.com/sirupsen/logrus"
 
 	"github.com/labd/mach-composer/internal/config"
 	"github.com/labd/mach-composer/internal/utils"
-	"github.com/sirupsen/logrus"
 )
-
-// commit": "%H",
-// author": "%aN <%aE>",
-// date": "%ad",
-// message": "%s",
-const gitFormat = "%H|%aN <%aE>|%ad|%s"
 
 type gitSource struct {
 	URL        string
@@ -30,10 +30,16 @@ type gitSource struct {
 }
 
 type gitCommit struct {
-	Commit  string
-	Author  string
-	Date    string
-	Message string
+	Commit    string
+	Author    gitCommitAuthor
+	Committer gitCommitAuthor
+	Message   string
+}
+
+type gitCommitAuthor struct {
+	Name  string
+	Email string
+	Date  time.Time
 }
 
 func GetLastVersionGit(ctx context.Context, c *config.Component, origin string) (*ChangeSet, error) {
@@ -44,12 +50,16 @@ func GetLastVersionGit(ctx context.Context, c *config.Component, origin string) 
 		return nil, fmt.Errorf("cannot check %s component since it doesn't have a Git source defined", c.Name)
 	}
 
-	branch := "HEAD"
+	branch := ""
 	if c.Branch != "" {
 		branch = c.Branch
 	}
 	fetchGitRepository(ctx, source, cacheDir)
-	commits := loadGitHistory(ctx, source, c.Version, branch, cacheDir)
+	path := filepath.Join(cacheDir, source.Name)
+	commits, err := GetRecentCommits(ctx, path, c.Version, branch)
+	if err != nil {
+		return nil, err
+	}
 
 	cs := &ChangeSet{
 		Changes:   commits,
@@ -123,37 +133,119 @@ func fetchGitRepository(ctx context.Context, source *gitSource, cacheDir string)
 	}
 }
 
-func loadGitHistory(ctx context.Context, source *gitSource, baseRef string, branch string, cacheDir string) []gitCommit {
-	dest := filepath.Join(cacheDir, source.Name)
-
-	args := []string{
-		"log", branch, fmt.Sprintf(`--pretty=%s`, gitFormat),
-	}
-	if baseRef != "" {
-		args = append(args, fmt.Sprintf("%s...%s", baseRef, branch))
+func GetRecentCommits(ctx context.Context, path string, baseRef string, branch string) ([]gitCommit, error) {
+	repository, err := git.PlainOpen(path)
+	if err != nil {
+		return nil, err
 	}
 
-	output := runGit(ctx, dest, args...)
-	commits := []gitCommit{}
-
-	for _, line := range SplitLines(string(output)) {
-		parts := strings.SplitN(line, "|", 4)
-		commits = append(commits, gitCommit{
-			Commit:  parts[0][:7],
-			Author:  parts[1],
-			Date:    parts[2],
-			Message: parts[3],
-		})
+	// Hack to make resolving short hashes work
+	// https://github.com/go-git/go-git/issues/148#issuecomment-989635832
+	_, err = repository.CommitObjects()
+	if err != nil {
+		return nil, err
 	}
-	return commits
+
+	baseRevision, err := repository.ResolveRevision(plumbing.Revision(baseRef))
+	if err != nil {
+		return nil, fmt.Errorf("failed to find commit %s in repository %s: %w", baseRef, path, err)
+	}
+
+	var branchRevision *plumbing.Hash
+	if branch == "" {
+		branchRef, err := repository.Head()
+		if err != nil {
+			return nil, fmt.Errorf("failed to resolve HEAD in repository: %w", err)
+		}
+		hash := branchRef.Hash()
+		branchRevision = &hash
+	} else {
+		branchRef := plumbing.NewBranchReferenceName(branch)
+		branchRevision, err = repository.ResolveRevision(plumbing.Revision(branchRef))
+		if err != nil {
+			return nil, fmt.Errorf("failed to find branch %s in repository: %w", branch, err)
+		}
+	}
+
+	commits, err := commitsBetween(repository, baseRevision, branchRevision)
+	if err != nil {
+		return nil, err
+	}
+
+	result := make([]gitCommit, len(commits))
+	for i, c := range commits {
+		fields := strings.Split(c.Message, "\n")
+		subject := strings.TrimSpace(fields[0])
+		result[i] = gitCommit{
+			Commit: c.Hash.String()[:7],
+			Author: gitCommitAuthor{
+				Name:  c.Author.Name,
+				Email: c.Author.Email,
+				Date:  c.Author.When,
+			},
+			Committer: gitCommitAuthor{
+				Name:  c.Committer.Name,
+				Email: c.Committer.Email,
+				Date:  c.Committer.When,
+			},
+			Message: subject,
+		}
+	}
+	return result, nil
 }
 
-func Commit(ctx context.Context, fileNames []string, message string) {
-	args := []string{"commit"}
-	args = append(args, fileNames...)
-	args = append(args, "-m", message)
+// commitsBetween returns the commits from x to y. It should equal the
+// functionality of `git log base..head`
+// See https://github.com/go-git/go-git/issues/69
+// FIXME: very naive implementation
+func commitsBetween(repository *git.Repository, first, last *plumbing.Hash) ([]*object.Commit, error) {
+	cIter, err := repository.Log(&git.LogOptions{
+		Order: git.LogOrderCommitterTime,
+		From:  *last,
+	})
+	if err != nil {
+		return nil, err
+	}
 
-	runGit(ctx, ".", args...)
+	result := []*object.Commit{}
+	err = cIter.ForEach(func(c *object.Commit) error {
+		if first != nil && *first == c.Hash {
+			return storer.ErrStop
+		}
+		result = append(result, c)
+		return nil
+	})
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
+}
+
+func Commit(ctx context.Context, fileNames []string, message string) error {
+	path, err := os.Getwd()
+	if err != nil {
+		return err
+	}
+	repository, err := git.PlainOpen(path)
+	if err != nil {
+		return err
+	}
+
+	w, err := repository.Worktree()
+	if err != nil {
+		return err
+	}
+
+	for _, filename := range fileNames {
+		if _, err := w.Add(filename); err != nil {
+			return err
+		}
+	}
+
+	if _, err := w.Commit(message, &git.CommitOptions{}); err != nil {
+		return err
+	}
+	return nil
 }
 
 // runGit executes the git command

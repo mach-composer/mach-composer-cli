@@ -26,6 +26,15 @@ func (c *MachConfig) HasSite(ident string) bool {
 	return false
 }
 
+func (c *MachConfig) GetComponent(name string) *Component {
+	for i := range c.Components {
+		if strings.EqualFold(c.Components[i].Name, name) {
+			return &c.Components[i]
+		}
+	}
+	return nil
+}
+
 type _RawMachConfig struct {
 	Filename     string
 	MachComposer MachComposer `yaml:"mach_composer"`
