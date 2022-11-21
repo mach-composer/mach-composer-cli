@@ -5,6 +5,8 @@ import (
 
 	"github.com/mach-composer/mcc-sdk-go/mccsdk"
 	"github.com/spf13/cobra"
+
+	"github.com/labd/mach-composer/internal/cloud"
 )
 
 var componentCmd = &cobra.Command{
@@ -76,27 +78,46 @@ var componentListCmd = &cobra.Command{
 var componentRegisterVersionCmd = &cobra.Command{
 	Use:   "register-component-version [name] [version]",
 	Short: "Register a new version for an existing component",
-	Args:  cobra.ExactArgs(2),
+	Args:  cobra.MinimumNArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		componentKey := args[0]
-		version := args[1]
 
 		organization := MustGetString(cmd, "organization")
 		project := MustGetString(cmd, "project")
 
-		client, ctx := getClient(cmd)
-		resource, _, err := client.
-			ComponentsApi.
-			ComponentVersionCreate(ctx, organization, project, componentKey).
-			ComponentVersionDraft(mccsdk.ComponentVersionDraft{
-				Version: version,
-			}).
-			Execute()
+		auto, err := cmd.Flags().GetBool("auto")
 		if err != nil {
-			return handleError(err)
+			return err
 		}
-		cmd.Printf("Created new version for component %s: %s\n",
-			resource.GetComponent(), resource.GetVersion())
+
+		client, ctx := getClient(cmd)
+
+		if !auto {
+			if len(args) < 2 {
+				cmd.Printf("Missing version argument")
+				os.Exit(1)
+			}
+			version := args[1]
+			resource, _, err := client.
+				ComponentsApi.
+				ComponentVersionCreate(ctx, organization, project, componentKey).
+				ComponentVersionDraft(mccsdk.ComponentVersionDraft{
+					Version: version,
+				}).
+				Execute()
+			if err != nil {
+				return handleError(err)
+			}
+			cmd.Printf("Created new version for component %s: %s\n",
+				resource.GetComponent(), resource.GetVersion())
+
+		} else {
+			_, err := cloud.AutoRegisterVersion(ctx, client, organization, project, componentKey)
+			if err != nil {
+				return handleError(err)
+			}
+		}
+
 		return nil
 	},
 }
@@ -138,7 +159,6 @@ var componentListVersionCmd = &cobra.Command{
 }
 
 func init() {
-
 	CloudCmd.AddCommand(componentCreateCmd)
 	registerContextFlags(componentCreateCmd)
 
@@ -147,6 +167,7 @@ func init() {
 
 	CloudCmd.AddCommand(componentRegisterVersionCmd)
 	registerContextFlags(componentRegisterVersionCmd)
+	componentRegisterVersionCmd.Flags().Bool("auto", false, "Automate")
 
 	CloudCmd.AddCommand(componentListVersionCmd)
 	registerContextFlags(componentListVersionCmd)

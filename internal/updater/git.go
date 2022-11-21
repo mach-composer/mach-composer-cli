@@ -31,6 +31,7 @@ type gitSource struct {
 
 type gitCommit struct {
 	Commit    string
+	Parents   []string
 	Author    gitCommitAuthor
 	Committer gitCommitAuthor
 	Message   string
@@ -56,7 +57,7 @@ func GetLastVersionGit(ctx context.Context, c *config.Component, origin string) 
 	}
 	fetchGitRepository(ctx, source, cacheDir)
 	path := filepath.Join(cacheDir, source.Name)
-	commits, err := GetRecentCommits(ctx, path, c.Version, branch)
+	commits, err := GetRecentCommits(ctx, path, branch, c.Version)
 	if err != nil {
 		return nil, err
 	}
@@ -133,7 +134,20 @@ func fetchGitRepository(ctx context.Context, source *gitSource, cacheDir string)
 	}
 }
 
-func GetRecentCommits(ctx context.Context, path string, baseRef string, branch string) ([]gitCommit, error) {
+func GetCurrentBranch(ctx context.Context, path string) (string, error) {
+	repository, err := git.PlainOpen(path)
+	if err != nil {
+		return "", err
+	}
+	branchRef, err := repository.Head()
+	if err != nil {
+		return "", fmt.Errorf("failed to resolve HEAD in repository: %w", err)
+	}
+	return branchRef.Name().Short(), nil
+}
+
+// GetRecentCommits returns all commits in descending order (newest first)
+func GetRecentCommits(ctx context.Context, path string, branch string, baseRef string) ([]gitCommit, error) {
 	repository, err := git.PlainOpen(path)
 	if err != nil {
 		return nil, err
@@ -146,9 +160,12 @@ func GetRecentCommits(ctx context.Context, path string, baseRef string, branch s
 		return nil, err
 	}
 
-	baseRevision, err := repository.ResolveRevision(plumbing.Revision(baseRef))
-	if err != nil {
-		return nil, fmt.Errorf("failed to find commit %s in repository %s: %w", baseRef, path, err)
+	var baseRevision *plumbing.Hash
+	if baseRef != "" {
+		baseRevision, err = repository.ResolveRevision(plumbing.Revision(baseRef))
+		if err != nil {
+			return nil, fmt.Errorf("failed to find commit %s in repository %s: %w", baseRef, path, err)
+		}
 	}
 
 	var branchRevision *plumbing.Hash
@@ -176,8 +193,14 @@ func GetRecentCommits(ctx context.Context, path string, baseRef string, branch s
 	for i, c := range commits {
 		fields := strings.Split(c.Message, "\n")
 		subject := strings.TrimSpace(fields[0])
+		parents := make([]string, len(c.ParentHashes))
+		for i, parent := range c.ParentHashes {
+			parents[i] = parent.String()[:7]
+		}
+
 		result[i] = gitCommit{
-			Commit: c.Hash.String()[:7],
+			Commit:  c.Hash.String()[:7],
+			Parents: parents,
 			Author: gitCommitAuthor{
 				Name:  c.Author.Name,
 				Email: c.Author.Email,
