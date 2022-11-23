@@ -158,6 +158,45 @@ var componentListVersionCmd = &cobra.Command{
 	},
 }
 
+var componentDescribeVersionCmd = &cobra.Command{
+	Use:   "describe-component-versions [name] [version]",
+	Short: "List all version for an existing component",
+	Args:  cobra.ExactArgs(2),
+	RunE: func(cmd *cobra.Command, args []string) error {
+		key := args[0]
+		version := args[1]
+
+		organization := MustGetString(cmd, "organization")
+		project := MustGetString(cmd, "project")
+
+		client, ctx := getClient(cmd)
+		paginator, _, err := client.
+			ComponentsApi.
+			ComponentVersionQueryCommits(ctx, organization, project, key, version).
+			Execute()
+		if err != nil {
+			return handleError(err)
+		}
+
+		data := make([][]string, len(paginator.Results))
+		for i, record := range paginator.Results {
+			data[i] = []string{
+				record.Author.Date.Local().Format("2006-01-02 15:04:05"),
+				record.Commit,
+				record.Author.Name,
+				record.Subject,
+			}
+		}
+
+		writeTable(os.Stdout,
+			[]string{"Date", "Commit", "Author", "Message"},
+			data,
+		)
+
+		return nil
+	},
+}
+
 func init() {
 	CloudCmd.AddCommand(componentCreateCmd)
 	registerContextFlags(componentCreateCmd)
@@ -171,4 +210,7 @@ func init() {
 
 	CloudCmd.AddCommand(componentListVersionCmd)
 	registerContextFlags(componentListVersionCmd)
+
+	CloudCmd.AddCommand(componentDescribeVersionCmd)
+	registerContextFlags(componentDescribeVersionCmd)
 }

@@ -40,7 +40,6 @@ type Options struct {
 
 // AuthorizeUser implements the PKCE OAuth2 flow.
 func StartAuthentication(ctx context.Context, config oauth2.Config, options *Options) (*oauth2.Token, error) {
-
 	setOptionDefaults(options)
 
 	state := generateStateParam()
