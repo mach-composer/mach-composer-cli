@@ -31,7 +31,7 @@ var cloudLoginCmd = &cobra.Command{
 
 		authConfig := oauth2.Config{
 			Scopes:   []string{"openid"},
-			ClientID: "",
+			ClientID: "b0b9ccbd-0613-4ccf-86a1-dab07b8b5619",
 			Endpoint: getAuthEndpoint(),
 		}
 
@@ -58,7 +58,9 @@ var cloudLoginCmd = &cobra.Command{
 		}
 
 		if token.AccessToken != "" {
-			viper.Set("token", token.AccessToken)
+			viper.Set("token.access", token.AccessToken)
+			viper.Set("token.refresh", token.RefreshToken)
+			viper.Set("token.expiry", token.Expiry)
 			if err := viper.WriteConfig(); err != nil {
 				cmd.PrintErrln(err)
 			}
