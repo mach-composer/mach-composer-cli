@@ -11,7 +11,7 @@ require (
 	github.com/gosimple/unidecode v1.0.1
 	github.com/hashicorp/hcl/v2 v2.13.0
 	github.com/lithammer/dedent v1.1.0
-	github.com/mach-composer/mcc-sdk-go v0.0.2
+	github.com/mach-composer/mcc-sdk-go v0.0.3-0.20221122074702-8df13e53ecaa
 	github.com/mattn/go-isatty v0.0.14
 	github.com/sirupsen/logrus v1.8.1
 	github.com/skratchdot/open-golang v0.0.0-20200116055534-eef842397966
