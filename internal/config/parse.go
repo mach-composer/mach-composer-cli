@@ -4,12 +4,14 @@ import (
 	"errors"
 	"fmt"
 	"path/filepath"
+	"regexp"
 	"strconv"
 	"strings"
 
 	"github.com/creasty/defaults"
-	"github.com/labd/mach-composer/internal/utils"
 	"gopkg.in/yaml.v3"
+
+	"github.com/labd/mach-composer/internal/utils"
 )
 
 func Load(filename string, varFilename string) (*MachConfig, error) {
@@ -36,7 +38,7 @@ func Load(filename string, varFilename string) (*MachConfig, error) {
 		return nil, fmt.Errorf("failed to load config %s due to errors", filename)
 	}
 
-	cfg, err := Parse(body, vars)
+	cfg, err := Parse(body, vars, filename)
 	if err != nil {
 		panic(err)
 	}
@@ -76,14 +78,13 @@ func GetSchemaVersion(data []byte) (int, error) {
 	return 0, errors.New("no valid version identifier found")
 }
 
-func Parse(data []byte, vars *Variables) (*MachConfig, error) {
+func Parse(data []byte, vars *Variables, filename string) (*MachConfig, error) {
 	// Decode the yaml in an intermediate config file
 	intermediate := &_RawMachConfig{}
 	err := yaml.Unmarshal(data, intermediate)
 	if err != nil {
 		return nil, fmt.Errorf("failed to unmarshall yaml: %w", err)
 	}
-
 	if vars == nil && intermediate.MachComposer.VariablesFile != "" {
 		vars, err = loadVariables(intermediate.MachComposer.VariablesFile)
 		if err != nil {
@@ -116,9 +117,36 @@ func Parse(data []byte, vars *Variables) (*MachConfig, error) {
 		return nil, fmt.Errorf("decoding error: %w", err)
 	}
 
-	if err := intermediate.Components.Decode(&cfg.Components); err != nil {
+	if err := parseComponentsNode(intermediate.Components, filename, &cfg.Components); err != nil {
 		return nil, fmt.Errorf("decoding error: %w", err)
 	}
 
 	return cfg, nil
+}
+
+func parseComponentsNode(node yaml.Node, source string, target *[]Component) error {
+	if node.Tag != "!!str" {
+		if err := node.Decode(target); err != nil {
+			return fmt.Errorf("decoding error: %w", err)
+		}
+		return nil
+	}
+
+	re := regexp.MustCompile(`\$\(include\(([^)]+)\)`)
+	data := re.FindStringSubmatch(node.Value)
+	if len(data) != 2 {
+		return fmt.Errorf("failed to parse $include() tag")
+	}
+	filename := filepath.Join(filepath.Dir(source), data[1])
+
+	body, err := utils.AFS.ReadFile(filename)
+	if err != nil {
+		return err
+	}
+
+	err = yaml.Unmarshal(body, &target)
+	if err != nil {
+		return err
+	}
+	return nil
 }
