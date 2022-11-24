@@ -7,8 +7,9 @@ import (
 	"strings"
 
 	"github.com/flosch/pongo2/v5"
-	"github.com/labd/mach-composer/internal/config"
 	"github.com/sirupsen/logrus"
+
+	"github.com/labd/mach-composer/internal/config"
 )
 
 func registerFilters() {
@@ -128,7 +129,7 @@ func filterTFValue(in *pongo2.Value, param *pongo2.Value) (*pongo2.Value, *pongo
 		if err != nil {
 			logrus.Fatal(err.Error())
 		}
-		res := pongo2.AsSafeValue(fmt.Sprintf(`"%s"`, val))
+		res := pongo2.AsSafeValue(val)
 		return res, nil
 	}
 	if in.IsInteger() {
