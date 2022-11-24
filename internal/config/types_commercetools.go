@@ -31,11 +31,12 @@ func (s *CommercetoolsSettings) SetDefaults() {
 	}
 }
 
+// ManagedStores returns all stores which are managed.
 func (s *CommercetoolsSettings) ManagedStores() []CommercetoolsStore {
 	managed := make([]CommercetoolsStore, 0)
 
 	for _, store := range s.Stores {
-		if store.Managed {
+		if store.Managed == nil || *store.Managed {
 			managed = append(managed, store)
 		}
 	}
@@ -72,10 +73,13 @@ func (s *CommercetoolsFrontendSettings) SetDefaults() {
 type CommercetoolsStore struct {
 	Key                  string
 	Name                 map[string]string
-	Managed              bool `default:"true"`
 	Languages            []string
 	DistributionChannels []string `yaml:"distribution_channels"`
 	SupplyChannels       []string `yaml:"supply_channels"`
+
+	// We use a pointer to a boolean. Otherwise the default value is false which
+	// in turn is alwys set to true by the defaults module
+	Managed *bool `yaml:"managed" default:"true"`
 
 	// def __post_init__(self):
 	//     if self.managed and not self.name:
