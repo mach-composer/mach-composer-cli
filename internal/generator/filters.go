@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"regexp"
+	"strconv"
 	"strings"
 
 	"github.com/flosch/pongo2/v5"
@@ -137,7 +138,8 @@ func filterTFValue(in *pongo2.Value, param *pongo2.Value) (*pongo2.Value, *pongo
 		return res, nil
 	}
 	if in.IsFloat() {
-		res := pongo2.AsSafeValue(fmt.Sprintf("%f", in.Float()))
+		buf := strconv.FormatFloat(in.Float(), 'f', -1, 64)
+		res := pongo2.AsSafeValue(buf)
 		return res, nil
 	}
 	if in.IsBool() {

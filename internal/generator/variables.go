@@ -10,13 +10,13 @@ var varRegex = regexp.MustCompile(`\${(component(?:\.[^\}]+)+)}`)
 
 func ParseTemplateVariable(raw string) (string, error) {
 	val := strings.TrimSpace(raw)
-	org := val
-
 	matches := varRegex.FindAllStringSubmatch(val, 20)
 	if len(matches) == 0 {
-		return val, nil
+		result := quoteString(val)
+		return result, nil
 	}
 
+	org := val
 	for _, match := range matches {
 		parts := strings.SplitN(match[1], ".", 3)
 		if len(parts) < 3 {
@@ -35,8 +35,11 @@ func ParseTemplateVariable(raw string) (string, error) {
 	if len(matches) == 1 && len(matches[0][0]) == len(org) {
 		result = val[2 : len(val)-1]
 	} else {
-		result = fmt.Sprintf(`"%s"`, val)
+		result = quoteString(val)
 	}
-
 	return result, nil
+}
+
+func quoteString(val string) string {
+	return fmt.Sprintf(`"%s"`, val)
 }

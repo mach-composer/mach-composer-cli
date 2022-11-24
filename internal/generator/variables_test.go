@@ -14,9 +14,9 @@ func TestParseTemplateVariable(t *testing.T) {
 
 	tests := []test{
 		{input: "${component.foo.endpoint}", output: "module.foo.endpoint"},
-		{input: "foo ${component.foo.endpoint} bar", output: "foo ${module.foo.endpoint} bar"},
+		{input: "foo ${component.foo.endpoint} bar", output: `"foo ${module.foo.endpoint} bar"`},
 		{input: "  ${component.foo.endpoint} ", output: "module.foo.endpoint"},
-		{input: "${component.foo.endpoint}${component.bar.other}", output: "${module.foo.endpoint}${module.bar.other}"},
+		{input: "${component.foo.endpoint}${component.bar.other}", output: `"${module.foo.endpoint}${module.bar.other}"`},
 	}
 
 	for _, tc := range tests {
@@ -24,5 +24,4 @@ func TestParseTemplateVariable(t *testing.T) {
 		assert.NoError(t, err)
 		assert.Equal(t, tc.output, value)
 	}
-
 }
