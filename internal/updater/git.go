@@ -141,7 +141,8 @@ func GetCurrentBranch(ctx context.Context, path string) (string, error) {
 	}
 	branchRef, err := repository.Head()
 	if err != nil {
-		return "", fmt.Errorf("failed to resolve HEAD in repository: %w", err)
+		err = fmt.Errorf("failed to resolve HEAD in repository (%s): %w", path, err)
+		return "", err
 	}
 	return branchRef.Name().Short(), nil
 }
@@ -172,7 +173,8 @@ func GetRecentCommits(ctx context.Context, path string, branch string, baseRef s
 	if branch == "" {
 		branchRef, err := repository.Head()
 		if err != nil {
-			return nil, fmt.Errorf("failed to resolve HEAD in repository: %w", err)
+			err = fmt.Errorf("failed to resolve HEAD in repository (%s): %w", path, err)
+			return nil, err
 		}
 		hash := branchRef.Hash()
 		branchRevision = &hash
