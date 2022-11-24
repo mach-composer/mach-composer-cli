@@ -3,8 +3,9 @@ package config
 import (
 	"testing"
 
-	"github.com/labd/mach-composer/internal/utils"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/labd/mach-composer/internal/utils"
 )
 
 func TestParse(t *testing.T) {
@@ -68,7 +69,7 @@ func TestParse(t *testing.T) {
 	vars.Set("foo", "foobar")
 	vars.Set("foo.bar", "1")
 	vars.Set("bar.foo", "2")
-	config, err := Parse(data, &vars)
+	config, err := Parse(data, &vars, "main.yml")
 	if err != nil {
 		t.Error(err)
 	}
@@ -213,6 +214,6 @@ func TestParseMissingVars(t *testing.T) {
 
 	// Empty variables, it should fail because var.foo cannot be resolved
 	vars := Variables{}
-	_, err := Parse(data, &vars)
+	_, err := Parse(data, &vars, "main.yml")
 	assert.Error(t, err)
 }

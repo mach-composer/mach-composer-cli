@@ -1,27 +1,27 @@
-$schema: 'http://json-schema.org/draft-07/schema#'
+$schema: "http://json-schema.org/draft-07/schema#"
 description: Main MACH configuration object.
 additionalProperties: false
 type: object
 properties:
-
   mach_composer:
-    $ref: '#/definitions/MachComposerConfig'
+    $ref: "#/definitions/MachComposerConfig"
   global:
-    $ref: '#/definitions/GlobalConfig'
+    $ref: "#/definitions/GlobalConfig"
   sites:
     type: array
     items:
-      $ref: '#/definitions/Site'
+      $ref: "#/definitions/Site"
   components:
-    type: array
-    items:
-      $ref: '#/definitions/ComponentConfig'
+    oneOf:
+      - type: string
+      - type: array
+        items:
+          $ref: "#/definitions/ComponentConfig"
 
   sops:
     type: object
 
 definitions:
-
   MachComposerConfig:
     type: object
     required:
@@ -45,20 +45,20 @@ definitions:
       environment:
         type: string
       terraform_config:
-        $ref: '#/definitions/TerraformConfig'
+        $ref: "#/definitions/TerraformConfig"
       cloud:
         type: string
         enum:
           - aws
           - azure
       sentry:
-        $ref: '#/definitions/SentryConfig'
+        $ref: "#/definitions/SentryConfig"
       azure:
-        $ref: '#/definitions/AzureConfig'
+        $ref: "#/definitions/AzureConfig"
       contentful:
-        $ref: '#/definitions/ContentfulConfig'
+        $ref: "#/definitions/ContentfulConfig"
       amplience:
-        $ref: '#/definitions/AmplienceConfig'
+        $ref: "#/definitions/AmplienceConfig"
 
   TerraformConfig:
     type: object
@@ -66,11 +66,11 @@ definitions:
     additionalProperties: false
     properties:
       azure_remote_state:
-        $ref: '#/definitions/AzureTFState'
+        $ref: "#/definitions/AzureTFState"
       aws_remote_state:
-        $ref: '#/definitions/AWSTFState'
+        $ref: "#/definitions/AWSTFState"
       providers:
-        $ref: '#/definitions/TerraformProviders'
+        $ref: "#/definitions/TerraformProviders"
 
   AzureTFState:
     type: object
@@ -163,7 +163,7 @@ definitions:
       region:
         type: string
       frontdoor:
-        $ref: '#/definitions/AzureFrontdoorSettings'
+        $ref: "#/definitions/AzureFrontdoorSettings"
       resources_prefix:
         type: string
       service_object_ids:
@@ -173,7 +173,7 @@ definitions:
       service_plans:
         type: object
         additionalProperties:
-          $ref: '#/definitions/AzureServicePlan'
+          $ref: "#/definitions/AzureServicePlan"
 
   AzureFrontdoorSettings:
     type: object
@@ -183,7 +183,7 @@ definitions:
       dns_resource_group:
         type: string
       ssl_key_vault:
-        $ref: '#/definitions/AzureFrontdoorSslConfig'
+        $ref: "#/definitions/AzureFrontdoorSslConfig"
       suppress_changes:
         type: boolean
     description: Frontdoor settings.
@@ -264,25 +264,25 @@ definitions:
           "^[A-Za-z0-9+-]+$":
             oneOf:
               - type: string
-              - $ref: '#/definitions/Endpoint'
+              - $ref: "#/definitions/Endpoint"
       commercetools:
-        $ref: '#/definitions/CommercetoolsSettings'
+        $ref: "#/definitions/CommercetoolsSettings"
       contentful:
-        $ref: '#/definitions/ContentfulSettings'
+        $ref: "#/definitions/ContentfulSettings"
       amplience:
-        $ref: '#/definitions/AmplienceSettings'
+        $ref: "#/definitions/AmplienceSettings"
       apollo_federation:
-        $ref: '#/definitions/ApolloFederationSettings'
+        $ref: "#/definitions/ApolloFederationSettings"
       azure:
-        $ref: '#/definitions/SiteAzureSettings'
+        $ref: "#/definitions/SiteAzureSettings"
       aws:
-        $ref: '#/definitions/SiteAWSSettings'
+        $ref: "#/definitions/SiteAWSSettings"
       components:
         type: array
         items:
-          $ref: '#/definitions/Component'
+          $ref: "#/definitions/Component"
       sentry:
-        $ref: '#/definitions/SentryDsn'
+        $ref: "#/definitions/SentryDsn"
 
   Endpoint:
     type: object
@@ -297,9 +297,9 @@ definitions:
       zone:
         type: string
       aws:
-        $ref: '#/definitions/AWSEndpoint'
+        $ref: "#/definitions/AWSEndpoint"
       azure:
-        $ref: '#/definitions/AzureEndpoint'
+        $ref: "#/definitions/AzureEndpoint"
 
   AWSEndpoint:
     type: object
@@ -349,9 +349,9 @@ definitions:
       health_check_path:
         type: string
       sentry:
-        $ref: '#/definitions/SentryDsn'
+        $ref: "#/definitions/SentryDsn"
       azure:
-        $ref: '#/definitions/ComponentAzureConfig'
+        $ref: "#/definitions/ComponentAzureConfig"
 
   SentryDsn:
     type: object
@@ -395,34 +395,34 @@ definitions:
         type: string
       token_url:
         type: string
-        default: 'https://auth.europe-west1.gcp.commercetools.com'
+        default: "https://auth.europe-west1.gcp.commercetools.com"
       api_url:
         type: string
-        default: 'https://api.europe-west1.gcp.commercetools.com'
+        default: "https://api.europe-west1.gcp.commercetools.com"
       project_settings:
-        $ref: '#/definitions/CommercetoolsProjectSettings'
+        $ref: "#/definitions/CommercetoolsProjectSettings"
       channels:
         type: array
         items:
-          $ref: '#/definitions/CommercetoolsChannel'
+          $ref: "#/definitions/CommercetoolsChannel"
       taxes:
         type: array
         items:
-          $ref: '#/definitions/CommercetoolsTax'
+          $ref: "#/definitions/CommercetoolsTax"
       tax_categories:
         type: array
         items:
-          $ref: '#/definitions/CommercetoolsTaxCategory'
+          $ref: "#/definitions/CommercetoolsTaxCategory"
       stores:
         type: array
         items:
-          $ref: '#/definitions/CommercetoolsStore'
+          $ref: "#/definitions/CommercetoolsStore"
       zones:
         type: array
         items:
-          $ref: '#/definitions/CommercetoolsZone'
+          $ref: "#/definitions/CommercetoolsZone"
       frontend:
-        $ref: '#/definitions/CommercetoolsFrontendSettings'
+        $ref: "#/definitions/CommercetoolsFrontendSettings"
 
   CommercetoolsProjectSettings:
     type: object
@@ -499,7 +499,7 @@ definitions:
       rates:
         type: array
         items:
-          $ref: '#/definitions/CommercetoolsTax'
+          $ref: "#/definitions/CommercetoolsTax"
 
   CommercetoolsStore:
     type: object
@@ -542,11 +542,11 @@ definitions:
       locations:
         type: array
         items:
-          $ref: '#/definitions/CommercetoolsZoneLocation'
+          $ref: "#/definitions/CommercetoolsZoneLocation"
 
   CommercetoolsZoneLocation:
     type: object
-    description: 'CommercetoolsZoneLocation(country: str, state: str = '''')'
+    description: "CommercetoolsZoneLocation(country: str, state: str = '')"
     required:
       - country
     properties:
@@ -627,9 +627,9 @@ definitions:
     additionalProperties: false
     properties:
       frontdoor:
-        $ref: '#/definitions/AzureFrontdoorSettings'
+        $ref: "#/definitions/AzureFrontdoorSettings"
       alert_group:
-        $ref: '#/definitions/AlertGroup'
+        $ref: "#/definitions/AlertGroup"
       resource_group:
         type: string
       tenant_id:
@@ -645,7 +645,7 @@ definitions:
       service_plans:
         type: object
         additionalProperties:
-          $ref: '#/definitions/AzureServicePlan'
+          $ref: "#/definitions/AzureServicePlan"
 
   AlertGroup:
     type: object
@@ -686,7 +686,7 @@ definitions:
       extra_providers:
         type: array
         items:
-          $ref: '#/definitions/AWSProvider'
+          $ref: "#/definitions/AWSProvider"
 
   AWSProvider:
     type: object
@@ -733,7 +733,7 @@ definitions:
       health_check_path:
         type: string
       azure:
-        $ref: '#/definitions/ComponentAzureConfig'
+        $ref: "#/definitions/ComponentAzureConfig"
       branch:
         type: string
     description: Component definition.
