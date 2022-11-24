@@ -21,12 +21,16 @@ For more information about these configuration options, see the [syntax](../../r
 
 ## API client management
 
-MACH is provided by admin credentials which allows MACH to fully manage your commercetools project.
+MACH is provided by admin credentials which allows MACH to fully manage your
+commercetools project.
 
-Each component that implements functionality that needs to communicate with commercetools needs their own set of credentials.
-The component is responsible for creating the necessary API client credentials for that specific component, with only the most necessary scopes set.
+Each component that implements functionality that needs to communicate with
+commercetools needs their own set of credentials.
+The component is responsible for creating the necessary API client credentials
+for that specific component, with only the most necessary scopes set.
 
-One way a component could facilitate in this would be to define the following in your Terraform config:
+One way a component could facilitate in this would be to define the following in
+your Terraform config:
 
 ```terraform
 locals {
@@ -50,7 +54,8 @@ It's possible to
 - Configure your stores within a MACH configuration (see [example](#example-configuration-block) below)
 - Define store-specific variables and secrets per component
 
-For example, when two stores are defined `uk-store` and `nl-store`, these can be used to configure your component:
+For example, when two stores are defined `uk-store` and `nl-store`, these can be
+used to configure your component:
 
 ```yaml
 component:
@@ -69,16 +74,24 @@ component:
         MAIL_API_KEY: i1hajIJ92LPNYGB2p3W1
 ```
 
-The component can use the correct variables based on the context that is decided based on incoming requests or other information available.
+The component can use the correct variables based on the context that is decided
+based on incoming requests or other information available.
 
 !!! warning "Using store-aware context in components"
-    Although MACH composer provides a data structure for managing your configuration in different contexts, it is the responsibility of the component itself to parse this data structure correctly, and apply the right configuration in the right context.
+    Although MACH composer provides a data structure for managing your
+    configuration in different contexts, it is the responsibility of the
+    component itself to parse this data structure correctly, and apply the right
+    configuration in the right context.
 
-    Read the [parse store variables and secrets](../../howto/commercetools/store-vars.md) how-to for more information.
+    Read the [parse store variables and secrets](../../howto/commercetools/store-vars.md)
+    how-to for more information.
 
 ### Outside MACH configuration
 
-If you don't want to manage the stores from the MACH configuration itself, you still have the possibility to define them in the configuration so that components can use store variables and receive a full list of the stores available.
+If you don't want to manage the stores from the MACH configuration itself, you
+still have the possibility to define them in the configuration so that
+components can use store variables and receive a full list of the stores
+available.
 
 This is done by setting a store to `managed: false`:
 
@@ -149,7 +162,8 @@ commercetools:
 
 ## Integrate with components
 
-When `commercetools` is set as an [component integration](../../reference/components/structure.md#integrations), the component should have the following Terraform variables defined:
+When `commercetools` is set as an [component integration](../../reference/components/structure.md#integrations),
+the component should have the following Terraform variables defined:
 
 - `ct_project_key`
 - `ct_api_url`
