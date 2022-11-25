@@ -2,9 +2,8 @@ package runner
 
 import (
 	"crypto/sha256"
-	"fmt"
+	"encoding/hex"
 	"io"
-	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -28,14 +27,12 @@ func GetHash(path string) (string, error) {
 		if err != nil {
 			return "", err
 		}
+		defer f.Close()
 
 		if _, err := io.Copy(h, f); err != nil {
-			_ = f.Close() // TODO: handle error
-			log.Fatal(err)
+			return "", err
 		}
-
-		_ = f.Close() // TODO: handle error
 	}
 
-	return fmt.Sprintf("%x", h.Sum(nil)), nil
+	return hex.EncodeToString(h.Sum(nil)), nil
 }
