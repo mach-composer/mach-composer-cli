@@ -119,7 +119,7 @@ Will replace `${env.MACH_ENVIRONMENT}` in our [example](#example) with `test`.
 ## `include`
 **Usage** `${include(<filename>)}`
 
-Any valid YAML file can be included here.
+Any valid YAML file can be included here for the `components` block.
 
 !!! info "Using `!include`"
     The `${include(...)}` syntax has the same effect as using `!include ...` in your YAML file.
@@ -127,4 +127,6 @@ Any valid YAML file can be included here.
     However, when using [SOPS](../topics/../howto/security/encrypt.md) to
     encrypt your configuration file, this tag will get stripped.  Therefor, MACH
     Composer also supports the MACH Composer-specific syntax.
+
+    Note that this only is supported for the `components` block.
 
