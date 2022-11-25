@@ -72,7 +72,7 @@ func TestParse(t *testing.T) {
 	vars.Set("foo", "foobar")
 	vars.Set("foo.bar", "1")
 	vars.Set("bar.foo", "2")
-	config, err := Parse(data, &vars, "main.yml")
+	config, err := parseConfig(data, &vars, "main.yml")
 	if err != nil {
 		t.Error(err)
 	}
@@ -217,7 +217,7 @@ func TestParseMissingVars(t *testing.T) {
 
 	// Empty variables, it should fail because var.foo cannot be resolved
 	vars := Variables{}
-	_, err := Parse(data, &vars, "main.yml")
+	_, err := parseConfig(data, &vars, "main.yml")
 	assert.Error(t, err)
 }
 
