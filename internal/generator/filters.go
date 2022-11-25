@@ -138,31 +138,31 @@ func filterComponentEndpointName(in *pongo2.Value, param *pongo2.Value) (*pongo2
 }
 
 func filterTFValue(in *pongo2.Value, param *pongo2.Value) (*pongo2.Value, *pongo2.Error) {
-	if in.IsString() {
+	switch {
+	case in.IsString():
 		val, err := ParseTemplateVariable(in.String())
 		if err != nil {
 			logrus.Fatal(err.Error())
 		}
 		res := pongo2.AsSafeValue(val)
 		return res, nil
-	}
-	if in.IsInteger() {
+
+	case in.IsInteger():
 		res := pongo2.AsSafeValue(fmt.Sprintf("%d", in.Integer()))
 		return res, nil
-	}
-	if in.IsFloat() {
+
+	case in.IsFloat():
 		buf := strconv.FormatFloat(in.Float(), 'f', -1, 64)
 		res := pongo2.AsSafeValue(buf)
 		return res, nil
-	}
-	if in.IsBool() {
+
+	case in.IsBool():
 		if in.IsTrue() {
 			return pongo2.AsValue("true"), nil
-		} else {
-			return pongo2.AsValue("false"), nil
 		}
-	}
-	if in.CanSlice() {
+		return pongo2.AsValue("false"), nil
+
+	case in.CanSlice():
 		sl := make([]string, 0, in.Len())
 		for i := 0; i < in.Len(); i++ {
 			sl = append(sl, fmt.Sprintf(`"%s"`, in.Index(i).String()))
@@ -170,25 +170,26 @@ func filterTFValue(in *pongo2.Value, param *pongo2.Value) (*pongo2.Value, *pongo
 
 		result := pongo2.AsSafeValue(fmt.Sprintf("[%s]", strings.Join(sl, ", ")))
 		return result, nil
-	}
-
-	switch data := in.Interface().(type) {
-	case map[string]string:
-		return formatMap(data)
-
-	case map[string]any:
-		return formatMap(data)
-
-	case map[any]any:
-		// Should not be necessary if the formatMap is fixed
-		items := make(map[string]any, 0)
-		for k, v := range data {
-			items[fmt.Sprint(k)] = v
-		}
-		return formatMap(items)
 
 	default:
-		return pongo2.AsValue(data), nil
+		switch data := in.Interface().(type) {
+		case map[string]string:
+			return formatMap(data)
+
+		case map[string]any:
+			return formatMap(data)
+
+		case map[any]any:
+			// Should not be necessary if the formatMap is fixed
+			items := make(map[string]any, 0)
+			for k, v := range data {
+				items[fmt.Sprint(k)] = v
+			}
+			return formatMap(items)
+
+		default:
+			return pongo2.AsValue(data), nil
+		}
 	}
 }
 
