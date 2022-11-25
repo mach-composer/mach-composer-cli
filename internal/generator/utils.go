@@ -19,3 +19,8 @@ func Slugify(value string) string {
 	v := strings.ToLower(strings.TrimSpace(trimmed))
 	return reReplace.ReplaceAllString(v, "_")
 }
+
+// EscapeChars escapes characters needed for HCL
+func EscapeChars(value string) string {
+	return strings.ReplaceAll(value, `\`, `\\`)
+}

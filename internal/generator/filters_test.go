@@ -15,6 +15,7 @@ func TestFilterTFValue(t *testing.T) {
 
 	tests := []test{
 		{input: pongo2.AsValue("foobar"), output: pongo2.AsSafeValue(`"foobar"`)},
+		{input: pongo2.AsValue(`c:\foo\bar`), output: pongo2.AsSafeValue(`"c:\\foo\\bar"`)},
 		{input: pongo2.AsValue(1), output: pongo2.AsSafeValue("1")},
 		{input: pongo2.AsValue(1.5), output: pongo2.AsSafeValue("1.5")},
 		{input: pongo2.AsValue(true), output: pongo2.AsSafeValue("true")},

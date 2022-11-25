@@ -144,7 +144,7 @@ func filterTFValue(in *pongo2.Value, param *pongo2.Value) (*pongo2.Value, *pongo
 		if err != nil {
 			logrus.Fatal(err.Error())
 		}
-		res := pongo2.AsSafeValue(val)
+		res := pongo2.AsSafeValue(EscapeChars(val))
 		return res, nil
 
 	case in.IsInteger():

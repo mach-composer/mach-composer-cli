@@ -8,6 +8,7 @@
 - Fix rendering of variables in the generated terraform output (#194)
 - Fix a yaml parsing bug which resulted in not being able to disable management
   of commercetools stores. (#193)
+- Escape backslashes for strings in HCL (#133)
 
 ## 2.3.0 (2022-10-01)
 - Fix windows version due to wrong handling of the path separator (#182)
