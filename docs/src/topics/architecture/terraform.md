@@ -1,6 +1,6 @@
 # Everything-as-configuration-as-code
 
-As a principle, MACH composer encourages declaratively defining your
+As a principle, MACH Composer encourages declaratively defining your
 configuration as code, as much as possible. This will enable you to manage much
 of your infrastructure in an automated fashion, which in turn will enable you to
 scale your MACH ecosystem to many instances and use-cases.
@@ -9,9 +9,9 @@ scale your MACH ecosystem to many instances and use-cases.
 ## Terraform & infrastructure-as-code
 
 In most cases, this boils down to managing your SaaS and Cloud resources using
-Terraform, which MACH compser uses underneath as the infrastructure-as-code
+Terraform, which MACH Composer uses underneath as the infrastructure-as-code
 engine. As a rule-of-thumb we can say: *if it can be managed by Terraform, it
-can be managed by MACH composer*.
+can be managed by MACH Composer*.
 
 Find supported services on these pages:
 
@@ -25,7 +25,10 @@ did with the Terraform Provider for Commercetools](https://blog.labdigital.nl/co
 
 
 !!! info "Creating your own Terraform Provider"
-    Read [this blogpost by Hashicorp](https://www.hashicorp.com/resources/creating-terraform-provider-for-anything) to find out how to start with that. The article also points to [this Tutorial](https://learn.hashicorp.com/collections/terraform/providers), which explains how to build your own Terraform Provider.
+    Read [this blogpost by Hashicorp](https://www.hashicorp.com/resources/creating-terraform-provider-for-anything)
+    to find out how to start with that. The article also points to
+    [this Tutorial](https://learn.hashicorp.com/collections/terraform/providers),
+    which explains how to build your own Terraform Provider.
 
 
 When yo don't have the time or the resources to create your own Terraform
@@ -51,7 +54,8 @@ Find it here: [https://github.com/sullivtr/terraform-provider-graphql](https://g
 
 ### 3. Invoke an existing CLI from Terraform
 
-Using Terraform's [null_resource](https://registry.terraform.io/providers/hashicorp/null/latest/docs/resources/resource), you can invoke local commands.
+Using Terraform's [null_resource](https://registry.terraform.io/providers/hashicorp/null/latest/docs/resources/resource),
+you can invoke local commands.
 
 ```terraform
 resource "null_resource" "my_resource" {

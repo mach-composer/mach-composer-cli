@@ -1,10 +1,11 @@
-# MACH configuration deployment
+# MACH Composer configuration deployment
 
-A MACH configuration deployment (or simply put: **MACH deployment**) will
-generate and apply a Terraform configuration **per site** so that it can deploy
+A MACH Composer configuration deployment (or simply put: **MACH deployment**)
+will generate and apply a Terraform configuration **per site** so that it can
+deploy.
 
-#### 1. MACH-managed resources
-The resources that are managed by MACH depend on the cloud integration:
+#### 1. MACH-Composer managed resources
+The resources that are managed by MACH Composer depend on the cloud integration:
 
 - AWS (See [AWS deployments](./aws.md))
 - Azure (See [Azure deployments](./azure.md))
@@ -18,14 +19,16 @@ Resources needed for the integrations such as
 #### 3. Components
 Since components are loaded into the configuration as
 [Terraform modules](../../../reference/components/structure.md#terraform-module),
-during a MACH deployment the resources defined in the component will get created.
+during a MACH Composer deployment the resources defined in the component will
+get created.
 
 1. The [**first stage**](../components.md) of a component deployment (uploading
    the assets to a component repository) is done before a component is deployed as
-   part of a MACH stack.
+   part of a MACH Composer stack.
 
 2. The [**second stage**](./components.md) is getting the previously deployed
-   component assets actually up and running in your MACH stack and to create other necessary resources.
+   component assets actually up and running in your MACH Composer stack and to
+   create other necessary resources.
 
 More info about the [second stage deployment](./components.md).
 
@@ -38,15 +41,15 @@ More info about the [second stage deployment](./components.md).
 
 ## Providing credentials
 
-MACH needs to be able to access:
+MACH Composer needs to be able to access:
 
 - The components repositories
 - The AWS account / Azure subscription it needs to manage resources in
 
-When running MACH composer directly **from the command line**, whenever you have
+When running MACH Composer directly **from the command line**, whenever you have
 been authenticated (either by setting the correct AWS environment variables or
-on Azure using `az login`) you should be able to deploy using MACH without any
-issues.
+on Azure using `az login`) you should be able to deploy using MACH Composer
+without any issues.
 
 When running the **MACH Docker image**, the necessary environment variables need
 to be passed on to the docker container:
@@ -78,19 +81,19 @@ to be passed on to the docker container:
     ```
 
     For Azure you'll need to run it with the `--with-sp-login` option let MACH
-    composer perform an `az login` command.<br>
+    Composer perform an `az login` command.<br>
     [More info](../../../reference/cli.md#apply).
 
 
 ## Cache Terraform providers
 
-MACH composer comes with Terraform providers pre-installed in the Docker image.
+MACH Composer comes with Terraform providers pre-installed in the Docker image.
 
 If you're overwriting these versions with in your
 [`terraform_config` block](../../../reference/syntax/global.md#terraform_config),
 these providers will be downloaded.
 
-To avoid having to re-download it everytime you run MACH through the Docker
+To avoid having to re-download it everytime you run MACH Composer through the Docker
 image, make sure you mount the [plugin cache](https://www.terraform.io/docs/commands/cli-config.html#provider-plugin-cache)
 directory;
 

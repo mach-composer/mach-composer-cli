@@ -1,12 +1,12 @@
 # Azure components
 
-All components within a Azure-based MACH configuration are automatically
-considered to have a 'azure' integration by default. Only if 'azure' is
-explicitely omitted from the `integrations` definition, it won't require any
-Azure-specific variables.
+All components within a Azure-based MACH Composer configuration are
+automatically considered to have a 'azure' integration by default. Only if
+'azure' is explicitely omitted from the `integrations` definition, it won't
+require any Azure-specific variables.
 
 To be able to create the resources needed, a couple of extra
-[Terraform variables](#terraform-variables) are set by MACH.
+[Terraform variables](#terraform-variables) are set by MACH Composer.
 
 In addition to this, the component itself is responsible for
 [packaging and deploying](#packaging-and-deploying) the correct assets in case
@@ -167,7 +167,7 @@ output "azure_endpoint_main" {
 ### With `service_plan`
 
 When a component has been configured with a [`service_plan`](../syntax/sites.md#azure_1),
-MACH manages the service plan for you and passes the information to the
+MACH Composer manages the service plan for you and passes the information to the
 component with a `app_service_plan` variable:
 
 ```terraform
@@ -212,7 +212,7 @@ resource "azurerm_function_app" "your_component" {
 ```
 ## HTTP routing
 
-MACH will provide the correct HTTP routing for you.<br>
+MACH Composer will provide the correct HTTP routing for you.<br>
 To do so, the following has to be configured:
 
 - [Frontdoor](../syntax/global.md#frontdoor) settings in the Azure configuration
@@ -222,7 +222,7 @@ To do so, the following has to be configured:
     If you assign `default` to one of your components endpoints, no additional
     Frontdoor settings are needed.
 
-    MACH will create a Frontdoor instance for you without any custom domain.
+    MACH Composer will create a Frontdoor instance for you without any custom domain.
 
 More information in the [deployment section](../../topics/deployment/config/azure.md#http-routing).
 
@@ -245,7 +245,7 @@ resources](https://docs.microsoft.com/en-us/azure/azure-resource-manager/managem
 
 ### Resource prefixing
 
-MACH creates a name prefix which can be used to name all other resources.
+MACH Composer creates a name prefix which can be used to name all other resources.
 
 This prefix is built up using
 

@@ -1,22 +1,22 @@
 # Tutorial
 
-In this tutorial, we will explain how to set up a new MACH composer project in
+In this tutorial, we will explain how to set up a new MACH Composer project in
 any of the supported clouds, including the setup of a commercetools project.
 Also, we explain how to create your first MACH component (a serverless
 microservice), and attach it to your project.
 
-## How does MACH composer work?
+## How does MACH Composer work?
 
-MACH composer takes a [YAML configuration](../reference/syntax/index.md) as
+MACH Composer takes a [YAML configuration](../reference/syntax/index.md) as
 input, and will translate this into a Terraform configuration. It will then
 execute the terraform configuration, which will deploy all resources for the
 site architecture.
 
 [![MACH diagram](../_img/mach.png)](../_img/mach.png)
 
-MACH composer is intended for managing multiple instances of the architecture.
+MACH Composer is intended for managing multiple instances of the architecture.
 
-## Get started with MACH composer
+## Get started with MACH Composer
 
 In this tutorial we'll walk you through the steps required to get started with MACH.
 

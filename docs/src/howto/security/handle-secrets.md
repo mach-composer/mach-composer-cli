@@ -1,6 +1,6 @@
 # Handle secrets in components
 
-Secrets values are passed on to the component by MACH using the
+Secrets values are passed on to the component by MACH Composer using the
 [`secrets` attribute](../../reference/syntax/sites.md#components).
 
 It is up to the component to use those secret values in a secure manner.
@@ -13,7 +13,8 @@ references to those secrets in the Lambda environment variables
 
 ### Combined or seperate
 
-Depending on your use-case you can choose to store **all** secrets into **one** *AWS secret* or store them separately.
+Depending on your use-case you can choose to store **all** secrets into
+**one** *AWS secret* or store them separately.
 
 Combining the secrets can be done by storing the secrets as a *json-encoded*
 value. The main advantage of combining them is that you only need one call to

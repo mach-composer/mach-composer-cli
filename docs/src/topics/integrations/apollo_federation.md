@@ -32,5 +32,5 @@ the component should have the following Terraform variables defined:
 
 ## Further reading
 
-For more instructions on how to integrate Apollo Federation into your MACH
+For more instructions on how to integrate Apollo Federation into your MACH Composer
 stack, [read our how-to](../../howto/apollo-federation.md).

@@ -1,12 +1,12 @@
-# Step 5. Create your MACH stack
+# Step 5. Create your MACH Composer stack
 
-To create a new MACH configuration file, run
+To create a new MACH Composer configuration file, run
 
 ```bash
-mach bootstrap config
+mach-composer bootstrap config
 ```
 
-A configuration will be created and can be used as input for MACH composer.
+A configuration will be created and can be used as input for MACH Composer.
 
 An example:
 

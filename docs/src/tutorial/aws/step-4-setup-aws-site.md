@@ -7,14 +7,14 @@ Now that we've created our [service account](./step-3-setup-aws-services.md), we
 For this account we will create:
 
 1. Terraform state backend
-2. `deploy` IAM role for MACH to manage your resources
+2. `deploy` IAM role for MACH Composer to manage your resources
 
 ### 1. Create AWS account
 
 - In your AWS console, go to **My Organization** and choose **Add accounts**
 - For your new account choose a name like `your-project-tst`
 - As **IAM role name** enter `admin`
-  
+
 ### 2. Setup your Terraform configuration
 
 Within your `mach-account` directory [^1] create the following files:
@@ -79,17 +79,21 @@ module "mach_account" {
 ```
 
 !!! info "`deploy_principle_identifiers`"
-    We specify our root account here, so it makes it easier for this tutorial to setup credentials to be able to deploy using MACH.
+    We specify our root account here, so it makes it easier for this tutorial to
+    setup credentials to be able to deploy using MACH.
 
 #### `policies.tf`
 
-The `terraform-aws-mach-account` module will create the necessary IAM policies that allows the mach deploy user to deploy the necessary resources.
+The `terraform-aws-mach-account` module will create the necessary IAM policies
+that allows the mach deploy user to deploy the necessary resources.
 
-The Terraform state backend must also be used by mach, so we need to create the necessary policies that allows the mach user to read/write to that state backend:
+The Terraform state backend must also be used by MACH Composer, so we need to
+create the necessary policies that allows the mach user to read/write to that
+state backend:
 
 ```terraform
 data "aws_iam_policy_document" "terraform_state" {
-    
+
   statement {
     actions = [
       "s3:ListBucket"
@@ -155,15 +159,17 @@ name           = "your-project-tst"
 
 Within your `mach-account` directory, run the following commands:
 ```bash
-$ terraform init -var-file=envs/tst.tfvars 
-$ terraform apply -var-file=envs/tst.tfvars 
+$ terraform init -var-file=envs/tst.tfvars
+$ terraform apply -var-file=envs/tst.tfvars
 ```
 
 ### 5. Configure state backend
 
 Terraform has now created the Terraform state backend.
 
-We are going to store that information in a site-specific backend configuration file. This way, several backends for multiple sites can live side-by-side in the same infra repo.
+We are going to store that information in a site-specific backend configuration
+file. This way, several backends for multiple sites can live side-by-side in the
+same infra repo.
 
 1. Create a new directory `mach-account/backend-configs` and create a new file `tst.conf`:
 ```
@@ -177,7 +183,7 @@ encrypt        = "true"
 2. Uncomment the `# backend "s3" {}` line in `main.tf`
 3. Perform the following command:
 ```bash
-$ terraform init -force-copy -var-file=envs/tst.tfvars  -backend-config=backend-configs/tst.conf 
+$ terraform init -force-copy -var-file=envs/tst.tfvars  -backend-config=backend-configs/tst.conf
 ```
 Now the state is stored in the S3 bucket, and the DynamoDB table will be used to lock the state to prevent concurrent modification.
 
@@ -197,7 +203,8 @@ module "shared-config" {
 ```
 
 !!! note ""
-    This will make sure that this AWS account is able to read the contents of the component repository bucket.
+    This will make sure that this AWS account is able to read the contents of
+    the component repository bucket.
 
 Run `terraform apply` to apply these changes.
 
@@ -205,4 +212,5 @@ Run `terraform apply` to apply these changes.
     Next we'll create our first [MACH component](./step-5-create-component.md).
 
 
-[^1]: Refer to the [previous step](./step-3-setup-aws-services.md#2-setup-your-terraform-configuration) to see how we organize the two different AWS accounts
+[^1]: Refer to the [previous step](./step-3-setup-aws-services.md#2-setup-your-terraform-configuration)
+      to see how we organize the two different AWS accounts

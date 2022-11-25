@@ -4,21 +4,23 @@
 
 Make sure you have Terraform installed on your machine.
 
-We recommend using [tfenv](https://github.com/tfutils/tfenv) to easily switch between Terraform versions when needed.
+We recommend using [tfenv](https://github.com/tfutils/tfenv) to easily switch
+between Terraform versions when needed.
 
 1. Install [tfenv](https://github.com/tfutils/tfenv): Follow the instructions on [https://github.com/tfutils/tfenv](https://github.com/tfutils/tfenv)
-2. Make sure you have Terraform 0.14.5 installed
+2. Make sure you have Terraform installed
    ```bash
-   $ tfenv install 0.14.5
+   $ tfenv install latest
    ```
 
-## Install MACH
-The easiest way to get started is by installing MACH composer locally to be able
-to perform a MACH deploy and make use of the
+## Install MACH Composer
+The easiest way to get started is by installing MACH Composer locally to be able
+to perform a MACH Composer deploy and make use of the
 [developer tools](../topics/development/workflow.md).
 
 ```bash
-$ pipx install mach-composer
+brew tap labd/mach-composer
+brew install mach-composer
 ```
 
 !!! tip "Next: step 2"

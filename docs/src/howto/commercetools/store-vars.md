@@ -1,7 +1,8 @@
 # Parse store variables and secrets
 
 When [integrating with commercetools](../../topics/integrations/commercetools.md)
-MACH makes it possible to define [store specific variables and secrets](../../topics/integrations/commercetools.md).
+MACH Composer makes it possible to define
+[store specific variables and secrets](../../topics/integrations/commercetools.md).
 
 You could have for example the following configuration
 

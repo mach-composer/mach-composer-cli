@@ -18,8 +18,7 @@ operations.
 The easiest way to navigate to your Terraform output is by running
 
 ```bash
-cd $(mach path <site-name>)
-# or (in case of for example main.yml)
+# in case of for example main.yml
 cd deployments/main/<site-name>
 ```
 

@@ -2,22 +2,22 @@
 
 ## Resource groups
 
-MACH will create a **[resource group](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/resource_group) per site**.
+MACH Composer will create a **[resource group](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/resource_group) per site**.
 
 !!! info ""
     Only when a [`resource_group`](../../../reference/syntax/sites.md#azure)
-    is explicitly set, it won't be managed by MACH.
+    is explicitly set, it won't be managed by MACH Composer.
 
 ## HTTP routing
 
-Only when a MACH stack contains components that have an
-[`endpoint`](../../../reference/syntax/components.md) defined, MACH will setup a
-**Frontdoor instance** to be able to route traffic to that component.
+Only when a MACH Composer stack contains components that have an
+[`endpoint`](../../../reference/syntax/components.md) defined, MACH Composer
+will setup a **Frontdoor instance** to be able to route traffic to that component.
 
 ### Default endpoint
 
-If you have defined your component with a `default` endpoint, MACH will create a
-Frontdoor instance for you which includes the default Azure domain.
+If you have defined your component with a `default` endpoint, MACH Composer will
+create a Frontdoor instance for you which includes the default Azure domain.
 
 ```yaml
 components:
@@ -34,7 +34,7 @@ components:
 ### Custom endpoint
 
 Whenever a custom endpoint from your [endpoints definition](../../../reference/syntax/sites.md#endpoints)
-is used, MACH will require that you have configured
+is used, MACH Composer will require that you have configured
 [`frontdoor`](../../../reference/syntax/global.md#frontdoor) for additional DNS
 information that it needs to setup your Frontdoor instance.
 
@@ -42,7 +42,7 @@ In addition to that it will also setup the necessary DNS record.
 
 ### Component routing
 
-For each component with an `endpoint` MACH composer will add a route to the
+For each component with an `endpoint` MACH Composer will add a route to the
 Frontdoor instance using the name of the component.
 
 So when having the following components defined:
@@ -75,13 +75,12 @@ The routing in Frontdoor that will be created:
     the components.
 
     This means the components can't create the routing themselves (as with AWS)
-    but need to instruct MACH how to set up routing. This can be done by
-    defining routing options in [output
-    values](../../../reference/components/azure.md#defining-outputs).
+    but need to instruct MACH Composer how to set up routing. This can be done by
+    defining routing options in [output values](../../../reference/components/azure.md#defining-outputs).
 
 ## App service plans
 
-MACH can create an [App service plan](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/app_service_plan)
+MACH Composer can create an [App service plan](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/app_service_plan)
 that can be used for any MACH component that uses the `service_plan`
 configuration option (either in the [component definition](../../../reference/syntax/components.md#azure)
 or the [site-specific configuration](../../../reference/syntax/sites.md#azure_1)).
@@ -91,11 +90,11 @@ plans are needed by the components, and how the
 [`service_plans`](../../../reference/syntax/global.md#service_plans)
 configuration looks like.
 
-By default, MACH will create a `default` service plan which is a Consumption
-plan, if any of the components have `service_plan: default` set in their
-configuration.
+By default, MACH Composer will create a `default` service plan which is a
+Consumption plan, if any of the components have `service_plan: default` set in
+their configuration.
 
-In this case, you don't need to define the service plan yourself, MACH
+In this case, you don't need to define the service plan yourself, MACH Composer
 automatically creates this default for you:
 
 ```yaml

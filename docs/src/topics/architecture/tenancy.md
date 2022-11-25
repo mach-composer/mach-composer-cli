@@ -1,11 +1,11 @@
 # Designing your Tenancy model
 
-When using MACH composer, chances are you want to manage multiple use-cases with
-it, from a single basis. At least, this is what MACH composer is intended for:
+When using MACH Composer, chances are you want to manage multiple use-cases with
+it, from a single basis. At least, this is what MACH Composer is intended for:
 building platforms that span many use-cases that share a big part of how they
 are built.
 
-MACH composer allows you to orchestrate multi-tenant environments and implement
+MACH Composer allows you to orchestrate multi-tenant environments and implement
 use-case specific requirements where needed, without sacrificing the scalability
 (and perhaps more importantly, its maintainability) for it.
 
@@ -20,7 +20,7 @@ up instead of trying to fit a square into a circle.
 
 !!! info "Multi tenancy"
     When we talk about the Tenancy model, we explain how we implement
-    multi-tenancy within a MACH composer project. Multi tenancy is used to serve
+    multi-tenancy within a MACH Composer project. Multi tenancy is used to serve
     many use-cases, from a single platform. Typical use-cases are multi-brand,
     multi-country and multi-country environments, that require some 'context' at
     the application level, to separate one environment from the other, to
@@ -31,7 +31,7 @@ up instead of trying to fit a square into a circle.
     organisation's communication structure.*
     ([source](https://en.wikipedia.org/wiki/Conway%27s_law)).
 
-    Usually the tenancy model of a MACH composer platform, ends up being a
+    Usually the tenancy model of a MACH Composer platform, ends up being a
     reflection of how the organisation that uses it is structured.
 
 
@@ -86,7 +86,8 @@ controls to design a sane structure that matches your organisational needs.
 ### contentful tenancy
 
 !!! TODO
-    describe/link to how contentful is structured and how that relates to MACH composer projects.
+    describe/link to how contentful is structured and how that relates to MACH
+    Composer projects.
 
 ### Amplience tenancy
 
@@ -148,7 +149,7 @@ In short:
 
 1. Follow [Azure Resource Group best-practices](https://docs.microsoft.com/en-us/azure/cloud-adoption-framework/ready/azure-setup-guide/organize-resources?tabs=AzureManagementGroupsAndHierarchy).
 2. Create a 'shared' Resource Groups that host shared resources (i.e. CDN, front-ends, encryption keys and the components repository)
-3. Have all resources per site be created in their own separate Azure Resource Group. MACH composer will do this for you automatically. [^1]
+3. Have all resources per site be created in their own separate Azure Resource Group. MACH Composer will do this for you automatically. [^1]
 
 !!! tip ""
       See the instructions on [how to setup Azure](../../tutorial/azure/step-3-setup-azure.md)

@@ -1,11 +1,12 @@
 # AWS components
 
-All components within a AWS-based MACH configuration are automatically
+All components within a AWS-based MACH Composer configuration are automatically
 considered to have a 'aws' integration by default. Only if 'aws' is explicitely
 omitted from the `integrations` definition, it won't require any AWS-specific
 variables.
 
-To be able to create the resources needed, a couple of extra [Terraform variables](#terraform-variables) are set by MACH.
+To be able to create the resources needed, a couple of extra
+[Terraform variables](#terraform-variables) are set by MACH Composer.
 
 In addition to this, the component itself is responsible for
 [packaging and deploying](#packaging-and-deploying) the correct assets in case
@@ -65,7 +66,7 @@ resource "aws_lambda_function" "example" {
 ```
 ## HTTP routing
 
-MACH will provide the correct HTTP routing for you.<br>
+MACH Composer will provide the correct HTTP routing for you.<br>
 To do so, the following has to be configured:
 
 - [endpoints](../syntax/sites.md) settings in the Site configuration
@@ -75,7 +76,7 @@ To do so, the following has to be configured:
     If you assign `default` to one of your components endpoints, no additional
     Route53 settings are needed.
 
-    MACH will create an API Gateway for you without any custom domain.
+    MACH Composer will create an API Gateway for you without any custom domain.
 
 More information in the [deployment section](../../topics/deployment/config/aws.md#http-routing).
 

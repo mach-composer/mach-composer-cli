@@ -45,8 +45,8 @@ for example:
 
 Instead of provided these seperate pieces of functionality in two seperate
 components, it would make more sense to include that in one component so that
-when including that component in your MACH stack, all ERP-related functionality
-is taken care of.
+when including that component in your MACH stack, all ERP-related
+functionality is taken care of.
 
 
 ## Deployment process
@@ -56,11 +56,11 @@ The deployment of a full-fledged component typically flows through the following
 1. In case of a **serverless function** it is **built**, **packaged** and
    **uploaded** to a shared resources all environments and sites can access.<br>
    **Note:** at this point, no actual deployment is made; the function doesn't run yet.
-2. At the moment MACH composer deploys a site's Terraform configuration, it uses
+2. At the moment MACH Composer deploys a site's Terraform configuration, it uses
    the component's Terraform configuration to make the necessary modifications to
    the resources.<br>
    For example: create the function app instance, necessary routing, etc.
-3. MACH composer will use the packaged function (from step 1) to deploy the function itself
+3. MACH Composer will use the packaged function (from step 1) to deploy the function itself
 
 !!! info "Simple components"
       Not all components need to be a serverless function. A component might be
@@ -75,11 +75,12 @@ you'll see the steps illustrated.
 
 ## Terraform module
 
-The component must be able to instruct MACH wat resources to create in the cloud
-infrastructure.  This is done by providing the necessary Terraform module files
-in the component.
+The component must be able to instruct MACH Composer wat resources to create in
+the cloud infrastructure.  This is done by providing the necessary Terraform
+module files in the component.
 
 
 !!! tip ""
       A good practise usually is to place all Terraform files in a single
-      `terraform/` directory and reference that in your MACH configuration.
+      `terraform/` directory and reference that in your MACH Composer
+      configuration.

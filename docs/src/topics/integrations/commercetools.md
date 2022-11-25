@@ -2,8 +2,8 @@
 
 ## Configuration
 
-From a MACH configuration file, you can configure the following items in
-commercetools:
+From a MACH Composer configuration file, you can configure the following items
+in commercetools:
 
 - currencies
 - languages
@@ -16,8 +16,8 @@ commercetools:
 For more information about these configuration options, see the [syntax](../../reference/syntax/sites.md#commercetools).
 
 !!! tip "More fine-grained control"
-    MACH provides a couple of basic configuration options which in most cases
-    are sufficient and is setup very quickly.<br>
+    MACH Composer provides a couple of basic configuration options which in most
+    cases are sufficient and is setup very quickly.<br>
     If you need more control over the configuration in your project, you can
     load custom configuration through a new component which would include the
     necessary Terraform configuration for that.<br>
@@ -25,8 +25,8 @@ For more information about these configuration options, see the [syntax](../../r
 
 ## API client management
 
-MACH is provided by admin credentials which allows MACH to fully manage your
-commercetools project.
+MACH Composer is provided by admin credentials which allows MACH Composer to
+fully manage your commercetools project.
 
 Each component that implements functionality that needs to communicate with
 commercetools needs their own set of credentials.
@@ -55,7 +55,8 @@ MACH provides built-in [commercetools Stores](https://docs.commercetools.com/api
 
 It's possible to
 
-- Configure your stores within a MACH configuration (see [example](#example-configuration-block) below)
+- Configure your stores within a MACH Composer configuration
+  (see [example](#example-configuration-block) below)
 - Define store-specific variables and secrets per component
 
 For example, when two stores are defined `uk-store` and `nl-store`, these can be
@@ -82,7 +83,7 @@ The component can use the correct variables based on the context that is decided
 based on incoming requests or other information available.
 
 !!! warning "Using store-aware context in components"
-    Although MACH composer provides a data structure for managing your
+    Although MACH Composer provides a data structure for managing your
     configuration in different contexts, it is the responsibility of the
     component itself to parse this data structure correctly, and apply the right
     configuration in the right context.
@@ -90,11 +91,11 @@ based on incoming requests or other information available.
     Read the [parse store variables and secrets](../../howto/commercetools/store-vars.md)
     how-to for more information.
 
-### Outside MACH configuration
+### Outside MACH Composer configuration
 
-If you don't want to manage the stores from the MACH configuration itself, you
-still have the possibility to define them in the configuration so that
-components can use store variables and receive a full list of the stores
+If you don't want to manage the stores from the MACH Composer configuration
+itself, you still have the possibility to define them in the configuration so
+that components can use store variables and receive a full list of the stores
 available.
 
 This is done by setting a store to `managed: false`:

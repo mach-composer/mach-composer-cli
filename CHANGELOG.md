@@ -9,7 +9,7 @@
 ## 2.2.1 (2022-06-10)
 - Fixed inconsistencies between 1.2 and 2.x:
   - Add `branch` option to component definitions to be able to perform a
-    `mach update` and stay within a certain branch (during development)
+    `mach-composer update` and stay within a certain branch (during development)
   - Fixed commercetools `stores` definitions
   - Fixed bug where custom AWS and Azure provider version definitions weren't picked up
 
@@ -348,17 +348,17 @@ A number of features which were minimal used are removed.
 
 ## 0.5.1 (2020-11-10)
 - Removed `aws` block in general_config
-- Add `branch` option to component definitions to be able to perform a `mach
-  update` and stay within a certain branch (during development)
+- Add `branch` option to component definitions to be able to perform a
+  `mach update` and stay within a certain branch (during development)
 
 
 ## 0.5.0 (2020-11-09)
 - Add new CLI options:
-    - `mach components` to list all components
-    - `mach sites` to list all sites
+    - `mach-composer components` to list all components
+    - `mach-composer sites` to list all sites
 - Improved `update` command:
     - Supports updating (or checking for updates) on all components based on their git history
-    - This can now also be used to manually update a single component; `mach update my-component v1.0.4`
+    - This can now also be used to manually update a single component; `mach-composer update my-component v1.0.4`
     - Add `--commit` argument to automatically create a git commit message
 - Add new AWS configuration option `route53_zone_name`
 - Remove unused `api_gateway` attribute on AWS config

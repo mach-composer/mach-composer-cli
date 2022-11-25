@@ -45,7 +45,7 @@ components:
     for a production deployment, but can facilitate local development:
 
     - `branch` - Configure the git branch of the component. Only used to
-      facilitate the `mach update` CLI command.
+      facilitate the `mach-composer update` CLI command.
     - `artifacts` - Mapping of additional artifacts **AWS only**
       - `script` - Script file to build and package the component, relative to the workdir.
       - `filename` - Filename to be used for deployment, relative to the workdir
@@ -65,7 +65,7 @@ components:
           workdir: ../mach-component-my-component/
     ```
 
-    More info on [using MACH during development](../../topics/development/workflow.md)
+    More info on [using MACH Composer during development](../../topics/development/workflow.md)
 
 ## azure
 Example:

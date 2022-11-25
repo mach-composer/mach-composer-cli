@@ -1,14 +1,14 @@
 # Step 6. Create your MACH stack
 
-## 1. Create MACH configuration file
+## 1. Create MACH Composer configuration file
 
-To create a new MACH configuration file, run
+To create a new MACH Composer configuration file, run
 
 ```bash
 mach bootstrap config
 ```
 
-A configuration will be created and can be used as input for MACH composer.
+A configuration will be created and can be used as input for MACH Composer.
 
 Edit your configuration so that it looks like the following example
 
@@ -55,7 +55,8 @@ components:
 
 !!! note "Component source"
     We defined our component source as `source: ../components/api-component/terraform`.<br>
-    This is a path relative to the MACH configuration file itself. Edit your path so that it fits your current setup.
+    This is a path relative to the MACH Composer configuration file itself. Edit
+    your path so that it fits your current setup.
 
     During actual development and deployment this will usually point to a Git repository.
 
@@ -67,7 +68,8 @@ In [step 4](./step-4-setup-aws-site.md) we've used the
 [`terraform-aws-mach-account` module](https://github.com/labd/terraform-aws-mach-account)
 to setup the AWS account for us.
 
-This also created an IAM **user** called `mach` and a **role** `mach` that we can use to perform MACH deployments with.
+This also created an IAM **user** called `mach` and a **role** `mach` that we
+can use to perform MACH Composer deployments with.
 
 In this tutorial, we'll be using the `mach` role so we can configure the
 credentials in the same fashion we did for the
@@ -123,7 +125,8 @@ endpoints = {
 Done 👍
 ```
 
-If you now append the endpoint with `/api/healthcheck` you have the URL of the API endpoint we created in our component:
+If you now append the endpoint with `/api/healthcheck` you have the URL of the
+API endpoint we created in our component:
 
 ```bash
 $ curl https://cytbsqhtp5.execute-api.eu-central-1.amazonaws.com/api/healthcheck
