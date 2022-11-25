@@ -132,10 +132,10 @@ func parseComponentsNode(node yaml.Node, source string, target *[]Component) err
 		return nil
 	}
 
-	re := regexp.MustCompile(`\$\(include\(([^)]+)\)`)
+	re := regexp.MustCompile(`\$\{include\(([^)]+)\)\}`)
 	data := re.FindStringSubmatch(node.Value)
 	if len(data) != 2 {
-		return fmt.Errorf("failed to parse $include() tag")
+		return fmt.Errorf("failed to parse ${include()} tag")
 	}
 	filename := filepath.Join(filepath.Dir(source), data[1])
 

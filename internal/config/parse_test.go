@@ -3,7 +3,10 @@ package config
 import (
 	"testing"
 
+	"github.com/spf13/afero"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+	"gopkg.in/yaml.v3"
 
 	"github.com/labd/mach-composer/internal/utils"
 )
@@ -216,4 +219,56 @@ func TestParseMissingVars(t *testing.T) {
 	vars := Variables{}
 	_, err := Parse(data, &vars, "main.yml")
 	assert.Error(t, err)
+}
+
+func TestParseComponentsNodeInline(t *testing.T) {
+	var intermediate struct {
+		Components yaml.Node `yaml:"components"`
+	}
+
+	data := []byte(utils.TrimIndent(`
+        components:
+        - name: your-component
+          source: "git::https://github.com/<username>/<your-component>.git//terraform"
+          version: 0.1.0
+  `))
+
+	err := yaml.Unmarshal(data, &intermediate)
+	require.NoError(t, err)
+
+	target := make([]Component, 0)
+	parseComponentsNode(intermediate.Components, "main.yml", &target)
+	require.NoError(t, err)
+	assert.Len(t, target, 1)
+	assert.Equal(t, "your-component", target[0].Name)
+}
+
+func TestParseComponentsNodeInclude(t *testing.T) {
+	utils.FS = afero.NewMemMapFs()
+	utils.AFS = &afero.Afero{Fs: utils.FS}
+
+	content := utils.TrimIndent(`
+    - name: your-component
+      source: "git::https://github.com/<username>/<your-component>.git//terraform"
+      version: 0.1.0
+	`)
+
+	utils.AFS.WriteFile("components.yml", []byte(content), 0644)
+
+	var intermediate struct {
+		Components yaml.Node `yaml:"components"`
+	}
+
+	data := []byte(utils.TrimIndent(`
+        components: ${include(components.yml)}
+  `))
+
+	err := yaml.Unmarshal(data, &intermediate)
+	require.NoError(t, err)
+
+	target := make([]Component, 0)
+	err = parseComponentsNode(intermediate.Components, "main.yml", &target)
+	require.NoError(t, err)
+	assert.Len(t, target, 1)
+	assert.Equal(t, "your-component", target[0].Name)
 }
