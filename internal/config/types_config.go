@@ -13,8 +13,16 @@ type MachConfig struct {
 	Sites        []Site       `yaml:"sites"`
 	Components   []Component  `yaml:"components"`
 
+	ExtraFiles map[string][]byte
+
 	Variables   *Variables
 	IsEncrypted bool
+}
+
+func NewMachConfig() *MachConfig {
+	cfg := &MachConfig{}
+	cfg.ExtraFiles = make(map[string][]byte, 0)
+	return cfg
 }
 
 func (c *MachConfig) HasSite(ident string) bool {

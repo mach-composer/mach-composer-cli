@@ -10,8 +10,9 @@ import (
 
 	"github.com/hashicorp/hcl/v2/hclparse"
 	"github.com/hashicorp/hcl/v2/hclwrite"
-	"github.com/labd/mach-composer/internal/config"
 	"github.com/sirupsen/logrus"
+
+	"github.com/labd/mach-composer/internal/config"
 )
 
 type GenerateOptions struct {
@@ -66,6 +67,14 @@ func WriteFiles(cfg *config.MachConfig, options *GenerateOptions) (map[string]st
 
 		if err := os.WriteFile(filename, formatted, 0700); err != nil {
 			panic(err)
+		}
+		// Write extra files
+		for extraFilename, content := range cfg.ExtraFiles {
+			extraFilename = filepath.Join(path, extraFilename)
+			fmt.Printf("Copying %s\n", extraFilename)
+			if err := os.WriteFile(extraFilename, content, 0700); err != nil {
+				return nil, fmt.Errorf("error writing extra file: %w", err)
+			}
 		}
 	}
 	return locations, nil

@@ -3,6 +3,7 @@ package config
 import (
 	"errors"
 	"fmt"
+	"os"
 	"path/filepath"
 	"regexp"
 	"strconv"
@@ -101,16 +102,15 @@ func Parse(data []byte, vars *Variables, filename string) (*MachConfig, error) {
 		return nil, varErr
 	}
 
-	cfg := &MachConfig{
-		Filename:     intermediate.Filename,
-		MachComposer: intermediate.MachComposer,
-		Global:       intermediate.Global,
-	}
-
+	cfg := NewMachConfig()
+	cfg.Filename = intermediate.Filename
+	cfg.MachComposer = intermediate.MachComposer
+	cfg.Global = intermediate.Global
 	cfg.Variables = vars
 
 	if intermediate.Sops.Kind == yaml.MappingNode {
 		cfg.IsEncrypted = true
+		addFileToConfig(cfg, intermediate.MachComposer.VariablesFile)
 	}
 
 	if err := intermediate.Sites.Decode(&cfg.Sites); err != nil {
@@ -122,6 +122,16 @@ func Parse(data []byte, vars *Variables, filename string) (*MachConfig, error) {
 	}
 
 	return cfg, nil
+}
+
+func addFileToConfig(cfg *MachConfig, filename string) error {
+	b, err := os.ReadFile(filename)
+	if err != nil {
+		return fmt.Errorf("error reading variables file: %w", err)
+	}
+	filename = filepath.Base(filename)
+	cfg.ExtraFiles[filename] = b
+	return nil
 }
 
 func parseComponentsNode(node yaml.Node, source string, target *[]Component) error {
