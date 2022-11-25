@@ -17,7 +17,6 @@ var (
 )
 
 var (
-	verbose bool
 	rootCmd = &cobra.Command{
 		Use:   name,
 		Short: "MACH composer is an orchestration tool for modern MACH ecosystems",
@@ -25,6 +24,10 @@ var (
 			`extend modern digital commerce & experience platforms, based on MACH ` +
 			`technologies and cloud native services.`,
 		PersistentPreRun: func(cmd *cobra.Command, args []string) {
+			verbose, err := cmd.Flags().GetBool("verbose")
+			if err != nil {
+				panic(err)
+			}
 			if verbose {
 				logrus.SetLevel(logrus.DebugLevel)
 			}
@@ -39,7 +42,7 @@ func main() {
 }
 
 func init() {
-	rootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "", false, "Verbose output.")
+	rootCmd.PersistentFlags().BoolP("verbose", "", false, "Verbose output.")
 	rootCmd.AddCommand(applyCmd)
 	rootCmd.AddCommand(cloudcmd.CloudCmd)
 	rootCmd.AddCommand(componentsCmd)
