@@ -7,6 +7,6 @@ import (
 func registerContextFlags(cmd *cobra.Command) {
 	cmd.Flags().String("organization", "", "Organization key")
 	cmd.Flags().String("project", "", "Project key")
-	cmd.MarkFlagRequired("organization")
-	cmd.MarkFlagRequired("project")
+	Must(cmd.MarkFlagRequired("organization"))
+	Must(cmd.MarkFlagRequired("project"))
 }

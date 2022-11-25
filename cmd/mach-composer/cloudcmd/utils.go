@@ -99,6 +99,12 @@ func handleError(err error) error {
 	return nil
 }
 
+func Must(err error) {
+	if err != nil {
+		panic(err)
+	}
+}
+
 func MustGetString(cmd *cobra.Command, key string) string {
 	value, err := cmd.Flags().GetString(key)
 	if err != nil {

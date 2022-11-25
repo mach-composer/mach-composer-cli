@@ -127,19 +127,19 @@ func init() {
 	CloudCmd.AddCommand(createOrganizationCmd)
 	createOrganizationCmd.Flags().String("name", "", "name of the organization")
 	createOrganizationCmd.Flags().String("key", "", "key for the organization")
-	createOrganizationCmd.MarkFlagRequired("name")
-	createOrganizationCmd.MarkFlagRequired("key")
+	Must(createOrganizationCmd.MarkFlagRequired("name"))
+	Must(createOrganizationCmd.MarkFlagRequired("key"))
 
 	// List organizations
 	CloudCmd.AddCommand(listOrganizationCmd)
 
 	// List organization users
 	listOrganizationUsersCmd.Flags().String("organization", "", "The organization key to use")
-	listOrganizationUsersCmd.MarkFlagRequired("organization")
+	Must(listOrganizationUsersCmd.MarkFlagRequired("organization"))
 	CloudCmd.AddCommand(listOrganizationUsersCmd)
 
 	// Add organization users
 	addOrganizationUsersCmd.Flags().String("organization", "", "The organization key to use")
-	addOrganizationUsersCmd.MarkFlagRequired("organization")
+	Must(addOrganizationUsersCmd.MarkFlagRequired("organization"))
 	CloudCmd.AddCommand(addOrganizationUsersCmd)
 }

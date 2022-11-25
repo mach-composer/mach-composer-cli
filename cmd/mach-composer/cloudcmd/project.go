@@ -66,13 +66,13 @@ func init() {
 	createProjectCmd.Flags().String("organization", "", "organization")
 	createProjectCmd.Flags().String("name", "", "name of the project")
 	createProjectCmd.Flags().String("key", "", "key for the project")
-	createProjectCmd.MarkFlagRequired("organization")
-	createProjectCmd.MarkFlagRequired("name")
-	createProjectCmd.MarkFlagRequired("key")
+	Must(createProjectCmd.MarkFlagRequired("organization"))
+	Must(createProjectCmd.MarkFlagRequired("name"))
+	Must(createProjectCmd.MarkFlagRequired("key"))
 	CloudCmd.AddCommand(createProjectCmd)
 
 	// List projects
 	listProjectCmd.Flags().String("organization", "", "The organization key to use")
-	listProjectCmd.MarkFlagRequired("organization")
+	Must(listProjectCmd.MarkFlagRequired("organization"))
 	CloudCmd.AddCommand(listProjectCmd)
 }
