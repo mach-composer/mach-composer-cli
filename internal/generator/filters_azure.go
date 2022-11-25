@@ -4,11 +4,18 @@ import (
 	"fmt"
 
 	"github.com/flosch/pongo2/v5"
+
 	"github.com/labd/mach-composer/internal/config"
 )
 
 func AzureFrontendEndpointName(in *pongo2.Value, param *pongo2.Value) (*pongo2.Value, *pongo2.Error) {
-	val := in.Interface().(config.Endpoint)
+	val, ok := in.Interface().(config.Endpoint)
+	if !ok {
+		return nil, &pongo2.Error{
+			Sender:    "filter:azure_frontend_endpoint_name",
+			OrigError: fmt.Errorf("filter expected argument of type Endpoint"),
+		}
+	}
 
 	if val.Azure != nil && val.Azure.InternalName != "" {
 		return filterTFValue(pongo2.AsSafeValue(val.Azure.InternalName), nil)

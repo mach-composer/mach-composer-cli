@@ -111,15 +111,28 @@ func filterString(in *pongo2.Value, param *pongo2.Value) (*pongo2.Value, *pongo2
 // an output. The endpoint might have a different name in the component itself
 // based on the mappings
 func filterComponentEndpointName(in *pongo2.Value, param *pongo2.Value) (*pongo2.Value, *pongo2.Error) {
-	component := in.Interface().(config.SiteComponent)
-	endpoint := param.Interface().(config.Endpoint)
+	component, ok := in.Interface().(config.SiteComponent)
+	if !ok {
+		return nil, &pongo2.Error{
+			Sender:    "filter:component_endpoint_name",
+			OrigError: fmt.Errorf("filter only works on site component"),
+		}
+	}
+	endpoint, ok := param.Interface().(config.Endpoint)
+	if !ok {
+		return nil, &pongo2.Error{
+			Sender:    "filter:component_endpoint_name",
+			OrigError: fmt.Errorf("filter expected argument of type Endpoint"),
+		}
+	}
+
 	for componentKey, epKey := range component.Definition.Endpoints {
 		if epKey == endpoint.Key {
 			return pongo2.AsSafeValue(componentKey), nil
 		}
 	}
 	return nil, &pongo2.Error{
-		Sender:    "filter:render_commercetools_scopes",
+		Sender:    "filter:component_endpoint_name",
 		OrigError: fmt.Errorf("endpoint %s not found on %s", endpoint.Key, component.Name),
 	}
 }
