@@ -41,7 +41,7 @@ func getClient(cmd *cobra.Command) (*mccsdk.APIClient, context.Context) {
 			TokenURL:     endpoints.TokenURL,
 		}
 		cfg.HTTPClient = oauth2Config.Client(
-			context.WithValue(context.TODO(), oauth2.HTTPClient, cfg.HTTPClient))
+			context.WithValue(ctx, oauth2.HTTPClient, cfg.HTTPClient))
 	} else {
 		oauth2Config := &oauth2.Config{
 			Endpoint: endpoints,
@@ -52,7 +52,7 @@ func getClient(cmd *cobra.Command) (*mccsdk.APIClient, context.Context) {
 			RefreshToken: viper.GetString("token.refresh"),
 			Expiry:       viper.GetTime("token.expiry"),
 		}
-
+		ctx := context.WithValue(ctx, oauth2.HTTPClient, cfg.HTTPClient)
 		cfg.HTTPClient = oauth2Config.Client(ctx, token)
 	}
 
