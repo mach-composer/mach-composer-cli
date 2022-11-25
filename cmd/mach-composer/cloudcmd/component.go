@@ -9,14 +9,6 @@ import (
 	"github.com/labd/mach-composer/internal/cloud"
 )
 
-var componentCmd = &cobra.Command{
-	Use:   "component",
-	Short: "Manage your components",
-	RunE: func(cmd *cobra.Command, args []string) error {
-		return cmd.Help()
-	},
-}
-
 var componentCreateCmd = &cobra.Command{
 	Use:   "create-component [name]",
 	Short: "Register a new component",
