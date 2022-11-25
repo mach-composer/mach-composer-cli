@@ -68,6 +68,9 @@ func preprocessGenerateFlags() {
 }
 
 func handleError(err error) error {
+	if err == nil {
+		return nil
+	}
 	fmt.Printf("Error encountered: %s", err)
 	os.Exit(1)
 	return nil
