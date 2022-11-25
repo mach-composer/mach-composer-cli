@@ -120,6 +120,9 @@ func parseConfig(ctx context.Context, data []byte, vars *Variables, filename str
 
 	if intermediate.Sops.Kind == yaml.MappingNode {
 		cfg.IsEncrypted = true
+	}
+
+	if vars.Encrypted {
 		err := addFileToConfig(cfg, intermediate.MachComposer.VariablesFile)
 		if err != nil {
 			return nil, err
