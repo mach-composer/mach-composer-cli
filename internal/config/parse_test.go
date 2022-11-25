@@ -146,6 +146,7 @@ func TestParse(t *testing.T) {
 				},
 			},
 		},
+		ExtraFiles: map[string][]byte{},
 		Variables: &Variables{
 			vars: map[string]string{
 				"bar.foo": "2",
