@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.4.0 (unreleased)
+- Use `go-git` to retrieve the git log instead of executing `git` directly. This
+  fixes (#188)
+- Re-implement the `$(include())` syntax for include a separate components file
+  for the 2.0 versione (#115)
+- Fix rendering of variables in the generated terraform output (#194)
+
 ## 2.3.0 (2022-10-01)
 - Fix windows version due to wrong handling of the path separator (#182)
 - Restore the `sites` subcommand to output the sites in the config (#178)
