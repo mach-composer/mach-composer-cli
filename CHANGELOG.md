@@ -6,6 +6,8 @@
 - Re-implement the `$(include())` syntax for include a separate components file
   for the 2.0 versione (#115)
 - Fix rendering of variables in the generated terraform output (#194)
+- Fix a yaml parsing bug which resulted in not being able to disable management
+  of commercetools stores. (#193)
 
 ## 2.3.0 (2022-10-01)
 - Fix windows version due to wrong handling of the path separator (#182)
