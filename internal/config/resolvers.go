@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-func Process(cfg *MachConfig) {
+func ProcessConfig(cfg *MachConfig) {
 	// resolve_variables(config, config.variables, config.variables_encrypted)
 	// parse_global_config(config)
 	// resolve_component_definitions(config)

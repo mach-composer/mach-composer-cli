@@ -39,7 +39,7 @@ func Load(filename string, varFilename string) (*MachConfig, error) {
 		return nil, fmt.Errorf("failed to load config %s due to errors", filename)
 	}
 
-	cfg, err := Parse(body, vars, filename)
+	cfg, err := parseConfig(body, vars, filename)
 	if err != nil {
 		return nil, err
 	}
@@ -49,7 +49,7 @@ func Load(filename string, varFilename string) (*MachConfig, error) {
 	}
 
 	cfg.Filename = filepath.Base(filename)
-	Process(cfg)
+	ProcessConfig(cfg)
 
 	return cfg, nil
 }
@@ -79,7 +79,9 @@ func GetSchemaVersion(data []byte) (int, error) {
 	return 0, errors.New("no valid version identifier found")
 }
 
-func Parse(data []byte, vars *Variables, filename string) (*MachConfig, error) {
+// parseConfig is responsible for parsing a mach composer yaml config file and
+// creating the resulting MachConfig struct.
+func parseConfig(data []byte, vars *Variables, filename string) (*MachConfig, error) {
 	// Decode the yaml in an intermediate config file
 	intermediate := &_RawMachConfig{}
 	err := yaml.Unmarshal(data, intermediate)
