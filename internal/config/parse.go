@@ -20,13 +20,13 @@ func Load(filename string, varFilename string) (*MachConfig, error) {
 		var err error
 		vars, err = loadVariables(varFilename)
 		if err != nil {
-			panic(err)
+			return nil, err
 		}
 	}
 
 	body, err := utils.AFS.ReadFile(filename)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	schemaVersion, err := GetSchemaVersion(body)
@@ -40,11 +40,11 @@ func Load(filename string, varFilename string) (*MachConfig, error) {
 
 	cfg, err := Parse(body, vars, filename)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	if err := defaults.Set(cfg); err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	cfg.Filename = filepath.Base(filename)
@@ -88,7 +88,7 @@ func Parse(data []byte, vars *Variables, filename string) (*MachConfig, error) {
 	if vars == nil && intermediate.MachComposer.VariablesFile != "" {
 		vars, err = loadVariables(intermediate.MachComposer.VariablesFile)
 		if err != nil {
-			panic(err)
+			return nil, err
 		}
 	}
 
