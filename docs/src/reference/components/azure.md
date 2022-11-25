@@ -1,14 +1,21 @@
 # Azure components
 
-All components within a Azure-based MACH configuration are automatically considered to have a 'azure' integration by default. Only if 'azure' is explicitely omitted from the `integrations` definition, it won't require any Azure-specific variables.
+All components within a Azure-based MACH configuration are automatically
+considered to have a 'azure' integration by default. Only if 'azure' is
+explicitely omitted from the `integrations` definition, it won't require any
+Azure-specific variables.
 
-To be able to create the resources needed, a couple of extra [Terraform variables](#terraform-variables) are set by MACH.
+To be able to create the resources needed, a couple of extra
+[Terraform variables](#terraform-variables) are set by MACH.
 
-In addition to this, the component itself is responsible for [packaging and deploying](#packaging-and-deploying) the correct assets in case of a Function App.
+In addition to this, the component itself is responsible for
+[packaging and deploying](#packaging-and-deploying) the correct assets in case
+of a Function App.
 
 ## Terraform variables
 
-In addition to the [base variables](./structure.md#required-variables), an Azure component expects the following:
+In addition to the [base variables](./structure.md#required-variables), an Azure
+component expects the following:
 
 ```terraform
 variable "azure_short_name" {
@@ -56,13 +63,19 @@ variable "azure_monitor_action_group_id" {
 ```
 
 !!! info "Monitor action group"
-    `monitor_action_group_id` is set to the [action group](../../topics/deployment/config/azure.md#action-groups) ID when a [alert_group](../syntax/global.md#azure) is configured.
+    `monitor_action_group_id` is set to the
+    [action group](../../topics/deployment/config/azure.md#action-groups)
+    ID when a [alert_group](../syntax/global.md#azure) is configured.
 
 ### With `endpoints`
 
-In order to support the [`endpoints`](../../topics/deployment/config/azure.md#http-routing) attribute on the component, the component needs to define what endpoints it expects **and** needs to provide output about the [routing options](../../topics/deployment/config/azure.md#http-routing).
+In order to support the [`endpoints`](../../topics/deployment/config/azure.md#http-routing)
+attribute on the component, the component needs to define what endpoints it
+expects **and** needs to provide output about the
+[routing options](../../topics/deployment/config/azure.md#http-routing).
 
-For example, if the component requires two endpoints (`main` and `webhooks`) to be set, the following variables and outputs needs to be defined:
+For example, if the component requires two endpoints (`main` and `webhooks`) to
+be set, the following variables and outputs needs to be defined:
 
 ```terraform
 variable "azure_endpoint_main" {
@@ -102,7 +115,8 @@ output "azure_endpoint_webhooks" {
 
 #### Defining `outputs`
 
-As shown in the example above, the component needs to have an output *per endpoint* defined in order to instruct MACH how to setup Frontdoor routing.
+As shown in the example above, the component needs to have an output *per
+endpoint* defined in order to instruct MACH how to setup Frontdoor routing.
 
 This output needs to have a name in the form of `azure_endpoint_<endpoint-name>` and contain the following attributes:
 
@@ -119,7 +133,9 @@ This output needs to have a name in the form of `azure_endpoint_<endpoint-name>`
 
 - `patterns` - List of patterns to match
 - `cache_enabled` - Specifies whether to Enable caching or not. Valid options are `true` or `false`. Defaults to `false`.
-- `custom_forwarding_path` - Path to use when constructing the request to forward to the backend. This functions as a URL Rewrite. Default behaviour preserves the URL path.
+- `custom_forwarding_path` - Path to use when constructing the request to
+  forward to the backend. This functions as a URL Rewrite. Default behaviour
+  preserves the URL path.
 
 
 **Full example**
@@ -142,7 +158,7 @@ output "azure_endpoint_main" {
           "/media/*",
         ]
         cache_enabled = true
-      } 
+      }
     ]
   }
 }
@@ -150,7 +166,9 @@ output "azure_endpoint_main" {
 
 ### With `service_plan`
 
-When a component has been configured with a [`service_plan`](../syntax/sites.md#azure_1), MACH manages the service plan for you and passes the information to the component with a `app_service_plan` variable:
+When a component has been configured with a [`service_plan`](../syntax/sites.md#azure_1),
+MACH manages the service plan for you and passes the information to the
+component with a `app_service_plan` variable:
 
 ```terraform
 variable "azure_app_service_plan" {
@@ -172,7 +190,8 @@ For Azure functions, the deployment process constist of two steps:
 [Read more](../../topics/deployment/components.md) about Azure component deployments.
 
 ### Configure runtime
-When defining your Azure function app resource, you can reference back to the asset that is deployed:
+When defining your Azure function app resource, you can reference back to the
+asset that is deployed:
 
 ```terraform
 data "azurerm_storage_account" "shared" {
@@ -200,7 +219,8 @@ To do so, the following has to be configured:
 - The component needs to have [`endpoints`](../syntax/components.md) defined
 
 !!! tip "Default endpoint"
-    If you assign `default` to one of your components endpoints, no additional Frontdoor settings are needed.
+    If you assign `default` to one of your components endpoints, no additional
+    Frontdoor settings are needed.
 
     MACH will create a Frontdoor instance for you without any custom domain.
 
@@ -208,14 +228,19 @@ More information in the [deployment section](../../topics/deployment/config/azur
 
 ## Naming conventions
 
-When setting up Terraform components for Azure we need to follow the following naming conventions and mind the current naming restrictions.
+When setting up Terraform components for Azure we need to follow the following
+naming conventions and mind the current naming restrictions.
 
 - [Azure best practices on naming things](https://docs.microsoft.com/en-us/azure/cloud-adoption-framework/ready/azure-best-practices/naming-and-tagging)
 - [Azure naming restrictions](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/resource-name-rules)
 
 An important thing to highlight is the following:
 
-> Resource names have length limits. Balancing the context embedded in a name with its scope and length is important when you develop your naming conventions. For more information about naming rules for allowed characters, scopes, and name lengths for resource types, see [Naming conventions for Azure resources](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/resource-name-rules).
+> Resource names have length limits. Balancing the context embedded in a name
+with its scope and length is important when you develop your naming conventions.
+For more information about naming rules for allowed characters, scopes, and name
+lengths for resource types, see [Naming conventions for Azure
+resources](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/resource-name-rules).
 
 
 ### Resource prefixing
@@ -236,7 +261,9 @@ resource "azurerm_function_app" "example_component" {
 }
 ```
 
-With `resources_prefix` configured as `mach-` and a site id of `uk-example-prd` (UK site of Example site on production) the result will be `mach-uk-example-p-we-func-example`.
+With `resources_prefix` configured as `mach-` and a site id of `uk-example-prd`
+(UK site of Example site on production) the result will be
+`mach-uk-example-p-we-func-example`.
 
 !!! note ""
     To save character space [^1], the following adjustments are made:
@@ -261,7 +288,9 @@ resource "azurerm_storage_account" "main" {
 
 Where `sa` stands for *'storage account'*
 
-[^1]: Some resources have a name restriction of max 24 characters. Obviously we want to avoid hitting that limit. See [Azure naming restrictions](#azure-naming-restrictions) on how to avoid that.
+[^1]: Some resources have a name restriction of max 24 characters. Obviously we
+want to avoid hitting that limit. See
+[Azure naming restrictions](#azure-naming-restrictions) on how to avoid that.
 
 ## Function App
 

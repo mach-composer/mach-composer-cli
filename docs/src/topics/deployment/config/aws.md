@@ -2,19 +2,23 @@
 
 ## HTTP routing
 
-If any component used in a MACH stack is defined with an [`endpoint`](../../../reference/syntax/components.md), MACH will create the necessary resources to be able to route traffic to that components.
+If any component used in a MACH stack is defined with an
+[`endpoint`](../../../reference/syntax/components.md), MACH will create the
+necessary resources to be able to route traffic to that components.
 
-The information needed for components to add custom routes to that API Gateway are provided through [Terraform variables](../../../reference/components/aws.md#terraform-variables).
+The information needed for components to add custom routes to that API Gateway
+are provided through [Terraform variables](../../../reference/components/aws.md#terraform-variables).
 
 ### Default endpoint
 
-If you have defined your component with a `default` endpoint, MACH will create an API Gateway for you which includes a default AWS API Gateway domain.
+If you have defined your component with a `default` endpoint, MACH will create
+an API Gateway for you which includes a default AWS API Gateway domain.
 
 ```
 components:
   - name: payment
     source: git::ssh://git@github.com/your-project/components/payment-component.git//terraform
-    endpoints: 
+    endpoints:
       public: default
     version: ....
 ```
@@ -24,7 +28,8 @@ components:
 
 ### Custom endpoint
 
-A site might have a couple of [endpoints](../../../reference/syntax/sites.md#endpoints) defined and for each endpoint MACH will create:
+A site might have a couple of [endpoints](../../../reference/syntax/sites.md#endpoints)
+defined and for each endpoint MACH will create:
 
 - API Gateway + default routing
 - ACM Certificate (with DNS validation)
@@ -32,5 +37,7 @@ A site might have a couple of [endpoints](../../../reference/syntax/sites.md#end
 
 
 !!! info "Route53 zone"
-    MACH will not create and manage the Route53 zone itself but expects it to be created already as described in the [prerequisites](../../../tutorial/aws/step-4-setup-aws-site.md) section.<br>
+    MACH will not create and manage the Route53 zone itself but expects it to be
+    created already as described in the
+    [prerequisites](../../../tutorial/aws/step-4-setup-aws-site.md) section.<br>
     It will try to lookup that zone using the `route53_zone_name` setting.

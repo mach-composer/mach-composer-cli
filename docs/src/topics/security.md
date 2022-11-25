@@ -2,7 +2,8 @@
 
 This document is intended to describe a couple of key points around security.
 
-Aside from use-case specific security considerations for your environment, the main focus for a typical MACH stack would be to:
+Aside from use-case specific security considerations for your environment, the
+main focus for a typical MACH stack would be to:
 
 - Securely configure and store your MACH configuration
 - Handle secrets well in your components runtime

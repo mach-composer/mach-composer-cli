@@ -1,6 +1,8 @@
 # Component deployment - first stage
 
-As described in the [components section](../../reference/components/structure.md#deployment-process), whenever a component contains a **serverless function** that needs to be uploaded to a registry, it needs a '*first stage*' deployment.
+As described in the [components section](../../reference/components/structure.md#deployment-process),
+whenever a component contains a **serverless function** that needs to be
+uploaded to a registry, it needs a '*first stage*' deployment.
 
 In that case, the component itself is responsible for the following steps:
 
@@ -16,7 +18,8 @@ In this section a couple of methods – for various cloud providers – will be 
 
 ### Using serverless
 
-When using [serverless](https://www.serverless.com) for local development, the easiest way to package your function would be to invoke
+When using [serverless](https://www.serverless.com) for local development, the
+easiest way to package your function would be to invoke
 
 ```bash
 $ serverless package
@@ -137,7 +140,8 @@ $ ./build.sh upload
 ```
 ## Setting up CI
 
-Refer to the CI/CD section for instructions on how to setup your Continuous Integration pipeline for component deployments:
+Refer to the CI/CD section for instructions on how to setup your Continuous
+Integration pipeline for component deployments:
 
 - [GitLab](../../howto/ci/gitlab.md#component-deployment)
 - [GitHub actions](../../howto/ci/github.md#component-deployment)
@@ -146,8 +150,10 @@ Refer to the CI/CD section for instructions on how to setup your Continuous Inte
 
 ## Second stage - MACH deployment
 
-As part of the [MACH deployment](./config/index.md), the component will be loaded as a Terraform module so that the component can deploy the necessary resources needed for the specific site it is configured for.
+As part of the [MACH deployment](./config/index.md), the component will be
+loaded as a Terraform module so that the component can deploy the necessary
+resources needed for the specific site it is configured for.
 
 This is what we call the ['second stage' deployment](./config/components.md).
 
-### 
+###

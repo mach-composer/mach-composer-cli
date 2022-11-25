@@ -22,69 +22,73 @@ CI/CD settings;
    configuration repo settings.
 
 !!! note "Permissions needed"
-      We need `repo` to have access to any private repositories so that MACH can pull in the components during deployment.
+      We need `repo` to have access to any private repositories so that MACH can
+      pull in the components during deployment.
 
 ### Example
 === "AWS"
-      ```yaml
-      name: MACH rollout
 
-      on:
-        push:
-          branches:
-            - master
+    ```yaml
+    name: MACH rollout
 
-      jobs:
-        mach:
-          runs-on: ubuntu-latest
-          container:
-            image: docker.pkg.github.com/labd/mach-composer/mach:2.0.0
-            options: --user 1001
-            credentials:
-              username: ${{ secrets.GITHUB_USER }}
-              password: ${{ secrets.GITHUB_TOKEN }}
-          steps:
-          - uses: actions/checkout@v2
-          - run: |
-              echo -e "machine github.com\nlogin ${{ secrets.GITHUB_USER }}\npassword ${{ secrets.GITHUB_TOKEN }}" > ~/.netrc
-            name: Prepare credentials
-          - run: mach-composer apply --auto-approve
-            name: Apply
-            env:
-              AWS_DEFAULT_REGION: eu-central-1
-              AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-              AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      ```
+    on:
+      push:
+        branches:
+          - master
+
+    jobs:
+      mach:
+        runs-on: ubuntu-latest
+        container:
+          image: docker.pkg.github.com/labd/mach-composer/mach:2.0.0
+          options: --user 1001
+          credentials:
+            username: ${{ secrets.GITHUB_USER }}
+            password: ${{ secrets.GITHUB_TOKEN }}
+        steps:
+        - uses: actions/checkout@v2
+        - run: |
+            echo -e "machine github.com\nlogin ${{ secrets.GITHUB_USER }}\npassword ${{ secrets.GITHUB_TOKEN }}" > ~/.netrc
+          name: Prepare credentials
+        - run: mach-composer apply --auto-approve
+          name: Apply
+          env:
+            AWS_DEFAULT_REGION: eu-central-1
+            AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+            AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    ```
+
 === "Azure"
-      ```yaml
-      name: MACH rollout
 
-      on:
-        push:
-          branches:
-            - master
+    ```yaml
+    name: MACH rollout
 
-      jobs:
-        mach:
-          runs-on: ubuntu-latest
-          container:
-            image: docker.pkg.github.com/labd/mach-composer/mach:2.0.0
-            credentials:
-              username: ${{ secrets.GITHUB_USER }}
-              password: ${{ secrets.GITHUB_TOKEN }}
-          steps:
-          - uses: actions/checkout@v2
-          - run: |
-              echo -e "machine github.com\nlogin ${{ secrets.GITHUB_USER }}\npassword ${{ secrets.GITHUB_TOKEN }}" > ~/.netrc
-            name: Prepare credentials
-          - run: mach-composer apply --auto-approve --with-sp-login
-            name: Apply
-            env:
-              ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
-              ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
-              ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
-              ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
-      ```
+    on:
+      push:
+        branches:
+          - master
+
+    jobs:
+      mach:
+        runs-on: ubuntu-latest
+        container:
+          image: docker.pkg.github.com/labd/mach-composer/mach:2.0.0
+          credentials:
+            username: ${{ secrets.GITHUB_USER }}
+            password: ${{ secrets.GITHUB_TOKEN }}
+        steps:
+        - uses: actions/checkout@v2
+        - run: |
+            echo -e "machine github.com\nlogin ${{ secrets.GITHUB_USER }}\npassword ${{ secrets.GITHUB_TOKEN }}" > ~/.netrc
+          name: Prepare credentials
+        - run: mach-composer apply --auto-approve --with-sp-login
+          name: Apply
+          env:
+            ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
+            ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
+            ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+            ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
+    ```
 
 ## Component deployment
 
@@ -96,56 +100,56 @@ function app ZIP file.
 Example GitHub action to package and deploy a component on AWS.
 
 === "Node"
-  ```yaml
-   name: Package and upload
 
-   on:
-     push:
-       branches:
-         - main
+    ```yaml
+    name: Package and upload
 
-   env:
-     PACKAGE_NAME: my-component
-     AWS_BUCKET_NAME: my-lambda-bucket
+    on:
+      push:
+        branches:
+          - main
 
-   jobs:
-     package:
-       name: Package Lambda function
-       runs-on: ubuntu-latest
-       steps:
-         - uses: actions/checkout@v2
+    env:
+      PACKAGE_NAME: my-component
+      AWS_BUCKET_NAME: my-lambda-bucket
 
-         - name: Artifact Name
-           id: artifact-name
-           run: echo "::set-output name=artifact::$(echo $PACKAGE_NAME-${GITHUB_SHA:0:7}.zip)"
+    jobs:
+      package:
+        name: Package Lambda function
+        runs-on: ubuntu-latest
+        steps:
+          - uses: actions/checkout@v2
 
-         - name: Use Node.js
-           uses: actions/setup-node@v1
-           with:
-             node-version: 12.x
+          - name: Artifact Name
+            id: artifact-name
+            run: echo "::set-output name=artifact::$(echo $PACKAGE_NAME-${GITHUB_SHA:0:7}.zip)"
 
-         - name: Cache modules
-           uses: actions/cache@v2
-           with:
-             path: '**/node_modules'
-             key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
+          - name: Use Node.js
+            uses: actions/setup-node@v1
+            with:
+              node-version: 12.x
 
-         - name: Install dependencies
-           run: yarn
+          - name: Cache modules
+            uses: actions/cache@v2
+            with:
+              path: '**/node_modules'
+              key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
 
-         - name: Package
-           uses: dragonraid/sls-action@v1.2
-           with:
-             args: --stage prod package
+          - name: Install dependencies
+            run: yarn
 
-         - name: Configure AWS Credentials
-           uses: aws-actions/configure-aws-credentials@v1
-           with:
-             aws-access-key-id: ${{ secrets.MACH_ARTIFACT_AWS_ACCESS_KEY_ID }}
-             aws-secret-access-key: ${{ secrets.MACH_ARTIFACT_AWS_SECRET_ACCESS_KEY }}
-             aws-region: eu-central-1
+          - name: Package
+            uses: dragonraid/sls-action@v1.2
+            with:
+              args: --stage prod package
 
-         - name: Upload
-           run: aws s3 cp .serverless/${{ env.PACKAGE_NAME }}.zip s3://${{ env.AWS_BUCKET_NAME }}/${{ steps.artifact-name.outputs.artifact }}
+          - name: Configure AWS Credentials
+            uses: aws-actions/configure-aws-credentials@v1
+            with:
+              aws-access-key-id: ${{ secrets.MACH_ARTIFACT_AWS_ACCESS_KEY_ID }}
+              aws-secret-access-key: ${{ secrets.MACH_ARTIFACT_AWS_SECRET_ACCESS_KEY }}
+              aws-region: eu-central-1
 
-  ```
+          - name: Upload
+            run: aws s3 cp .serverless/${{ env.PACKAGE_NAME }}.zip s3://${{ env.AWS_BUCKET_NAME }}/${{ steps.artifact-name.outputs.artifact }}
+      ```

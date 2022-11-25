@@ -64,7 +64,8 @@ We need to be able to provide the following environment variables:
 - `ARM_SUBSCRIPTION_ID`
 - `ARM_TENANT_ID`
 
-In this case, we're going to store the `ARM_CLIENT_ID` and `ARM_CLIENT_SECRET` in the KeyVault, so we don't have to hard code it in the pipeline.
+In this case, we're going to store the `ARM_CLIENT_ID` and `ARM_CLIENT_SECRET`
+in the KeyVault, so we don't have to hard code it in the pipeline.
 
 ```bash
 $ az keyvault secret set --name "DevOpsClientID" --value "..." --vault-name my-devops-secrets
@@ -128,7 +129,9 @@ For the component CI pipeline we need to be able to test, package and upload the
 
 ### Setup Azure service connection
 
-Just as in the [step for setting up the MACH stack](#2-azure-service-connection), we need to add an Azure service connection so that the pipeline can upload the function apps to the storage account.
+Just as in the [step for setting up the MACH stack](#2-azure-service-connection),
+we need to add an Azure service connection so that the pipeline can upload the
+function apps to the storage account.
 
 The *Service connection name* will be used later in the pipeline.
 
@@ -137,7 +140,8 @@ The *Service connection name* will be used later in the pipeline.
 
 Example DevOps CI configuration.
 
-See the [Components deployment](../../topics/deployment/components.md#package-upload-script) section for examples of the package/upload script used here.
+See the [Components deployment](../../topics/deployment/components.md#package-upload-script)
+section for examples of the package/upload script used here.
 
 === "Python"
   ```yaml

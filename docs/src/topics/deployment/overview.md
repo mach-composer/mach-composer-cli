@@ -2,14 +2,29 @@
 
 ## Stage 1: Pushing a component to the component registry
 
-MACH composer is primarily used to deploy components in an individual site, and provide it with the right context (settings, endpoints, etc).
+MACH composer is primarily used to deploy components in an individual site, and
+provide it with the right context (settings, endpoints, etc).
 
-Components themselves are responsible for publishing their own artifacts into the component registry (which can be a simple S3 bucket). And usually that is implemented by configuring a CI/CD pipeline that manages that automatically.
+Components themselves are responsible for publishing their own artifacts into
+the component registry (which can be a simple S3 bucket). And usually that is
+implemented by configuring a CI/CD pipeline that manages that automatically.
 
-An artifact is usually a zip file containing a serverless function, i.e. `my-component-vXYZ.zip`. These can be conveniently generated using the serverless framework, using `sls package`, but can also be built using a different process. Next to serverless functions, it is increasingly common to deploy Docker containers through MACH composer, using the serverless container hosting options in cloud providers (i.e. AWS Fargate).
+An artifact is usually a zip file containing a serverless function, i.e.
+`my-component-vXYZ.zip`. These can be conveniently generated using the
+serverless framework, using `sls package`, but can also be built using a
+different process. Next to serverless functions, it is increasingly common to
+deploy Docker containers through MACH composer, using the serverless container
+hosting options in cloud providers (i.e. AWS Fargate).
 
 !!! tip "A component always contains a Terraform module"
-    Next to the component publishing its artifact into a component registry, it should also provide the necessary terraform resources for the component. Usually, components have a `/terraform` directory in the root of the component, containing the Terraform module, which is the entrypoint for MACH composer. And MACH composer in turn leverages [Terraforms 'modules sources'](https://www.terraform.io/docs/language/modules/sources.html) functionality to 'pull together' different modules from different Git repositories.
+    Next to the component publishing its artifact into a component registry, it
+    should also provide the necessary terraform resources for the component.
+    Usually, components have a `/terraform` directory in the root of the
+    component, containing the Terraform module, which is the entrypoint for MACH
+    composer. And MACH composer in turn leverages [Terraforms 'modules
+    sources'](https://www.terraform.io/docs/language/modules/sources.html)
+    functionality to 'pull together' different modules from different Git
+    repositories.
 
 <div class="mermaid">
 sequenceDiagram
@@ -17,7 +32,7 @@ sequenceDiagram
     participant S as SCM
     participant CI as CI/CD
     participant C as Component Registry
-    
+
     D->>S: Merges new code
     S->>CI: run build and tests
     opt if master branch
@@ -28,7 +43,9 @@ sequenceDiagram
 
 ## Stage 2: MACH composer deployment
 
-MACH composer itself is primarily a code generator that generates the required Terraform code per site in the YAML configuration. Optionally (though recommended) MACH composer decrypts the YAML file through SOPS.
+MACH composer itself is primarily a code generator that generates the required
+Terraform code per site in the YAML configuration. Optionally (though
+recommended) MACH composer decrypts the YAML file through SOPS.
 
 <div class="mermaid">
 sequenceDiagram
@@ -40,7 +57,7 @@ sequenceDiagram
     participant C as Component Registry
     participant MACH as MACH services
     participant Cloud as Cloud (AWS/Azure/GCP)
-    
+
     D->>M: executes mach apply
     opt if encrypted with SOPS
         S->>Cloud: fetch encryption key
@@ -61,4 +78,7 @@ sequenceDiagram
 
 
 !!! tip "Running MACH composer in CI/CD is a best practice"
-    For production deployments we recommend running MACH composer in a CI/CD pipeline. This because running it requires access to sensitive resources and should be secured properly, as well as providing a good audit-trail about who deployed what at which time.
+    For production deployments we recommend running MACH composer in a CI/CD
+    pipeline. This because running it requires access to sensitive resources and
+    should be secured properly, as well as providing a good audit-trail about
+    who deployed what at which time.

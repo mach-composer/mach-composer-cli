@@ -2,12 +2,15 @@
 
 Here's a list of best practices regarding MACH components.
 
-## Check artifacts existence 
+## Check artifacts existence
 
-We often see builds fail with bad error messages (403 for Lambda functions) or silently for Docker if the artifact (zip or Docker container)
-does not exist. This often happens because a CI step failed (linting or testing).
+We often see builds fail with bad error messages (403 for Lambda functions) or
+silently for Docker if the artifact (zip or Docker container)
+does not exist. This often happens because a CI step failed (linting or
+testing).
 
-We can fail early in Terraform by explicitly checking for the artifact, and doing a `depends_on` on this data resource:
+We can fail early in Terraform by explicitly checking for the artifact, and
+doing a `depends_on` on this data resource:
 
 For AWS ECR (Docker):
 
@@ -28,7 +31,8 @@ data "aws_s3_bucket_object" "component_exists" {
 }
 ```
 
-For Azure blob storage there is no data resource, but one can script it and hook it up to an [external data source](https://registry.terraform.io/providers/hashicorp/external/latest/docs/data-sources/data_source):
+For Azure blob storage there is no data resource, but one can script it and hook
+it up to an [external data source](https://registry.terraform.io/providers/hashicorp/external/latest/docs/data-sources/data_source):
 
 ```bash
 az storage blob exists --account-key $1 --account-name $2 --container-name $3 --name $4 --query exists

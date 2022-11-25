@@ -21,7 +21,8 @@ It includes:
 - Multi-tenancy support for managing many instances of your platform, that share
   the same library of micro services
 - CI/CD tools for automating the delivery of your MACH ecosystem
-- Tight integration with AWS an Azure, including an (opinionated) setup of these cloud environments
+- Tight integration with AWS an Azure, including an (opinionated) setup of these
+  cloud environments
 
 The framework is intended as the 'center piece' of your MACH architecture and
 incorporates industry best practises such as the 12 Factor Methodology,
@@ -35,13 +36,19 @@ organisation.
 
 ## Documentation structure
 
-- [Tutorials](./tutorial/intro.md) introduces you to MACH composer and lets you setup your MACH stack in a couple of steps
-- [Explanations](./topics/concepts.md) explanations of concepts, best practises and techniques
-- [Reference guides](./reference/index.md) contain technical reference for the MACH syntax and usage of the CLI.
-- [How-to guides](./howto/index.md) contain practical descriptions on how to solve certain problems. They are more advanced than tutorials and assume some knowledge of how MACH works.
+- [Tutorials](./tutorial/intro.md) introduces you to MACH composer and lets you
+  setup your MACH stack in a couple of steps
+- [Explanations](./topics/concepts.md) explanations of concepts, best practises
+  and techniques
+- [Reference guides](./reference/index.md) contain technical reference for the
+  MACH syntax and usage of the CLI.
+- [How-to guides](./howto/index.md) contain practical descriptions on how to
+  solve certain problems. They are more advanced than tutorials and assume some
+  knowledge of how MACH works.
 
 ## Where from here?
 
 - Start by setting up your [first MACH stack](./tutorial/intro.md)
 - Read more about the [MACH concepts](./topics/concepts.md)
-- Wonder how to reason about your MACH stack? Read our [Architectural Guidance](./topics/architecture/index.md)
+- Wonder how to reason about your MACH stack? Read our
+  [Architectural Guidance](./topics/architecture/index.md)

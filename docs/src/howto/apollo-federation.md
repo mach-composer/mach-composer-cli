@@ -1,8 +1,8 @@
 # Apply Apollo Federation
 
 A common use-case when having multiple components (and/or external SaaS
-services) with a GraphQL API is to expose the APIs using a [federated
-gateway](https://www.apollographql.com/docs/federation/).
+services) with a GraphQL API is to expose the APIs using a
+[federated gateway](https://www.apollographql.com/docs/federation/).
 
 This setup consists of two things:
 

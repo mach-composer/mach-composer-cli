@@ -13,7 +13,9 @@ If you don't have an account yet, you can [signup for a free trail](https://ok.c
     By default MACH uses the `europe-west1` region of commercetools.
 
     There are [more regions available](https://docs.commercetools.com/api/general-concepts#hosts) that can be used.
-    If any other then the default is used, make sure you change the [necessary commercetools settings](../reference/syntax/sites.md#commercetools) in your MACH configuration later on.
+    If any other then the default is used, make sure you change the
+    [necessary commercetools settings](../reference/syntax/sites.md#commercetools)
+    in your MACH configuration later on.
 
 ## Create a new project
 
@@ -33,7 +35,8 @@ Required scopes:
 - `view_api_clients`
 
 !!! info "One client to rule them all"
-    This client is used MACH composer to create other necessary commercetools clients for each individual component.
+    This client is used MACH composer to create other necessary commercetools
+    clients for each individual component.
 
 We will use these credentials later when configuring our MACH stack.
 

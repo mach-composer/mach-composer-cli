@@ -29,7 +29,8 @@ For this account we will create a;
 ![New account](../../_img/tutorial/aws-create-account.png){: style="max-width: 600px"}
 
 !!! info "No root AWS account yet?"
-    Go to [AWS support](https://aws.amazon.com/premiumsupport/knowledge-center/create-and-activate-aws-account/) for instructions on how to setup your AWS root account.
+    Go to [AWS support](https://aws.amazon.com/premiumsupport/knowledge-center/create-and-activate-aws-account/)
+    for instructions on how to setup your AWS root account.
 
 ### 2. Setup your Terraform configuration
 
@@ -99,7 +100,8 @@ module "shared-config" {
 ```
 
 !!! info "`allow_assume_deploy_role`"
-    We specify our root account here, so it makes it easier for this tutorial to setup credentials to be able to deploy the components.
+    We specify our root account here, so it makes it easier for this tutorial to
+    setup credentials to be able to deploy the components.
 
 ### 3. Terraform apply
 
@@ -108,8 +110,10 @@ module "shared-config" {
 $ terraform init
 $ terraform apply
 ```
-2. Terraform has now created a `backend.tf` file which instructs Terraform to store the state on a S3 bucket.<br>
-In order to move the current (local) state file to the bucket, perform this one-time command:
+2. Terraform has now created a `backend.tf` file which instructs Terraform to
+store the state on a S3 bucket.<br>
+In order to move the current (local) state file to the bucket, perform this
+one-time command:
 ```bash
 $ terraform init -force-copy
 ```
@@ -119,5 +123,6 @@ lock the state to prevent concurrent modification.
 !!! tip "Next: step 4"
     Next we'll setup the [AWS account for a MACH stack](step-4-setup-aws-site.md).
 
-[^1]: For the sake of simplicity we will use the default administrator role that AWS will create for us.<br>
-However, as best practise, we advise to create an admin (or sudo) role explicitly with Terraform.
+[^1]: For the sake of simplicity we will use the default administrator role that
+AWS will create for us.<br> However, as best practise, we advise to create an
+admin (or sudo) role explicitly with Terraform.

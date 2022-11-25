@@ -1,6 +1,7 @@
 # Parse store variables and secrets
 
-When [integrating with commercetools](../../topics/integrations/commercetools.md) MACH makes it possible to define [store specific variables and secrets](../../topics/integrations/commercetools.md).
+When [integrating with commercetools](../../topics/integrations/commercetools.md)
+MACH makes it possible to define [store specific variables and secrets](../../topics/integrations/commercetools.md).
 
 You could have for example the following configuration
 
@@ -52,11 +53,14 @@ ct_stores = {
 
 ## Using store variables
 
-One way of approaching the store variables is to provide them all in your runtime environment prefixed with the store key.
+One way of approaching the store variables is to provide them all in your
+runtime environment prefixed with the store key.
 
-In your function, depending on the Store context, you can choose what environment setting to use.
+In your function, depending on the Store context, you can choose what
+environment setting to use.
 
-In this example, we'd like to set the following environment variables on our function runtime:
+In this example, we'd like to set the following environment variables on our
+function runtime:
 
 ```bash
 UK_FROM_EMAIL = "mach@example.co.uk"
@@ -110,9 +114,11 @@ resource "aws_secretsmanager_secret_version" "store_secret" {
 ```
 
 !!! tip "Combining secrets"
-    Depending on your use-case you could choose to store **all** secrets into one AWS secret or to have a logical split.
+    Depending on your use-case you could choose to store **all** secrets into
+    one AWS secret or to have a logical split.
 
-    More considerations about this in the ['Handle secrets in components'](../security/handle-secrets.md#combine-or-split-up) how-to.
+    More considerations about this in the [
+      'Handle secrets in components'](../security/handle-secrets.md#combine-or-split-up) how-to.
 
 #### Seperate secrets
 ```terraform

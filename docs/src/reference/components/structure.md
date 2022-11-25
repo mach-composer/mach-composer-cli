@@ -9,12 +9,18 @@ What variables it needs to have defined is controlled by the [integrations](../s
 If `integrations` is set to an empty list `[]`, no variables will be needed.
 
 !!! tip ""
-    An example of a component that takes no variables could be a component that creates custom product types in commercetools. This component operates with the same Terraform commercetools provider which is configured for the correct project already, so no additional information will be needed in the Terraform module itself.
+    An example of a component that takes no variables could be a component that
+    creates custom product types in commercetools. This component operates with
+    the same Terraform commercetools provider which is configured for the
+    correct project already, so no additional information will be needed in the
+    Terraform module itself.
 
 
 ### Optional variables
 
-Regardless of what [integration](#integrations) the components has, two variables must be set on the component if those are actually set in your MACH configuration.
+Regardless of what [integration](#integrations) the components has, two
+variables must be set on the component if those are actually set in your MACH
+configuration.
 
 So only if you have following configuration for your component:
 
@@ -43,9 +49,12 @@ variable "secrets" {
 
 ## Integrations
 
-By defining a set of `integrations` in the [component definitions](../syntax/components.md), MACH knows what variables need to be passed on to the components.
+By defining a set of `integrations` in the
+[component definitions](../syntax/components.md), MACH knows what variables need
+to be passed on to the components.
 
-This way the components don't need to define **all possible variables** a component might have.
+This way the components don't need to define **all possible variables** a
+component might have.
 
 Available integrations are:
 
@@ -57,11 +66,15 @@ Available integrations are:
 - `amplience`
 - `apollo_federation`
 
-By default, integrations are set on the given cloud provider. So when no `integrations` defintion is given, it defaults to `['aws']` in case of an AWS deployment.
+By default, integrations are set on the given cloud provider. So when no
+`integrations` defintion is given, it defaults to `['aws']` in case of an AWS
+deployment.
 
 !!! tip "Non-cloud components"
-    As an example; you might have a component defining some custom commercetools product types. No further cloud infrastructure is needed.<br>
-    In this case, that component will have `integrations: ['commeretools']` and MACH won't pass any of the cloud-specific variables.
+    As an example; you might have a component defining some custom commercetools
+    product types. No further cloud infrastructure is needed.<br>
+    In this case, that component will have `integrations: ['commeretools']` and
+    MACH won't pass any of the cloud-specific variables.
 
 ### cloud integration
 
@@ -100,7 +113,9 @@ variable "tags" {
 ```
 
 !!! info "Cloud specific variables"
-      See [AWS variables](./aws.md#terraform-variables) and [Azure variables](./azure.md#terraform-variables) for cloud-specific variables that a component needs in addition to the base set.
+      See [AWS variables](./aws.md#terraform-variables) and
+      [Azure variables](./azure.md#terraform-variables) for cloud-specific
+      variables that a component needs in addition to the base set.
 
 
 ### commercetools
@@ -193,11 +208,14 @@ variable "apollo_federation" {
 
 ## Serverless function
 
-The component might contain code for a serverless function to run on the cloud provider.
+The component might contain code for a serverless function to run on the cloud
+provider.
 
-What kind of language/runtime is used for that is irrelevant to MACH. Two things the component needs to contain:
+What kind of language/runtime is used for that is irrelevant to MACH. Two things
+the component needs to contain:
 
-- **Build/deploy script** to build, package and upload the serverless function to a repository
+- **Build/deploy script** to build, package and upload the serverless function
+  to a repository
 - A **Terraform configuration** for the serverless function
 
 ## Cloud provider specifics

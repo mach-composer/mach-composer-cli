@@ -19,7 +19,8 @@ It should be present in your:
 2. [Site component configuration](../../reference/syntax/sites.md#components) to
     include it in your MACH stack add site-specific configuration
 
-The [tutorial](../../tutorial/aws/step-6-create-mach-stack.md) includes an example of a configuration file with a component implemented.
+The [tutorial](../../tutorial/aws/step-6-create-mach-stack.md) includes an
+example of a configuration file with a component implemented.
 
 ## Using Serverless framework
 
@@ -28,13 +29,18 @@ The 'function'-part of a MACH component can easily be integrated with the
 
 This gives you a couple of features:
 
-- Easy local development of your function code including mocked infrastructure that might be needed for your setup
-- Build & package your function by calling `sls package`. [More info about Packaging & Deployment](../../topics/deployment/components.md##using-serverless)
+- Easy local development of your function code including mocked infrastructure
+  that might be needed for your setup
+- Build & package your function by calling `sls package`.
+  [More info about Packaging & Deployment](../../topics/deployment/components.md##using-serverless)
 
 !!! info "Serverless framework in your MACH deployment"
-    Although we do encourage the usage of the serverless framework for development and packaging, we don't recommend using it for the actual MACH deployment itself.<br>
+    Although we do encourage the usage of the serverless framework for
+    development and packaging, we don't recommend using it for the actual MACH
+    deployment itself.<br>
     More info about this in the [MACH configuration deployment notes](../../topics/deployment/config/components.md#serverless-framework).
 
 ## Further reading
 
-Continue to [component structure](../../reference/components/structure.md) for an explanation of a component's internals.
+Continue to [component structure](../../reference/components/structure.md) for
+an explanation of a component's internals.

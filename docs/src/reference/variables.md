@@ -34,7 +34,8 @@ sites:
 components: ${include(components.yml)}
 ```
 
-- `${components.infra.sns_topic_arn}` uses the `sns_topic_arn` Terraform output as a value for the payment component
+- `${components.infra.sns_topic_arn}` uses the `sns_topic_arn` Terraform output
+  as a value for the payment component
 - `${var.stripe_secret}` reads the `stripe_secret` from a variables file
 - `${include(components.yml)}` includes `components.yml` and injects it in the configuration
 
@@ -97,7 +98,10 @@ will use the `stripe_secret` value from the given variables file.
 !!! tip "Note on encryption"
     You can [encrypt your `variables.yml` using SOPS](../howto/security/encrypt.md#encrypted-variables).
 
-    When doing so, MACH won't render the variable files directly into your Terraform configuration but uses [terraform-sops](https://github.com/carlpett/terraform-provider-sops) to refer you the SOPS encrypted variables within the Terraform file.
+    When doing so, MACH won't render the variable files directly into your
+    Terraform configuration but uses
+    [terraform-sops](https://github.com/carlpett/terraform-provider-sops) to
+    refer you the SOPS encrypted variables within the Terraform file.
 
 ## `env`
 **Usage** `${env.<variable-name>}`
@@ -119,6 +123,7 @@ Any valid YAML file can be included here.
 !!! info "Using `!include`"
     The `${include(...)}` syntax has the same effect as using `!include ...` in your YAML file.
 
-    However, when using [SOPS](../topics/../howto/security/encrypt.md) to encrypt your configuration file, this tag will get stripped.
-    Therefor, MACH also supports the MACH-specific syntax.
+    However, when using [SOPS](../topics/../howto/security/encrypt.md) to
+    encrypt your configuration file, this tag will get stripped.  Therefor, MACH
+    also supports the MACH-specific syntax.
 

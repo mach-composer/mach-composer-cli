@@ -1,9 +1,11 @@
 # Sentry
 
-You can define a predefined Sentry [DSN](https://docs.sentry.io/product/sentry-basics/dsn-explainer) for your components to use during runtime to report to your Sentry project.
+You can define a predefined Sentry [DSN](https://docs.sentry.io/product/sentry-basics/dsn-explainer)
+for your components to use during runtime to report to your Sentry project.
 
 It's also possible for MACH to manage the keys (and DSN values) for you.
-This allows you to generate a unique DSN per component as well as have fine-grained control over rate-limiting.
+This allows you to generate a unique DSN per component as well as have
+fine-grained control over rate-limiting.
 
 To let MACH manage your DSN values, you need to define a **auth token**, **project** and **organization**.
 
@@ -32,11 +34,13 @@ global:
   ...
 ```
 
-The rate limits can also be defined/overwritten on [`site`](../../reference/syntax/sites.md) and [`component`](../../reference/syntax/sites.md#components) level
+The rate limits can also be defined/overwritten on [`site`](../../reference/syntax/sites.md)
+and [`component`](../../reference/syntax/sites.md#components) level
 
 ## Integrate with components
 
-When `sentry` is set as an [component integration](../../reference/components/structure.md#integrations), the component should have the following Terraform variables defined:
+When `sentry` is set as an [component integration](../../reference/components/structure.md#integrations),
+the component should have the following Terraform variables defined:
 
 - `sentry_dsn`
 

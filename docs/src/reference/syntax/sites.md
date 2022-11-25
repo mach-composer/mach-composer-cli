@@ -18,7 +18,9 @@ All site definitions.
 
 Endpoint definitions to be used in the API Gateway or Frontdoor routing.
 
-Each component might require a different endpoint. In the [component definition](./components.md) it can be defined which endpoint it expects. The actual endpoint can be defined here using the unique key.
+Each component might require a different endpoint. In the
+[component definition](./components.md) it can be defined which endpoint it
+expects. The actual endpoint can be defined here using the unique key.
 
 Basic example:
 
@@ -58,7 +60,8 @@ aws:
 
 - `throttling_burst_limit` - Set burst limit for API Gateway endpoints
 - `throttling_rate_limit` - Set burst limit for API Gateway endpoints
-- `enable_cdn` - Defaults to false. Sets a CDN in front of this endpoint for better global availability. For AWS creates a CloudFront distribution
+- `enable_cdn` - Defaults to false. Sets a CDN in front of this endpoint for
+  better global availability. For AWS creates a CloudFront distribution
 
 ### azure
 Example:
@@ -124,7 +127,8 @@ project_settings:
 
 - **`currencies`** - (Required) List of three-digit currency codes as per ISO 4217
 - **`languages`** - (Required) List of IETF language tag
-- **`countries`** - (Required) List of two-digit country codes as per [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2)
+- **`countries`** - (Required) List of two-digit country codes as per
+  [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2)
 - `messages_enabled` - When false the creation of messages is disabled.<br>
   Defaults to True
 
@@ -274,7 +278,7 @@ Example:
 !!! warning
 This functionality is deprecated and will be removed soon.
 
-Create your own frontend tokens in the commercetools Merchant Center. 
+Create your own frontend tokens in the commercetools Merchant Center.
 Once this functionality is removed the generated frontend tokens will be automatically deleted on rollout.
 
 Example:
@@ -360,7 +364,8 @@ And adds the following exta attributes:
 
 !!! warning
     Use `resource_group` with care.<br>
-    By default, MACH will manage the site resource groups for you. If you add this option later, the managed resource group will get **deleted**.<br>
+    By default, MACH will manage the site resource groups for you. If you add
+    this option later, the managed resource group will get **deleted**.<br>
     So only use for new site definitions
 
 ### frontdoor
@@ -376,7 +381,8 @@ frontdoor:
 ```
 
 - **`dns_resource_group`** - (Required) Resource group name where the DNS zone can be found
-- `suppress_changes` - Suppress changes to the Frontdoor instance. This is a temporary work-around for some issues in the Azure Terraform provider.
+- `suppress_changes` - Suppress changes to the Frontdoor instance. This is a
+  temporary work-around for some issues in the Azure Terraform provider.
 - `ssl_key_vault` - SSL certificate configuration when Frontdoor should use your own certificate
 
 #### ssl_key_vault
@@ -387,7 +393,8 @@ frontdoor:
 
 ### service_plans
 
-Map of service plan definitions if you want to define additional service plans your components should run on, or if you want to overwrite the default.
+Map of service plan definitions if you want to define additional service plans
+your components should run on, or if you want to overwrite the default.
 
 Example:
 === "Additional plan"
@@ -419,8 +426,13 @@ Example:
 - **`tier`** - (Required) Specifies the plan's pricing tier.
 - **`size`** - (Required) Specifies the plan's instance size.
 - `capacity` - Specifies the number of workers associated with this App Service Plan.
-- `dedicated_resource_group` - Indicates of the service plan should run on a dedicated resource group. This might be useful when, due to Azure hosting restrictions, a service plan cannot run on the same resource group as an existing one. Defaults to `false`.
-- `per_site_scaling` - Can Apps assigned to this App Service Plan be scaled independently? If set to `false` apps assigned to this plan will scale to all instances of the plan. Defaults to `false`.
+- `dedicated_resource_group` - Indicates of the service plan should run on a
+  dedicated resource group. This might be useful when, due to Azure hosting
+  restrictions, a service plan cannot run on the same resource group as an
+  existing one. Defaults to `false`.
+- `per_site_scaling` - Can Apps assigned to this App Service Plan be scaled
+  independently? If set to `false` apps assigned to this plan will scale to all
+  instances of the plan. Defaults to `false`.
 
 ### alert_group
 Example:
@@ -465,7 +477,8 @@ aws:
 
 ## components
 
-Configures the components for the site. They must reference a defined component (defined in the [component definitions](#components))
+Configures the components for the site. They must reference a defined component
+(defined in the [component definitions](#components))
 
 Example:
 
@@ -490,7 +503,8 @@ components:
 - `variables` - Variables for this component
 - `secrets` - Variables for this component that should be stored in a encrypted key-value store
 - `store_variables` - [commercetools store](#stores)-specific variables for this component
-- `store_secrets` - [commercetools store](#stores)-specific variables for this component that should be stored in a encrypted key-value store
+- `store_secrets` - [commercetools store](#stores)-specific variables for this
+  component that should be stored in a encrypted key-value store
 - `health_check_path` - Defines a custom healthcheck path.<br>
   Overwrites the default `health_check_path` defined in the component definition
 - `sentry` - [Sentry configuration](#sentry_1) block
@@ -505,7 +519,8 @@ Overwrites any value specified in the site configs [Sentry block](#sentry)
 - `rate_limit_count` - The rate limit count that applies to a generated key
 
 
-[^1]: commercetools uses [Localized strings](https://docs.commercetools.com/http-api-types#localizedstring) to be able to define strings in mulitple languages.<br>
+[^1]: commercetools uses [Localized strings](https://docs.commercetools.com/http-api-types#localizedstring)
+to be able to define strings in mulitple languages.<br>
 Whenever a localized string needs to be defined, this can be done in the following format:
 ```yaml
 some-string:
@@ -523,4 +538,6 @@ azure:
   service_plan: default
 ```
 
-- `service_plan` - The service plan (defined in [`service_plans`](./global.md#service_plans)) to use for this component. Set this to `default` if you want to use the MACH-managed Consumption plan.
+- `service_plan` - The service plan (defined in [`service_plans`](./global.md#service_plans))
+  to use for this component. Set this to `default` if you want to use the
+  MACH-managed Consumption plan.

@@ -1,26 +1,32 @@
 # Integrations
 
-Each integration brings it's own set of managed resources that gets created by MACH when configured for a specific MACH stack.
+Each integration brings it's own set of managed resources that gets created by
+MACH when configured for a specific MACH stack.
 
 ### commercetools
 
-The commercetools integration will manage all resources that can be [configured](../../integrations/commercetools.md#configuration) in the [commercetools settings](../../../reference/syntax/sites.md#commercetools).
+The commercetools integration will manage all resources that can be
+[configured](../../integrations/commercetools.md#configuration) in the
+[commercetools settings](../../../reference/syntax/sites.md#commercetools).
 
 It uses the [Terraform commercetools provider](https://registry.terraform.io/providers/labd/commercetools/latest/docs) for this.
 
 !!! note ""
-    [More info](../../integrations/commercetools.md) about the commercetools integration.
+    [More info](../../integrations/commercetools.md) about the commercetools
+    integration.
 
 ### Sentry
 
-It will create a [Sentry key](https://registry.terraform.io/providers/jianyuan/sentry/latest/docs/resources/key) per component that has the [Sentry integration](../../integrations/sentry.md) defined.
+It will create a [Sentry key](https://registry.terraform.io/providers/jianyuan/sentry/latest/docs/resources/key)
+per component that has the [Sentry integration](../../integrations/sentry.md) defined.
 
 !!! note ""
     [more info](../../integrations/sentry.md) about the Sentry integration
 
 ### Contentful
 
-It uses the [Terraform contentful provider](https://registry.terraform.io/providers/labd/contentful/latest) to manage the following resources per site:
+It uses the [Terraform contentful provider](https://registry.terraform.io/providers/labd/contentful/latest)
+to manage the following resources per site:
 
 - Contentful space
 - An API key
@@ -30,7 +36,8 @@ It uses the [Terraform contentful provider](https://registry.terraform.io/provid
 
 ### Amplience
 
-It will use the information from the [amplience settings](../../../reference/syntax/global.md#amplience) to pass to the components that have `amplience` included in their integrations.
+It will use the information from the [amplience settings](../../../reference/syntax/global.md#amplience)
+to pass to the components that have `amplience` included in their integrations.
 
 !!! note ""
     [more info](../../integrations/amplience.md) about the Ampience integration

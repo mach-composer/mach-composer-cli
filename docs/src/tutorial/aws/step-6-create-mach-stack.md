@@ -63,11 +63,15 @@ See [Syntax](../../reference/syntax/index.md) for all configuration options.
 
 ## 2. Configure credentials
 
-In [step 4](./step-4-setup-aws-site.md) we've used the [`terraform-aws-mach-account` module](https://github.com/labd/terraform-aws-mach-account) to setup the AWS account for us.
+In [step 4](./step-4-setup-aws-site.md) we've used the
+[`terraform-aws-mach-account` module](https://github.com/labd/terraform-aws-mach-account)
+to setup the AWS account for us.
 
 This also created an IAM **user** called `mach` and a **role** `mach` that we can use to perform MACH deployments with.
 
-In this tutorial, we'll be using the `mach` role so we can configure the credentials in the same fashion we did for the [component upload](./step-5-create-component.md#upload):
+In this tutorial, we'll be using the `mach` role so we can configure the
+credentials in the same fashion we did for the
+[component upload](./step-5-create-component.md#upload):
 
 Make sure the following is added to your `~/.aws/config` file:
 
@@ -78,7 +82,8 @@ role_arn = arn:aws:iam::<service-account-id>:role/mach
 ```
 
 !!! tip "Using the `mach` user"
-    In order to use this user, go to your AWS console and open the **Systems Manager Parameter Store** to view the credentials.
+    In order to use this user, go to your AWS console and open the
+    **Systems Manager Parameter Store** to view the credentials.
 
     ![New account](../../_img/tutorial/aws-mach-user-credentials.png)
 
@@ -96,7 +101,9 @@ $ mach-composer apply
 !!! tip "Providing AWS credentials"
     How you provide the AWS credentials is dependent on your local setup.
 
-    For example; you could invoke this with `AWS_DEFAULT_PROFILE=your-project-tst mach-composer apply` or with [aws-vault](https://github.com/99designs/aws-vault):
+    For example; you could invoke this with
+    `AWS_DEFAULT_PROFILE=your-project-tst mach-composer apply` or with
+    [aws-vault](https://github.com/99designs/aws-vault):
 
     ```bash
     aws-vault exec your-project-tst -- mach-composer apply

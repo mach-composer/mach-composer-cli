@@ -9,17 +9,22 @@ How to set up the deployment process for your MACH configuration.
 
 ### Providing cloud credentials
 
-We have to make sure the the necessary AWS or Azure credentials are set in the GitLab CI/CD settings;
+We have to make sure the the necessary AWS or Azure credentials are set in the
+GitLab CI/CD settings;
 
 ![CI/CD variables](../../_img/deployment/gitlab/variables.png)
 
 ### Access to component repositories
 
-When MACH is applied it will have to download the various components from their Git repositories.<br>
+When MACH is applied it will have to download the various components from their
+Git repositories.<br>
 We have to make sure the current runner has access to those.
 
-Most probably you'll have the CI for the MACH configuration running under the same GitLab account as the components itself.<br>
-In that case you can use the [`CI_JOB_TOKEN`](https://docs.gitlab.com/ee/ci/variables/predefined_variables.html) variable and place it in a [`.netrc`](https://docs.gitlab.com/ee/user/project/new_ci_build_permissions_model.html#dependent-repositories) file so that other repositories can be accessed (see [example](#example)):
+Most probably you'll have the CI for the MACH configuration running under the
+same GitLab account as the components itself.<br>
+In that case you can use the [`CI_JOB_TOKEN`](https://docs.gitlab.com/ee/ci/variables/predefined_variables.html)
+variable and place it in a [`.netrc`](https://docs.gitlab.com/ee/user/project/new_ci_build_permissions_model.html#dependent-repositories)
+file so that other repositories can be accessed (see [example](#example)):
 
 ```yaml
 # Run the following script before any deploy
@@ -32,11 +37,14 @@ In that case you can use the [`CI_JOB_TOKEN`](https://docs.gitlab.com/ee/ci/vari
 
 ### Terraform plugin cache
 
-To speed up deployments and avoid re-downloads of each provider and module, we can set a `TF_PLUGIN_CACHE_DIR` as described in the [MACH deployment section](../../topics/deployment/config/index.md#cache-terraform-providers).
+To speed up deployments and avoid re-downloads of each provider and module, we
+can set a `TF_PLUGIN_CACHE_DIR` as described in the
+[MACH deployment section](../../topics/deployment/config/index.md#cache-terraform-providers).
 
 ### Example
 
 === "AWS"
+
       ```yaml
       ---
       image: docker.pkg.github.com/labd/mach-composer/mach:0.4
@@ -65,6 +73,7 @@ To speed up deployments and avoid re-downloads of each provider and module, we c
           - mach-composer apply --auto-approve -f $CI_PROJECT_DIR/main.yml
       ```
 === "Azure"
+
       ```yaml
       ---
       image: docker.pkg.github.com/labd/mach-composer/mach:2.0.0
@@ -99,6 +108,7 @@ To speed up deployments and avoid re-downloads of each provider and module, we c
 Example GitLab CI configuration
 
 === "Python"
+
   ```yaml
   stages:
     - test

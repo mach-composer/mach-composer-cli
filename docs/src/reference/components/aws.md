@@ -19,7 +19,9 @@ expected (and set in the configuration).
 
 ### With `endpoints`
 
-In order to support the [`endpoints`](../../topics/deployment/config/aws.md#http-routing) attribute on the component, the component needs to define what endpoints it expects.
+In order to support the [`endpoints`](../../topics/deployment/config/aws.md#http-routing)
+attribute on the component, the component needs to define what endpoints it
+expects.
 
 For example, if the component requires two endpoints (`main` and `webhooks`) to
 be set, the following variables needs to be defined:
@@ -70,7 +72,8 @@ To do so, the following has to be configured:
 - The component needs to have [`endpoints`](../syntax/components.md) defined
 
 !!! tip "Default endpoint"
-    If you assign `default` to one of your components endpoints, no additional Route53 settings are needed.
+    If you assign `default` to one of your components endpoints, no additional
+    Route53 settings are needed.
 
     MACH will create an API Gateway for you without any custom domain.
 
@@ -78,7 +81,8 @@ More information in the [deployment section](../../topics/deployment/config/aws.
 
 ## Lambda function
 
-We recommend using the [AWS Lambda Terraform module](https://registry.terraform.io/modules/terraform-aws-modules/lambda/aws/latest) for managing a Lambda function.
+We recommend using the [AWS Lambda Terraform module](https://registry.terraform.io/modules/terraform-aws-modules/lambda/aws/latest)
+for managing a Lambda function.
 
 ```terraform
 module "lambda_function" {

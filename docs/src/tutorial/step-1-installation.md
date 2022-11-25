@@ -13,7 +13,9 @@ We recommend using [tfenv](https://github.com/tfutils/tfenv) to easily switch be
    ```
 
 ## Install MACH
-The easiest way to get started is by installing MACH composer locally to be able to perform a MACH deploy and make use of the [developer tools](../topics/development/workflow.md).
+The easiest way to get started is by installing MACH composer locally to be able
+to perform a MACH deploy and make use of the
+[developer tools](../topics/development/workflow.md).
 
 ```bash
 $ pipx install mach-composer

@@ -35,7 +35,7 @@ nav:
   - Deployment:
     - Overview: topics/deployment/overview.md
     - Components: topics/deployment/components.md
-    - MACH stack: 
+    - MACH stack:
       - Overview: topics/deployment/config/index.md
       - topics/deployment/config/aws.md
       - topics/deployment/config/azure.md
@@ -127,7 +127,6 @@ markdown_extensions:
       guess_lang: false
   - footnotes
   - pymdownx.tabbed
-  - fontawesome_markdown
   - pymdownx.tasklist:
       clickable_checkbox: true
       custom_checkbox: true

@@ -1,18 +1,23 @@
 # Handle secrets in components
 
-Secrets values are passed on to the component by MACH using the [`secrets` attribute](../../reference/syntax/sites.md#components).
+Secrets values are passed on to the component by MACH using the
+[`secrets` attribute](../../reference/syntax/sites.md#components).
 
 It is up to the component to use those secret values in a secure manner.
 
 ## Handle secrets in AWS
 
-In AWS we recommend storing the secret values in the [Secrets Manager](https://aws.amazon.com/secrets-manager/) and provide references to those secrets in the Lambda environment variables
+In AWS we recommend storing the secret values in the
+[Secrets Manager](https://aws.amazon.com/secrets-manager/) and provide
+references to those secrets in the Lambda environment variables
 
 ### Combined or seperate
 
 Depending on your use-case you can choose to store **all** secrets into **one** *AWS secret* or store them separately.
 
-Combining the secrets can be done by storing the secrets as a *json-encoded* value. The main advantage of combining them is that you only need one call to the Secrets Manager to retreive all secrets which decreases your latency.
+Combining the secrets can be done by storing the secrets as a *json-encoded*
+value. The main advantage of combining them is that you only need one call to
+the Secrets Manager to retreive all secrets which decreases your latency.
 
 ### Store secrets
 
@@ -64,7 +69,8 @@ Combining the secrets can be done by storing the secrets as a *json-encoded* val
 
 Make sure your Lambda function knows where to find the secrets.
 
-By providing the references to the Secret Manager secrets the Lambda function can use the AWS SDK to retreive the values.
+By providing the references to the Secret Manager secrets the Lambda function
+can use the AWS SDK to retreive the values.
 
 === "Combined"
     ```terraform
@@ -99,14 +105,16 @@ By providing the references to the Secret Manager secrets the Lambda function ca
           ENVIRONMENT    = var.environment,
           ...
         }
-      ) 
+      )
     ```
 
 ### Configure your Lambda IAM policy
 
-Make sure your Lambda has the correct policies to access the secrets **but only the secrets of that component**.
+Make sure your Lambda has the correct policies to access the secrets
+**but only the secrets of that component**.
 
-One way of achieving this is to use the `tags` that we've set on the secret itself.
+One way of achieving this is to use the `tags` that we've set on the secret
+itself.
 
 Snippet of our IAM policy that we assign to the Lambda:
 ```terraform
@@ -130,7 +138,8 @@ statement {
 
 ## Handle secrets in Azure
 
-In Azure we can store the secrets in a KeyVault and pass the KeyVaul references to the Function App that needs those values.
+In Azure we can store the secrets in a KeyVault and pass the KeyVaul references
+to the Function App that needs those values.
 
 ### Store the secrets
 

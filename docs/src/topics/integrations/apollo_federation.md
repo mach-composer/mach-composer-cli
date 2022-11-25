@@ -6,7 +6,8 @@ You can define a site specific configuration for [managed Apollo federation](htt
 
 Go to Apollo Studio and you will be prompted with a popup for the credentials.
 
-The *graph* setting can be determined from the **APOLLO_KEY** string, use the name between the two `:` characters.
+The *graph* setting can be determined from the **APOLLO_KEY** string, use the
+name between the two `:` characters.
 
 ## Example site configuration block
 
@@ -18,10 +19,11 @@ apollo_federation:
   graph: mach-poc-123
   graph_variant: current
 ```
-      
+
 ## Integrate with components
 
-When `apollo_federation` is set as an [component integration](../../reference/components/structure.md#integrations), the component should have the following Terraform variables defined:
+When `apollo_federation` is set as an [component integration](../../reference/components/structure.md#integrations),
+the component should have the following Terraform variables defined:
 
 - `apollo_federation`
 
@@ -30,4 +32,5 @@ When `apollo_federation` is set as an [component integration](../../reference/co
 
 ## Further reading
 
-For more instructions on how to integrate Apollo Federation into your MACH stack, [read our how-to](../../howto/apollo-federation.md).
+For more instructions on how to integrate Apollo Federation into your MACH
+stack, [read our how-to](../../howto/apollo-federation.md).

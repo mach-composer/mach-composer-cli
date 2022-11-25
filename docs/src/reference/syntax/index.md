@@ -1,8 +1,10 @@
 # Configuration syntax
 
-A configuration file can contain several sites with all different configurations and all using a different mix of re-usable serverless microservice components.
+A configuration file can contain several sites with all different configurations
+and all using a different mix of re-usable serverless microservice components.
 
-It is common to have a single configuration file per environment since they usually share the same general configurations.
+It is common to have a single configuration file per environment since they
+usually share the same general configurations.
 
 The configuration file has the following structure:
 
@@ -28,7 +30,8 @@ The configuration file has the following structure:
 
 
 !!! tip "JSON schema"
-    A JSON schema for the syntax is [available on GitHub](https://github.com/labd/mach-composer/blob/master/schema.json). This can be used to configure IntelliSense autocompletion support in VSCode.
+    A JSON schema for the syntax is [available on GitHub](https://github.com/labd/mach-composer/blob/master/schema.json).
+    This can be used to configure IntelliSense autocompletion support in VSCode.
 
 ## Including YAML files
 
@@ -47,26 +50,27 @@ components: ${include(components.yml)}
 Or load them from an external location;
 
 === "Git"
-    ```yaml
+```yaml
     ---
     mach_composer: ...
     global: ...
     sites: ...
     components: ${include(git::https://github.com/your-org/mach-config.git@9f42fe2//components.yml)}
-    ```
+```
+
 === "HTTPS"
-    ```yaml
+```yaml
     ---
     mach_composer: ...
     global: ...
     sites: ...
     components: ${include(https://www.your-org.com/mach/components.yml)}
-    ```
+```
 
 ## Full example
 
 === "AWS"
-    ```yaml
+```yaml
     ---
     mach_composer:
       version: 1.0.0
@@ -164,10 +168,10 @@ Or load them from an external location;
         source: git::https://github.com/your-company/ecommerce-content//terraform
         version: a410ce6
 
-    ```
+```
 
 === "Azure"
-    ```yaml
+```yaml
     ---
     mach_composer:
       version: 1.0.0
@@ -180,7 +184,7 @@ Or load them from an external location;
           storage_account: mysharedwesaterra
           container_name: tfstate
           state_folder: test
-        providers: 
+        providers:
           azure: 2.51.0
       amplience:
         client_id: 2d02e7da-053a-449c-a954-bc0bb22f70e6
@@ -288,4 +292,4 @@ Or load them from an external location;
           short_name: pt_ecom
         source: git::https://github.com/your-company/ecommerce-content//terraform
         version: a410ce6
-    ```
+```

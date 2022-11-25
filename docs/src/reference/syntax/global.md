@@ -140,7 +140,8 @@ azure:
 
 ### service_plans
 
-Map of service plan definitions if you want to define additional service plans your components should run on, or if you want to overwrite the default.
+Map of service plan definitions if you want to define additional service plans
+your components should run on, or if you want to overwrite the default.
 
 Example:
 === "Additional plan"
@@ -155,7 +156,7 @@ Example:
     ```
 === "Default overwrite"
     ```yaml
-    # Here we configure the default service plan to run Premium 
+    # Here we configure the default service plan to run Premium
     # and also offer a service plan running Windows
     service_plans:
       default:
@@ -172,8 +173,13 @@ Example:
 - **`tier`** - (Required) Specifies the plan's pricing tier.
 - **`size`** - (Required) Specifies the plan's instance size.
 - `capacity` - Specifies the number of workers associated with this App Service Plan.
-- `dedicated_resource_group` - Indicates of the service plan should run on a dedicated resource group. This might be useful when, due to Azure hosting restrictions, a service plan cannot run on the same resource group as an existing one. Defaults to `false`.
-- `per_site_scaling` - Can Apps assigned to this App Service Plan be scaled independently? If set to `false` apps assigned to this plan will scale to all instances of the plan. Defaults to `false`.
+- `dedicated_resource_group` - Indicates of the service plan should run on a
+  dedicated resource group. This might be useful when, due to Azure hosting
+  restrictions, a service plan cannot run on the same resource group as an
+  existing one. Defaults to `false`.
+- `per_site_scaling` - Can Apps assigned to this App Service Plan be scaled
+  independently? If set to `false` apps assigned to this plan will scale to all
+  instances of the plan. Defaults to `false`.
 
 ### frontdoor
 
@@ -188,8 +194,10 @@ frontdoor:
 ```
 
 - **`dns_resource_group`** - (Required) Resource group name where the DNS zone can be found
-- `suppress_changes` - Suppress changes to the Frontdoor instance. This is a temporary work-around for some issues in the Azure Terraform provider.
-- `ssl_key_vault` - SSL certificate configuration when Frontdoor should use your own certificate
+- `suppress_changes` - Suppress changes to the Frontdoor instance. This is a
+  temporary work-around for some issues in the Azure Terraform provider.
+- `ssl_key_vault` - SSL certificate configuration when Frontdoor should use your
+  own certificate
 
 #### ssl_key_vault
 - **`name`** - (Required) KeyVault name
