@@ -3,6 +3,8 @@
 ## 2.4.0 (unreleased)
 - Use `go-git` to retrieve the git log instead of executing `git` directly. This
   fixes (#188)
+- Remove panic() calls in the codebase and handle errors properly by printing
+  them to stdout and setting correct exit code
 - Re-implement the `$(include())` syntax for include a separate components file
   for the 2.0 versione (#115)
 - Fix rendering of variables in the generated terraform output (#194)

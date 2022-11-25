@@ -72,7 +72,7 @@ func handleError(err error) error {
 	if err == nil {
 		return nil
 	}
-	fmt.Printf("Error encountered: %s", err)
+	fmt.Fprintf(os.Stderr, "Error encountered: %s\n", err)
 	os.Exit(1)
 	return nil
 }
