@@ -8,12 +8,11 @@ import (
 	"github.com/labd/mach-composer/internal/utils"
 )
 
-func RunTerraform(ctx context.Context, cwd string, args ...string) {
+func RunTerraform(ctx context.Context, cwd string, args ...string) error {
 	if _, err := os.Stat(cwd); err != nil {
 		if os.IsNotExist(err) {
-			fmt.Fprintln(os.Stderr, "The generated files are not found. Did you run mach-composer generate?")
-			os.Exit(1)
+			return fmt.Errorf("The generated files are not found: %w", err)
 		}
 	}
-	utils.RunInteractive(ctx, "terraform", cwd, args...)
+	return utils.RunInteractive(ctx, "terraform", cwd, args...)
 }

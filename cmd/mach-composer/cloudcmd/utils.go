@@ -42,7 +42,6 @@ func getClient(cmd *cobra.Command) (*mccsdk.APIClient, context.Context) {
 		}
 		cfg.HTTPClient = oauth2Config.Client(
 			context.WithValue(context.TODO(), oauth2.HTTPClient, cfg.HTTPClient))
-
 	} else {
 		oauth2Config := &oauth2.Config{
 			Endpoint: endpoints,
@@ -104,7 +103,6 @@ func MustGetString(cmd *cobra.Command, key string) string {
 	value, err := cmd.Flags().GetString(key)
 	if err != nil {
 		panic(err)
-
 	}
 	return value
 }

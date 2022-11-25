@@ -3,9 +3,10 @@ package main
 import (
 	"fmt"
 
+	"github.com/spf13/cobra"
+
 	"github.com/labd/mach-composer/internal/generator"
 	"github.com/labd/mach-composer/internal/runner"
-	"github.com/spf13/cobra"
 )
 
 var terraformCmd = &cobra.Command{
@@ -15,10 +16,7 @@ var terraformCmd = &cobra.Command{
 		preprocessGenerateFlags()
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
-		if err := terraformFunc(args); err != nil {
-			return err
-		}
-		return nil
+		return handleError(terraformFunc(args))
 	},
 }
 
@@ -38,7 +36,5 @@ func terraformFunc(args []string) error {
 		Site:       generateFlags.siteName,
 	})
 
-	runner.TerraformProxy(cfg, fileLocations, generateFlags.siteName, args)
-
-	return nil
+	return runner.TerraformProxy(cfg, fileLocations, generateFlags.siteName, args)
 }

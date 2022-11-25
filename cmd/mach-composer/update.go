@@ -35,10 +35,7 @@ var updateCmd = &cobra.Command{
 		}
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
-		if err := updateFunc(cmd.Context(), args); err != nil {
-			return err
-		}
-		return nil
+		return handleError(updateFunc(cmd.Context(), args))
 	},
 }
 
@@ -70,7 +67,10 @@ func updateFunc(ctx context.Context, args []string) error {
 
 	var changes string
 	if componentName != "" {
-		u.UpdateComponent(ctx, componentName, componentVersion)
+		err = u.UpdateComponent(ctx, componentName, componentVersion)
+		if err != nil {
+			return err
+		}
 
 		updateSet := u.GetUpdateSet()
 		if writeChanges && u.Write(ctx) {
@@ -99,7 +99,10 @@ func updateFunc(ctx context.Context, args []string) error {
 		}
 
 		ctx := context.Background()
-		updater.Commit(ctx, []string{updateFlags.configFile}, commitMessage)
+		err = updater.Commit(ctx, []string{updateFlags.configFile}, commitMessage)
+		if err != nil {
+			return err
+		}
 	}
 	return nil
 }

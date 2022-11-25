@@ -17,7 +17,7 @@ type ApplyOptions struct {
 	Site        string
 }
 
-func TerraformApply(cfg *config.MachConfig, locations map[string]string, options *ApplyOptions) {
+func TerraformApply(cfg *config.MachConfig, locations map[string]string, options *ApplyOptions) error {
 	ctx := context.Background()
 
 	for i := range cfg.Sites {
@@ -27,11 +27,14 @@ func TerraformApply(cfg *config.MachConfig, locations map[string]string, options
 			continue
 		}
 
-		TerraformApplySite(ctx, cfg, &site, locations[site.Identifier], options)
+		if err := TerraformApplySite(ctx, cfg, &site, locations[site.Identifier], options); err != nil {
+			return err
+		}
 	}
+	return nil
 }
 
-func TerraformProxy(cfg *config.MachConfig, locations map[string]string, siteName string, cmd []string) {
+func TerraformProxy(cfg *config.MachConfig, locations map[string]string, siteName string, cmd []string) error {
 	ctx := context.Background()
 
 	for i := range cfg.Sites {
@@ -41,13 +44,19 @@ func TerraformProxy(cfg *config.MachConfig, locations map[string]string, siteNam
 			continue
 		}
 
-		RunTerraform(ctx, locations[site.Identifier], cmd...)
+		err := RunTerraform(ctx, locations[site.Identifier], cmd...)
+		if err != nil {
+			return err
+		}
 	}
+	return nil
 }
 
-func TerraformApplySite(ctx context.Context, cfg *config.MachConfig, site *config.Site, path string, options *ApplyOptions) {
+func TerraformApplySite(ctx context.Context, cfg *config.MachConfig, site *config.Site, path string, options *ApplyOptions) error {
 	if !options.Reuse {
-		RunTerraform(ctx, path, "init")
+		if err := RunTerraform(ctx, path, "init"); err != nil {
+			return err
+		}
 	}
 
 	cmd := []string{"apply"}
@@ -65,18 +74,25 @@ func TerraformApplySite(ctx context.Context, cfg *config.MachConfig, site *confi
 	}
 
 	// If there is a plan then we should use it.
-	if val := TerraformPlanDetect(path); val != "" {
-		cmd = append(cmd, val)
+	planFilename, err := TerraformPlanDetect(path)
+	if err != nil {
+		return err
+	}
+	if planFilename != "" {
+		cmd = append(cmd, planFilename)
 	}
 
-	RunTerraform(ctx, path, cmd...)
+	return RunTerraform(ctx, path, cmd...)
 }
 
-func TerraformPlanDetect(path string) string {
-	filename := GeneratePlanName(path)
+func TerraformPlanDetect(path string) (string, error) {
+	filename, err := GeneratePlanName(path)
+	if err != nil {
+		return "", err
+	}
 	filePath := filepath.Join(path, filename)
 	if _, err := os.Stat(filePath); err == nil {
-		return filename
+		return filename, nil
 	}
-	return ""
+	return "", nil
 }

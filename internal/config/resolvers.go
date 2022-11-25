@@ -8,27 +8,35 @@ import (
 	"strings"
 )
 
-func ProcessConfig(cfg *MachConfig) {
+func ProcessConfig(cfg *MachConfig) error {
 	// resolve_variables(config, config.variables, config.variables_encrypted)
 	// parse_global_config(config)
 	// resolve_component_definitions(config)
-	ResolveComponentDefinitions(cfg)
-	ResolveSiteConfigs(cfg)
-}
-
-func ResolveComponentDefinitions(cfg *MachConfig) {
-	for i := range cfg.Components {
-		ResolveComponentDefinition(&cfg.Components[i], cfg)
+	if err := ResolveComponentDefinitions(cfg); err != nil {
+		return err
 	}
+	if err := ResolveSiteConfigs(cfg); err != nil {
+		return err
+	}
+	return nil
 }
 
-func ResolveComponentDefinition(c *Component, cfg *MachConfig) *Component {
+func ResolveComponentDefinitions(cfg *MachConfig) error {
+	for i := range cfg.Components {
+		if _, err := ResolveComponentDefinition(&cfg.Components[i], cfg); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func ResolveComponentDefinition(c *Component, cfg *MachConfig) (*Component, error) {
 	// Terraform needs absolute paths to modules
 	if strings.HasPrefix(c.Source, ".") {
 		if val, err := filepath.Abs(c.Source); err == nil {
 			c.Source = val
 		} else {
-			panic(err)
+			return nil, err
 		}
 	}
 
@@ -49,17 +57,21 @@ func ResolveComponentDefinition(c *Component, cfg *MachConfig) *Component {
 		c.Azure.ShortName = c.Name
 	}
 
-	return c
+	return c, nil
 }
 
-func ResolveSiteConfigs(cfg *MachConfig) {
+func ResolveSiteConfigs(cfg *MachConfig) error {
 	ResolveAzureConfig(cfg)
 	ResolveSentryConfig(cfg)
 	ResolveSiteComponents(cfg)
 
 	for i := range cfg.Sites {
-		ResolveComponentEndpoints(&cfg.Sites[i])
+		err := ResolveComponentEndpoints(&cfg.Sites[i])
+		if err != nil {
+			return err
+		}
 	}
+	return nil
 }
 
 func ResolveSiteComponents(cfg *MachConfig) {
@@ -132,8 +144,10 @@ func ResolveAzureConfig(cfg *MachConfig) {
 	}
 }
 
-func ResolveComponentEndpoints(site *Site) {
-	site.ResolveEndpoints()
+func ResolveComponentEndpoints(site *Site) error {
+	if err := site.ResolveEndpoints(); err != nil {
+		return err
+	}
 
 	components := site.EndpointComponents()
 	for i := range site.Endpoints {
@@ -144,6 +158,7 @@ func ResolveComponentEndpoints(site *Site) {
 			ep.Components = make([]SiteComponent, 0)
 		}
 	}
+	return nil
 }
 
 func stringContains(s []string, e string) bool {

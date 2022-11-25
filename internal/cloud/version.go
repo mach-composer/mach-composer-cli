@@ -32,7 +32,7 @@ func AutoRegisterVersion(ctx context.Context, client *mccsdk.APIClient, organiza
 
 	commits, err := updater.GetRecentCommits(ctx, ".", branch, baseRef)
 	if err != nil {
-		panic(err)
+		return "", err
 	}
 
 	if len(commits) == 0 {

@@ -1,9 +1,10 @@
 package main
 
 import (
+	"github.com/spf13/cobra"
+
 	"github.com/labd/mach-composer/internal/generator"
 	"github.com/labd/mach-composer/internal/runner"
-	"github.com/spf13/cobra"
 )
 
 var applyFlags struct {
@@ -21,10 +22,7 @@ var applyCmd = &cobra.Command{
 	},
 
 	RunE: func(cmd *cobra.Command, args []string) error {
-		if err := applyFunc(args); err != nil {
-			return err
-		}
-		return nil
+		return handleError(applyFunc(args))
 	},
 }
 
@@ -51,13 +49,11 @@ func applyFunc(args []string) error {
 		return err
 	}
 
-	runner.TerraformApply(cfg, paths, &runner.ApplyOptions{
+	return runner.TerraformApply(cfg, paths, &runner.ApplyOptions{
 		Destroy:     applyFlags.destroy,
 		Reuse:       applyFlags.reuse,
 		AutoApprove: applyFlags.autoApprove,
 		Site:        generateFlags.siteName,
 		Components:  applyFlags.components,
 	})
-
-	return nil
 }

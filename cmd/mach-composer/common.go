@@ -6,8 +6,9 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/labd/mach-composer/internal/config"
 	"github.com/spf13/cobra"
+
+	"github.com/labd/mach-composer/internal/config"
 )
 
 type GenerateFlags struct {
@@ -64,6 +65,12 @@ func preprocessGenerateFlags() {
 			generateFlags.outputPath = filepath.Join(value, "deployments")
 		}
 	}
+}
+
+func handleError(err error) error {
+	fmt.Printf("Error encountered: %s", err)
+	os.Exit(1)
+	return nil
 }
 
 // LoadConfig parses and validates the given config file path.

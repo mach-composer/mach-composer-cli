@@ -35,7 +35,12 @@ func Load(filename string, varFilename string) (*MachConfig, error) {
 		return nil, err
 	}
 
-	if !ValidateConfig(body, schemaVersion) {
+	isValid, err := ValidateConfig(body, schemaVersion)
+	if err != nil {
+		return nil, err
+	}
+
+	if !isValid {
 		return nil, fmt.Errorf("failed to load config %s due to errors", filename)
 	}
 
@@ -49,7 +54,9 @@ func Load(filename string, varFilename string) (*MachConfig, error) {
 	}
 
 	cfg.Filename = filepath.Base(filename)
-	ProcessConfig(cfg)
+	if err := ProcessConfig(cfg); err != nil {
+		return nil, err
+	}
 
 	return cfg, nil
 }
@@ -112,7 +119,10 @@ func parseConfig(data []byte, vars *Variables, filename string) (*MachConfig, er
 
 	if intermediate.Sops.Kind == yaml.MappingNode {
 		cfg.IsEncrypted = true
-		addFileToConfig(cfg, intermediate.MachComposer.VariablesFile)
+		err := addFileToConfig(cfg, intermediate.MachComposer.VariablesFile)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	if err := intermediate.Sites.Decode(&cfg.Sites); err != nil {

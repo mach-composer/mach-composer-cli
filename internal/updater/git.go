@@ -44,9 +44,12 @@ type gitCommitAuthor struct {
 }
 
 func GetLastVersionGit(ctx context.Context, c *config.Component, origin string) (*ChangeSet, error) {
-	cacheDir := getGitCachePath(origin)
-	source, err := parseGitSource(c.Source)
+	cacheDir, err := getGitCachePath(origin)
+	if err != nil {
+		return nil, err
+	}
 
+	source, err := parseGitSource(c.Source)
 	if err != nil {
 		return nil, fmt.Errorf("cannot check %s component since it doesn't have a Git source defined", c.Name)
 	}
@@ -76,18 +79,18 @@ func GetLastVersionGit(ctx context.Context, c *config.Component, origin string) 
 	return cs, nil
 }
 
-func getGitCachePath(origin string) string {
+func getGitCachePath(origin string) (string, error) {
 	cwd, err := os.Getwd()
 	if err != nil {
-		panic(err)
+		return "", err
 	}
 
 	base := strings.TrimSuffix(origin, filepath.Ext(origin))
 	path := filepath.Join(cwd, ".mach", base)
 	if err := os.MkdirAll(path, 0700); err != nil {
-		panic(err)
+		return "", err
 	}
-	return path
+	return path, nil
 }
 
 // Parse a git url and return a gitSource reference
@@ -113,7 +116,7 @@ func parseGitSource(source string) (*gitSource, error) {
 
 	parts, err := url.Parse(result.Repository)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 	result.Name = filepath.Base(parts.Path)
 	return result, nil

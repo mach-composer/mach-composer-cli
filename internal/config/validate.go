@@ -12,26 +12,25 @@ import (
 //go:embed schemas/*
 var schemas embed.FS
 
-func ValidateConfig(data []byte, version int) bool {
+func ValidateConfig(data []byte, version int) (bool, error) {
 	if version != 1 {
-		fmt.Fprintf(os.Stderr, "Config version %d is unsupported. Only version 1 is supported.\n", version)
-		return false
+		err := fmt.Errorf("Config version %d is unsupported. Only version 1 is supported.\n", version)
+		return false, err
 	}
 
 	schemaLoader, err := loadSchema(version)
 	if err != nil {
-		panic(err)
+		return false, err
 	}
 
 	docLoader, err := newYamlLoader(data)
 	if err != nil {
-		panic(err)
+		return false, err
 	}
 
 	result, err := gojsonschema.Validate(*schemaLoader, *docLoader)
 	if err != nil {
-		fmt.Fprintln(os.Stderr, err.Error())
-		os.Exit(1)
+		return false, err
 	}
 
 	// Deal with result
@@ -40,9 +39,9 @@ func ValidateConfig(data []byte, version int) bool {
 		for _, desc := range result.Errors() {
 			fmt.Fprintf(os.Stderr, " - %s\n", desc)
 		}
-		return false
+		return false, nil
 	}
-	return true
+	return true, nil
 }
 
 func loadSchema(version int) (*gojsonschema.JSONLoader, error) {

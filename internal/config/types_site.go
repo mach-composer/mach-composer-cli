@@ -5,8 +5,9 @@ import (
 	"log"
 
 	"github.com/creasty/defaults"
-	"github.com/labd/mach-composer/internal/utils"
 	"gopkg.in/yaml.v3"
+
+	"github.com/labd/mach-composer/internal/utils"
 )
 
 // Site contains all configuration needed for a site.
@@ -26,7 +27,7 @@ type Site struct {
 	Sentry        *SentryConfig          `yaml:"sentry"`
 }
 
-func (s *Site) ResolveEndpoints() {
+func (s *Site) ResolveEndpoints() error {
 	for k, rv := range s.RawEndpoints {
 		switch v := rv.(type) {
 		case string:
@@ -35,7 +36,7 @@ func (s *Site) ResolveEndpoints() {
 				URL: v,
 			}
 			if err := defaults.Set(&ep); err != nil {
-				panic(err)
+				return err
 			}
 			s.Endpoints = append(s.Endpoints, ep)
 
@@ -45,24 +46,23 @@ func (s *Site) ResolveEndpoints() {
 
 			body, err := yaml.Marshal(v)
 			if err != nil {
-				panic(err)
+				return err
 			}
 
 			ep := Endpoint{
 				Key: k,
 			}
-			err = yaml.Unmarshal(body, &ep)
-			if err != nil {
-				panic(err)
+			if err := yaml.Unmarshal(body, &ep); err != nil {
+				return err
 			}
 
 			if err := defaults.Set(&ep); err != nil {
-				panic(err)
+				return err
 			}
 
 			s.Endpoints = append(s.Endpoints, ep)
 		default:
-			panic("Missing")
+			return fmt.Errorf("unexecpted type while resolving endpoints")
 		}
 	}
 
@@ -92,6 +92,7 @@ func (s *Site) ResolveEndpoints() {
 			Key: "default",
 		})
 	}
+	return nil
 }
 
 func (s *Site) EndpointComponents() map[string][]SiteComponent {

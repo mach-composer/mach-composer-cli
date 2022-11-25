@@ -7,9 +7,10 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/labd/mach-composer/internal/utils"
 	"github.com/sirupsen/logrus"
 	"gopkg.in/yaml.v3"
+
+	"github.com/labd/mach-composer/internal/utils"
 )
 
 var varRegex = regexp.MustCompile(`\${((?:var|env)(?:\.[^\}]+)+)}`)
@@ -66,23 +67,26 @@ func loadVariables(filename string) (*Variables, error) {
 	vars.Filepath = filename
 
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
-	if yamlIsEncrypted(body) {
+	isEncrypted, err := yamlIsEncrypted(body)
+	if err != nil {
+		return nil, err
+	}
+	if isEncrypted {
 		logrus.Debug("Detected SOPS encryption; decrypting...")
 		body, err = DecryptYaml(filename)
 		if err != nil {
-			panic(err)
+			return nil, err
 		}
 
 		vars.Encrypted = true
 	}
 
 	dst := make(map[string]interface{})
-	err = yaml.Unmarshal(body, &dst)
-	if err != nil {
-		panic(err)
+	if err := yaml.Unmarshal(body, &dst); err != nil {
+		return nil, err
 	}
 
 	if vars.Encrypted {
@@ -115,16 +119,16 @@ func processVariablesYaml(in map[string]interface{}, out map[string]string, pref
 }
 
 // Check if the file is encrypted with sops
-func yamlIsEncrypted(data []byte) bool {
+func yamlIsEncrypted(data []byte) (bool, error) {
 	dst := make(map[string]interface{})
 	err := yaml.Unmarshal(data, &dst)
 	if err != nil {
-		panic(err)
+		return false, err
 	}
 	if _, ok := dst["sops"]; ok {
-		return true
+		return true, nil
 	}
-	return false
+	return false, nil
 }
 
 // InterpolateVars interpolates the variables within the values of the given

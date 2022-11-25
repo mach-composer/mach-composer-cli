@@ -62,7 +62,10 @@ func (u *Updater) UpdateComponent(ctx context.Context, name, version string) err
 		return nil
 	}
 
-	updateSet := FindSpecificUpdate(ctx, u.config, u.filename, component)
+	updateSet, err := FindSpecificUpdate(ctx, u.config, u.filename, component)
+	if err != nil {
+		return err
+	}
 	if updateSet.HasChanges() {
 		fmt.Printf("Updating component %s to version %s\n", component.Name, updateSet.updates[0].LastVersion)
 		u.updates = updateSet.updates
@@ -144,10 +147,10 @@ func FindUpdates(ctx context.Context, cfg *config.MachConfig, filename string) *
 	return &updates
 }
 
-func FindSpecificUpdate(ctx context.Context, cfg *config.MachConfig, filename string, component *config.Component) *UpdateSet {
+func FindSpecificUpdate(ctx context.Context, cfg *config.MachConfig, filename string, component *config.Component) (*UpdateSet, error) {
 	changeSet, err := GetLastVersion(ctx, component, cfg.Filename)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	output := OutputChanges(changeSet)
@@ -157,7 +160,7 @@ func FindSpecificUpdate(ctx context.Context, cfg *config.MachConfig, filename st
 		filename: cfg.Filename,
 		updates:  []ChangeSet{*changeSet},
 	}
-	return &updates
+	return &updates, nil
 }
 
 func GetLastVersion(ctx context.Context, c *config.Component, origin string) (*ChangeSet, error) {

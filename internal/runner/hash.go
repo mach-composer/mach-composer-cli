@@ -10,11 +10,11 @@ import (
 	"strings"
 )
 
-func GetHash(path string) string {
+func GetHash(path string) (string, error) {
 	// Loop through all *.tf files
 	files, err := os.ReadDir(path)
 	if err != nil {
-		panic(err)
+		return "", err
 	}
 
 	h := sha256.New()
@@ -26,7 +26,7 @@ func GetHash(path string) string {
 		}
 		f, err := os.Open(filename)
 		if err != nil {
-			panic(err)
+			return "", err
 		}
 
 		if _, err := io.Copy(h, f); err != nil {
@@ -37,5 +37,5 @@ func GetHash(path string) string {
 		_ = f.Close() // TODO: handle error
 	}
 
-	return fmt.Sprintf("%x", h.Sum(nil))
+	return fmt.Sprintf("%x", h.Sum(nil)), nil
 }

@@ -23,7 +23,6 @@ var componentsCmd = &cobra.Command{
 		}
 
 		fmt.Println("")
-
 		return nil
 	},
 }

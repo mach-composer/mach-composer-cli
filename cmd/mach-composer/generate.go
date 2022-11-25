@@ -1,8 +1,9 @@
 package main
 
 import (
-	"github.com/labd/mach-composer/internal/generator"
 	"github.com/spf13/cobra"
+
+	"github.com/labd/mach-composer/internal/generator"
 )
 
 var generateCmd = &cobra.Command{
@@ -12,10 +13,7 @@ var generateCmd = &cobra.Command{
 		preprocessGenerateFlags()
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
-		if err := generateFunc(args); err != nil {
-			return err
-		}
-		return nil
+		return handleError(generateFunc(args))
 	},
 }
 

@@ -2,7 +2,7 @@ package utils
 
 import (
 	"context"
-	"log"
+	"fmt"
 	"os"
 	"os/exec"
 	"strings"
@@ -10,7 +10,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func RunInteractive(ctx context.Context, command string, cwd string, args ...string) {
+func RunInteractive(ctx context.Context, command string, cwd string, args ...string) error {
 	logrus.Debugf("Running: %s %s\n", command, strings.Join(args, " "))
 
 	cmd := exec.CommandContext(
@@ -27,11 +27,12 @@ func RunInteractive(ctx context.Context, command string, cwd string, args ...str
 
 	err := cmd.Start()
 	if err != nil {
-		log.Fatalln(err)
+		return err
 	}
 
 	err = cmd.Wait()
 	if err != nil {
-		logrus.Fatalf("command exited: %s %s (in %s)", command, strings.Join(args, " "), cwd)
+		return fmt.Errorf("command exited: %s %s (in %s)", command, strings.Join(args, " "), cwd)
 	}
+	return nil
 }

@@ -4,8 +4,9 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/labd/mach-composer/internal/config"
 	"github.com/sirupsen/logrus"
+
+	"github.com/labd/mach-composer/internal/config"
 )
 
 type PlanOptions struct {
@@ -14,7 +15,7 @@ type PlanOptions struct {
 	Site       string
 }
 
-func TerraformPlan(cfg *config.MachConfig, locations map[string]string, options *PlanOptions) {
+func TerraformPlan(cfg *config.MachConfig, locations map[string]string, options *PlanOptions) error {
 	ctx := context.Background()
 
 	for i := range cfg.Sites {
@@ -24,15 +25,21 @@ func TerraformPlan(cfg *config.MachConfig, locations map[string]string, options 
 			continue
 		}
 
-		TerraformPlanSite(ctx, cfg, &site, locations[site.Identifier], options)
+		err := TerraformPlanSite(ctx, cfg, &site, locations[site.Identifier], options)
+		if err != nil {
+			return err
+		}
 	}
+	return nil
 }
 
-func TerraformPlanSite(ctx context.Context, cfg *config.MachConfig, site *config.Site, path string, options *PlanOptions) {
+func TerraformPlanSite(ctx context.Context, cfg *config.MachConfig, site *config.Site, path string, options *PlanOptions) error {
 	logrus.Debugf("Running terraform plan for site %s", site.Identifier)
 
 	if !options.Reuse {
-		RunTerraform(ctx, path, "init")
+		if err := RunTerraform(ctx, path, "init"); err != nil {
+			return err
+		}
 	}
 	cmd := []string{"plan"}
 
@@ -40,13 +47,20 @@ func TerraformPlanSite(ctx context.Context, cfg *config.MachConfig, site *config
 		cmd = append(cmd, fmt.Sprintf("-target=module.%s", component))
 	}
 
-	filename := GeneratePlanName(path)
+	filename, err := GeneratePlanName(path)
+	if err != nil {
+		return err
+	}
 	cmd = append(cmd, fmt.Sprintf("-out=%s", filename))
 
-	RunTerraform(ctx, path, cmd...)
+	return RunTerraform(ctx, path, cmd...)
 }
 
-func GeneratePlanName(path string) string {
-	siteHash := GetHash(path)
-	return fmt.Sprintf("%s.tfplan", siteHash[:7])
+func GeneratePlanName(path string) (string, error) {
+	siteHash, err := GetHash(path)
+	if err != nil {
+		return "", err
+	}
+	result := fmt.Sprintf("%s.tfplan", siteHash[:7])
+	return result, nil
 }
