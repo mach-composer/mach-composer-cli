@@ -49,7 +49,7 @@ func WriteFiles(cfg *config.MachConfig, options *GenerateOptions) (map[string]st
 
 		body, err := Render(cfg, &site)
 		if err != nil {
-			panic(err)
+			return nil, err
 		}
 
 		// Format and validate the file
@@ -62,12 +62,13 @@ func WriteFiles(cfg *config.MachConfig, options *GenerateOptions) (map[string]st
 		}
 
 		if err := os.MkdirAll(path, 0700); err != nil {
-			panic(err)
+			return nil, fmt.Errorf("error creating directory structure: %w", err)
 		}
 
 		if err := os.WriteFile(filename, formatted, 0700); err != nil {
-			panic(err)
+			return nil, fmt.Errorf("error writing file: %w", err)
 		}
+
 		// Write extra files
 		for extraFilename, content := range cfg.ExtraFiles {
 			extraFilename = filepath.Join(path, extraFilename)
