@@ -1,6 +1,8 @@
 package main
 
 import (
+	"context"
+
 	"github.com/spf13/cobra"
 
 	"github.com/labd/mach-composer/internal/generator"
@@ -22,7 +24,7 @@ var applyCmd = &cobra.Command{
 	},
 
 	RunE: func(cmd *cobra.Command, args []string) error {
-		return handleError(applyFunc(args))
+		return handleError(applyFunc(cmd.Context(), args))
 	},
 }
 
@@ -34,8 +36,8 @@ func init() {
 	applyCmd.Flags().StringArrayVarP(&applyFlags.components, "component", "c", []string{}, "")
 }
 
-func applyFunc(args []string) error {
-	cfg := LoadConfig()
+func applyFunc(ctx context.Context, args []string) error {
+	cfg := LoadConfig(ctx)
 	generateFlags.ValidateSite(cfg)
 
 	// Note that we do this in multiple passes to minimize ending up with
@@ -49,7 +51,7 @@ func applyFunc(args []string) error {
 		return err
 	}
 
-	return runner.TerraformApply(cfg, paths, &runner.ApplyOptions{
+	return runner.TerraformApply(ctx, cfg, paths, &runner.ApplyOptions{
 		Destroy:     applyFlags.destroy,
 		Reuse:       applyFlags.reuse,
 		AutoApprove: applyFlags.autoApprove,

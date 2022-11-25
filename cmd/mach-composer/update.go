@@ -59,7 +59,7 @@ func updateFunc(ctx context.Context, args []string) error {
 
 	writeChanges := !updateFlags.check
 
-	u, err := updater.NewUpdater(updateFlags.configFile)
+	u, err := updater.NewUpdater(ctx, updateFlags.configFile)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Failed to update %s: %v\n", updateFlags.configFile, err.Error())
 		os.Exit(1)
@@ -98,7 +98,6 @@ func updateFunc(ctx context.Context, args []string) error {
 			commitMessage = generateCommitMessage(map[string]string{updateFlags.configFile: changes})
 		}
 
-		ctx := context.Background()
 		err = updater.Commit(ctx, []string{updateFlags.configFile}, commitMessage)
 		if err != nil {
 			return err

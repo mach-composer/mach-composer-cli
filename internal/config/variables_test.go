@@ -1,11 +1,13 @@
 package config
 
 import (
+	"context"
 	"testing"
 
-	"github.com/labd/mach-composer/internal/utils"
 	"github.com/spf13/afero"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/labd/mach-composer/internal/utils"
 )
 
 func TestVariablesLoad(t *testing.T) {
@@ -21,7 +23,7 @@ func TestVariablesLoad(t *testing.T) {
 
 	utils.AFS.WriteFile("variables.yaml", []byte(content), 0644)
 
-	vars, err := loadVariables("variables.yaml")
+	vars, err := loadVariables(context.Background(), "variables.yaml")
 	assert.NoError(t, err)
 
 	expected := map[string]string{

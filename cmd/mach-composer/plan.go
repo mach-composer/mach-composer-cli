@@ -1,6 +1,8 @@
 package main
 
 import (
+	"context"
+
 	"github.com/spf13/cobra"
 
 	"github.com/labd/mach-composer/internal/generator"
@@ -20,7 +22,7 @@ var planCmd = &cobra.Command{
 	},
 
 	RunE: func(cmd *cobra.Command, args []string) error {
-		return handleError(planFunc(args))
+		return handleError(planFunc(cmd.Context(), args))
 	},
 }
 
@@ -30,8 +32,8 @@ func init() {
 	planCmd.Flags().StringArrayVarP(&planFlags.components, "component", "c", []string{}, "")
 }
 
-func planFunc(args []string) error {
-	cfg := LoadConfig()
+func planFunc(ctx context.Context, args []string) error {
+	cfg := LoadConfig(ctx)
 	generateFlags.ValidateSite(cfg)
 
 	paths, err := generator.WriteFiles(cfg, &generator.GenerateOptions{
@@ -42,7 +44,7 @@ func planFunc(args []string) error {
 		return err
 	}
 
-	return runner.TerraformPlan(cfg, paths, &runner.PlanOptions{
+	return runner.TerraformPlan(ctx, cfg, paths, &runner.PlanOptions{
 		Reuse: planFlags.reuse,
 		Site:  generateFlags.siteName,
 	})

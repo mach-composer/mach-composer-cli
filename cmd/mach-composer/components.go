@@ -13,7 +13,7 @@ var componentsCmd = &cobra.Command{
 		preprocessGenerateFlags()
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
-		cfg := LoadConfig()
+		cfg := LoadConfig(cmd.Context())
 		generateFlags.ValidateSite(cfg)
 
 		fmt.Printf("%s:\n", generateFlags.configFile)

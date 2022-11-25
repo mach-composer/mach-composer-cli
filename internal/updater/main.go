@@ -20,8 +20,8 @@ type Updater struct {
 	updates  []ChangeSet
 }
 
-func NewUpdater(filename string) (*Updater, error) {
-	cfg, err := config.Load(filename, "")
+func NewUpdater(ctx context.Context, filename string) (*Updater, error) {
+	cfg, err := config.Load(ctx, filename, "")
 	if err != nil {
 		return nil, err
 	}
@@ -89,7 +89,7 @@ func (u *Updater) Write(ctx context.Context) bool {
 
 	updateSet := u.GetUpdateSet()
 	if u.config.IsEncrypted {
-		SopsFileWriter(u.config, updateSet)
+		SopsFileWriter(ctx, u.config, updateSet)
 	} else {
 		MachFileWriter(updateSet)
 	}

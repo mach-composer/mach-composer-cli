@@ -15,9 +15,7 @@ type PlanOptions struct {
 	Site       string
 }
 
-func TerraformPlan(cfg *config.MachConfig, locations map[string]string, options *PlanOptions) error {
-	ctx := context.Background()
-
+func TerraformPlan(ctx context.Context, cfg *config.MachConfig, locations map[string]string, options *PlanOptions) error {
 	for i := range cfg.Sites {
 		site := cfg.Sites[i]
 

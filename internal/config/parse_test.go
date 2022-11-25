@@ -1,6 +1,7 @@
 package config
 
 import (
+	"context"
 	"testing"
 
 	"github.com/spf13/afero"
@@ -72,7 +73,7 @@ func TestParse(t *testing.T) {
 	vars.Set("foo", "foobar")
 	vars.Set("foo.bar", "1")
 	vars.Set("bar.foo", "2")
-	config, err := parseConfig(data, &vars, "main.yml")
+	config, err := parseConfig(context.Background(), data, &vars, "main.yml")
 	if err != nil {
 		t.Error(err)
 	}
@@ -217,7 +218,7 @@ func TestParseMissingVars(t *testing.T) {
 
 	// Empty variables, it should fail because var.foo cannot be resolved
 	vars := Variables{}
-	_, err := parseConfig(data, &vars, "main.yml")
+	_, err := parseConfig(context.Background(), data, &vars, "main.yml")
 	assert.Error(t, err)
 }
 

@@ -1,6 +1,8 @@
 package main
 
 import (
+	"context"
+
 	"github.com/spf13/cobra"
 
 	"github.com/labd/mach-composer/internal/generator"
@@ -13,7 +15,7 @@ var generateCmd = &cobra.Command{
 		preprocessGenerateFlags()
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
-		return handleError(generateFunc(args))
+		return handleError(generateFunc(cmd.Context(), args))
 	},
 }
 
@@ -21,8 +23,8 @@ func init() {
 	registerGenerateFlags(generateCmd)
 }
 
-func generateFunc(args []string) error {
-	cfg := LoadConfig()
+func generateFunc(ctx context.Context, args []string) error {
+	cfg := LoadConfig(ctx)
 	generateFlags.ValidateSite(cfg)
 
 	genOptions := &generator.GenerateOptions{

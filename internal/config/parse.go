@@ -1,6 +1,7 @@
 package config
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"os"
@@ -15,11 +16,11 @@ import (
 	"github.com/labd/mach-composer/internal/utils"
 )
 
-func Load(filename string, varFilename string) (*MachConfig, error) {
+func Load(ctx context.Context, filename string, varFilename string) (*MachConfig, error) {
 	var vars *Variables
 	if varFilename != "" {
 		var err error
-		vars, err = loadVariables(varFilename)
+		vars, err = loadVariables(ctx, varFilename)
 		if err != nil {
 			return nil, err
 		}
@@ -44,7 +45,7 @@ func Load(filename string, varFilename string) (*MachConfig, error) {
 		return nil, fmt.Errorf("failed to load config %s due to errors", filename)
 	}
 
-	cfg, err := parseConfig(body, vars, filename)
+	cfg, err := parseConfig(ctx, body, vars, filename)
 	if err != nil {
 		return nil, err
 	}
@@ -88,7 +89,7 @@ func GetSchemaVersion(data []byte) (int, error) {
 
 // parseConfig is responsible for parsing a mach composer yaml config file and
 // creating the resulting MachConfig struct.
-func parseConfig(data []byte, vars *Variables, filename string) (*MachConfig, error) {
+func parseConfig(ctx context.Context, data []byte, vars *Variables, filename string) (*MachConfig, error) {
 	// Decode the yaml in an intermediate config file
 	intermediate := &_RawMachConfig{}
 	err := yaml.Unmarshal(data, intermediate)
@@ -96,7 +97,7 @@ func parseConfig(data []byte, vars *Variables, filename string) (*MachConfig, er
 		return nil, fmt.Errorf("failed to unmarshall yaml: %w", err)
 	}
 	if vars == nil && intermediate.MachComposer.VariablesFile != "" {
-		vars, err = loadVariables(intermediate.MachComposer.VariablesFile)
+		vars, err = loadVariables(ctx, intermediate.MachComposer.VariablesFile)
 		if err != nil {
 			return nil, err
 		}

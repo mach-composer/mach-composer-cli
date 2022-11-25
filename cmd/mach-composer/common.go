@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"os"
@@ -77,8 +78,8 @@ func handleError(err error) error {
 }
 
 // LoadConfig parses and validates the given config file path.
-func LoadConfig() *config.MachConfig {
-	cfg, err := config.Load(generateFlags.configFile, generateFlags.varFile)
+func LoadConfig(ctx context.Context) *config.MachConfig {
+	cfg, err := config.Load(ctx, generateFlags.configFile, generateFlags.varFile)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err.Error())
 		os.Exit(1)

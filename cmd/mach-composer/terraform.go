@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/spf13/cobra"
@@ -16,7 +17,7 @@ var terraformCmd = &cobra.Command{
 		preprocessGenerateFlags()
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
-		return handleError(terraformFunc(args))
+		return handleError(terraformFunc(cmd.Context(), args))
 	},
 }
 
@@ -27,8 +28,8 @@ func init() {
 	}
 }
 
-func terraformFunc(args []string) error {
-	cfg := LoadConfig()
+func terraformFunc(ctx context.Context, args []string) error {
+	cfg := LoadConfig(ctx)
 	generateFlags.ValidateSite(cfg)
 
 	fileLocations := generator.FileLocations(cfg, &generator.GenerateOptions{
@@ -36,5 +37,5 @@ func terraformFunc(args []string) error {
 		Site:       generateFlags.siteName,
 	})
 
-	return runner.TerraformProxy(cfg, fileLocations, generateFlags.siteName, args)
+	return runner.TerraformProxy(ctx, cfg, fileLocations, generateFlags.siteName, args)
 }

@@ -11,8 +11,7 @@ import (
 // This command directly calls the sops binary instead of using the
 // go.mozilla.org/sops/v3/decrypt package since that adds numerous dependencies
 // and adds ~19mb to the generated binary
-func DecryptYaml(filename string) ([]byte, error) {
-	ctx := context.Background()
+func DecryptYaml(ctx context.Context, filename string) ([]byte, error) {
 	wd, err := os.Getwd()
 	if err != nil {
 		return nil, err
