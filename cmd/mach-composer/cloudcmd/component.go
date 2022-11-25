@@ -47,7 +47,7 @@ var componentListCmd = &cobra.Command{
 			Execute())
 
 		if err != nil {
-			panic(err)
+			return handleError(err)
 		}
 
 		data := make([][]string, len(paginator.Results))
