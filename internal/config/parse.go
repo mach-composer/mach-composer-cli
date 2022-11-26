@@ -31,12 +31,12 @@ func Load(ctx context.Context, filename string, varFilename string) (*MachConfig
 		return nil, err
 	}
 
-	schemaVersion, err := GetSchemaVersion(body)
+	schemaVersion, err := getSchemaVersion(body)
 	if err != nil {
 		return nil, err
 	}
 
-	isValid, err := ValidateConfig(body, schemaVersion)
+	isValid, err := validateConfig(body, schemaVersion)
 	if err != nil {
 		return nil, err
 	}
@@ -62,7 +62,7 @@ func Load(ctx context.Context, filename string, varFilename string) (*MachConfig
 	return cfg, nil
 }
 
-func GetSchemaVersion(data []byte) (int, error) {
+func getSchemaVersion(data []byte) (int, error) {
 	type PartialMachConfig struct {
 		MachComposer MachComposer `yaml:"mach_composer"`
 	}
@@ -107,7 +107,7 @@ func parseConfig(ctx context.Context, data []byte, vars *Variables, filename str
 		vars = NewVariables()
 	}
 
-	varErr := InterpolateVars(intermediate, vars)
+	varErr := interpolateVars(intermediate, vars)
 	if varErr != nil {
 		return nil, varErr
 	}

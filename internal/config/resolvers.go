@@ -12,25 +12,25 @@ func ProcessConfig(cfg *MachConfig) error {
 	// resolve_variables(config, config.variables, config.variables_encrypted)
 	// parse_global_config(config)
 	// resolve_component_definitions(config)
-	if err := ResolveComponentDefinitions(cfg); err != nil {
+	if err := resolveComponentDefinitions(cfg); err != nil {
 		return err
 	}
-	if err := ResolveSiteConfigs(cfg); err != nil {
+	if err := resolveSiteConfigs(cfg); err != nil {
 		return err
 	}
 	return nil
 }
 
-func ResolveComponentDefinitions(cfg *MachConfig) error {
+func resolveComponentDefinitions(cfg *MachConfig) error {
 	for i := range cfg.Components {
-		if _, err := ResolveComponentDefinition(&cfg.Components[i], cfg); err != nil {
+		if _, err := resolveComponentDefinition(&cfg.Components[i], cfg); err != nil {
 			return err
 		}
 	}
 	return nil
 }
 
-func ResolveComponentDefinition(c *Component, cfg *MachConfig) (*Component, error) {
+func resolveComponentDefinition(c *Component, cfg *MachConfig) (*Component, error) {
 	// Terraform needs absolute paths to modules
 	if strings.HasPrefix(c.Source, ".") {
 		if val, err := filepath.Abs(c.Source); err == nil {
@@ -60,13 +60,13 @@ func ResolveComponentDefinition(c *Component, cfg *MachConfig) (*Component, erro
 	return c, nil
 }
 
-func ResolveSiteConfigs(cfg *MachConfig) error {
-	ResolveAzureConfig(cfg)
-	ResolveSentryConfig(cfg)
-	ResolveSiteComponents(cfg)
+func resolveSiteConfigs(cfg *MachConfig) error {
+	resolveAzureConfig(cfg)
+	resolveSentryConfig(cfg)
+	resolveSiteComponents(cfg)
 
 	for i := range cfg.Sites {
-		err := ResolveComponentEndpoints(&cfg.Sites[i])
+		err := resolveComponentEndpoints(&cfg.Sites[i])
 		if err != nil {
 			return err
 		}
@@ -74,7 +74,7 @@ func ResolveSiteConfigs(cfg *MachConfig) error {
 	return nil
 }
 
-func ResolveSiteComponents(cfg *MachConfig) {
+func resolveSiteComponents(cfg *MachConfig) {
 	components := make(map[string]*Component, len(cfg.Components))
 	for i, c := range cfg.Components {
 		components[c.Name] = &cfg.Components[i]
@@ -96,29 +96,29 @@ func ResolveSiteComponents(cfg *MachConfig) {
 
 			if site.Sentry != nil {
 				if c.Sentry == nil {
-					c.Sentry = NewSentryConfig(site.Sentry)
+					c.Sentry = newSentryConfig(site.Sentry)
 				} else {
-					c.Sentry.Merge(site.Sentry)
+					c.Sentry.merge(site.Sentry)
 				}
 			}
 		}
 	}
 }
 
-func ResolveSentryConfig(cfg *MachConfig) {
+func resolveSentryConfig(cfg *MachConfig) {
 	if cfg.Global.SentryConfig != nil {
 		for i := range cfg.Sites {
 			s := &cfg.Sites[i]
 			if s.Sentry == nil {
-				s.Sentry = NewSentryConfigFromGlobal(cfg.Global.SentryConfig)
+				s.Sentry = newSentryConfigFromGlobal(cfg.Global.SentryConfig)
 			} else {
-				s.Sentry.MergeGlobal(cfg.Global.SentryConfig)
+				s.Sentry.mergeGlobal(cfg.Global.SentryConfig)
 			}
 		}
 	}
 }
 
-func ResolveAzureConfig(cfg *MachConfig) {
+func resolveAzureConfig(cfg *MachConfig) {
 	if cfg.Global.Cloud != "azure" {
 		return
 	}
@@ -130,7 +130,7 @@ func ResolveAzureConfig(cfg *MachConfig) {
 			if s.Azure == nil {
 				s.Azure = &SiteAzureSettings{}
 			}
-			s.Azure.Merge(cfg.Global.Azure)
+			s.Azure.merge(cfg.Global.Azure)
 			if s.Azure.ResourceGroup != "" {
 				fmt.Fprintf(
 					os.Stderr,
@@ -144,8 +144,8 @@ func ResolveAzureConfig(cfg *MachConfig) {
 	}
 }
 
-func ResolveComponentEndpoints(site *Site) error {
-	if err := site.ResolveEndpoints(); err != nil {
+func resolveComponentEndpoints(site *Site) error {
+	if err := site.resolveEndpoints(); err != nil {
 		return err
 	}
 

@@ -77,7 +77,7 @@ func loadVariables(ctx context.Context, filename string) (*Variables, error) {
 	}
 	if isEncrypted {
 		logrus.Debug("Detected SOPS encryption; decrypting...")
-		body, err = DecryptYaml(ctx, filename)
+		body, err = decryptYaml(ctx, filename)
 		if err != nil {
 			return nil, err
 		}
@@ -132,9 +132,9 @@ func yamlIsEncrypted(data []byte) (bool, error) {
 	return false, nil
 }
 
-// InterpolateVars interpolates the variables within the values of the given
+// interpolateVars interpolates the variables within the values of the given
 // MACH Config in-place.
-func InterpolateVars(raw *_RawMachConfig, vars *Variables) error {
+func interpolateVars(raw *_RawMachConfig, vars *Variables) error {
 	if vars == nil {
 		return errors.New("vars cannot be nil")
 	}

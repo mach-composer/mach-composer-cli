@@ -22,7 +22,7 @@ type SentryConfig struct {
 	Project          string `yaml:"project"`
 }
 
-func NewSentryConfigFromGlobal(c *GlobalSentryConfig) *SentryConfig {
+func newSentryConfigFromGlobal(c *GlobalSentryConfig) *SentryConfig {
 	return &SentryConfig{
 		Project: c.Project,
 		SentryConfigBase: SentryConfigBase{
@@ -33,7 +33,7 @@ func NewSentryConfigFromGlobal(c *GlobalSentryConfig) *SentryConfig {
 	}
 }
 
-func NewSentryConfig(c *SentryConfig) *SentryConfig {
+func newSentryConfig(c *SentryConfig) *SentryConfig {
 	return &SentryConfig{
 		Project: c.Project,
 		SentryConfigBase: SentryConfigBase{
@@ -44,7 +44,7 @@ func NewSentryConfig(c *SentryConfig) *SentryConfig {
 	}
 }
 
-func (sc *SentryConfig) Merge(c *SentryConfig) {
+func (sc *SentryConfig) merge(c *SentryConfig) {
 	if sc.DSN == "" {
 		sc.DSN = c.DSN
 	}
@@ -59,7 +59,7 @@ func (sc *SentryConfig) Merge(c *SentryConfig) {
 	}
 }
 
-func (sc *SentryConfig) MergeGlobal(c *GlobalSentryConfig) {
+func (sc *SentryConfig) mergeGlobal(c *GlobalSentryConfig) {
 	if sc.DSN == "" {
 		sc.DSN = c.DSN
 	}

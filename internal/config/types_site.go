@@ -26,7 +26,7 @@ type Site struct {
 	Sentry        *SentryConfig          `yaml:"sentry"`
 }
 
-func (s *Site) ResolveEndpoints() error {
+func (s *Site) resolveEndpoints() error {
 	for k, rv := range s.RawEndpoints {
 		switch v := rv.(type) {
 		case string:
