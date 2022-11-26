@@ -110,7 +110,7 @@ type SiteAzureSettings struct {
 	ServicePlans     map[string]AzureServicePlan `yaml:"service_plans"`
 }
 
-func (a *SiteAzureSettings) Merge(c *GlobalAzureConfig) {
+func (a *SiteAzureSettings) merge(c *GlobalAzureConfig) {
 	if a.Frontdoor == nil {
 		a.Frontdoor = c.Frontdoor
 	}

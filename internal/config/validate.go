@@ -12,7 +12,7 @@ import (
 //go:embed schemas/*
 var schemas embed.FS
 
-func ValidateConfig(data []byte, version int) (bool, error) {
+func validateConfig(data []byte, version int) (bool, error) {
 	if version != 1 {
 		err := fmt.Errorf("Config version %d is unsupported. Only version 1 is supported.\n", version)
 		return false, err
