@@ -5,9 +5,8 @@ import (
 	"log"
 
 	"github.com/creasty/defaults"
+	"github.com/elliotchance/pie/v2"
 	"gopkg.in/yaml.v3"
-
-	"github.com/labd/mach-composer/internal/utils"
 )
 
 // Site contains all configuration needed for a site.
@@ -124,7 +123,7 @@ func (s *Site) DNSZones() []string {
 	for i := range endpoints {
 		result = append(result, endpoints[i].Zone)
 	}
-	return utils.UniqueSlice(result)
+	return pie.Unique(result)
 }
 
 // HasCDNEndpoint checks if there is an endpoint with a CDN enabled.
