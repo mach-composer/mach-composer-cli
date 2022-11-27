@@ -9,6 +9,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"gopkg.in/yaml.v3"
 
+	"github.com/labd/mach-composer/internal/plugins"
 	"github.com/labd/mach-composer/internal/utils"
 )
 
@@ -32,21 +33,6 @@ func TestParse(t *testing.T) {
               url: internal-api.my-site.nl
               throttling_burst_limit: 5000
               throttling_rate_limit: 10000
-          commercetools:
-            project_key: my-site
-            client_id: "<client-id>"
-            client_secret: "<client-secret>"
-            scopes: manage_api_clients:my-site manage_project:my-site view_api_clients:my-site
-            project_settings:
-              languages:
-                - en-GB
-                - nl-NL
-              currencies:
-                - GBP
-                - EUR
-              countries:
-                - GB
-                - NL
           aws:
             account_id: 123456789
             region: eu-central-1
@@ -83,14 +69,9 @@ func TestParse(t *testing.T) {
 			Version: "1.0.0",
 		},
 		Global: Global{
-			Environment: "test",
-			Cloud:       "aws",
-			TerraformConfig: TerraformConfig{
-				AWSRemoteState: &AWSTFState{
-					Bucket:    "your bucket",
-					KeyPrefix: "mach",
-				},
-			},
+			Environment:            "test",
+			Cloud:                  "aws",
+			TerraformStateProvider: "aws",
 		},
 		Sites: []Site{
 			{
@@ -102,17 +83,6 @@ func TestParse(t *testing.T) {
 						"throttling_burst_limit": 5000,
 						"throttling_rate_limit":  10000,
 						"url":                    "internal-api.my-site.nl",
-					},
-				},
-				Commercetools: &CommercetoolsSettings{
-					ProjectKey:   "my-site",
-					ClientID:     "<client-id>",
-					ClientSecret: "<client-secret>",
-					Scopes:       "manage_api_clients:my-site manage_project:my-site view_api_clients:my-site",
-					ProjectSettings: &CommercetoolsProjectSettings{
-						Languages:  []string{"en-GB", "nl-NL"},
-						Currencies: []string{"GBP", "EUR"},
-						Countries:  []string{"GB", "NL"},
 					},
 				},
 				Components: []SiteComponent{
@@ -127,10 +97,6 @@ func TestParse(t *testing.T) {
 							"MY_SECRET": "secretvalue",
 						},
 					},
-				},
-				AWS: &SiteAWS{
-					AccountID: "123456789",
-					Region:    "eu-central-1",
 				},
 			},
 		},
@@ -157,7 +123,10 @@ func TestParse(t *testing.T) {
 			Encrypted: false,
 		},
 	}
-	assert.Equal(t, expected, config)
+	assert.Equal(t, expected.Global, config.Global)
+	assert.Equal(t, expected.Sites, config.Sites)
+	assert.Equal(t, expected.Components, config.Components)
+	assert.Equal(t, expected.Variables, config.Variables)
 }
 
 func TestParseMissingVars(t *testing.T) {
@@ -180,21 +149,6 @@ func TestParseMissingVars(t *testing.T) {
               url: internal-api.my-site.nl
               throttling_burst_limit: 5000
               throttling_rate_limit: 10000
-          commercetools:
-            project_key: my-site
-            client_id: "<client-id>"
-            client_secret: "<client-secret>"
-            scopes: manage_api_clients:my-site manage_project:my-site view_api_clients:my-site
-            project_settings:
-              languages:
-                - en-GB
-                - nl-NL
-              currencies:
-                - GBP
-                - EUR
-              countries:
-                - GB
-                - NL
           aws:
             account_id: 123456789
             region: eu-central-1
@@ -214,7 +168,6 @@ func TestParseMissingVars(t *testing.T) {
             internal: internal
           integrations:
             - aws
-            - commercetools
     `))
 
 	// Empty variables, it should fail because var.foo cannot be resolved
@@ -238,11 +191,16 @@ func TestParseComponentsNodeInline(t *testing.T) {
 	err := yaml.Unmarshal(data, &intermediate)
 	require.NoError(t, err)
 
-	target := make([]Component, 0)
-	parseComponentsNode(intermediate.Components, "main.yml", &target)
+	cfg := &MachConfig{
+		Plugins: plugins.NewPluginRepository(),
+		Global: Global{
+			Cloud: "aws",
+		},
+	}
+	parseComponentsNode(cfg, &intermediate.Components, "main.yml")
 	require.NoError(t, err)
-	assert.Len(t, target, 1)
-	assert.Equal(t, "your-component", target[0].Name)
+	assert.Len(t, cfg.Components, 1)
+	assert.Equal(t, "your-component", cfg.Components[0].Name)
 }
 
 func TestParseComponentsNodeInclude(t *testing.T) {
@@ -268,9 +226,14 @@ func TestParseComponentsNodeInclude(t *testing.T) {
 	err := yaml.Unmarshal(data, &intermediate)
 	require.NoError(t, err)
 
-	target := make([]Component, 0)
-	err = parseComponentsNode(intermediate.Components, "main.yml", &target)
+	cfg := &MachConfig{
+		Plugins: plugins.NewPluginRepository(),
+		Global: Global{
+			Cloud: "aws",
+		},
+	}
+	err = parseComponentsNode(cfg, &intermediate.Components, "main.yml")
 	require.NoError(t, err)
-	assert.Len(t, target, 1)
-	assert.Equal(t, "your-component", target[0].Name)
+	assert.Len(t, cfg.Components, 1)
+	assert.Equal(t, "your-component", cfg.Components[0].Name)
 }

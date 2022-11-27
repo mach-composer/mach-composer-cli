@@ -3,8 +3,11 @@ GOFLAGS ?= -mod=readonly -ldflags "-s -w -X 'main.version=$(VERSION)-dev' -extld
 
 check: lint test
 
-build: tidy
+build-release: tidy
 	CGO_ENABLED=0 go build -a -trimpath -tags netgo $(GOFLAGS) -o bin/ ./cmd/...
+
+build:
+	go build -o bin/ ./cmd/...
 
 tidy:
 	@go mod tidy -v

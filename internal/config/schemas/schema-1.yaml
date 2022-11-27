@@ -36,7 +36,7 @@ definitions:
   GlobalConfig:
     type: object
     description: Config that is shared across sites.
-    additionalProperties: false
+    additionalProperties: true
     required:
       - environment
       - terraform_config
@@ -51,14 +51,6 @@ definitions:
         enum:
           - aws
           - azure
-      sentry:
-        $ref: "#/definitions/SentryConfig"
-      azure:
-        $ref: "#/definitions/AzureConfig"
-      contentful:
-        $ref: "#/definitions/ContentfulConfig"
-      amplience:
-        $ref: "#/definitions/AmplienceConfig"
 
   TerraformConfig:
     type: object

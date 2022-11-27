@@ -5,8 +5,11 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/elliotchance/pie/v2"
 	"github.com/flosch/pongo2/v5"
+
 	"github.com/labd/mach-composer/internal/config"
+	"github.com/labd/mach-composer/internal/plugins/shared"
 )
 
 //go:embed templates/*
@@ -25,7 +28,7 @@ var renderer TemplateRenderer
 func init() {
 	registerFilters()
 
-	renderer.templateSet = pongo2.NewSet("", &EmbedLoader{Content: templates})
+	renderer.templateSet = pongo2.NewSet("", &shared.EmbedLoader{Content: templates})
 	renderer.servicesTemplate = pongo2.Must(renderer.templateSet.FromFile("services.tf"))
 	renderer.componentTemplate = pongo2.Must(renderer.templateSet.FromFile("component.tf"))
 	renderer.tfConfigTemplate = pongo2.Must(renderer.templateSet.FromFile("config.tf"))
@@ -37,13 +40,13 @@ func Render(cfg *config.MachConfig, site *config.Site) (string, error) {
 		fmt.Sprintf("# Site: %s", site.Identifier),
 	}
 
-	if val, err := RenderTerraformConfig(cfg, site); err == nil {
+	if val, err := renderTerraformConfig(cfg, site); err == nil {
 		result = append(result, val)
 	} else {
 		return "", err
 	}
 
-	if val, err := RenderServices(cfg, site); err == nil {
+	if val, err := renderServices(cfg, site); err == nil {
 		result = append(result, val)
 	} else {
 		return "", err
@@ -51,7 +54,7 @@ func Render(cfg *config.MachConfig, site *config.Site) (string, error) {
 
 	// Add components
 	for i := range site.Components {
-		if val, err := RenderComponent(cfg, site, &site.Components[i]); err == nil {
+		if val, err := renderComponent(cfg, site, &site.Components[i]); err == nil {
 			result = append(result, val)
 		} else {
 			return "", err
@@ -62,28 +65,68 @@ func Render(cfg *config.MachConfig, site *config.Site) (string, error) {
 	return content, nil
 }
 
-func RenderTerraformConfig(cfg *config.MachConfig, site *config.Site) (string, error) {
+func renderTerraformConfig(cfg *config.MachConfig, site *config.Site) (string, error) {
+	providers := []string{}
+	for _, plugin := range cfg.Plugins.All() {
+		content := plugin.TerraformRenderProviders(site.Identifier)
+		providers = append(providers, content)
+	}
+
+	statePlugin, err := cfg.Plugins.Get(cfg.Global.TerraformStateProvider)
+	if err != nil {
+		return "", err
+	}
+
 	return renderer.tfConfigTemplate.Execute(pongo2.Context{
-		"global":    cfg.Global,
-		"site":      site,
-		"variables": cfg.Variables,
+		"global":         cfg.Global,
+		"site":           site,
+		"variables":      cfg.Variables,
+		"providers":      providers,
+		"backend_config": statePlugin.TerraformRenderStateBackend(site.Identifier),
 	})
 }
 
-func RenderServices(cfg *config.MachConfig, site *config.Site) (string, error) {
+func renderServices(cfg *config.MachConfig, site *config.Site) (string, error) {
+	resources := []string{}
+	for _, plugin := range cfg.Plugins.All() {
+		content := plugin.TerraformRenderResources(site.Identifier)
+		resources = append(resources, content)
+	}
+
 	return renderer.servicesTemplate.Execute(pongo2.Context{
 		"global":    cfg.Global,
 		"site":      site,
 		"variables": cfg.Variables,
+		"resources": resources,
 	})
 }
 
-func RenderComponent(cfg *config.MachConfig, site *config.Site, component *config.SiteComponent) (string, error) {
+func renderComponent(cfg *config.MachConfig, site *config.Site, component *config.SiteComponent) (string, error) {
+	pVars := []string{}
+	pResources := []string{}
+	pDependsOn := []string{}
+	for _, plugin := range cfg.Plugins.All() {
+		if !pie.Contains(component.Definition.Integrations, plugin.Identifier()) {
+			continue
+		}
+		resources := plugin.TerraformRenderComponentResources(site.Identifier, component.Name)
+		pResources = append(pResources, resources)
+
+		content := plugin.TerraformRenderComponentVars(site.Identifier, component.Name)
+		pVars = append(pVars, content)
+
+		value := plugin.TerraformRenderComponentDependsOn(site.Identifier, component.Name)
+		pDependsOn = append(pDependsOn, value...)
+	}
+
 	return renderer.componentTemplate.Execute(pongo2.Context{
-		"global":     cfg.Global,
-		"site":       site,
-		"variables":  cfg.Variables,
-		"component":  component,
-		"definition": component.Definition,
+		"global":          cfg.Global,
+		"site":            site,
+		"variables":       cfg.Variables,
+		"component":       component,
+		"definition":      component.Definition,
+		"pluginVariables": pVars,
+		"pluginResources": pResources,
+		"pluginDependsOn": pDependsOn,
 	})
 }

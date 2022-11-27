@@ -62,6 +62,27 @@ func (v *Variables) Set(key string, value string) {
 	v.vars[key] = value
 }
 
+func processVariables(ctx context.Context, vars *Variables, rawConfig *_RawMachConfig) (*Variables, error) {
+	if vars == nil && rawConfig.MachComposer.VariablesFile != "" {
+		var err error
+		vars, err = loadVariables(ctx, rawConfig.MachComposer.VariablesFile)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	if vars == nil {
+		vars = NewVariables()
+	}
+
+	varErr := interpolateVars(rawConfig, vars)
+	if varErr != nil {
+		return nil, varErr
+	}
+
+	return vars, nil
+}
+
 func loadVariables(ctx context.Context, filename string) (*Variables, error) {
 	body, err := utils.AFS.ReadFile(filename)
 	vars := NewVariables()

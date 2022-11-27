@@ -6,6 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	"github.com/labd/mach-composer/internal/config"
+	"github.com/labd/mach-composer/internal/plugins"
 )
 
 func TestRender(t *testing.T) {
@@ -16,13 +17,6 @@ func TestRender(t *testing.T) {
 		Global: config.Global{
 			Environment: "test",
 			Cloud:       "aws",
-			TerraformConfig: config.TerraformConfig{
-				AWSRemoteState: &config.AWSTFState{
-					Bucket:    "your bucket",
-					KeyPrefix: "mach",
-					Region:    "eu-central-1",
-				},
-			},
 		},
 		Sites: []config.Site{
 			{
@@ -36,17 +30,6 @@ func TestRender(t *testing.T) {
 						"url":                    "internal-api.my-site.nl",
 					},
 				},
-				Commercetools: &config.CommercetoolsSettings{
-					ProjectKey:   "my-site",
-					ClientID:     "<client-id>",
-					ClientSecret: "<client-secret>",
-					Scopes:       "manage_api_clients:my-site manage_project:my-site view_api_clients:my-site",
-					ProjectSettings: &config.CommercetoolsProjectSettings{
-						Languages:  []string{"en-GB", "nl-NL"},
-						Currencies: []string{"GBP", "EUR"},
-						Countries:  []string{"GB", "NL"},
-					},
-				},
 				Components: []config.SiteComponent{
 					{
 						Name: "your-component",
@@ -58,10 +41,6 @@ func TestRender(t *testing.T) {
 						},
 					},
 				},
-				AWS: &config.SiteAWS{
-					AccountID: "123456789",
-					Region:    "eu-central-1",
-				},
 			},
 		},
 		Components: []config.Component{
@@ -72,6 +51,7 @@ func TestRender(t *testing.T) {
 				Integrations: []string{"aws", "commercetools"},
 			},
 		},
+		Plugins: plugins.NewPluginRepository(),
 	}
 
 	config.ProcessConfig(&cfg)
