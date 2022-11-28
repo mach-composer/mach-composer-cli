@@ -28,7 +28,7 @@ func TerraformInit(ctx context.Context, cfg *config.MachConfig, locations map[st
 	return nil
 }
 
-func TerraformInitSite(ctx context.Context, cfg *config.MachConfig, site *config.Site, path string, options *InitOptions) error {
+func TerraformInitSite(ctx context.Context, cfg *config.MachConfig, site *config.SiteConfig, path string, options *InitOptions) error {
 	logrus.Debugf("Running terraform init for site %s", site.Identifier)
 
 	return RunTerraform(ctx, path, "init")

@@ -16,8 +16,8 @@ import (
 type MachConfig struct {
 	Filename     string       `yaml:"-"`
 	MachComposer MachComposer `yaml:"mach_composer"`
-	Global       Global       `yaml:"global"`
-	Sites        []Site       `yaml:"sites"`
+	Global       GlobalConfig `yaml:"global"`
+	Sites        []SiteConfig `yaml:"sites"`
 	Components   []Component  `yaml:"components"`
 
 	extraFiles  map[string][]byte         `yaml:"-"`
@@ -78,14 +78,14 @@ type MachComposer struct {
 	Plugins       map[string]string `yaml:"plugins"`
 }
 
-type Global struct {
+type GlobalConfig struct {
 	Environment            string `yaml:"environment"`
 	Cloud                  string `yaml:"cloud"`
 	TerraformStateProvider string `yaml:"-"`
 }
 
 // Site contains all configuration needed for a site.
-type Site struct {
+type SiteConfig struct {
 	Name         string
 	Identifier   string
 	RawEndpoints map[string]any `yaml:"endpoints"`

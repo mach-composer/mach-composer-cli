@@ -31,7 +31,7 @@ func TerraformPlan(ctx context.Context, cfg *config.MachConfig, locations map[st
 	return nil
 }
 
-func TerraformPlanSite(ctx context.Context, cfg *config.MachConfig, site *config.Site, path string, options *PlanOptions) error {
+func TerraformPlanSite(ctx context.Context, cfg *config.MachConfig, site *config.SiteConfig, path string, options *PlanOptions) error {
 	logrus.Debugf("Running terraform plan for site %s", site.Identifier)
 
 	if !options.Reuse {
