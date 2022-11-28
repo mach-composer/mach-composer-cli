@@ -1,15 +1,15 @@
 package azure
 
 import (
-	"bytes"
 	"fmt"
 	"log"
 	"os"
-	"text/template"
 
 	"github.com/creasty/defaults"
 	"github.com/elliotchance/pie/v2"
 	"github.com/mitchellh/mapstructure"
+
+	"github.com/labd/mach-composer/internal/plugins/shared"
 )
 
 type AzurePlugin struct {
@@ -142,7 +142,7 @@ func (p *AzurePlugin) getSiteConfig(site string) *SiteConfig {
 	return &cfg
 }
 
-func (p *AzurePlugin) TerraformRenderStateBackend(site string) string {
+func (p *AzurePlugin) TerraformRenderStateBackend(site string) (string, error) {
 	templateContext := struct {
 		State *AzureTFState
 		Site  string
@@ -159,26 +159,26 @@ func (p *AzurePlugin) TerraformRenderStateBackend(site string) string {
 	  key                  = "{{ .State.StateFolder}}/{{ .Site }}"
 	}
 	`
-	return renderTemplate(template, templateContext)
+	return shared.RenderGoTemplate(template, templateContext)
 }
 
-func (p *AzurePlugin) TerraformRenderProviders(site string) string {
+func (p *AzurePlugin) TerraformRenderProviders(site string) (string, error) {
 	cfg := p.getSiteConfig(site)
 	if cfg == nil {
-		return ""
+		return "", nil
 	}
 
 	return `
     azure = {
       version = "2.99.0"
     }
-	`
+	`, nil
 }
 
-func (p *AzurePlugin) TerraformRenderResources(site string) string {
+func (p *AzurePlugin) TerraformRenderResources(site string) (string, error) {
 	cfg := p.getSiteConfig(site)
 	if cfg == nil {
-		return ""
+		return "", nil
 	}
 
 	activeEndpoints := map[string]EndpointConfig{}
@@ -208,22 +208,17 @@ func (p *AzurePlugin) TerraformRenderResources(site string) string {
 		}
 	}
 
-	content, err := renderResources(site, cfg, pie.Values(activeEndpoints))
-	if err != nil {
-		panic(err)
-	}
-
-	return content
+	return renderResources(site, cfg, pie.Values(activeEndpoints))
 }
 
-func (p *AzurePlugin) TerraformRenderComponentResources(site string, component string) string {
-	return ""
+func (p *AzurePlugin) TerraformRenderComponentResources(site string, component string) (string, error) {
+	return "", nil
 }
 
-func (p *AzurePlugin) TerraformRenderComponentVars(site string, component string) string {
+func (p *AzurePlugin) TerraformRenderComponentVars(site string, component string) (string, error) {
 	cfg := p.getSiteConfig(site)
 	if cfg == nil {
-		return ""
+		return "", nil
 	}
 
 	componentConfig, ok := p.componentConfigs[component]
@@ -271,31 +266,18 @@ func (p *AzurePlugin) TerraformRenderComponentVars(site string, component string
 	azure_monitor_action_group_id = azurerm_monitor_action_group.alert_action_group.id
 	{{ end }}
 	`
-	return renderTemplate(template, templateContext)
+	return shared.RenderGoTemplate(template, templateContext)
 }
 
-func (p *AzurePlugin) TerraformRenderComponentProviders(site string, component string) []string {
-	return []string{"azurerm = azurerm"}
+func (p *AzurePlugin) TerraformRenderComponentProviders(site string, component string) ([]string, error) {
+	return []string{"azurerm = azurerm"}, nil
 }
 
-func (p *AzurePlugin) TerraformRenderComponentDependsOn(site string, component string) []string {
-	return []string{"null_resource.commercetools"}
+func (p *AzurePlugin) TerraformRenderComponentDependsOn(site string, component string) ([]string, error) {
+	return []string{"null_resource.commercetools"}, nil
 	// {% if site.Azure and component.Azure.ServicePlan %}
 	// {% if component.Azure.ServicePlan == "default" %}
 	// azurerm_app_service_plan.functionapps,{% else %}
 	// azurerm_app_service_plan.functionapps_{{ component.Azure.ServicePlan }},{% endif %}
 	// {% endif %}
-}
-
-func renderTemplate(t string, data any) string {
-	tpl, err := template.New("template-1").Parse(t)
-	if err != nil {
-		panic(err)
-	}
-
-	var content bytes.Buffer
-	if err := tpl.Execute(&content, data); err != nil {
-		panic(err)
-	}
-	return content.String()
 }

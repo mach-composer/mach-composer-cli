@@ -190,7 +190,7 @@ func TestParseComponentsNodeInline(t *testing.T) {
 			Cloud: "aws",
 		},
 	}
-	parseComponentsNode(cfg, &intermediate.Components, "main.yml")
+	err = parseComponentsNode(cfg, &intermediate.Components, "main.yml")
 	require.NoError(t, err)
 	assert.Len(t, cfg.Components, 1)
 	assert.Equal(t, "your-component", cfg.Components[0].Name)

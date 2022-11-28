@@ -1,11 +1,11 @@
 package sentry
 
 import (
-	"bytes"
 	"fmt"
-	"text/template"
 
 	"github.com/mitchellh/mapstructure"
+
+	"github.com/labd/mach-composer/internal/plugins/shared"
 )
 
 type SentryPlugin struct {
@@ -79,23 +79,23 @@ func (p *SentryPlugin) SetComponentEndpointsConfig(component string, endpoints m
 	return nil
 }
 
-func (p *SentryPlugin) TerraformRenderStateBackend(site string) string {
-	return ""
+func (p *SentryPlugin) TerraformRenderStateBackend(site string) (string, error) {
+	return "", nil
 }
 
-func (p *SentryPlugin) TerraformRenderProviders(site string) string {
+func (p *SentryPlugin) TerraformRenderProviders(site string) (string, error) {
 	return `
     sentry = {
       source = "jianyuan/sentry"
       version = "0.6.0"
     }
-	`
+	`, nil
 }
 
-func (p *SentryPlugin) TerraformRenderResources(site string) string {
+func (p *SentryPlugin) TerraformRenderResources(site string) (string, error) {
 	cfg := p.getSiteConfig(site)
 	if cfg == nil {
-		return ""
+		return "", nil
 	}
 
 	template := `
@@ -104,17 +104,17 @@ func (p *SentryPlugin) TerraformRenderResources(site string) string {
 			base_url = {{ if .BaseURL }}{{ .BaseURL|printf "%q" }}{{ else }}"https://sentry.io/api/"{{ end }}
 		}
 	`
-	return renderTemplate(template, p.globalConfig)
+	return shared.RenderGoTemplate(template, p.globalConfig)
 }
 
-func (p *SentryPlugin) TerraformRenderComponentResources(site string, component string) string {
+func (p *SentryPlugin) TerraformRenderComponentResources(site string, component string) (string, error) {
 	if p.globalConfig.AuthToken == "" {
-		return ""
+		return "", nil
 	}
 
 	cfg := p.getComponentSiteConfig(site, component)
 	if cfg == nil {
-		return ""
+		return "", nil
 	}
 
 	templateContext := struct {
@@ -142,17 +142,17 @@ func (p *SentryPlugin) TerraformRenderComponentResources(site string, component 
 		{{ end }}
 		}
 	`
-	return renderTemplate(template, templateContext)
+	return shared.RenderGoTemplate(template, templateContext)
 }
 
-func (p *SentryPlugin) TerraformRenderComponentVars(site string, component string) string {
+func (p *SentryPlugin) TerraformRenderComponentVars(site string, component string) (string, error) {
 	if p.globalConfig.AuthToken == "" {
-		return ""
+		return "", nil
 	}
 
 	cfg := p.getComponentSiteConfig(site, component)
 	if cfg == nil {
-		return ""
+		return "", nil
 	}
 
 	templateContext := struct {
@@ -170,15 +170,15 @@ func (p *SentryPlugin) TerraformRenderComponentVars(site string, component strin
 	template := `
 		sentry_dsn = {{ if .Global.AuthToken }}sentry_key.{{ .ComponentName }}.dsn_secret{{ else }}"{{ .Config.DSN }}"{{ end }}
 	`
-	return renderTemplate(template, templateContext)
+	return shared.RenderGoTemplate(template, templateContext)
 }
 
-func (p *SentryPlugin) TerraformRenderComponentDependsOn(site string, component string) []string {
-	return []string{} // TODO. sentry_key.component
+func (p *SentryPlugin) TerraformRenderComponentDependsOn(site string, component string) ([]string, error) {
+	return []string{}, nil // TODO. sentry_key.component
 }
 
-func (p *SentryPlugin) TerraformRenderComponentProviders(site string, component string) []string {
-	return []string{}
+func (p *SentryPlugin) TerraformRenderComponentProviders(site string, component string) ([]string, error) {
+	return []string{}, nil
 }
 
 func (p *SentryPlugin) getSiteConfig(site string) *SiteConfig {
@@ -195,17 +195,4 @@ func (p *SentryPlugin) getComponentSiteConfig(site, name string) *ComponentConfi
 		return nil
 	}
 	return siteCfg.getComponentSiteConfig(name)
-}
-
-func renderTemplate(t string, data any) string {
-	tpl, err := template.New("template").Parse(t)
-	if err != nil {
-		panic(err)
-	}
-
-	var content bytes.Buffer
-	if err := tpl.Execute(&content, data); err != nil {
-		panic(err)
-	}
-	return content.String()
 }

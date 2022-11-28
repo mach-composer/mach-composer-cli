@@ -1,11 +1,11 @@
 package contentful
 
 import (
-	"bytes"
 	"fmt"
-	"text/template"
 
 	"github.com/mitchellh/mapstructure"
+
+	"github.com/labd/mach-composer/internal/plugins/shared"
 )
 
 type ContentfulPlugin struct {
@@ -68,22 +68,22 @@ func (p *ContentfulPlugin) SetComponentEndpointsConfig(component string, endpoin
 	return nil
 }
 
-func (p *ContentfulPlugin) TerraformRenderStateBackend(site string) string {
-	return ""
+func (p *ContentfulPlugin) TerraformRenderStateBackend(site string) (string, error) {
+	return "", nil
 }
 
-func (p *ContentfulPlugin) TerraformRenderProviders(site string) string {
+func (p *ContentfulPlugin) TerraformRenderProviders(site string) (string, error) {
 	return `
 	contentful = {
 		source = "labd/contentful"
 		version = "0.1.0"
-	}`
+	}`, nil
 }
 
-func (p *ContentfulPlugin) TerraformRenderResources(site string) string {
+func (p *ContentfulPlugin) TerraformRenderResources(site string) (string, error) {
 	cfg := p.getSiteConfig(site)
 	if cfg == nil {
-		return ""
+		return "", nil
 	}
 
 	template := `
@@ -112,30 +112,30 @@ func (p *ContentfulPlugin) TerraformRenderResources(site string) string {
 			value = contentful_apikey.apikey.access_token
 		  }
 	`
-	return renderTemplate(template, cfg)
+	return shared.RenderGoTemplate(template, cfg)
 }
 
-func (p *ContentfulPlugin) TerraformRenderComponentResources(site string, component string) string {
-	return ""
+func (p *ContentfulPlugin) TerraformRenderComponentResources(site string, component string) (string, error) {
+	return "", nil
 }
 
-func (p *ContentfulPlugin) TerraformRenderComponentVars(site, component string) string {
+func (p *ContentfulPlugin) TerraformRenderComponentVars(site, component string) (string, error) {
 	cfg := p.getSiteConfig(site)
 	if cfg == nil {
-		return ""
+		return "", nil
 	}
 
 	return `
     	contentful_space_id = contentful_space.space.id
-	`
+	`, nil
 }
 
-func (p *ContentfulPlugin) TerraformRenderComponentDependsOn(site string, component string) []string {
-	return []string{}
+func (p *ContentfulPlugin) TerraformRenderComponentDependsOn(site string, component string) ([]string, error) {
+	return []string{}, nil
 }
 
-func (p *ContentfulPlugin) TerraformRenderComponentProviders(site string, component string) []string {
-	return []string{}
+func (p *ContentfulPlugin) TerraformRenderComponentProviders(site string, component string) ([]string, error) {
+	return []string{}, nil
 }
 
 func (p *ContentfulPlugin) getSiteConfig(site string) *ContentfulConfig {
@@ -144,17 +144,4 @@ func (p *ContentfulPlugin) getSiteConfig(site string) *ContentfulConfig {
 		cfg = &ContentfulConfig{}
 	}
 	return cfg.extendConfig(p.globalConfig)
-}
-
-func renderTemplate(t string, data any) string {
-	tpl, err := template.New("template").Parse(t)
-	if err != nil {
-		panic(err)
-	}
-
-	var content bytes.Buffer
-	if err := tpl.Execute(&content, data); err != nil {
-		panic(err)
-	}
-	return content.String()
 }

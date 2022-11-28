@@ -1,12 +1,12 @@
 package commercetools
 
 import (
-	"bytes"
 	"fmt"
-	"text/template"
 
 	"github.com/creasty/defaults"
 	"github.com/mitchellh/mapstructure"
+
+	"github.com/labd/mach-composer/internal/plugins/shared"
 )
 
 type CommercetoolsPlugin struct {
@@ -90,14 +90,14 @@ func (p *CommercetoolsPlugin) getSiteConfig(site string) *SiteConfig {
 	return cfg
 }
 
-func (p *CommercetoolsPlugin) TerraformRenderStateBackend(site string) string {
-	return ""
+func (p *CommercetoolsPlugin) TerraformRenderStateBackend(site string) (string, error) {
+	return "", nil
 }
 
-func (p *CommercetoolsPlugin) TerraformRenderProviders(site string) string {
+func (p *CommercetoolsPlugin) TerraformRenderProviders(site string) (string, error) {
 	cfg := p.getSiteConfig(site)
 	if cfg == nil {
-		return ""
+		return "", nil
 	}
 
 	return `
@@ -105,31 +105,31 @@ func (p *CommercetoolsPlugin) TerraformRenderProviders(site string) string {
       source = "labd/commercetools"
       version = "0.30.0"
     }
-	`
+	`, nil
 }
 
-func (p *CommercetoolsPlugin) TerraformRenderResources(site string) string {
+func (p *CommercetoolsPlugin) TerraformRenderResources(site string) (string, error) {
 	cfg := p.getSiteConfig(site)
 	if cfg == nil {
-		return ""
+		return "", nil
 	}
 
 	content, err := Render(cfg)
 	if err != nil {
-		panic(err)
+		return "", err
 	}
 
-	return content
+	return content, nil
 }
 
-func (p *CommercetoolsPlugin) TerraformRenderComponentResources(site string, component string) string {
-	return ""
+func (p *CommercetoolsPlugin) TerraformRenderComponentResources(site string, component string) (string, error) {
+	return "", nil
 }
 
-func (p *CommercetoolsPlugin) TerraformRenderComponentVars(site string, component string) string {
+func (p *CommercetoolsPlugin) TerraformRenderComponentVars(site string, component string) (string, error) {
 	cfg := p.getSiteConfig(site)
 	if cfg == nil {
-		return ""
+		return "", nil
 	}
 
 	templateContext := struct {
@@ -164,26 +164,13 @@ func (p *CommercetoolsPlugin) TerraformRenderComponentVars(site string, componen
 			{{ end }}
 		}
 	`
-	return renderTemplate(template, templateContext)
+	return shared.RenderGoTemplate(template, templateContext)
 }
 
-func (p *CommercetoolsPlugin) TerraformRenderComponentDependsOn(site string, component string) []string {
-	return []string{"null_resource.commercetools"}
+func (p *CommercetoolsPlugin) TerraformRenderComponentDependsOn(site string, component string) ([]string, error) {
+	return []string{"null_resource.commercetools"}, nil
 }
 
-func (p *CommercetoolsPlugin) TerraformRenderComponentProviders(site string, component string) []string {
-	return []string{}
-}
-
-func renderTemplate(t string, data any) string {
-	tpl, err := template.New("template-1").Parse(t)
-	if err != nil {
-		panic(err)
-	}
-
-	var content bytes.Buffer
-	if err := tpl.Execute(&content, data); err != nil {
-		panic(err)
-	}
-	return content.String()
+func (p *CommercetoolsPlugin) TerraformRenderComponentProviders(site string, component string) ([]string, error) {
+	return []string{}, nil
 }
