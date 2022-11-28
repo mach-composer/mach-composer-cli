@@ -27,6 +27,16 @@ func (p *PluginRepository) Load(name string, version string) error {
 	return fmt.Errorf("Plugin not found")
 }
 
+// LoadDefault loads the default plugins, for backwards compatibility
+func (p *PluginRepository) LoadDefault() {
+	plugins := []string{"amplience", "aws", "azure", "contentful", "commercetools", "sentry"}
+	for _, name := range plugins {
+		if err := p.Load(name, "internal"); err != nil {
+			panic(err)
+		}
+	}
+}
+
 func (p *PluginRepository) Get(name string) (MachComposerPlugin, error) {
 	if name == "" {
 		return nil, fmt.Errorf("invalid plugin name given, received: %#v", name)

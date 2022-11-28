@@ -5,6 +5,14 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
+func nodeAsMap(n *yaml.Node) (map[string]any, error) {
+	target := map[string]any{}
+	if err := n.Decode(&target); err != nil {
+		return nil, err
+	}
+	return target, nil
+}
+
 func mapYamlNodes(nodes []*yaml.Node) map[string]*yaml.Node {
 	result := map[string]*yaml.Node{}
 	for i := 0; i < len(nodes); i += 2 {
