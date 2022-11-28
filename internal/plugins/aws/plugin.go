@@ -119,6 +119,10 @@ func (p *AWSPlugin) SetComponentEndpointsConfig(component string, endpoints map[
 }
 
 func (p *AWSPlugin) TerraformRenderStateBackend(site string) (string, error) {
+	if p.remoteState == nil {
+		return "", nil
+	}
+
 	templateContext := struct {
 		State *AWSTFState
 		Site  string
