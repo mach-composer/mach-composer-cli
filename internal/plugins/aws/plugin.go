@@ -82,6 +82,15 @@ func (p *AWSPlugin) SetSiteEndpointsConfig(site string, data map[string]any) err
 		if url, ok := epData.(string); ok {
 			cfg.URL = url
 		} else {
+			if mapData, ok := epData.(map[string]any); ok {
+				if val, ok := mapData["aws"].(map[string]any); ok {
+					fmt.Println("Warning: the aws node on the endpoint will be removed. Set the children directly in the endpoint")
+					for key, value := range val {
+						mapData[key] = value
+					}
+				}
+			}
+
 			if err := mapstructure.Decode(epData, &cfg); err != nil {
 				return err
 			}

@@ -145,6 +145,10 @@ func (p *AmpliencePlugin) TerraformRenderComponentDependsOn(site string, compone
 	return []string{}
 }
 
+func (p *AmpliencePlugin) TerraformRenderComponentProviders(site string, component string) []string {
+	return []string{}
+}
+
 func renderTemplate(t string, data any) string {
 	tpl, err := template.New("template").Parse(t)
 	if err != nil {

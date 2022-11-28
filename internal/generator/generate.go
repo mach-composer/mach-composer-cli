@@ -105,6 +105,7 @@ func renderComponent(cfg *config.MachConfig, site *config.Site, component *confi
 	pVars := []string{}
 	pResources := []string{}
 	pDependsOn := []string{}
+	pProviders := []string{}
 	for _, plugin := range cfg.Plugins.All() {
 		if !pie.Contains(component.Definition.Integrations, plugin.Identifier()) {
 			continue
@@ -115,7 +116,10 @@ func renderComponent(cfg *config.MachConfig, site *config.Site, component *confi
 		content := plugin.TerraformRenderComponentVars(site.Identifier, component.Name)
 		pVars = append(pVars, content)
 
-		value := plugin.TerraformRenderComponentDependsOn(site.Identifier, component.Name)
+		value := plugin.TerraformRenderComponentProviders(site.Identifier, component.Name)
+		pProviders = append(pProviders, value...)
+
+		value = plugin.TerraformRenderComponentDependsOn(site.Identifier, component.Name)
 		pDependsOn = append(pDependsOn, value...)
 	}
 
@@ -127,6 +131,7 @@ func renderComponent(cfg *config.MachConfig, site *config.Site, component *confi
 		"definition":      component.Definition,
 		"pluginVariables": pVars,
 		"pluginResources": pResources,
+		"pluginProviders": pProviders,
 		"pluginDependsOn": pDependsOn,
 	})
 }

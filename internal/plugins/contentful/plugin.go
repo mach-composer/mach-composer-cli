@@ -134,6 +134,10 @@ func (p *ContentfulPlugin) TerraformRenderComponentDependsOn(site string, compon
 	return []string{}
 }
 
+func (p *ContentfulPlugin) TerraformRenderComponentProviders(site string, component string) []string {
+	return []string{}
+}
+
 func (p *ContentfulPlugin) getSiteConfig(site string) *ContentfulConfig {
 	cfg, ok := p.siteConfigs[site]
 	if !ok {

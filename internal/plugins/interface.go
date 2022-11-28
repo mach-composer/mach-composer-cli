@@ -36,6 +36,8 @@ type MachComposerPlugin interface {
 
 	// Render depends_on clause for a component
 	TerraformRenderComponentDependsOn(site string, component string) []string
+
+	TerraformRenderComponentProviders(site string, component string) []string
 }
 
 type MachComposerPluginCloud interface {

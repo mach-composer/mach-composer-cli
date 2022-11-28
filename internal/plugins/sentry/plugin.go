@@ -177,6 +177,10 @@ func (p *SentryPlugin) TerraformRenderComponentDependsOn(site string, component 
 	return []string{} // TODO. sentry_key.component
 }
 
+func (p *SentryPlugin) TerraformRenderComponentProviders(site string, component string) []string {
+	return []string{}
+}
+
 func (p *SentryPlugin) getSiteConfig(site string) *SiteConfig {
 	cfg, ok := p.siteConfigs[site]
 	if !ok {
