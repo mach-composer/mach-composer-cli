@@ -57,7 +57,7 @@ func WriteFiles(cfg *config.MachConfig, options *GenerateOptions) (map[string]st
 		}
 
 		// Write extra files
-		for extraFilename, content := range cfg.ExtraFiles {
+		for extraFilename, content := range cfg.GetFiles() {
 			extraFilename = filepath.Join(path, extraFilename)
 			fmt.Printf("Copying %s\n", extraFilename)
 			if err := os.WriteFile(extraFilename, content, 0700); err != nil {

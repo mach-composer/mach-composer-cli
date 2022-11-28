@@ -10,7 +10,6 @@ import (
 
 	"github.com/labd/mach-composer/internal/config"
 	"github.com/labd/mach-composer/internal/plugins/shared"
-	"github.com/labd/mach-composer/internal/variables"
 )
 
 //go:embed templates/*
@@ -193,27 +192,14 @@ func renderComponent(cfg *config.MachConfig, site *config.Site, component *confi
 		pDependsOn = append(pDependsOn, values...)
 	}
 
-	componentVariables, err := variables.InterpolateComponentVars(component.Variables)
-	if err != nil {
-		return "", err
-	}
-
-	componentSecrets, err := variables.InterpolateComponentVars(component.Secrets)
-	if err != nil {
-		return "", err
-	}
-
 	return renderer.componentTemplate.Execute(pongo2.Context{
-		"global":             cfg.Global,
-		"site":               site,
-		"variables":          cfg.Variables,
-		"component":          component,
-		"componentSecrets":   componentSecrets,
-		"componentVariables": componentVariables,
-		"definition":         component.Definition,
-		"pluginVariables":    pVars,
-		"pluginResources":    pResources,
-		"pluginProviders":    pProviders,
-		"pluginDependsOn":    pDependsOn,
+		"siteEnvironment": cfg.Global.Environment,
+		"siteIdentifier":  site.Identifier,
+		"component":       component,
+		"definition":      component.Definition,
+		"pluginVariables": pVars,
+		"pluginResources": pResources,
+		"pluginProviders": pProviders,
+		"pluginDependsOn": pDependsOn,
 	})
 }

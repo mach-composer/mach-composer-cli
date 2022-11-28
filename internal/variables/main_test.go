@@ -23,7 +23,8 @@ func TestNewVariablesFromFile(t *testing.T) {
 			  foo: encrypted
 	`)
 
-	utils.AFS.WriteFile("variables.yaml", []byte(content), 0644)
+	err := utils.AFS.WriteFile("variables.yaml", []byte(content), 0644)
+	require.NoError(t, err)
 
 	vars, err := NewVariablesFromFile(context.Background(), "variables.yaml")
 	assert.NoError(t, err)
