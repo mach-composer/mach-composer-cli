@@ -89,5 +89,6 @@ func TestVariablesResolve(t *testing.T) {
 	vars.vars["foo.bar"] = "my-other-bar"
 	vars.vars["bar.foo"] = "my--bar"
 
-	vars.InterpolateNode(&node)
+	err = vars.InterpolateNode(&node)
+	require.NoError(t, err)
 }

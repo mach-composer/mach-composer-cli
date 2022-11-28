@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func intRef(val int) *int {
@@ -22,7 +23,8 @@ func TestSetSiteEndpointsConfig(t *testing.T) {
 	}
 
 	plugin := NewAWSPlugin()
-	plugin.SetSiteEndpointsConfig("my-site", data)
+	err := plugin.SetSiteEndpointsConfig("my-site", data)
+	require.NoError(t, err)
 
 	result := plugin.endpointsConfigs["my-site"]["internal"]
 	assert.Equal(t, intRef(5000), result.ThrottlingBurstLimit)
