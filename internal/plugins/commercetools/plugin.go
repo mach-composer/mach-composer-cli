@@ -31,7 +31,7 @@ func (p *CommercetoolsPlugin) IsEnabled() bool {
 }
 
 func (p *CommercetoolsPlugin) Identifier() string {
-	return "sentry"
+	return "commercetools"
 }
 
 func (p *CommercetoolsPlugin) SetRemoteStateBackend(data map[string]any) error {
