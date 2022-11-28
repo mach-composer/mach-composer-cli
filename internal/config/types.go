@@ -70,7 +70,6 @@ type _RawMachConfig struct {
 	Global       yaml.Node    `yaml:"global"`
 	Sites        yaml.Node    `yaml:"sites"`
 	Components   yaml.Node    `yaml:"components"`
-	Sops         yaml.Node    `yaml:"sops"`
 }
 
 type MachComposer struct {

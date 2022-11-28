@@ -2,8 +2,11 @@ package config
 
 import (
 	"embed"
+	"errors"
 	"fmt"
 	"os"
+	"strconv"
+	"strings"
 
 	"github.com/xeipuuv/gojsonschema"
 	"gopkg.in/yaml.v3"
@@ -12,7 +15,12 @@ import (
 //go:embed schemas/*
 var schemas embed.FS
 
-func validateConfig(data []byte, version int) (bool, error) {
+func validateConfig(data []byte) (bool, error) {
+	version, err := getSchemaVersion(data)
+	if err != nil {
+		return false, err
+	}
+
 	if version != 1 {
 		err := fmt.Errorf("Config version %d is unsupported. Only version 1 is supported.\n", version)
 		return false, err
@@ -42,6 +50,31 @@ func validateConfig(data []byte, version int) (bool, error) {
 		return false, nil
 	}
 	return true, nil
+}
+
+func getSchemaVersion(data []byte) (int, error) {
+	type PartialMachConfig struct {
+		MachComposer MachComposer `yaml:"mach_composer"`
+	}
+
+	// Decode the yaml in an intermediate config file
+	intermediate := &PartialMachConfig{}
+	err := yaml.Unmarshal(data, intermediate)
+	if err != nil {
+		return 0, err
+	}
+
+	v := intermediate.MachComposer.Version
+	if val, err := strconv.Atoi(v); err == nil {
+		return val, err
+	}
+
+	parts := strings.SplitN(v, ".", 2)
+	if val, err := strconv.Atoi(parts[0]); err == nil {
+		return val, err
+	}
+
+	return 0, errors.New("no valid version identifier found")
 }
 
 func loadSchema(version int) (*gojsonschema.JSONLoader, error) {
