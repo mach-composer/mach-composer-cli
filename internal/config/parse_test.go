@@ -80,12 +80,12 @@ func TestParse(t *testing.T) {
 		MachComposer: MachComposer{
 			Version: "1.0.0",
 		},
-		Global: Global{
+		Global: GlobalConfig{
 			Environment:            "test",
 			Cloud:                  "aws",
 			TerraformStateProvider: "aws",
 		},
-		Sites: []Site{
+		Sites: []SiteConfig{
 			{
 				Name:       "",
 				Identifier: "my-site",
@@ -187,7 +187,7 @@ func TestParseComponentsNodeInline(t *testing.T) {
 
 	cfg := &MachConfig{
 		Plugins: plugins.NewPluginRepository(),
-		Global: Global{
+		Global: GlobalConfig{
 			Cloud: "aws",
 		},
 	}
@@ -226,7 +226,7 @@ func TestParseComponentsNodeInclude(t *testing.T) {
 
 	cfg := &MachConfig{
 		Plugins: plugins.NewPluginRepository(),
-		Global: Global{
+		Global: GlobalConfig{
 			Cloud: "aws",
 		},
 	}

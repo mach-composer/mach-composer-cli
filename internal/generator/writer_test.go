@@ -10,7 +10,7 @@ import (
 
 func TestFileLocations(t *testing.T) {
 	cfg := &config.MachConfig{
-		Sites: []config.Site{
+		Sites: []config.SiteConfig{
 			{
 				Identifier: "my-site",
 			},

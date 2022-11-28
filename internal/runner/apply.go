@@ -48,7 +48,7 @@ func TerraformProxy(ctx context.Context, cfg *config.MachConfig, locations map[s
 	return nil
 }
 
-func TerraformApplySite(ctx context.Context, cfg *config.MachConfig, site *config.Site, path string, options *ApplyOptions) error {
+func TerraformApplySite(ctx context.Context, cfg *config.MachConfig, site *config.SiteConfig, path string, options *ApplyOptions) error {
 	if !options.Reuse {
 		if err := RunTerraform(ctx, path, "init"); err != nil {
 			return err
