@@ -14,6 +14,7 @@ import (
 )
 
 type AzurePlugin struct {
+	environment      string
 	remoteState      *AzureTFState
 	globalConfig     *GlobalConfig
 	siteConfigs      map[string]SiteConfig
@@ -27,6 +28,11 @@ func NewAzurePlugin() *AzurePlugin {
 		componentConfigs: map[string]ComponentConfig{},
 		endpointsConfigs: map[string]map[string]EndpointConfig{},
 	}
+}
+
+func (p *AzurePlugin) Initialize(environment string) error {
+	p.environment = environment
+	return nil
 }
 
 func (p *AzurePlugin) IsEnabled() bool {
@@ -135,14 +141,6 @@ func (p *AzurePlugin) SetComponentEndpointsConfig(component string, endpoints ma
 	return nil
 }
 
-func (p *AzurePlugin) getSiteConfig(site string) *SiteConfig {
-	cfg, ok := p.siteConfigs[site]
-	if !ok {
-		return nil
-	}
-	return &cfg
-}
-
 func (p *AzurePlugin) TerraformRenderStateBackend(site string) (string, error) {
 	templateContext := struct {
 		State *AzureTFState
@@ -209,7 +207,7 @@ func (p *AzurePlugin) TerraformRenderResources(site string) (string, error) {
 		}
 	}
 
-	return renderResources(site, cfg, pie.Values(activeEndpoints))
+	return renderResources(site, p.environment, cfg, pie.Values(activeEndpoints))
 }
 
 func (p *AzurePlugin) TerraformRenderComponentResources(site string, component string) (string, error) {
@@ -227,45 +225,54 @@ func (p *AzurePlugin) TerraformRenderComponentVars(site string, component string
 		componentConfig = ComponentConfig{} // TODO
 	}
 
+	endpointNames := map[string]string{}
+	for key, value := range componentConfig.Endpoints {
+		endpointNames[shared.Slugify(key)] = shared.Slugify(value)
+	}
+
 	templateContext := struct {
 		Config      *SiteConfig
 		Component   *ComponentConfig
 		ServicePlan string
+		Endpoints   map[string]string
 	}{
 		Config:      cfg,
 		Component:   &componentConfig,
 		ServicePlan: azureServicePlanResourceName(componentConfig.ServicePlan),
+		Endpoints:   endpointNames,
 	}
-
-	// {% for component_endpoint, site_endpoint in component.Endpoints -%}
-	// azure_endpoint_{{ component_endpoint|slugify }} = {
-	//   url = local.endpoint_url_{{ site_endpoint|slugify }}
-	//   frontdoor_id = azurerm_frontdoor.app-service.header_frontdoor_id
-	// }
-	// {% endfor %}
 
 	template := `
-	### azure related
-	azure_short_name              = "{{ .Component.ShortName }}"
-	azure_name_prefix             = local.name_prefix
-	azure_subscription_id         = local.subscription_id
-	azure_tenant_id               = local.tenant_id
-	azure_region                  = local.region
-	azure_service_object_ids      = local.service_object_ids
-	azure_resource_group          = {
-	  name     = local.resource_group_name
-	  location = local.resource_group_location
-	}
-	{{ if .ServicePlan }}
-	azure_app_service_plan        = {
-	  id                  = azurerm_app_service_plan.{{ .ServicePlan }}.id
-	  name                = azurerm_app_service_plan.{{ .ServicePlan }}.name
-	  resource_group_name = azurerm_app_service_plan.{{ .ServicePlan }}.resource_group_name
-	}
-	{{ end }}
-	{{ if .Config.AlertGroup }}
-	azure_monitor_action_group_id = azurerm_monitor_action_group.alert_action_group.id
-	{{ end }}
+		### azure related
+		azure_short_name              = "{{ .Component.ShortName }}"
+		azure_name_prefix             = local.name_prefix
+		azure_subscription_id         = local.subscription_id
+		azure_tenant_id               = local.tenant_id
+		azure_region                  = local.region
+		azure_service_object_ids      = local.service_object_ids
+		azure_resource_group          = {
+			name     = local.resource_group_name
+			location = local.resource_group_location
+		}
+
+		{{ if .ServicePlan }}
+		azure_app_service_plan = {
+			id                  = azurerm_app_service_plan.{{ .ServicePlan }}.id
+			name                = azurerm_app_service_plan.{{ .ServicePlan }}.name
+			resource_group_name = azurerm_app_service_plan.{{ .ServicePlan }}.resource_group_name
+		}
+		{{ end }}
+
+		{{ if .Config.AlertGroup }}
+		azure_monitor_action_group_id = azurerm_monitor_action_group.alert_action_group.id
+		{{ end }}
+
+		{{ range $cEndpoint, $sEndpoint := .Endpoints }}
+		azure_endpoint_{{ $cEndpoint }} = {
+			url = local.endpoint_url_{{ $sEndpoint }}
+			frontdoor_id = azurerm_frontdoor.app-service.header_frontdoor_id
+		}
+		{{ end }}
 	`
 	return shared.RenderGoTemplate(template, templateContext)
 }
@@ -275,10 +282,35 @@ func (p *AzurePlugin) TerraformRenderComponentProviders(site string, component s
 }
 
 func (p *AzurePlugin) TerraformRenderComponentDependsOn(site string, component string) ([]string, error) {
-	return []string{"null_resource.commercetools"}, nil
-	// {% if site.Azure and component.Azure.ServicePlan %}
-	// {% if component.Azure.ServicePlan == "default" %}
-	// azurerm_app_service_plan.functionapps,{% else %}
-	// azurerm_app_service_plan.functionapps_{{ component.Azure.ServicePlan }},{% endif %}
-	// {% endif %}
+	cfg := p.getSiteConfig(site)
+	if cfg == nil {
+		return []string{}, nil
+	}
+	componentCfg := p.getComponentConfig(component)
+
+	if componentCfg.ServicePlan != "" {
+		if componentCfg.ServicePlan == "default" {
+			return []string{"azurerm_app_service_plan.functionapps"}, nil
+		} else {
+			val := fmt.Sprintf("azurerm_app_service_plan.functionapps_%s", componentCfg.ServicePlan)
+			return []string{val}, nil
+		}
+	}
+	return []string{}, nil
+}
+
+func (p *AzurePlugin) getSiteConfig(site string) *SiteConfig {
+	cfg, ok := p.siteConfigs[site]
+	if !ok {
+		return nil
+	}
+	return &cfg
+}
+
+func (p *AzurePlugin) getComponentConfig(name string) *ComponentConfig {
+	componentConfig, ok := p.componentConfigs[name]
+	if !ok {
+		componentConfig = ComponentConfig{} // TODO
+	}
+	return &componentConfig
 }

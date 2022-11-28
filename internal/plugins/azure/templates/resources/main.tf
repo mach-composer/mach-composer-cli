@@ -21,7 +21,7 @@ locals {
 
   tags = {
     Site        = "{{ siteName }}"
-    Environment = "{{ global.Environment }}"
+    Environment = "{{ envName }}"
   }
 }
 

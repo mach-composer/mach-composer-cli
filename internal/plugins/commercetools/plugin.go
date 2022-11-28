@@ -11,6 +11,7 @@ import (
 )
 
 type CommercetoolsPlugin struct {
+	environment string
 	siteConfigs map[string]*SiteConfig
 }
 
@@ -18,6 +19,11 @@ func NewCommercetoolsPlugin() *CommercetoolsPlugin {
 	return &CommercetoolsPlugin{
 		siteConfigs: map[string]*SiteConfig{},
 	}
+}
+
+func (p *CommercetoolsPlugin) Initialize(environment string) error {
+	p.environment = environment
+	return nil
 }
 
 func (p *CommercetoolsPlugin) IsEnabled() bool {

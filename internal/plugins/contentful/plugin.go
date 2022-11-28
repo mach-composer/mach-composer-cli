@@ -9,6 +9,7 @@ import (
 )
 
 type ContentfulPlugin struct {
+	environment  string
 	globalConfig *ContentfulConfig
 	siteConfigs  map[string]*ContentfulConfig
 	enabled      bool
@@ -18,6 +19,11 @@ func NewContentfulPlugin() *ContentfulPlugin {
 	return &ContentfulPlugin{
 		siteConfigs: map[string]*ContentfulConfig{},
 	}
+}
+
+func (p *ContentfulPlugin) Initialize(environment string) error {
+	p.environment = environment
+	return nil
 }
 
 func (p *ContentfulPlugin) IsEnabled() bool {

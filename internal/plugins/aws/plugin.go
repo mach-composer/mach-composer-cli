@@ -2,16 +2,17 @@ package aws
 
 import (
 	"fmt"
-	"log"
 
 	"github.com/creasty/defaults"
 	"github.com/elliotchance/pie/v2"
 	"github.com/mitchellh/mapstructure"
+	"github.com/sirupsen/logrus"
 
 	"github.com/labd/mach-composer/internal/plugins/shared"
 )
 
 type AWSPlugin struct {
+	environment      string
 	remoteState      *AWSTFState
 	siteConfigs      map[string]*SiteConfig
 	componentConfigs map[string]ComponentConfig
@@ -24,6 +25,11 @@ func NewAWSPlugin() *AWSPlugin {
 		componentConfigs: map[string]ComponentConfig{},
 		endpointsConfigs: map[string]map[string]EndpointConfig{},
 	}
+}
+
+func (p *AWSPlugin) Initialize(environment string) error {
+	p.environment = environment
+	return nil
 }
 
 func (p *AWSPlugin) IsEnabled() bool {
@@ -194,7 +200,7 @@ func (p *AWSPlugin) TerraformRenderResources(site string) (string, error) {
 		}
 	}
 
-	content, err := renderResources(site, cfg, pie.Values(activeEndpoints))
+	content, err := renderResources(site, p.environment, cfg, pie.Values(activeEndpoints))
 	if err != nil {
 		return "", fmt.Errorf("failed to render resources: %w", err)
 	}
@@ -255,6 +261,7 @@ func (p *AWSPlugin) TerraformRenderComponentDependsOn(site string, component str
 	// This shouldn't be needed since we already pass the values to the component
 	// make it automatically depend on that value
 	result := []string{}
+
 	componentCfg := p.componentConfigs[component]
 	for _, value := range componentCfg.Endpoints {
 		depends := fmt.Sprintf("aws_apigatewayv2_api.%s_gateway", shared.Slugify(value))
