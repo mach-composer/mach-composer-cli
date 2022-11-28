@@ -12,7 +12,7 @@ import (
 //go:embed templates/*
 var templates embed.FS
 
-func renderResources(site string, cfg *SiteConfig, endpoints []EndpointConfig) (string, error) {
+func renderResources(site, env string, cfg *SiteConfig, endpoints []EndpointConfig) (string, error) {
 	templateSet := pongo2.NewSet("", &shared.EmbedLoader{Content: templates})
 	template := pongo2.Must(templateSet.FromFile("resources/main.tf"))
 
@@ -30,6 +30,7 @@ func renderResources(site string, cfg *SiteConfig, endpoints []EndpointConfig) (
 	return template.Execute(pongo2.Context{
 		"aws":       cfg,
 		"siteName":  site,
+		"envName":   env,
 		"endpoints": endpoints,
 		"enableCDN": enableCDN,
 		"dnsZones":  pie.Unique(dnsZones),

@@ -11,13 +11,14 @@ import (
 //go:embed templates/*
 var templates embed.FS
 
-func renderResources(site string, cfg *SiteConfig, endpoints []EndpointConfig) (string, error) {
+func renderResources(site, env string, cfg *SiteConfig, endpoints []EndpointConfig) (string, error) {
 	templateSet := pongo2.NewSet("", &shared.EmbedLoader{Content: templates})
 	template := pongo2.Must(templateSet.FromFile("resources/main.tf"))
 
 	return template.Execute(pongo2.Context{
 		"azure":     cfg,
 		"siteName":  site,
+		"envName":   env,
 		"endpoints": endpoints,
 	})
 }

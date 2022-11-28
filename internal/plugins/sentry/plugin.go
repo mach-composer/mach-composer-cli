@@ -9,6 +9,7 @@ import (
 )
 
 type SentryPlugin struct {
+	environment  string
 	globalConfig GlobalConfig
 	siteConfigs  map[string]*SiteConfig
 }
@@ -17,6 +18,11 @@ func NewSentryPlugin() *SentryPlugin {
 	return &SentryPlugin{
 		siteConfigs: map[string]*SiteConfig{},
 	}
+}
+
+func (p *SentryPlugin) Initialize(environment string) error {
+	p.environment = environment
+	return nil
 }
 
 func (p *SentryPlugin) IsEnabled() bool {

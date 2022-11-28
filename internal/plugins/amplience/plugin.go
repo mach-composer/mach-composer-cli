@@ -9,6 +9,7 @@ import (
 )
 
 type AmpliencePlugin struct {
+	environment  string
 	globalConfig *AmplienceConfig
 	siteConfigs  map[string]*AmplienceConfig
 	enabled      bool
@@ -18,6 +19,11 @@ func NewAmpliencePlugin() *AmpliencePlugin {
 	return &AmpliencePlugin{
 		siteConfigs: map[string]*AmplienceConfig{},
 	}
+}
+
+func (p *AmpliencePlugin) Initialize(environment string) error {
+	p.environment = environment
+	return nil
 }
 
 func (p *AmpliencePlugin) IsEnabled() bool {
