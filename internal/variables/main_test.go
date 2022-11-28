@@ -85,7 +85,7 @@ func TestVariablesResolve(t *testing.T) {
 	require.NoError(t, err)
 
 	vars := NewVariables()
-	vars.vars["foo"] = "my-very-special-foo"
+	vars.vars["my-foo"] = "my-very-special-foo"
 	vars.vars["foo.bar"] = "my-other-bar"
 	vars.vars["bar.foo"] = "my--bar"
 

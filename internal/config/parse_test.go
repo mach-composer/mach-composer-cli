@@ -190,6 +190,9 @@ func TestParseComponentsNodeInline(t *testing.T) {
 			Cloud: "aws",
 		},
 	}
+	err = cfg.Plugins.Load("aws", "internal")
+	require.NoError(t, err)
+
 	err = parseComponentsNode(cfg, &intermediate.Components, "main.yml")
 	require.NoError(t, err)
 	assert.Len(t, cfg.Components, 1)
@@ -225,6 +228,9 @@ func TestParseComponentsNodeInclude(t *testing.T) {
 			Cloud: "aws",
 		},
 	}
+	err = cfg.Plugins.Load("aws", "internal")
+	require.NoError(t, err)
+
 	err = parseComponentsNode(cfg, &intermediate.Components, "main.yml")
 	require.NoError(t, err)
 	assert.Len(t, cfg.Components, 1)
