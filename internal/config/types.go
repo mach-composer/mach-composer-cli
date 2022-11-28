@@ -7,6 +7,7 @@ import (
 	"gopkg.in/yaml.v3"
 
 	"github.com/labd/mach-composer/internal/plugins"
+	"github.com/labd/mach-composer/internal/variables"
 )
 
 type MachConfig struct {
@@ -19,7 +20,7 @@ type MachConfig struct {
 	ExtraFiles map[string][]byte
 	Plugins    *plugins.PluginRepository `yaml:"-"`
 
-	Variables   *Variables
+	Variables   *variables.Variables
 	IsEncrypted bool
 }
 

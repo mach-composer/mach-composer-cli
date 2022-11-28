@@ -21,11 +21,31 @@ func TestFilterTFValue(t *testing.T) {
 		{input: pongo2.AsValue(true), output: pongo2.AsSafeValue("true")},
 		{input: pongo2.AsValue(false), output: pongo2.AsSafeValue("false")},
 		{input: pongo2.AsValue([]string{"foo", "bar"}), output: pongo2.AsSafeValue(`["foo", "bar"]`)},
+		{input: pongo2.AsValue([]string{"${foo}", "bar"}), output: pongo2.AsSafeValue(`[foo, "bar"]`)},
 	}
 
 	for _, tc := range tests {
 		value, err := FilterTFValue(tc.input, nil)
 		assert.Nil(t, err)
 		assert.True(t, tc.output.EqualValueTo(value))
+	}
+}
+
+func TestFormatString(t *testing.T) {
+	type test struct {
+		input  string
+		output string
+	}
+
+	tests := []test{
+		{input: "${module.foo.endpoint}", output: "module.foo.endpoint"},
+		{input: "foo ${module.foo.endpoint} bar", output: `"foo ${module.foo.endpoint} bar"`},
+		{input: "  ${module.foo.endpoint} ", output: `"  ${module.foo.endpoint} "`},
+		{input: "${module.foo.endpoint}${module.bar.other}", output: `"${module.foo.endpoint}${module.bar.other}"`},
+	}
+
+	for _, tc := range tests {
+		value := formatString(tc.input)
+		assert.Equal(t, tc.output, value)
 	}
 }

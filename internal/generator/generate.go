@@ -10,6 +10,7 @@ import (
 
 	"github.com/labd/mach-composer/internal/config"
 	"github.com/labd/mach-composer/internal/plugins/shared"
+	"github.com/labd/mach-composer/internal/variables"
 )
 
 //go:embed templates/*
@@ -26,8 +27,6 @@ type TemplateRenderer struct {
 var renderer TemplateRenderer
 
 func init() {
-	registerFilters()
-
 	renderer.templateSet = pongo2.NewSet("", &shared.EmbedLoader{Content: templates})
 	renderer.servicesTemplate = pongo2.Must(renderer.templateSet.FromFile("services.tf"))
 	renderer.componentTemplate = pongo2.Must(renderer.templateSet.FromFile("component.tf"))
@@ -101,6 +100,8 @@ func renderServices(cfg *config.MachConfig, site *config.Site) (string, error) {
 	})
 }
 
+// renderComponent uses templates/component.tf to generate a terraform snippet
+// for each component
 func renderComponent(cfg *config.MachConfig, site *config.Site, component *config.SiteComponent) (string, error) {
 	pVars := []string{}
 	pResources := []string{}

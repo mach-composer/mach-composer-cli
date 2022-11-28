@@ -15,8 +15,9 @@ func TestRender(t *testing.T) {
 			Version: "1.0.0",
 		},
 		Global: config.Global{
-			Environment: "test",
-			Cloud:       "aws",
+			Environment:            "test",
+			Cloud:                  "aws",
+			TerraformStateProvider: "aws",
 		},
 		Sites: []config.Site{
 			{
@@ -53,6 +54,7 @@ func TestRender(t *testing.T) {
 		},
 		Plugins: plugins.NewPluginRepository(),
 	}
+	cfg.Plugins.Load("aws", "internal")
 
 	config.ProcessConfig(&cfg)
 
