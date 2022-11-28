@@ -1,11 +1,11 @@
 package amplience
 
 import (
-	"bytes"
 	"fmt"
-	"text/template"
 
 	"github.com/mitchellh/mapstructure"
+
+	"github.com/labd/mach-composer/internal/plugins/shared"
 )
 
 type AmpliencePlugin struct {
@@ -95,22 +95,22 @@ func (p *AmpliencePlugin) getSiteConfig(site string) *AmplienceConfig {
 	return result
 }
 
-func (p *AmpliencePlugin) TerraformRenderStateBackend(site string) string {
-	return ""
+func (p *AmpliencePlugin) TerraformRenderStateBackend(site string) (string, error) {
+	return "", nil
 }
 
-func (p *AmpliencePlugin) TerraformRenderProviders(site string) string {
+func (p *AmpliencePlugin) TerraformRenderProviders(site string) (string, error) {
 	return `
 	amplience = {
 		source = "labd/amplience"
 		version = "0.3.7"
-	}`
+	}`, nil
 }
 
-func (p *AmpliencePlugin) TerraformRenderResources(site string) string {
+func (p *AmpliencePlugin) TerraformRenderResources(site string) (string, error) {
 	cfg := p.getSiteConfig(site)
 	if cfg == nil {
-		return ""
+		return "", nil
 	}
 
 	template := `
@@ -120,17 +120,17 @@ func (p *AmpliencePlugin) TerraformRenderResources(site string) string {
 			hub_id           = {{ .HubID|printf "%q" }}
 		}
 	`
-	return renderTemplate(template, cfg)
+	return shared.RenderGoTemplate(template, cfg)
 }
 
-func (p *AmpliencePlugin) TerraformRenderComponentResources(site string, component string) string {
-	return ""
+func (p *AmpliencePlugin) TerraformRenderComponentResources(site string, component string) (string, error) {
+	return "", nil
 }
 
-func (p *AmpliencePlugin) TerraformRenderComponentVars(site, component string) string {
+func (p *AmpliencePlugin) TerraformRenderComponentVars(site, component string) (string, error) {
 	cfg := p.getSiteConfig(site)
 	if cfg == nil {
-		return ""
+		return "", nil
 	}
 
 	template := `
@@ -138,26 +138,13 @@ func (p *AmpliencePlugin) TerraformRenderComponentVars(site, component string) s
 		amplience_client_secret = {{ .ClientSecret|printf "%q" }}
 		amplience_hub_id = {{ .HubID|printf "%q" }}
 	`
-	return renderTemplate(template, cfg)
+	return shared.RenderGoTemplate(template, cfg)
 }
 
-func (p *AmpliencePlugin) TerraformRenderComponentDependsOn(site string, component string) []string {
-	return []string{}
+func (p *AmpliencePlugin) TerraformRenderComponentDependsOn(site string, component string) ([]string, error) {
+	return []string{}, nil
 }
 
-func (p *AmpliencePlugin) TerraformRenderComponentProviders(site string, component string) []string {
-	return []string{}
-}
-
-func renderTemplate(t string, data any) string {
-	tpl, err := template.New("template").Parse(t)
-	if err != nil {
-		panic(err)
-	}
-
-	var content bytes.Buffer
-	if err := tpl.Execute(&content, data); err != nil {
-		panic(err)
-	}
-	return content.String()
+func (p *AmpliencePlugin) TerraformRenderComponentProviders(site string, component string) ([]string, error) {
+	return []string{}, nil
 }

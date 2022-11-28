@@ -1,10 +1,8 @@
 package aws
 
 import (
-	"bytes"
 	"fmt"
 	"log"
-	"text/template"
 
 	"github.com/creasty/defaults"
 	"github.com/elliotchance/pie/v2"
@@ -120,7 +118,7 @@ func (p *AWSPlugin) SetComponentEndpointsConfig(component string, endpoints map[
 	return nil
 }
 
-func (p *AWSPlugin) TerraformRenderStateBackend(site string) string {
+func (p *AWSPlugin) TerraformRenderStateBackend(site string) (string, error) {
 	templateContext := struct {
 		State *AWSTFState
 		Site  string
@@ -143,26 +141,26 @@ func (p *AWSPlugin) TerraformRenderStateBackend(site string) string {
 	  encrypt        = {{ .State.Encrypt }}
 	}
 	`
-	return renderTemplate(template, templateContext)
+	return shared.RenderGoTemplate(template, templateContext)
 }
 
-func (p *AWSPlugin) TerraformRenderProviders(site string) string {
+func (p *AWSPlugin) TerraformRenderProviders(site string) (string, error) {
 	cfg := p.getSiteConfig(site)
 	if cfg == nil {
-		return ""
+		return "", nil
 	}
 
 	return `
     aws = {
       version = "3.74.1"
     }
-	`
+	`, nil
 }
 
-func (p *AWSPlugin) TerraformRenderResources(site string) string {
+func (p *AWSPlugin) TerraformRenderResources(site string) (string, error) {
 	cfg := p.getSiteConfig(site)
 	if cfg == nil {
-		return ""
+		return "", nil
 	}
 
 	activeEndpoints := map[string]EndpointConfig{}
@@ -194,20 +192,20 @@ func (p *AWSPlugin) TerraformRenderResources(site string) string {
 
 	content, err := renderResources(site, cfg, pie.Values(activeEndpoints))
 	if err != nil {
-		panic(err)
+		return "", fmt.Errorf("failed to render resources: %w", err)
 	}
 
-	return content
+	return content, nil
 }
 
-func (p *AWSPlugin) TerraformRenderComponentResources(site string, component string) string {
-	return ""
+func (p *AWSPlugin) TerraformRenderComponentResources(site string, component string) (string, error) {
+	return "", nil
 }
 
-func (p *AWSPlugin) TerraformRenderComponentVars(site string, component string) string {
+func (p *AWSPlugin) TerraformRenderComponentVars(site string, component string) (string, error) {
 	cfg := p.getSiteConfig(site)
 	if cfg == nil {
-		return ""
+		return "", nil
 	}
 
 	componentCfg := p.componentConfigs[component]
@@ -234,22 +232,22 @@ func (p *AWSPlugin) TerraformRenderComponentVars(site string, component string) 
 		}
 		{{ end }}
 	`
-	return renderTemplate(template, templateContext)
+	return shared.RenderGoTemplate(template, templateContext)
 }
 
-func (p *AWSPlugin) TerraformRenderComponentProviders(site string, component string) []string {
+func (p *AWSPlugin) TerraformRenderComponentProviders(site string, component string) ([]string, error) {
 	cfg := p.getSiteConfig(site)
 	if cfg == nil {
-		return []string{}
+		return []string{}, nil
 	}
 	providers := []string{"aws = aws"}
 	for _, provider := range cfg.ExtraProviders {
 		providers = append(providers, fmt.Sprintf("aws.%s = aws.%s", provider.Name, provider.Name))
 	}
-	return providers
+	return providers, nil
 }
 
-func (p *AWSPlugin) TerraformRenderComponentDependsOn(site string, component string) []string {
+func (p *AWSPlugin) TerraformRenderComponentDependsOn(site string, component string) ([]string, error) {
 	// This shouldn't be needed since we already pass the values to the component
 	// make it automatically depend on that value
 	result := []string{}
@@ -258,7 +256,7 @@ func (p *AWSPlugin) TerraformRenderComponentDependsOn(site string, component str
 		depends := fmt.Sprintf("aws_apigatewayv2_api.%s_gateway", shared.Slugify(value))
 		result = append(result, depends)
 	}
-	return result
+	return result, nil
 }
 
 func (p *AWSPlugin) getSiteConfig(site string) *SiteConfig {
@@ -267,17 +265,4 @@ func (p *AWSPlugin) getSiteConfig(site string) *SiteConfig {
 		return nil
 	}
 	return cfg
-}
-
-func renderTemplate(t string, data any) string {
-	tpl, err := template.New("template-1").Parse(t)
-	if err != nil {
-		panic(err)
-	}
-
-	var content bytes.Buffer
-	if err := tpl.Execute(&content, data); err != nil {
-		panic(err)
-	}
-	return content.String()
 }

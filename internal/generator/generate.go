@@ -53,10 +53,11 @@ func Render(cfg *config.MachConfig, site *config.Site) (string, error) {
 
 	// Add components
 	for i := range site.Components {
-		if val, err := renderComponent(cfg, site, &site.Components[i]); err == nil {
+		component := &site.Components[i]
+		if val, err := renderComponent(cfg, site, component); err == nil {
 			result = append(result, val)
 		} else {
-			return "", err
+			return "", fmt.Errorf("failed to render component %s: %w", component.Name, err)
 		}
 	}
 
@@ -67,13 +68,22 @@ func Render(cfg *config.MachConfig, site *config.Site) (string, error) {
 func renderTerraformConfig(cfg *config.MachConfig, site *config.Site) (string, error) {
 	providers := []string{}
 	for _, plugin := range cfg.Plugins.All() {
-		content := plugin.TerraformRenderProviders(site.Identifier)
+		content, err := plugin.TerraformRenderProviders(site.Identifier)
+		if err != nil {
+			return "", err
+		}
 		providers = append(providers, content)
 	}
 
 	statePlugin, err := cfg.Plugins.Get(cfg.Global.TerraformStateProvider)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("failed to resolve plugin for terraform state: %w", err)
+	}
+
+	backendConfig, err := statePlugin.TerraformRenderStateBackend(site.Identifier)
+	if err != nil {
+		return "", fmt.Errorf("failed to render backend config: %w", err)
+
 	}
 
 	return renderer.tfConfigTemplate.Execute(pongo2.Context{
@@ -81,14 +91,17 @@ func renderTerraformConfig(cfg *config.MachConfig, site *config.Site) (string, e
 		"site":           site,
 		"variables":      cfg.Variables,
 		"providers":      providers,
-		"backend_config": statePlugin.TerraformRenderStateBackend(site.Identifier),
+		"backend_config": backendConfig,
 	})
 }
 
 func renderServices(cfg *config.MachConfig, site *config.Site) (string, error) {
 	resources := []string{}
 	for _, plugin := range cfg.Plugins.All() {
-		content := plugin.TerraformRenderResources(site.Identifier)
+		content, err := plugin.TerraformRenderResources(site.Identifier)
+		if err != nil {
+			return "", err
+		}
 		resources = append(resources, content)
 	}
 
@@ -111,28 +124,53 @@ func renderComponent(cfg *config.MachConfig, site *config.Site, component *confi
 		if !pie.Contains(component.Definition.Integrations, plugin.Identifier()) {
 			continue
 		}
-		resources := plugin.TerraformRenderComponentResources(site.Identifier, component.Name)
-		pResources = append(pResources, resources)
 
-		content := plugin.TerraformRenderComponentVars(site.Identifier, component.Name)
-		pVars = append(pVars, content)
+		value, err := plugin.TerraformRenderComponentResources(site.Identifier, component.Name)
+		if err != nil {
+			return "", err
+		}
+		pResources = append(pResources, value)
 
-		value := plugin.TerraformRenderComponentProviders(site.Identifier, component.Name)
-		pProviders = append(pProviders, value...)
+		value, err = plugin.TerraformRenderComponentVars(site.Identifier, component.Name)
+		if err != nil {
+			return "", err
+		}
+		pVars = append(pVars, value)
 
-		value = plugin.TerraformRenderComponentDependsOn(site.Identifier, component.Name)
-		pDependsOn = append(pDependsOn, value...)
+		values, err := plugin.TerraformRenderComponentProviders(site.Identifier, component.Name)
+		if err != nil {
+			return "", err
+		}
+		pProviders = append(pProviders, values...)
+
+		values, err = plugin.TerraformRenderComponentDependsOn(site.Identifier, component.Name)
+		if err != nil {
+			return "", err
+		}
+		pDependsOn = append(pDependsOn, values...)
+	}
+
+	componentVariables, err := variables.InterpolateComponentVars(component.Variables)
+	if err != nil {
+		return "", err
+	}
+
+	componentSecrets, err := variables.InterpolateComponentVars(component.Secrets)
+	if err != nil {
+		return "", err
 	}
 
 	return renderer.componentTemplate.Execute(pongo2.Context{
-		"global":          cfg.Global,
-		"site":            site,
-		"variables":       cfg.Variables,
-		"component":       component,
-		"definition":      component.Definition,
-		"pluginVariables": pVars,
-		"pluginResources": pResources,
-		"pluginProviders": pProviders,
-		"pluginDependsOn": pDependsOn,
+		"global":             cfg.Global,
+		"site":               site,
+		"variables":          cfg.Variables,
+		"component":          component,
+		"componentSecrets":   componentSecrets,
+		"componentVariables": componentVariables,
+		"definition":         component.Definition,
+		"pluginVariables":    pVars,
+		"pluginResources":    pResources,
+		"pluginProviders":    pProviders,
+		"pluginDependsOn":    pDependsOn,
 	})
 }

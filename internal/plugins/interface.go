@@ -20,24 +20,24 @@ type MachComposerPlugin interface {
 	SetComponentEndpointsConfig(component string, data map[string]string) error
 
 	// Render remote state configuration
-	TerraformRenderStateBackend(site string) string
+	TerraformRenderStateBackend(site string) (string, error)
 
 	// Render all required terraform providers
-	TerraformRenderProviders(site string) string
+	TerraformRenderProviders(site string) (string, error)
 
 	// Render global resources
-	TerraformRenderResources(site string) string
+	TerraformRenderResources(site string) (string, error)
 
 	// Render resources required per module
-	TerraformRenderComponentResources(site string, component string) string
+	TerraformRenderComponentResources(site string, component string) (string, error)
 
 	// Render variables to pass to a component
-	TerraformRenderComponentVars(site string, component string) string
+	TerraformRenderComponentVars(site string, component string) (string, error)
 
 	// Render depends_on clause for a component
-	TerraformRenderComponentDependsOn(site string, component string) []string
+	TerraformRenderComponentDependsOn(site string, component string) ([]string, error)
 
-	TerraformRenderComponentProviders(site string, component string) []string
+	TerraformRenderComponentProviders(site string, component string) ([]string, error)
 }
 
 type MachComposerPluginCloud interface {
