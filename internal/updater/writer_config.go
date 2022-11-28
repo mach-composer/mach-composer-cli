@@ -11,12 +11,8 @@ import (
 	"github.com/labd/mach-composer/internal/utils"
 )
 
-type MachConfig struct {
-	Components yaml.Node
-}
-
 func MachConfigUpdater(src []byte, updateSet *UpdateSet) []byte {
-	data := MachConfig{}
+	data := PartialRawConfig{}
 	err := yaml.Unmarshal(src, &data)
 	if err != nil {
 		log.Fatalln(err)

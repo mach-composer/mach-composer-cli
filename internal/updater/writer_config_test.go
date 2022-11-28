@@ -3,9 +3,10 @@ package updater
 import (
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+
 	"github.com/labd/mach-composer/internal/config"
 	"github.com/labd/mach-composer/internal/utils"
-	"github.com/stretchr/testify/assert"
 )
 
 func TestMachConfigUpdater(t *testing.T) {

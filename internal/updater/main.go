@@ -4,27 +4,63 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"path/filepath"
 	"strings"
 
+	"gopkg.in/yaml.v3"
+
 	"github.com/labd/mach-composer/internal/config"
+	"github.com/labd/mach-composer/internal/utils"
 )
+
+type PartialConfig struct {
+	Components []config.Component `yaml:"components"`
+	Sops       yaml.Node          `yaml:"sops"`
+
+	isEncrypted bool
+	filename    string `yaml:"-"`
+}
+
+func (c *PartialConfig) GetComponent(name string) *config.Component {
+	for i := range c.Components {
+		if strings.EqualFold(c.Components[i].Name, name) {
+			return &c.Components[i]
+		}
+	}
+	return nil
+}
+
+type PartialRawConfig struct {
+	Components yaml.Node
+}
 
 type WorkerJob struct {
 	component *config.Component
-	cfg       *config.MachConfig
+	cfg       *PartialConfig
 }
 
 type Updater struct {
 	filename string
-	config   *config.MachConfig
+	config   *PartialConfig
 	updates  []ChangeSet
 }
 
 func NewUpdater(ctx context.Context, filename string) (*Updater, error) {
-	cfg, err := config.Load(ctx, filename, "")
+	body, err := utils.AFS.ReadFile(filename)
 	if err != nil {
 		return nil, err
 	}
+
+	cfg := &PartialConfig{}
+	err = yaml.Unmarshal(body, cfg)
+	if err != nil {
+		return nil, fmt.Errorf("failed to unmarshall yaml: %w", err)
+	}
+	cfg.filename = filepath.Base(filename)
+
+	// If we have a Sops node which is a mapping then we can assume that this
+	// file is encrypted.
+	cfg.isEncrypted = cfg.Sops.Kind == yaml.MappingNode
 
 	result := &Updater{
 		filename: filename,
@@ -88,7 +124,7 @@ func (u *Updater) Write(ctx context.Context) bool {
 	}
 
 	updateSet := u.GetUpdateSet()
-	if u.config.IsEncrypted {
+	if u.config.isEncrypted {
 		SopsFileWriter(ctx, u.config, updateSet)
 	} else {
 		MachFileWriter(updateSet)
@@ -97,7 +133,7 @@ func (u *Updater) Write(ctx context.Context) bool {
 	return true
 }
 
-func FindUpdates(ctx context.Context, cfg *config.MachConfig, filename string) *UpdateSet {
+func FindUpdates(ctx context.Context, cfg *PartialConfig, filename string) *UpdateSet {
 	numUpdates := len(cfg.Components)
 	jobs := make(chan WorkerJob, numUpdates)
 	results := make(chan *ChangeSet, numUpdates)
@@ -110,7 +146,7 @@ func FindUpdates(ctx context.Context, cfg *config.MachConfig, filename string) *
 	for i := 0; i < numWorkers; i++ {
 		go func() {
 			for j := range jobs {
-				cs, err := GetLastVersion(ctx, j.component, j.cfg.Filename)
+				cs, err := GetLastVersion(ctx, j.component, j.cfg.filename)
 				if err != nil {
 					panic(err)
 				}
@@ -147,8 +183,8 @@ func FindUpdates(ctx context.Context, cfg *config.MachConfig, filename string) *
 	return &updates
 }
 
-func FindSpecificUpdate(ctx context.Context, cfg *config.MachConfig, filename string, component *config.Component) (*UpdateSet, error) {
-	changeSet, err := GetLastVersion(ctx, component, cfg.Filename)
+func FindSpecificUpdate(ctx context.Context, cfg *PartialConfig, filename string, component *config.Component) (*UpdateSet, error) {
+	changeSet, err := GetLastVersion(ctx, component, cfg.filename)
 	if err != nil {
 		return nil, err
 	}
@@ -157,7 +193,7 @@ func FindSpecificUpdate(ctx context.Context, cfg *config.MachConfig, filename st
 	fmt.Print(output)
 
 	updates := UpdateSet{
-		filename: cfg.Filename,
+		filename: cfg.filename,
 		updates:  []ChangeSet{*changeSet},
 	}
 	return &updates, nil
