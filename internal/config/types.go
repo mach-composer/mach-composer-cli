@@ -41,15 +41,6 @@ func (c *MachConfig) HasSite(ident string) bool {
 	return false
 }
 
-func (c *MachConfig) GetComponent(name string) *Component {
-	for i := range c.Components {
-		if strings.EqualFold(c.Components[i].Name, name) {
-			return &c.Components[i]
-		}
-	}
-	return nil
-}
-
 func (c *MachConfig) addFileToConfig(filename string) error {
 	b, err := os.ReadFile(filename)
 	if err != nil {
