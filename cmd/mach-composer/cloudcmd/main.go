@@ -142,8 +142,10 @@ func initConfig() {
 
 	err := viper.SafeWriteConfig()
 	if err != nil {
-		fmt.Printf("Error encountered while writing configuration file: %s", err)
-		os.Exit(1)
+		if _, ok := err.(viper.ConfigFileAlreadyExistsError); !ok {
+			fmt.Printf("Error encountered while writing configuration file: %s", err)
+			os.Exit(1)
+		}
 	}
 
 	viper.SetDefault("api-url", "https://api.mach.cloud")

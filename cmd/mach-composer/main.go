@@ -31,6 +31,12 @@ var (
 			if verbose {
 				logrus.SetLevel(logrus.DebugLevel)
 			}
+			logrus.SetFormatter(&logrus.TextFormatter{
+				DisableTimestamp:       true,
+				DisableLevelTruncation: true,
+				DisableSorting:         true,
+				PadLevelText:           true,
+			})
 		},
 	}
 )

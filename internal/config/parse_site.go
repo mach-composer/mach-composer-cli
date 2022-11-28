@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/elliotchance/pie/v2"
+	"github.com/sirupsen/logrus"
 	"gopkg.in/yaml.v3"
 
 	"github.com/labd/mach-composer/internal/variables"
@@ -61,7 +62,7 @@ func parseSiteComponentsNode(cfg *MachConfig, site string, node *yaml.Node) erro
 		nodes := mapYamlNodes(component.Content)
 		identifier := nodes["name"].Value
 
-		migrateCommercetools(identifier, nodes)
+		migrateCommercetools(site, identifier, nodes)
 
 		for key, node := range nodes {
 			if pie.Contains(knownKeys, key) {
@@ -116,7 +117,7 @@ func resolveSiteComponents(cfg *MachConfig) error {
 
 // migrateCommercetools moves the store_variables and store_secrets under the
 // commercetools node. Needed to say backwards compatible
-func migrateCommercetools(name string, nodes map[string]*yaml.Node) {
+func migrateCommercetools(site, name string, nodes map[string]*yaml.Node) {
 	needsMigrate := false
 	if _, ok := nodes["store_variables"]; ok {
 		needsMigrate = true
@@ -128,8 +129,7 @@ func migrateCommercetools(name string, nodes map[string]*yaml.Node) {
 		return
 	}
 
-	fmt.Printf("Warning: %s move store_variables and store_secrets to commercetools node\n", name)
-
+	logrus.Warnf("%s: %s store_variables and store_secrets should be children of the commercetools node\n", site, name)
 	if _, ok := nodes["commercetools"]; !ok {
 		nodes["commercetools"] = &yaml.Node{
 			Kind:    yaml.MappingNode,

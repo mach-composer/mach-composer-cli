@@ -82,7 +82,7 @@ func (p *AWSPlugin) SetSiteEndpointsConfig(site string, data map[string]any) err
 		} else {
 			if mapData, ok := epData.(map[string]any); ok {
 				if val, ok := mapData["aws"].(map[string]any); ok {
-					fmt.Println("Warning: the aws node on the endpoint will be removed. Set the children directly in the endpoint")
+					logrus.Warnln("the aws node on the endpoint will be removed. Set the children directly in the endpoint")
 					for key, value := range val {
 						mapData[key] = value
 					}
@@ -179,7 +179,7 @@ func (p *AWSPlugin) TerraformRenderResources(site string) (string, error) {
 
 			endpointConfig, ok := siteEndpoint[external]
 			if !ok && external != "default" {
-				log.Fatalf("component requires undeclared endpoint: %s", external)
+				return "", fmt.Errorf("component requires undeclared endpoint: %s", external)
 			}
 
 			if _, ok := activeEndpoints[external]; !ok {

@@ -32,7 +32,7 @@ func WriteFiles(cfg *config.MachConfig, options *GenerateOptions) (map[string]st
 		path := locations[site.Identifier]
 		filename := filepath.Join(path, "site.tf")
 
-		fmt.Printf("Generating %s\n", filename)
+		logrus.Infof("Writing %s\n", filename)
 
 		body, err := renderSite(cfg, &site)
 		if err != nil {
@@ -59,7 +59,7 @@ func WriteFiles(cfg *config.MachConfig, options *GenerateOptions) (map[string]st
 		// Write extra files
 		for extraFilename, content := range cfg.GetFiles() {
 			extraFilename = filepath.Join(path, extraFilename)
-			fmt.Printf("Copying %s\n", extraFilename)
+			logrus.Infof("Copying %s\n", extraFilename)
 			if err := os.WriteFile(extraFilename, content, 0700); err != nil {
 				return nil, fmt.Errorf("error writing extra file: %w", err)
 			}

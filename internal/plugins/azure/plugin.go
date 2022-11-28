@@ -8,6 +8,7 @@ import (
 	"github.com/creasty/defaults"
 	"github.com/elliotchance/pie/v2"
 	"github.com/mitchellh/mapstructure"
+	"github.com/sirupsen/logrus"
 
 	"github.com/labd/mach-composer/internal/plugins/shared"
 )
@@ -90,7 +91,7 @@ func (p *AzurePlugin) SetSiteEndpointsConfig(site string, data map[string]any) e
 		} else {
 			if mapData, ok := epData.(map[string]any); ok {
 				if val, ok := mapData["azure"].(map[string]any); ok {
-					fmt.Println("Warning: the azure node on the endpoint will be removed. Set the children directly in the endpoint")
+					logrus.Warnln("Warning: the azure node on the endpoint will be removed. Set the children directly in the endpoint")
 					for key, value := range val {
 						mapData[key] = value
 					}

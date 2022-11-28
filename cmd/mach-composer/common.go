@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 
 	"github.com/labd/mach-composer/internal/config"
@@ -40,7 +41,7 @@ func registerGenerateFlags(cmd *cobra.Command) {
 func preprocessGenerateFlags() {
 	if _, err := os.Stat(generateFlags.configFile); err != nil {
 		if errors.Is(err, os.ErrNotExist) {
-			fmt.Printf("%s: Config file not found\n", generateFlags.configFile)
+			logrus.Errorf("%s: Config file not found\n", generateFlags.configFile)
 			os.Exit(1)
 		}
 		fmt.Printf("error: %s\n", err.Error())
@@ -49,10 +50,10 @@ func preprocessGenerateFlags() {
 	if generateFlags.varFile != "" {
 		if _, err := os.Stat(generateFlags.varFile); err != nil {
 			if errors.Is(err, os.ErrNotExist) {
-				fmt.Printf("%s: Variables file not found\n", generateFlags.varFile)
+				logrus.Errorf("%s: Variables file not found\n", generateFlags.varFile)
 				os.Exit(1)
 			}
-			fmt.Printf("error: %s\n", err.Error())
+			logrus.Errorf("error: %s\n", err.Error())
 			os.Exit(1)
 		}
 	}
