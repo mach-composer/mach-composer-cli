@@ -171,6 +171,10 @@ func (p *CommercetoolsPlugin) TerraformRenderComponentDependsOn(site string, com
 	return []string{"null_resource.commercetools"}
 }
 
+func (p *CommercetoolsPlugin) TerraformRenderComponentProviders(site string, component string) []string {
+	return []string{}
+}
+
 func renderTemplate(t string, data any) string {
 	tpl, err := template.New("template-1").Parse(t)
 	if err != nil {

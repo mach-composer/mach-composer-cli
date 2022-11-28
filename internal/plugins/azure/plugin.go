@@ -88,6 +88,15 @@ func (p *AzurePlugin) SetSiteEndpointsConfig(site string, data map[string]any) e
 		if url, ok := epData.(string); ok {
 			cfg.URL = url
 		} else {
+			if mapData, ok := epData.(map[string]any); ok {
+				if val, ok := mapData["azure"].(map[string]any); ok {
+					fmt.Println("Warning: the azure node on the endpoint will be removed. Set the children directly in the endpoint")
+					for key, value := range val {
+						mapData[key] = value
+					}
+				}
+			}
+
 			if err := mapstructure.Decode(epData, &cfg); err != nil {
 				return err
 			}

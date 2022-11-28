@@ -349,7 +349,10 @@ func loadComponentsNode(node *yaml.Node, path string) (*yaml.Node, error) {
 	if err = yaml.Unmarshal(body, &result); err != nil {
 		return nil, err
 	}
-	return &result, nil
+	if len(result.Content) != 1 {
+		return nil, fmt.Errorf("Invalid yaml file")
+	}
+	return result.Content[0], nil
 }
 
 func nodeAsMap(n *yaml.Node) (map[string]any, error) {
