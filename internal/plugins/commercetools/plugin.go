@@ -5,6 +5,7 @@ import (
 
 	"github.com/creasty/defaults"
 	"github.com/mitchellh/mapstructure"
+	"github.com/sirupsen/logrus"
 
 	"github.com/labd/mach-composer/internal/plugins/shared"
 )
@@ -44,7 +45,7 @@ func (p *CommercetoolsPlugin) SetSiteConfig(site string, data map[string]any) er
 	}
 
 	if cfg.Frontend != nil {
-		fmt.Println("[WARN] Site", site, "commercetools frontend block is deprecated and will be removed soon")
+		logrus.Warnf("%s: commercetools frontend block is deprecated and will be removed soon\n", site)
 	}
 
 	if err := defaults.Set(&cfg); err != nil {
