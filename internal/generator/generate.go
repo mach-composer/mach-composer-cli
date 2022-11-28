@@ -83,7 +83,6 @@ func renderTerraformConfig(cfg *config.MachConfig, site *config.Site) (string, e
 	backendConfig, err := statePlugin.TerraformRenderStateBackend(site.Identifier)
 	if err != nil {
 		return "", fmt.Errorf("failed to render backend config: %w", err)
-
 	}
 
 	return renderer.tfConfigTemplate.Execute(pongo2.Context{

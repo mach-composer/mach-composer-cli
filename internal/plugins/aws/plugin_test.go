@@ -11,7 +11,6 @@ func intRef(val int) *int {
 }
 
 func TestSetSiteEndpointsConfig(t *testing.T) {
-
 	data := map[string]any{
 		"internal": map[string]any{
 			"url": "example.org",
@@ -28,5 +27,4 @@ func TestSetSiteEndpointsConfig(t *testing.T) {
 	result := plugin.endpointsConfigs["my-site"]["internal"]
 	assert.Equal(t, intRef(5000), result.ThrottlingBurstLimit)
 	assert.Equal(t, intRef(10000), result.ThrottlingRateLimit)
-
 }
