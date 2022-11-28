@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	"github.com/labd/mach-composer/internal/config"
 	"github.com/labd/mach-composer/internal/plugins"
@@ -54,9 +55,11 @@ func TestRender(t *testing.T) {
 		},
 		Plugins: plugins.NewPluginRepository(),
 	}
-	cfg.Plugins.Load("aws", "internal")
+	err := cfg.Plugins.Load("aws", "internal")
+	require.NoError(t, err)
 
-	config.ProcessConfig(&cfg)
+	err = config.ProcessConfig(&cfg)
+	require.NoError(t, err)
 
 	body, err := Render(&cfg, &cfg.Sites[0])
 	assert.NoError(t, err)

@@ -304,7 +304,10 @@ func parseComponentsNode(cfg *MachConfig, node *yaml.Node, source string) error 
 	}
 	for i := range cfg.Components {
 		c := &cfg.Components[i]
-		cloudPlugin.SetComponentEndpointsConfig(c.Name, c.Endpoints)
+		err := cloudPlugin.SetComponentEndpointsConfig(c.Name, c.Endpoints)
+		if err != nil {
+			return err
+		}
 	}
 
 	knownKeys := []string{
