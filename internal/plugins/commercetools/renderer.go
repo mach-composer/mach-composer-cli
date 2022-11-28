@@ -11,7 +11,7 @@ import (
 //go:embed templates/*
 var templates embed.FS
 
-func Render(cfg *SiteConfig) (string, error) {
+func renderResources(cfg *SiteConfig) (string, error) {
 	templateSet := pongo2.NewSet("", &shared.EmbedLoader{Content: templates})
 	template := pongo2.Must(templateSet.FromFile("main.tf"))
 
