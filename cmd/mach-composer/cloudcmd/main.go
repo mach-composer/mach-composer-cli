@@ -139,7 +139,12 @@ func initConfig() {
 
 	viper.AutomaticEnv()
 	viper.SetEnvPrefix("MCC")
-	viper.SafeWriteConfig()
+
+	err := viper.SafeWriteConfig()
+	if err != nil {
+		fmt.Printf("Error encountered while writing configuration file: %s", err)
+		os.Exit(1)
+	}
 
 	viper.SetDefault("api-url", "https://api.mach.cloud")
 	viper.SetDefault("auth-url", "https://auth.mach.cloud")
@@ -158,7 +163,7 @@ func initConfig() {
 			}
 
 			if viper.IsSet(f.Name) && viper.GetString(f.Name) != "" {
-				cmd.Flags().Set(f.Name, viper.GetString(f.Name))
+				Must(cmd.Flags().Set(f.Name, viper.GetString(f.Name)))
 			}
 		})
 	}
