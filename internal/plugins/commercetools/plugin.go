@@ -114,7 +114,7 @@ func (p *CommercetoolsPlugin) TerraformRenderResources(site string) (string, err
 		return "", nil
 	}
 
-	content, err := Render(cfg)
+	content, err := renderResources(cfg)
 	if err != nil {
 		return "", err
 	}

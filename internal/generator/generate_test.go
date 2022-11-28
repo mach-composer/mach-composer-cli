@@ -10,7 +10,7 @@ import (
 	"github.com/labd/mach-composer/internal/plugins"
 )
 
-func TestRender(t *testing.T) {
+func TestRenderSite(t *testing.T) {
 	cfg := config.MachConfig{
 		MachComposer: config.MachComposer{
 			Version: "1.0.0",
@@ -61,7 +61,7 @@ func TestRender(t *testing.T) {
 	err = config.ProcessConfig(&cfg)
 	require.NoError(t, err)
 
-	body, err := Render(&cfg, &cfg.Sites[0])
+	body, err := renderSite(&cfg, &cfg.Sites[0])
 	assert.NoError(t, err)
 	assert.NotEmpty(t, body)
 }

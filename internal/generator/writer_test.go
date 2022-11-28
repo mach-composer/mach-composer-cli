@@ -3,8 +3,9 @@ package generator
 import (
 	"testing"
 
-	"github.com/labd/mach-composer/internal/config"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/labd/mach-composer/internal/config"
 )
 
 func TestFileLocations(t *testing.T) {

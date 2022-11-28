@@ -20,19 +20,6 @@ type GenerateOptions struct {
 	Site       string
 }
 
-func FileLocations(cfg *config.MachConfig, options *GenerateOptions) map[string]string {
-	path := strings.TrimSuffix(filepath.Base(cfg.Filename), filepath.Ext(cfg.Filename))
-	sitesPath := filepath.Join(options.OutputPath, path)
-
-	locations := map[string]string{}
-
-	for i := range cfg.Sites {
-		site := cfg.Sites[i]
-		locations[site.Identifier] = filepath.Join(sitesPath, site.Identifier)
-	}
-	return locations
-}
-
 func WriteFiles(cfg *config.MachConfig, options *GenerateOptions) (map[string]string, error) {
 	locations := FileLocations(cfg, options)
 	for i := range cfg.Sites {
@@ -47,14 +34,14 @@ func WriteFiles(cfg *config.MachConfig, options *GenerateOptions) (map[string]st
 
 		fmt.Printf("Generating %s\n", filename)
 
-		body, err := Render(cfg, &site)
+		body, err := renderSite(cfg, &site)
 		if err != nil {
 			return nil, err
 		}
 
 		// Format and validate the file
-		formatted := FormatFile([]byte(body))
-		if err := ValidateFile(formatted); err != nil {
+		formatted := formatFile([]byte(body))
+		if err := validateFile(formatted); err != nil {
 			logrus.Error("The generated terraform code is invalid. " +
 				"This is a bug in mach composer. Please report the issue at " +
 				"https://github.com/labd/mach-composer")
@@ -81,7 +68,20 @@ func WriteFiles(cfg *config.MachConfig, options *GenerateOptions) (map[string]st
 	return locations, nil
 }
 
-func FormatFile(src []byte) []byte {
+func FileLocations(cfg *config.MachConfig, options *GenerateOptions) map[string]string {
+	path := strings.TrimSuffix(filepath.Base(cfg.Filename), filepath.Ext(cfg.Filename))
+	sitesPath := filepath.Join(options.OutputPath, path)
+
+	locations := map[string]string{}
+
+	for i := range cfg.Sites {
+		site := cfg.Sites[i]
+		locations[site.Identifier] = filepath.Join(sitesPath, site.Identifier)
+	}
+	return locations
+}
+
+func formatFile(src []byte) []byte {
 	// Trim whitespaces prefix
 	regex := regexp.MustCompile(`(?m)^\s*`)
 	src = regex.ReplaceAll(src, []byte(""))
@@ -108,7 +108,7 @@ func FormatFile(src []byte) []byte {
 	return src
 }
 
-func ValidateFile(src []byte) error {
+func validateFile(src []byte) error {
 	parser := hclparse.NewParser()
 
 	_, diags := parser.ParseHCL(src, "site.tf")
