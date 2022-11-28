@@ -1,7 +1,10 @@
 package config
 
 import (
+	"fmt"
 	"log"
+	"os"
+	"path/filepath"
 	"strings"
 
 	"gopkg.in/yaml.v3"
@@ -17,16 +20,15 @@ type MachConfig struct {
 	Sites        []Site       `yaml:"sites"`
 	Components   []Component  `yaml:"components"`
 
-	ExtraFiles map[string][]byte
-	Plugins    *plugins.PluginRepository `yaml:"-"`
-
-	Variables   *variables.Variables
-	IsEncrypted bool
+	extraFiles  map[string][]byte         `yaml:"-"`
+	Plugins     *plugins.PluginRepository `yaml:"-"`
+	Variables   *variables.Variables      `yaml:"-"`
+	IsEncrypted bool                      `yaml:"-"`
 }
 
 func NewMachConfig() *MachConfig {
 	cfg := &MachConfig{}
-	cfg.ExtraFiles = make(map[string][]byte, 0)
+	cfg.extraFiles = make(map[string][]byte, 0)
 	return cfg
 }
 
@@ -46,6 +48,20 @@ func (c *MachConfig) GetComponent(name string) *Component {
 		}
 	}
 	return nil
+}
+
+func (c *MachConfig) addFileToConfig(filename string) error {
+	b, err := os.ReadFile(filename)
+	if err != nil {
+		return fmt.Errorf("error reading variables file: %w", err)
+	}
+	filename = filepath.Base(filename)
+	c.extraFiles[filename] = b
+	return nil
+}
+
+func (c *MachConfig) GetFiles() map[string][]byte {
+	return c.extraFiles
 }
 
 type _RawMachConfig struct {

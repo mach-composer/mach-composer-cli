@@ -60,9 +60,20 @@ func TestParse(t *testing.T) {
 	vars.Set("foo", "foobar")
 	vars.Set("foo.bar", "1")
 	vars.Set("bar.foo", "2")
-	config, err := parseConfig(context.Background(), data, vars, "main.yml")
+	config, err := ParseConfig(context.Background(), data, vars, "main.yml")
 	if err != nil {
 		t.Error(err)
+	}
+
+	component := Component{
+		Name:         "your-component",
+		Source:       "git::https://github.com/<username>/<your-component>.git//terraform",
+		Version:      "0.1.0",
+		Branch:       "",
+		Integrations: []string{"aws", "commercetools"},
+		Endpoints: map[string]string{
+			"internal": "internal",
+		},
 	}
 
 	expected := &MachConfig{
@@ -97,23 +108,13 @@ func TestParse(t *testing.T) {
 						Secrets: map[string]any{
 							"MY_SECRET": "secretvalue",
 						},
+						Definition: &component,
 					},
 				},
 			},
 		},
-		Components: []Component{
-			{
-				Name:         "your-component",
-				Source:       "git::https://github.com/<username>/<your-component>.git//terraform",
-				Version:      "0.1.0",
-				Branch:       "",
-				Integrations: []string{"aws", "commercetools"},
-				Endpoints: map[string]string{
-					"internal": "internal",
-				},
-			},
-		},
-		ExtraFiles: map[string][]byte{},
+		Components: []Component{component},
+		extraFiles: map[string][]byte{},
 		Variables:  vars,
 	}
 	assert.Equal(t, expected.Global, config.Global)
@@ -165,7 +166,7 @@ func TestParseMissingVars(t *testing.T) {
 
 	// Empty variables, it should fail because var.foo cannot be resolved
 	vars := variables.Variables{}
-	_, err := parseConfig(context.Background(), data, &vars, "main.yml")
+	_, err := ParseConfig(context.Background(), data, &vars, "main.yml")
 	assert.Error(t, err)
 }
 
@@ -209,7 +210,8 @@ func TestParseComponentsNodeInclude(t *testing.T) {
       version: 0.1.0
 	`)
 
-	utils.AFS.WriteFile("components.yml", []byte(content), 0644)
+	err := utils.AFS.WriteFile("components.yml", []byte(content), 0644)
+	require.NoError(t, err)
 
 	var intermediate struct {
 		Components yaml.Node `yaml:"components"`
@@ -219,7 +221,7 @@ func TestParseComponentsNodeInclude(t *testing.T) {
         components: ${include(components.yml)}
   `))
 
-	err := yaml.Unmarshal(data, &intermediate)
+	err = yaml.Unmarshal(data, &intermediate)
 	require.NoError(t, err)
 
 	cfg := &MachConfig{

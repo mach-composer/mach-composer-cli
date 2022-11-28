@@ -6,17 +6,17 @@
 module "{{ component.Name }}" {
   source            = "{{ definition.Source|safe }}{% if definition.UseVersionReference() %}?ref={{ definition.Version }}{% endif %}"
 
-  {% if component.HasCloudIntegration() || componentVariables %}
+  {% if component.HasCloudIntegration() || component.Variables %}
   variables = {
-    {% for key, value in componentVariables -%}
+    {% for key, value in component.Variables -%}
     {{ key }} = {{ value|tf }}
     {% endfor %}
   }
   {% endif %}
 
-  {% if component.HasCloudIntegration() || componentSecrets -%}
+  {% if component.HasCloudIntegration() || component.Secrets -%}
   secrets = {
-    {% for key, value in componentSecrets -%}
+    {% for key, value in component.Secrets -%}
     {{ key }} = {{ value|tf }}
     {% endfor %}
   }
@@ -24,11 +24,10 @@ module "{{ component.Name }}" {
 
   {% if component.HasCloudIntegration() -%}
   component_version       = "{{ definition.Version }}"
-  environment             = "{{ global.Environment }}"
-  site                    = "{{ site.Identifier }}"
+  environment             = "{{ siteEnvironment }}"
+  site                    = "{{ siteIdentifier }}"
   tags                    = local.tags
   {%- endif %}
-
 
 
   {% for v in pluginVariables %}
