@@ -6,18 +6,18 @@
 module "{{ component.Name }}" {
   source            = "{{ definition.Source|safe }}{% if definition.UseVersionReference() %}?ref={{ definition.Version }}{% endif %}"
 
-  {% if component.HasCloudIntegration() || component.Variables %}
+  {% if component.HasCloudIntegration() || componentVariables %}
   variables = {
-    {% for key, value in component.Variables -%}
-    {{ key }} = {{ value|interpolate }}
+    {% for key, value in componentVariables -%}
+    {{ key }} = {{ value|tf }}
     {% endfor %}
   }
   {% endif %}
 
-  {% if component.HasCloudIntegration() || component.Secrets -%}
+  {% if component.HasCloudIntegration() || componentSecrets -%}
   secrets = {
-    {% for key, value in component.Secrets -%}
-    {{ key }} = {{ value|interpolate }}
+    {% for key, value in componentSecrets -%}
+    {{ key }} = {{ value|tf }}
     {% endfor %}
   }
   {%- endif %}

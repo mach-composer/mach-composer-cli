@@ -22,7 +22,7 @@ resource "commercetools_project_settings" "project" {
 {%- for channel in commercetools.Channels %}
 resource "commercetools_channel" "{{ channel.Key }}" {
     key = "{{ channel.Key }}"
-    roles = {{ channel.Roles|ctvalue }}
+    roles = {{ channel.Roles|tf }}
 
     {%- if channel.Name %}
     name = {
@@ -52,7 +52,7 @@ resource "commercetools_tax_category" "{{ tax_category.Key|lower }}" {
 resource "commercetools_tax_category_rate" "{{ rate.Name|slugify }}" {
   tax_category_id = commercetools_tax_category.{{ tax_category.Key|lower }}.id
   name = "{{ rate.Name }}"
-  amount = {{ rate.Amount|ctvalue }}
+  amount = {{ rate.Amount|tf }}
   country = "{{ rate.Country }}"
   included_in_price = {{ rate.IncludedInPrice | string | lower }}
 }
@@ -69,7 +69,7 @@ resource "commercetools_tax_category_rate" "{{ rate.Name|slugify }}" {
   resource "commercetools_tax_category_rate" "{{ tax.Country|lower }}_vat" {
     tax_category_id = commercetools_tax_category.standard.id
     name = "{{ tax.Name }}"
-    amount = {{ tax.Amount|ctvalue }}
+    amount = {{ tax.Amount|tf }}
     country = "{{ tax.Country }}"
     included_in_price = true
   }
@@ -79,12 +79,12 @@ resource "commercetools_tax_category_rate" "{{ rate.Name|slugify }}" {
 {%- for zone in commercetools.Zones %}
 resource "commercetools_shipping_zone" "{{ zone.Name|slugify }}" {
   name = "{{ zone.Name }}"
-  description = {{ zone.Description|ctvalue }}
+  description = {{ zone.Description|tf }}
   {% for location in zone.Locations %}
   location {
-      country = {{ location.Country|ctvalue }}
+      country = {{ location.Country|tf }}
       {% if location.State %}
-      state = {{ location.State|ctvalue }}
+      state = {{ location.State|tf }}
       {% endif %}
   }
   {% endfor %}

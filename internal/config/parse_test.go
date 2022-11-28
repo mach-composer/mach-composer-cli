@@ -11,6 +11,7 @@ import (
 
 	"github.com/labd/mach-composer/internal/plugins"
 	"github.com/labd/mach-composer/internal/utils"
+	"github.com/labd/mach-composer/internal/variables"
 )
 
 func TestParse(t *testing.T) {
@@ -55,11 +56,11 @@ func TestParse(t *testing.T) {
             - commercetools
     `))
 
-	vars := Variables{}
+	vars := variables.NewVariables()
 	vars.Set("foo", "foobar")
 	vars.Set("foo.bar", "1")
 	vars.Set("bar.foo", "2")
-	config, err := parseConfig(context.Background(), data, &vars, "main.yml")
+	config, err := parseConfig(context.Background(), data, vars, "main.yml")
 	if err != nil {
 		t.Error(err)
 	}
@@ -113,15 +114,7 @@ func TestParse(t *testing.T) {
 			},
 		},
 		ExtraFiles: map[string][]byte{},
-		Variables: &Variables{
-			vars: map[string]string{
-				"bar.foo": "2",
-				"foo":     "foobar",
-				"foo.bar": "1",
-			},
-			Filepath:  "",
-			Encrypted: false,
-		},
+		Variables:  vars,
 	}
 	assert.Equal(t, expected.Global, config.Global)
 	assert.Equal(t, expected.Sites, config.Sites)
@@ -171,7 +164,7 @@ func TestParseMissingVars(t *testing.T) {
     `))
 
 	// Empty variables, it should fail because var.foo cannot be resolved
-	vars := Variables{}
+	vars := variables.Variables{}
 	_, err := parseConfig(context.Background(), data, &vars, "main.yml")
 	assert.Error(t, err)
 }

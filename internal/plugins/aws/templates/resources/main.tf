@@ -27,7 +27,7 @@ provider "aws" {
   {% if provider.DefaultTags %}
   default_tags {
       tags = {{ provider.DefaultTags|tf }}
-  }
+}
   {% elif aws.DefaultTags %}
   default_tags {
       tags = {{ aws.DefaultTags|tf }}

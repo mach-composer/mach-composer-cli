@@ -16,13 +16,14 @@ import (
 
 	"github.com/labd/mach-composer/internal/plugins"
 	"github.com/labd/mach-composer/internal/utils"
+	"github.com/labd/mach-composer/internal/variables"
 )
 
 func Load(ctx context.Context, filename string, varFilename string) (*MachConfig, error) {
-	var vars *Variables
+	var vars *variables.Variables
 	if varFilename != "" {
 		var err error
-		vars, err = loadVariables(ctx, varFilename)
+		vars, err = variables.NewVariablesFromFile(ctx, varFilename)
 		if err != nil {
 			return nil, err
 		}
@@ -91,7 +92,7 @@ func getSchemaVersion(data []byte) (int, error) {
 
 // parseConfig is responsible for parsing a mach composer yaml config file and
 // creating the resulting MachConfig struct.
-func parseConfig(ctx context.Context, data []byte, vars *Variables, filename string) (*MachConfig, error) {
+func parseConfig(ctx context.Context, data []byte, vars *variables.Variables, filename string) (*MachConfig, error) {
 	// Decode the yaml in an intermediate config file
 	intermediate := &_RawMachConfig{}
 	err := yaml.Unmarshal(data, intermediate)
@@ -420,4 +421,27 @@ func loadDefaultPlugins(r *plugins.PluginRepository) {
 			panic(err)
 		}
 	}
+}
+
+func processVariables(ctx context.Context, vars *variables.Variables, rawConfig *_RawMachConfig) (*variables.Variables, error) {
+	if vars == nil && rawConfig.MachComposer.VariablesFile != "" {
+		var err error
+		vars, err = variables.NewVariablesFromFile(ctx, rawConfig.MachComposer.VariablesFile)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	if vars == nil {
+		vars = variables.NewVariables()
+	}
+
+	if err := vars.InterpolateNode(&rawConfig.Sites); err != nil {
+		return nil, err
+	}
+	if err := vars.InterpolateNode(&rawConfig.Components); err != nil {
+		return nil, err
+	}
+
+	return vars, nil
 }
