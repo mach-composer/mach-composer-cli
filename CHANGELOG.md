@@ -1,6 +1,9 @@
 # Changelog
 
 ## 2.4.0 (unreleased)
+- Major rewrite to move to a plugin based system. The plugins are for now all
+  built-in and part of the mach composer release but will in the future be
+  moved to external plugins.
 - Use `go-git` to retrieve the git log instead of executing `git` directly. This
   fixes (#188)
 - Remove panic() calls in the codebase and handle errors properly by printing
