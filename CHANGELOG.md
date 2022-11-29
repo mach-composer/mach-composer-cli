@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.4.2 (2022-11-29)
+- Validate the AWS Account ID as a string, fixes an issue if the account starts
+  with 0.
 ## 2.4.1 (2022-11-29)
 - Update build process to include arm docker images
 

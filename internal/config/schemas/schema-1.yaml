@@ -665,7 +665,7 @@ definitions:
       - region
     properties:
       account_id:
-        type: integer
+        type: string
       region:
         type: string
       deploy_role_name:
