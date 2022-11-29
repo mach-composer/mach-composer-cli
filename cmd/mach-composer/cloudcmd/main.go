@@ -128,9 +128,10 @@ func init() {
 func initConfig() {
 	configPath := path.Join(xdg.ConfigHome, "mach-composer")
 	if _, err := os.Stat(configPath); os.IsNotExist(err) {
-		err = os.MkdirAll(configPath, os.ModePerm)
-		fmt.Printf("Error encountered while creating configuration file: %s", err)
-		os.Exit(1)
+		if err := os.MkdirAll(configPath, os.ModePerm); err != nil {
+			fmt.Printf("Error encountered while creating configuration file: %s", err)
+			os.Exit(1)
+		}
 	}
 
 	viper.SetConfigName("mach-composer")
