@@ -36,12 +36,13 @@ var listProjectCmd = &cobra.Command{
 }
 
 var createProjectCmd = &cobra.Command{
-	Use:   "create-project",
+	Use:   "create-project [key] [name]",
 	Short: "Create a new Project",
+	Args:  cobra.ExactArgs(2),
 	RunE: func(cmd *cobra.Command, args []string) error {
-		name := MustGetString(cmd, "name")
-		key := MustGetString(cmd, "key")
 		organization := MustGetString(cmd, "organization")
+		key := args[0]
+		name := args[1]
 
 		client, ctx := getClient(cmd)
 		resource, _, err := (client.
@@ -56,7 +57,7 @@ var createProjectCmd = &cobra.Command{
 			return handleError(err)
 		}
 
-		cmd.Printf("Created new component: %s\n", resource.GetKey())
+		cmd.Printf("Created new project: %s\n", resource.GetKey())
 		return nil
 	},
 }
@@ -64,11 +65,7 @@ var createProjectCmd = &cobra.Command{
 func init() {
 	// Create project
 	createProjectCmd.Flags().String("organization", "", "organization")
-	createProjectCmd.Flags().String("name", "", "name of the project")
-	createProjectCmd.Flags().String("key", "", "key for the project")
 	Must(createProjectCmd.MarkFlagRequired("organization"))
-	Must(createProjectCmd.MarkFlagRequired("name"))
-	Must(createProjectCmd.MarkFlagRequired("key"))
 	CloudCmd.AddCommand(createProjectCmd)
 
 	// List projects
