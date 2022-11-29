@@ -1,3 +1,4 @@
+target "docker-metadata-action" {}
 
 target "cli" {
   inherits   = ["docker-metadata-action"]
