@@ -8,8 +8,7 @@ on:
       - 'v*'
 
 env:
-  REGISTRY: ghcr.io
-  IMAGE_NAME: labd/mach-composer/mach
+  IMAGE_NAME: ghcr.io/labd/mach-composer/mach-composer
 
 jobs:
   goreleaser:
@@ -76,15 +75,14 @@ jobs:
         with:
           flavor: |
             suffix=${{ steps.flavor.outputs.FLAVOR }}
-          images: |
-            ghcr.io/labd/mach-composer/mach
+            latest=false
+          images: ${{ env.IMAGE_NAME }}
           tags: |
             type=ref,event=branch
             type=ref,event=pr
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
             type=semver,pattern={{major}}
-            type=sha
 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v2
@@ -100,7 +98,6 @@ jobs:
             ./docker-bake.hcl
             ${{ steps.meta.outputs.bake-file }}
           targets: default-${{ matrix.cloud }}
-          tags: ${{ steps.meta.outputs.tags }}
           set: |
             base.args.GORELEASER_ARGS=--snapshot
             base.args.TERRAFORM_VERSION=${{ matrix.terraform }}
@@ -121,8 +118,7 @@ jobs:
         with:
           flavor: |
             suffix=-cli
-          images: |
-            ghcr.io/labd/mach-composer/mach
+          images: ${{ env.IMAGE_NAME }}
           tags: |
             type=ref,event=branch
             type=ref,event=pr
