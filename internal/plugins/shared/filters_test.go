@@ -3,7 +3,6 @@ package shared
 import (
 	"testing"
 
-	"github.com/davecgh/go-spew/spew"
 	"github.com/flosch/pongo2/v5"
 	"github.com/stretchr/testify/assert"
 )
@@ -27,7 +26,6 @@ func TestFilterTFValue(t *testing.T) {
 	for _, tc := range tests {
 		value, err := FilterTFValue(tc.input, nil)
 		assert.Nil(t, err)
-		spew.Dump(value)
 		assert.True(t, tc.output.EqualValueTo(value))
 	}
 }
