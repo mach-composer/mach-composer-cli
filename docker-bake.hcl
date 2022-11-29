@@ -1,9 +1,3 @@
-target "docker-metadata-action" {
-  tags = [
-    "ghcr.io/labd/mach-composer/mach:feature-docker-tags",
-    "ghcr.io/labd/mach-composer/mach:sha-419f767"
-  ]
-}
 
 target "cli" {
   inherits   = ["docker-metadata-action"]
