@@ -9,7 +9,7 @@ target "cli-arm64" {
   context    = "./"
   dockerfile = "docker/cli.Dockerfile"
   platforms = [
-    "linux/arm64",
+    "linux/amd64",
   ]
   args = {
     GOOS   = "linux"
