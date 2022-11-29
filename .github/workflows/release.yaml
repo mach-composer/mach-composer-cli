@@ -100,6 +100,7 @@ jobs:
             ./docker-bake.hcl
             ${{ steps.meta.outputs.bake-file }}
           targets: default-${{ matrix.cloud }}
+          tags: ${{ steps.meta.outputs.tags }}
           set: |
             base.args.GORELEASER_ARGS=--snapshot
             base.args.TERRAFORM_VERSION=${{ matrix.terraform }}
