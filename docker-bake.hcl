@@ -6,6 +6,7 @@ target "cli" {
   dockerfile = "docker/cli.Dockerfile"
   platforms = [
     "linux/amd64",
+    "linux/arm64/v8",
   ]
 }
 
@@ -15,6 +16,7 @@ target "base" {
   dockerfile = "docker/base.Dockerfile"
   platforms = [
     "linux/amd64",
+    "linux/arm64/v8",
   ]
   target = "base"
 }
