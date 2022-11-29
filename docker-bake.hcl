@@ -20,6 +20,7 @@ target "base" {
 }
 
 target "default-all" {
+  inherits = ["docker-metadata-action"]
   contexts = {
     base = "target:base"
   }
@@ -27,6 +28,7 @@ target "default-all" {
 }
 
 target "default-aws" {
+  inherits = ["docker-metadata-action"]
   contexts = {
     base = "target:base"
   }
@@ -34,6 +36,7 @@ target "default-aws" {
 }
 
 target "default-azure" {
+  inherits = ["docker-metadata-action"]
   contexts = {
     base = "target:base"
   }
