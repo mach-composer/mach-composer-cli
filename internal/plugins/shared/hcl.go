@@ -1,6 +1,7 @@
 package shared
 
 import (
+	"fmt"
 	"reflect"
 	"regexp"
 	"strings"
@@ -46,7 +47,9 @@ func transformToCTY(source any) cty.Value {
 		result := map[string]cty.Value{}
 		for _, e := range val.MapKeys() {
 			v := val.MapIndex(e)
-			result[e.String()] = transformToCTY(v.Interface())
+			k := fmt.Sprintf("%v", e.Interface())
+			result[k] = transformToCTY(v.Interface())
+
 		}
 		return cty.ObjectVal(result)
 	}
