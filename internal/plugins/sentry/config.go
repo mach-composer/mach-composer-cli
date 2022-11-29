@@ -33,7 +33,7 @@ func (c *SiteConfig) extendGlobalConfig(g *GlobalConfig) *SiteConfig {
 	cfg := &SiteConfig{
 		BaseConfig: g.BaseConfig,
 		Project:    g.Project,
-		Components: map[string]ComponentConfig{},
+		Components: c.Components,
 	}
 	if c.DSN != "" {
 		cfg.DSN = c.DSN
