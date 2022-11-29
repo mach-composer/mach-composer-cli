@@ -25,6 +25,8 @@ func TestParse(t *testing.T) {
             aws_remote_state:
               bucket: "your bucket"
               key_prefix: mach
+			providers:
+				aws: 3.0.0
           cloud: aws
         sites:
         - identifier: my-site
@@ -84,6 +86,11 @@ func TestParse(t *testing.T) {
 			Environment:            "test",
 			Cloud:                  "aws",
 			TerraformStateProvider: "aws",
+			TerraformConfig: &TerraformConfig{
+				Providers: map[string]string{
+					"aws": "3.0.0",
+				},
+			},
 		},
 		Sites: []SiteConfig{
 			{
