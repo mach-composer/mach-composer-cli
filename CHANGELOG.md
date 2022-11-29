@@ -1,6 +1,6 @@
 # Changelog
 
-## 2.4.0 (unreleased)
+## 2.4.0 (2022-11-29)
 - Major rewrite to move to a plugin based system. The plugins are for now all
   built-in and part of the mach composer release but will in the future be
   moved to external plugins.
