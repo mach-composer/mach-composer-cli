@@ -18,19 +18,7 @@ func MachConfigUpdater(src []byte, updateSet *UpdateSet) []byte {
 		log.Fatalln(err)
 	}
 
-	// Create a mapping where the key is the component name and the value the
-	// yaml node of the component. We do this by iterating all component children
-	// and searching for the `name` tag.
-	nodes := map[string]*yaml.Node{}
-	for _, cn := range data.Components.Content {
-		for i, n := range cn.Content {
-			if n.Tag == "!!str" && n.Value == "name" {
-				name := cn.Content[i+1].Value
-				nodes[name] = cn
-				break
-			}
-		}
-	}
+	nodes := mapComponentNodes(&data.Components)
 
 	// Walk through the updated components and search the corresponding yaml node
 	// via the previously created mapping. Withing the node search for the
@@ -72,6 +60,23 @@ func MachConfigUpdater(src []byte, updateSet *UpdateSet) []byte {
 
 	output := strings.Join(lines, "\n") + "\n"
 	return []byte(output)
+}
+
+// mapComponentNodes creates a mapping where the key is the component name and
+// the value the yaml node of the component. We do this by iterating all
+// component children and searching for the `name` tag.
+func mapComponentNodes(node *yaml.Node) map[string]*yaml.Node {
+	nodes := map[string]*yaml.Node{}
+	for _, cn := range node.Content {
+		for i, n := range cn.Content {
+			if n.Tag == "!!str" && n.Value == "name" {
+				name := cn.Content[i+1].Value
+				nodes[name] = cn
+				break
+			}
+		}
+	}
+	return nodes
 }
 
 // MachFileWriter updates the contents of a mach file with the updated
