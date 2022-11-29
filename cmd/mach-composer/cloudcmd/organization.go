@@ -4,7 +4,6 @@ import (
 	"os"
 	"strings"
 
-	"github.com/davecgh/go-spew/spew"
 	"github.com/mach-composer/mcc-sdk-go/mccsdk"
 	"github.com/spf13/cobra"
 )
@@ -47,7 +46,7 @@ var createOrganizationCmd = &cobra.Command{
 
 		client, ctx := getClient(cmd)
 
-		organization, _, err := (client.
+		resource, _, err := (client.
 			AccountManagementApi.
 			OrganizationCreate(ctx).
 			OrganizationDraft(organizationDraft).
@@ -56,7 +55,7 @@ var createOrganizationCmd = &cobra.Command{
 			return handleError(err)
 		}
 
-		spew.Dump(organization)
+		cmd.Printf("Created new organization: %s\n", resource.GetKey())
 		return nil
 	},
 }
