@@ -1,13 +1,13 @@
-FROM golang:alpine AS builder
+FROM goreleaser/goreleaser:v1.13.0 AS builder
+ARG GORELEASER_ARGS
+ARG GOOS=linux
+ARG GOARCH=amd64
 
-RUN apk update && apk add --no-cache git
-RUN apk add --no-cache make
-RUN apk add --no-cache ca-certificates
-WORKDIR /src
-RUN git clone https://github.com/labd/mach-composer.git /src
-RUN make build
+COPY . /code/
+WORKDIR /code/
+RUN GOOS=${GOOS} GOARCH=${GOARCH} goreleaser build --single-target --output /code/dist/mach-composer --skip-validate ${GORELEASER_ARGS}
 
 FROM scratch
 COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
-COPY --from=builder /src/bin/mach-composer /bin/mach-composer
-ENTRYPOINT ["/bin/mach-composer"]
+COPY --from=builder /code/dist/mach-composer /mach-composer
+ENTRYPOINT ["/mach-composer"]

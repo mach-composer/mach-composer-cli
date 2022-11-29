@@ -1,13 +1,32 @@
 target "docker-metadata-action" {}
 
-target "cli" {
+group "cli" {
+  targets = ["cli-arm64", "cli-amd64"]
+}
+
+target "cli-arm64" {
+  inherits   = ["docker-metadata-action"]
+  context    = "./"
+  dockerfile = "docker/cli.Dockerfile"
+  platforms = [
+    "linux/arm64",
+  ]
+  args = {
+    GOOS   = "linux"
+    GOARCH = "arm64"
+  }
+}
+target "cli-amd64" {
   inherits   = ["docker-metadata-action"]
   context    = "./"
   dockerfile = "docker/cli.Dockerfile"
   platforms = [
     "linux/amd64",
-    "linux/arm64/v8",
   ]
+  args = {
+    GOOS   = "linux"
+    GOARCH = "amd64"
+  }
 }
 
 target "base" {
@@ -16,7 +35,6 @@ target "base" {
   dockerfile = "docker/base.Dockerfile"
   platforms = [
     "linux/amd64",
-    "linux/arm64/v8",
   ]
   target = "base"
 }
