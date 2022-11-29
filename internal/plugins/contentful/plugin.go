@@ -88,7 +88,7 @@ func (p *ContentfulPlugin) TerraformRenderProviders(site string) (string, error)
 		contentful = {
 			source = "labd/contentful"
 			version = "%s"
-		}`, p.provider)
+		}`, shared.VersionConstraint(p.provider))
 	return result, nil
 }
 

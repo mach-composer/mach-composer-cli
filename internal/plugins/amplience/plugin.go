@@ -115,7 +115,7 @@ func (p *AmpliencePlugin) TerraformRenderProviders(site string) (string, error) 
 	amplience = {
 		source = "labd/amplience"
 		version = "%s"
-	}`, p.provider)
+	}`, shared.VersionConstraint(p.provider))
 	return result, nil
 }
 

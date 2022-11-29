@@ -175,7 +175,7 @@ func (p *AzurePlugin) TerraformRenderProviders(site string) (string, error) {
 	result := fmt.Sprintf(`
 		azure = {
 			version = "%s"
-		}`, p.provider)
+		}`, shared.VersionConstraint(p.provider))
 	return result, nil
 }
 

@@ -117,7 +117,7 @@ func (p *CommercetoolsPlugin) TerraformRenderProviders(site string) (string, err
 		source = "labd/commercetools"
 		version = "%s"
 		}
-	`, p.provider)
+	`, shared.VersionConstraint(p.provider))
 	return result, nil
 }
 

@@ -168,7 +168,7 @@ func (p *AWSPlugin) TerraformRenderProviders(site string) (string, error) {
 	result := fmt.Sprintf(`
 		aws = {
 			version = "%s"
-		}`, p.provider)
+		}`, shared.VersionConstraint(p.provider))
 	return result, nil
 }
 

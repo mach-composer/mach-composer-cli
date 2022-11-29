@@ -98,7 +98,7 @@ func (p *SentryPlugin) TerraformRenderProviders(site string) (string, error) {
 		sentry = {
 			source = "jianyuan/sentry"
 			version = "%s"
-		}`, p.provider)
+		}`, shared.VersionConstraint(p.provider))
 	return result, nil
 }
 
@@ -184,7 +184,7 @@ func (p *SentryPlugin) TerraformRenderComponentVars(site string, component strin
 }
 
 func (p *SentryPlugin) TerraformRenderComponentDependsOn(site string, component string) ([]string, error) {
-	return []string{}, nil // TODO. sentry_key.component
+	return []string{}, nil
 }
 
 func (p *SentryPlugin) TerraformRenderComponentProviders(site string, component string) ([]string, error) {
