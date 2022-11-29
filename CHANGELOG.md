@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.4.4 (2022-11-29)
+- Fix another config inheritance issue in the sentry plugin
+
 ## 2.4.3 (2022-11-29)
 - Fix serialization issue for variables when the key was not a string. We now
   force keys of maps to be strings.
