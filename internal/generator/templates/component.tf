@@ -7,21 +7,12 @@ module "{{ component.Name }}" {
   source            = "{{ definition.Source|safe }}{% if definition.UseVersionReference() %}?ref={{ definition.Version }}{% endif %}"
 
   {% if component.HasCloudIntegration() || component.Variables %}
-  variables = {
-    {% for key, value in component.Variables -%}
-    {{ key }} = {{ value|tf }}
-    {% endfor %}
-  }
+    {{ componentVariables|safe }}
   {% endif %}
 
   {% if component.HasCloudIntegration() || component.Secrets -%}
-  secrets = {
-    {% for key, value in component.Secrets -%}
-    {{ key }} = {{ value|tf }}
-    {% endfor %}
-  }
-  {%- endif %}
-
+    {{ componentSecrets|safe }}
+  {% endif %}
   {% if component.HasCloudIntegration() -%}
   component_version       = "{{ definition.Version }}"
   environment             = "{{ siteEnvironment }}"

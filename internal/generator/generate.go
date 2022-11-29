@@ -193,13 +193,15 @@ func renderComponent(cfg *config.MachConfig, site *config.SiteConfig, component 
 	}
 
 	return renderer.componentTemplate.Execute(pongo2.Context{
-		"siteEnvironment": cfg.Global.Environment,
-		"siteIdentifier":  site.Identifier,
-		"component":       component,
-		"definition":      component.Definition,
-		"pluginVariables": pVars,
-		"pluginResources": pResources,
-		"pluginProviders": pProviders,
-		"pluginDependsOn": pDependsOn,
+		"siteEnvironment":    cfg.Global.Environment,
+		"siteIdentifier":     site.Identifier,
+		"component":          component,
+		"componentVariables": shared.SerializeToHCL("variables", component.Variables),
+		"componentSecrets":   shared.SerializeToHCL("secrets", component.Secrets),
+		"definition":         component.Definition,
+		"pluginVariables":    pVars,
+		"pluginResources":    pResources,
+		"pluginProviders":    pProviders,
+		"pluginDependsOn":    pDependsOn,
 	})
 }

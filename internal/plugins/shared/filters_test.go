@@ -3,6 +3,7 @@ package shared
 import (
 	"testing"
 
+	"github.com/davecgh/go-spew/spew"
 	"github.com/flosch/pongo2/v5"
 	"github.com/stretchr/testify/assert"
 )
@@ -20,13 +21,13 @@ func TestFilterTFValue(t *testing.T) {
 		{input: pongo2.AsValue(1.5), output: pongo2.AsSafeValue("1.5")},
 		{input: pongo2.AsValue(true), output: pongo2.AsSafeValue("true")},
 		{input: pongo2.AsValue(false), output: pongo2.AsSafeValue("false")},
-		{input: pongo2.AsValue([]string{"foo", "bar"}), output: pongo2.AsSafeValue(`["foo", "bar"]`)},
-		{input: pongo2.AsValue([]string{"${foo}", "bar"}), output: pongo2.AsSafeValue(`[foo, "bar"]`)},
+		{input: pongo2.AsValue([]string{"${foo}", "${bar}"}), output: pongo2.AsSafeValue(`[foo, bar]`)},
 	}
 
 	for _, tc := range tests {
 		value, err := FilterTFValue(tc.input, nil)
 		assert.Nil(t, err)
+		spew.Dump(value)
 		assert.True(t, tc.output.EqualValueTo(value))
 	}
 }
