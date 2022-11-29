@@ -17,6 +17,7 @@ type SentryPlugin struct {
 
 func NewSentryPlugin() *SentryPlugin {
 	return &SentryPlugin{
+		provider:    "0.6.0",
 		siteConfigs: map[string]*SiteConfig{},
 	}
 }
