@@ -5,7 +5,7 @@ type MachComposerPlugin interface {
 
 	IsEnabled() bool
 
-	Initialize(environment string) error
+	Configure(environment string, provider string) error
 
 	SetRemoteStateBackend(data map[string]any) error
 

@@ -10,6 +10,7 @@ import (
 
 type ContentfulPlugin struct {
 	environment  string
+	provider     string
 	globalConfig *ContentfulConfig
 	siteConfigs  map[string]*ContentfulConfig
 	enabled      bool
@@ -17,12 +18,16 @@ type ContentfulPlugin struct {
 
 func NewContentfulPlugin() *ContentfulPlugin {
 	return &ContentfulPlugin{
+		provider:    "0.1.0",
 		siteConfigs: map[string]*ContentfulConfig{},
 	}
 }
 
-func (p *ContentfulPlugin) Initialize(environment string) error {
+func (p *ContentfulPlugin) Configure(environment string, provider string) error {
 	p.environment = environment
+	if provider != "" {
+		p.provider = provider
+	}
 	return nil
 }
 
@@ -79,11 +84,12 @@ func (p *ContentfulPlugin) TerraformRenderStateBackend(site string) (string, err
 }
 
 func (p *ContentfulPlugin) TerraformRenderProviders(site string) (string, error) {
-	return `
-	contentful = {
-		source = "labd/contentful"
-		version = "0.1.0"
-	}`, nil
+	result := fmt.Sprintf(`
+		contentful = {
+			source = "labd/contentful"
+			version = "%s"
+		}`, p.provider)
+	return result, nil
 }
 
 func (p *ContentfulPlugin) TerraformRenderResources(site string) (string, error) {

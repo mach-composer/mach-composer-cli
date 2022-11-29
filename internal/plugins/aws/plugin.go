@@ -13,6 +13,7 @@ import (
 
 type AWSPlugin struct {
 	environment      string
+	provider         string
 	remoteState      *AWSTFState
 	siteConfigs      map[string]*SiteConfig
 	componentConfigs map[string]ComponentConfig
@@ -21,14 +22,18 @@ type AWSPlugin struct {
 
 func NewAWSPlugin() *AWSPlugin {
 	return &AWSPlugin{
+		provider:         "3.74.1",
 		siteConfigs:      map[string]*SiteConfig{},
 		componentConfigs: map[string]ComponentConfig{},
 		endpointsConfigs: map[string]map[string]EndpointConfig{},
 	}
 }
 
-func (p *AWSPlugin) Initialize(environment string) error {
+func (p *AWSPlugin) Configure(environment string, provider string) error {
 	p.environment = environment
+	if provider != "" {
+		p.provider = provider
+	}
 	return nil
 }
 
@@ -160,11 +165,11 @@ func (p *AWSPlugin) TerraformRenderProviders(site string) (string, error) {
 		return "", nil
 	}
 
-	return `
-    aws = {
-      version = "3.74.1"
-    }
-	`, nil
+	result := fmt.Sprintf(`
+		aws = {
+			version = "%s"
+		}`, p.provider)
+	return result, nil
 }
 
 func (p *AWSPlugin) TerraformRenderResources(site string) (string, error) {

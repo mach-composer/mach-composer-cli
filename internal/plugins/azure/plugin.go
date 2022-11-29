@@ -15,6 +15,7 @@ import (
 
 type AzurePlugin struct {
 	environment      string
+	provider         string
 	remoteState      *AzureTFState
 	globalConfig     *GlobalConfig
 	siteConfigs      map[string]SiteConfig
@@ -24,14 +25,18 @@ type AzurePlugin struct {
 
 func NewAzurePlugin() *AzurePlugin {
 	return &AzurePlugin{
+		provider:         "2.99.0",
 		siteConfigs:      map[string]SiteConfig{},
 		componentConfigs: map[string]ComponentConfig{},
 		endpointsConfigs: map[string]map[string]EndpointConfig{},
 	}
 }
 
-func (p *AzurePlugin) Initialize(environment string) error {
+func (p *AzurePlugin) Configure(environment string, provider string) error {
 	p.environment = environment
+	if provider != "" {
+		p.provider = provider
+	}
 	return nil
 }
 
@@ -167,11 +172,11 @@ func (p *AzurePlugin) TerraformRenderProviders(site string) (string, error) {
 		return "", nil
 	}
 
-	return `
-    azure = {
-      version = "2.99.0"
-    }
-	`, nil
+	result := fmt.Sprintf(`
+		azure = {
+			version = "%s"
+		}`, p.provider)
+	return result, nil
 }
 
 func (p *AzurePlugin) TerraformRenderResources(site string) (string, error) {

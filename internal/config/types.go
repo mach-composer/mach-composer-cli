@@ -70,9 +70,10 @@ type MachComposer struct {
 }
 
 type GlobalConfig struct {
-	Environment            string `yaml:"environment"`
-	Cloud                  string `yaml:"cloud"`
-	TerraformStateProvider string `yaml:"-"`
+	Environment            string           `yaml:"environment"`
+	Cloud                  string           `yaml:"cloud"`
+	TerraformStateProvider string           `yaml:"-"`
+	TerraformConfig        *TerraformConfig `yaml:"terraform_config"`
 }
 
 // Site contains all configuration needed for a site.
@@ -99,6 +100,10 @@ type Component struct {
 	Branch       string
 	Integrations []string
 	Endpoints    map[string]string `yaml:"endpoints"`
+}
+
+type TerraformConfig struct {
+	Providers map[string]string `yaml:"providers"`
 }
 
 // TODO: should check if the integration is the cloud provider

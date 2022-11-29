@@ -12,17 +12,22 @@ import (
 
 type CommercetoolsPlugin struct {
 	environment string
+	provider    string
 	siteConfigs map[string]*SiteConfig
 }
 
 func NewCommercetoolsPlugin() *CommercetoolsPlugin {
 	return &CommercetoolsPlugin{
+		provider:    "0.30.0",
 		siteConfigs: map[string]*SiteConfig{},
 	}
 }
 
-func (p *CommercetoolsPlugin) Initialize(environment string) error {
+func (p *CommercetoolsPlugin) Configure(environment string, provider string) error {
 	p.environment = environment
+	if provider != "" {
+		p.provider = provider
+	}
 	return nil
 }
 
@@ -107,12 +112,13 @@ func (p *CommercetoolsPlugin) TerraformRenderProviders(site string) (string, err
 		return "", nil
 	}
 
-	return `
-    commercetools = {
-      source = "labd/commercetools"
-      version = "0.30.0"
-    }
-	`, nil
+	result := fmt.Sprintf(`
+		commercetools = {
+		source = "labd/commercetools"
+		version = "%s"
+		}
+	`, p.provider)
+	return result, nil
 }
 
 func (p *CommercetoolsPlugin) TerraformRenderResources(site string) (string, error) {

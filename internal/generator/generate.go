@@ -68,7 +68,7 @@ func renderSite(cfg *config.MachConfig, site *config.SiteConfig) (string, error)
 // remote state to be used and the providers to be loaded.
 func renderTerraformConfig(cfg *config.MachConfig, site *config.SiteConfig) (string, error) {
 	providers := []string{}
-	for _, plugin := range cfg.Plugins.All() {
+	for _, plugin := range cfg.Plugins.Enabled() {
 		content, err := plugin.TerraformRenderProviders(site.Identifier)
 		if err != nil {
 			return "", err
@@ -118,7 +118,7 @@ func renderTerraformConfig(cfg *config.MachConfig, site *config.SiteConfig) (str
 
 func renderTerraformResources(cfg *config.MachConfig, site *config.SiteConfig) (string, error) {
 	resources := []string{}
-	for _, plugin := range cfg.Plugins.All() {
+	for _, plugin := range cfg.Plugins.Enabled() {
 		content, err := plugin.TerraformRenderResources(site.Identifier)
 		if err != nil {
 			return "", err
@@ -162,7 +162,7 @@ func renderComponent(cfg *config.MachConfig, site *config.SiteConfig, component 
 	pResources := []string{}
 	pDependsOn := []string{}
 	pProviders := []string{}
-	for _, plugin := range cfg.Plugins.All() {
+	for _, plugin := range cfg.Plugins.Enabled() {
 		if !pie.Contains(component.Definition.Integrations, plugin.Identifier()) {
 			continue
 		}

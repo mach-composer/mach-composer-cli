@@ -10,6 +10,7 @@ import (
 
 type SentryPlugin struct {
 	environment  string
+	provider     string
 	globalConfig GlobalConfig
 	siteConfigs  map[string]*SiteConfig
 }
@@ -20,8 +21,11 @@ func NewSentryPlugin() *SentryPlugin {
 	}
 }
 
-func (p *SentryPlugin) Initialize(environment string) error {
+func (p *SentryPlugin) Configure(environment string, provider string) error {
 	p.environment = environment
+	if provider != "" {
+		p.provider = provider
+	}
 	return nil
 }
 
@@ -90,12 +94,12 @@ func (p *SentryPlugin) TerraformRenderStateBackend(site string) (string, error) 
 }
 
 func (p *SentryPlugin) TerraformRenderProviders(site string) (string, error) {
-	return `
-    sentry = {
-      source = "jianyuan/sentry"
-      version = "0.6.0"
-    }
-	`, nil
+	result := fmt.Sprintf(`
+		sentry = {
+			source = "jianyuan/sentry"
+			version = "%s"
+		}`, p.provider)
+	return result, nil
 }
 
 func (p *SentryPlugin) TerraformRenderResources(site string) (string, error) {

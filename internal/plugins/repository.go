@@ -48,7 +48,11 @@ func (p *PluginRepository) Get(name string) (MachComposerPlugin, error) {
 	return plugin, nil
 }
 
-func (p *PluginRepository) All() []MachComposerPlugin {
+func (p *PluginRepository) All() map[string]MachComposerPlugin {
+	return p.Plugins
+}
+
+func (p *PluginRepository) Enabled() []MachComposerPlugin {
 	plugins := pie.Values(p.Plugins)
 	return pie.Filter(plugins, func(p MachComposerPlugin) bool { return p.IsEnabled() })
 }

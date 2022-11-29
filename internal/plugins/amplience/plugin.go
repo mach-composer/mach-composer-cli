@@ -10,6 +10,7 @@ import (
 
 type AmpliencePlugin struct {
 	environment  string
+	provider     string
 	globalConfig *AmplienceConfig
 	siteConfigs  map[string]*AmplienceConfig
 	enabled      bool
@@ -17,12 +18,16 @@ type AmpliencePlugin struct {
 
 func NewAmpliencePlugin() *AmpliencePlugin {
 	return &AmpliencePlugin{
+		provider:    "0.3.7",
 		siteConfigs: map[string]*AmplienceConfig{},
 	}
 }
 
-func (p *AmpliencePlugin) Initialize(environment string) error {
+func (p *AmpliencePlugin) Configure(environment string, provider string) error {
 	p.environment = environment
+	if provider != "" {
+		p.provider = provider
+	}
 	return nil
 }
 
@@ -106,11 +111,12 @@ func (p *AmpliencePlugin) TerraformRenderStateBackend(site string) (string, erro
 }
 
 func (p *AmpliencePlugin) TerraformRenderProviders(site string) (string, error) {
-	return `
+	result := fmt.Sprintf(`
 	amplience = {
 		source = "labd/amplience"
-		version = "0.3.7"
-	}`, nil
+		version = "%s"
+	}`, p.provider)
+	return result, nil
 }
 
 func (p *AmpliencePlugin) TerraformRenderResources(site string) (string, error) {
