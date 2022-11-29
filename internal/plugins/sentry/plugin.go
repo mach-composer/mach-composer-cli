@@ -195,7 +195,7 @@ func (p *SentryPlugin) TerraformRenderComponentProviders(site string, component 
 func (p *SentryPlugin) getSiteConfig(site string) *SiteConfig {
 	cfg, ok := p.siteConfigs[site]
 	if !ok {
-		return &SiteConfig{}
+		cfg = &SiteConfig{}
 	}
 	return cfg.extendGlobalConfig(&p.globalConfig)
 }
