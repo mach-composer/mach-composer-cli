@@ -20,7 +20,7 @@ func AutoRegisterVersion(ctx context.Context, client *mccsdk.APIClient, organiza
 		ComponentsApi.
 		ComponentLatestVersion(ctx, organization, project, componentKey).
 		Branch(branch).
-		Execute()
+		Execute() //nolint:bodyclose
 	if err != nil {
 		return "", err
 	}
@@ -48,7 +48,7 @@ func AutoRegisterVersion(ctx context.Context, client *mccsdk.APIClient, organiza
 			Version: commits[0].Commit,
 			Branch:  branch,
 		}).
-		Execute()
+		Execute() //nolint:bodyclose
 	if err != nil {
 		return "", err
 	}
@@ -81,7 +81,7 @@ func AutoRegisterVersion(ctx context.Context, client *mccsdk.APIClient, organiza
 		ComponentVersionCommits(mccsdk.ComponentVersionCommits{
 			Commits: newCommits,
 		}).
-		Execute()
+		Execute() //nolint:bodyclose
 	if err != nil {
 		return newVersion.Version, err
 	}
