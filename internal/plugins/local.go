@@ -14,11 +14,22 @@ var localPlugins map[string]mcsdk.MachComposerPlugin
 
 func init() {
 	localPlugins = map[string]mcsdk.MachComposerPlugin{
-		"amplience":     amplience.NewAmpliencePlugin(),
-		"aws":           aws.NewAWSPlugin(),
-		"azure":         azure.NewAzurePlugin(),
-		"contentful":    contentful.NewContentfulPlugin(),
-		"commercetools": commercetools.NewCommercetoolsPlugin(),
-		"sentry":        sentry.NewSentryPlugin(),
+		// "amplience": amplience.NewAmpliencePlugin(),
+		// "aws":           aws.NewAWSPlugin(),
+		// "azure":         azure.NewAzurePlugin(),
+		// "contentful":    contentful.NewContentfulPlugin(),
+		// "commercetools": commercetools.NewCommercetoolsPlugin(),
+		// "sentry":        sentry.NewSentryPlugin(),
+	}
+}
+
+func GetLocalPlugins() map[string]func() {
+	return map[string]func(){
+		"amplience":     amplience.Serve,
+		"aws":           aws.Serve,
+		"azure":         azure.Serve,
+		"contentful":    contentful.Serve,
+		"commercetools": commercetools.Serve,
+		"sentry":        sentry.Serve,
 	}
 }
