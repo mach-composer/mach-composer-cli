@@ -49,7 +49,6 @@ func transformToCTY(source any) cty.Value {
 			v := val.MapIndex(e)
 			k := fmt.Sprintf("%v", e.Interface())
 			result[k] = transformToCTY(v.Interface())
-
 		}
 		return cty.ObjectVal(result)
 	}

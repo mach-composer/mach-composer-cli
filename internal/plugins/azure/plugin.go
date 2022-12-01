@@ -10,8 +10,41 @@ import (
 	"github.com/mitchellh/mapstructure"
 	"github.com/sirupsen/logrus"
 
+	"github.com/labd/mach-composer/internal/plugins/mcsdk"
 	"github.com/labd/mach-composer/internal/plugins/shared"
 )
+
+func NewAzurePlugin() mcsdk.MachComposerPlugin {
+	state := &AzurePlugin{
+		provider:         "2.99.0",
+		siteConfigs:      map[string]SiteConfig{},
+		componentConfigs: map[string]ComponentConfig{},
+		endpointsConfigs: map[string]map[string]EndpointConfig{},
+	}
+
+	return mcsdk.NewPlugin(&mcsdk.PluginSchema{
+		Identifier: "azure",
+
+		Configure: state.Configure,
+		IsEnabled: state.IsEnabled,
+
+		// Config
+		SetRemoteStateBackend: state.SetRemoteStateBackend,
+		SetGlobalConfig:       state.SetGlobalConfig,
+		SetSiteConfig:         state.SetSiteConfig,
+		SetComponentConfig:    state.SetComponentConfig,
+
+		// Config endpoints
+		SetSiteEndpointsConfig:      state.SetSiteEndpointsConfig,
+		SetComponentEndpointsConfig: state.SetComponentEndpointsConfig,
+
+		// Renders
+		RenderTerraformStateBackend: state.TerraformRenderStateBackend,
+		RenderTerraformProviders:    state.TerraformRenderProviders,
+		RenderTerraformResources:    state.TerraformRenderResources,
+		RenderTerraformComponent:    state.RenderTerraformComponent,
+	})
+}
 
 type AzurePlugin struct {
 	environment      string
@@ -21,15 +54,6 @@ type AzurePlugin struct {
 	siteConfigs      map[string]SiteConfig
 	componentConfigs map[string]ComponentConfig
 	endpointsConfigs map[string]map[string]EndpointConfig
-}
-
-func NewAzurePlugin() *AzurePlugin {
-	return &AzurePlugin{
-		provider:         "2.99.0",
-		siteConfigs:      map[string]SiteConfig{},
-		componentConfigs: map[string]ComponentConfig{},
-		endpointsConfigs: map[string]map[string]EndpointConfig{},
-	}
 }
 
 func (p *AzurePlugin) Configure(environment string, provider string) error {
@@ -42,10 +66,6 @@ func (p *AzurePlugin) Configure(environment string, provider string) error {
 
 func (p *AzurePlugin) IsEnabled() bool {
 	return len(p.siteConfigs) > 0
-}
-
-func (p *AzurePlugin) Identifier() string {
-	return "azure"
 }
 
 func (p *AzurePlugin) SetRemoteStateBackend(data map[string]any) error {
@@ -86,10 +106,6 @@ func (p *AzurePlugin) SetSiteConfig(site string, data map[string]any) error {
 	}
 
 	p.siteConfigs[site] = cfg
-	return nil
-}
-
-func (p *AzurePlugin) SetSiteComponentConfig(site string, component string, data map[string]any) error {
 	return nil
 }
 
@@ -215,23 +231,50 @@ func (p *AzurePlugin) TerraformRenderResources(site string) (string, error) {
 	return renderResources(site, p.environment, cfg, pie.Values(activeEndpoints))
 }
 
-func (p *AzurePlugin) TerraformRenderComponentResources(site string, component string) (string, error) {
-	return "", nil
-}
-
-func (p *AzurePlugin) TerraformRenderComponentVars(site string, component string) (string, error) {
+func (p *AzurePlugin) RenderTerraformComponent(site string, component string) (*mcsdk.ComponentSnippets, error) {
 	cfg := p.getSiteConfig(site)
 	if cfg == nil {
-		return "", nil
+		return nil, nil
+	}
+	componentCfg := p.getComponentConfig(component)
+
+	result := &mcsdk.ComponentSnippets{
+		Providers: []string{"azurerm = azurerm"},
 	}
 
-	componentConfig, ok := p.componentConfigs[component]
+	value, err := terraformRenderComponentVars(cfg, componentCfg)
+	if err != nil {
+		return nil, err
+	}
+	result.Variables = value
+
+	values, err := terraformRenderComponentDependsOn(cfg, componentCfg)
+	if err != nil {
+		return nil, err
+	}
+	result.DependsOn = values
+	return result, nil
+}
+
+func (p *AzurePlugin) getSiteConfig(site string) *SiteConfig {
+	cfg, ok := p.siteConfigs[site]
+	if !ok {
+		return nil
+	}
+	return &cfg
+}
+
+func (p *AzurePlugin) getComponentConfig(name string) *ComponentConfig {
+	componentConfig, ok := p.componentConfigs[name]
 	if !ok {
 		componentConfig = ComponentConfig{} // TODO
 	}
+	return &componentConfig
+}
 
+func terraformRenderComponentVars(cfg *SiteConfig, componentCfg *ComponentConfig) (string, error) {
 	endpointNames := map[string]string{}
-	for key, value := range componentConfig.Endpoints {
+	for key, value := range componentCfg.Endpoints {
 		endpointNames[shared.Slugify(key)] = shared.Slugify(value)
 	}
 
@@ -242,8 +285,8 @@ func (p *AzurePlugin) TerraformRenderComponentVars(site string, component string
 		Endpoints   map[string]string
 	}{
 		Config:      cfg,
-		Component:   &componentConfig,
-		ServicePlan: azureServicePlanResourceName(componentConfig.ServicePlan),
+		Component:   componentCfg,
+		ServicePlan: azureServicePlanResourceName(componentCfg.ServicePlan),
 		Endpoints:   endpointNames,
 	}
 
@@ -282,17 +325,7 @@ func (p *AzurePlugin) TerraformRenderComponentVars(site string, component string
 	return shared.RenderGoTemplate(template, templateContext)
 }
 
-func (p *AzurePlugin) TerraformRenderComponentProviders(site string, component string) ([]string, error) {
-	return []string{"azurerm = azurerm"}, nil
-}
-
-func (p *AzurePlugin) TerraformRenderComponentDependsOn(site string, component string) ([]string, error) {
-	cfg := p.getSiteConfig(site)
-	if cfg == nil {
-		return []string{}, nil
-	}
-	componentCfg := p.getComponentConfig(component)
-
+func terraformRenderComponentDependsOn(cfg *SiteConfig, componentCfg *ComponentConfig) ([]string, error) {
 	if componentCfg.ServicePlan != "" {
 		if componentCfg.ServicePlan == "default" {
 			return []string{"azurerm_app_service_plan.functionapps"}, nil
@@ -302,20 +335,4 @@ func (p *AzurePlugin) TerraformRenderComponentDependsOn(site string, component s
 		}
 	}
 	return []string{}, nil
-}
-
-func (p *AzurePlugin) getSiteConfig(site string) *SiteConfig {
-	cfg, ok := p.siteConfigs[site]
-	if !ok {
-		return nil
-	}
-	return &cfg
-}
-
-func (p *AzurePlugin) getComponentConfig(name string) *ComponentConfig {
-	componentConfig, ok := p.componentConfigs[name]
-	if !ok {
-		componentConfig = ComponentConfig{} // TODO
-	}
-	return &componentConfig
 }

@@ -4,15 +4,17 @@ import (
 	"fmt"
 
 	"github.com/elliotchance/pie/v2"
+
+	"github.com/labd/mach-composer/internal/plugins/mcsdk"
 )
 
 type PluginRepository struct {
-	Plugins map[string]MachComposerPlugin
+	Plugins map[string]mcsdk.MachComposerPlugin
 }
 
 func NewPluginRepository() *PluginRepository {
 	return &PluginRepository{
-		Plugins: make(map[string]MachComposerPlugin),
+		Plugins: make(map[string]mcsdk.MachComposerPlugin),
 	}
 }
 
@@ -37,7 +39,7 @@ func (p *PluginRepository) LoadDefault() {
 	}
 }
 
-func (p *PluginRepository) Get(name string) (MachComposerPlugin, error) {
+func (p *PluginRepository) Get(name string) (mcsdk.MachComposerPlugin, error) {
 	if name == "" {
 		return nil, fmt.Errorf("invalid plugin name given, received: %#v", name)
 	}
@@ -48,13 +50,13 @@ func (p *PluginRepository) Get(name string) (MachComposerPlugin, error) {
 	return plugin, nil
 }
 
-func (p *PluginRepository) All() map[string]MachComposerPlugin {
+func (p *PluginRepository) All() map[string]mcsdk.MachComposerPlugin {
 	return p.Plugins
 }
 
-func (p *PluginRepository) Enabled() []MachComposerPlugin {
+func (p *PluginRepository) Enabled() []mcsdk.MachComposerPlugin {
 	plugins := pie.Values(p.Plugins)
-	return pie.Filter(plugins, func(p MachComposerPlugin) bool { return p.IsEnabled() })
+	return pie.Filter(plugins, func(p mcsdk.MachComposerPlugin) bool { return p.IsEnabled() })
 }
 
 func (p *PluginRepository) SetRemoteState(name string, data map[string]any) error {

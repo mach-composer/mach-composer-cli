@@ -6,13 +6,14 @@ import (
 	"github.com/labd/mach-composer/internal/plugins/azure"
 	"github.com/labd/mach-composer/internal/plugins/commercetools"
 	"github.com/labd/mach-composer/internal/plugins/contentful"
+	"github.com/labd/mach-composer/internal/plugins/mcsdk"
 	"github.com/labd/mach-composer/internal/plugins/sentry"
 )
 
-var localPlugins map[string]MachComposerPlugin
+var localPlugins map[string]mcsdk.MachComposerPlugin
 
 func init() {
-	localPlugins = map[string]MachComposerPlugin{
+	localPlugins = map[string]mcsdk.MachComposerPlugin{
 		"amplience":     amplience.NewAmpliencePlugin(),
 		"aws":           aws.NewAWSPlugin(),
 		"azure":         azure.NewAzurePlugin(),
