@@ -5,6 +5,7 @@ import (
 
 	"github.com/mitchellh/mapstructure"
 
+	"github.com/labd/mach-composer/internal/plugins/mcsdk"
 	"github.com/labd/mach-composer/internal/plugins/shared"
 )
 
@@ -16,11 +17,26 @@ type ContentfulPlugin struct {
 	enabled      bool
 }
 
-func NewContentfulPlugin() *ContentfulPlugin {
-	return &ContentfulPlugin{
+func NewContentfulPlugin() mcsdk.MachComposerPlugin {
+	state := &ContentfulPlugin{
 		provider:    "0.1.0",
 		siteConfigs: map[string]*ContentfulConfig{},
 	}
+	return mcsdk.NewPlugin(&mcsdk.PluginSchema{
+		Identifier: "contentful",
+
+		Configure: state.Configure,
+		IsEnabled: state.IsEnabled,
+
+		// Config
+		SetGlobalConfig: state.SetGlobalConfig,
+		SetSiteConfig:   state.SetSiteConfig,
+
+		// Renders
+		RenderTerraformProviders: state.TerraformRenderProviders,
+		RenderTerraformResources: state.TerraformRenderResources,
+		RenderTerraformComponent: state.RenderTerraformComponent,
+	})
 }
 
 func (p *ContentfulPlugin) Configure(environment string, provider string) error {
@@ -37,10 +53,6 @@ func (p *ContentfulPlugin) IsEnabled() bool {
 
 func (p *ContentfulPlugin) Identifier() string {
 	return "contentful"
-}
-
-func (p *ContentfulPlugin) SetRemoteStateBackend(data map[string]any) error {
-	return fmt.Errorf("not supported by this plugin")
 }
 
 func (p *ContentfulPlugin) SetGlobalConfig(data map[string]any) error {
@@ -60,22 +72,6 @@ func (p *ContentfulPlugin) SetSiteConfig(site string, data map[string]any) error
 	}
 	p.siteConfigs[site] = &cfg
 	p.enabled = true
-	return nil
-}
-
-func (p *ContentfulPlugin) SetSiteComponentConfig(site string, component string, data map[string]any) error {
-	return nil
-}
-
-func (p *ContentfulPlugin) SetSiteEndpointsConfig(site string, data map[string]any) error {
-	return nil
-}
-
-func (p *ContentfulPlugin) SetComponentConfig(component string, data map[string]any) error {
-	return nil
-}
-
-func (p *ContentfulPlugin) SetComponentEndpointsConfig(component string, endpoints map[string]string) error {
 	return nil
 }
 
@@ -127,27 +123,16 @@ func (p *ContentfulPlugin) TerraformRenderResources(site string) (string, error)
 	return shared.RenderGoTemplate(template, cfg)
 }
 
-func (p *ContentfulPlugin) TerraformRenderComponentResources(site string, component string) (string, error) {
-	return "", nil
-}
-
-func (p *ContentfulPlugin) TerraformRenderComponentVars(site, component string) (string, error) {
+func (p *ContentfulPlugin) RenderTerraformComponent(site string, component string) (*mcsdk.ComponentSnippets, error) {
 	cfg := p.getSiteConfig(site)
 	if cfg == nil {
-		return "", nil
+		return nil, nil
 	}
 
-	return `
-    	contentful_space_id = contentful_space.space.id
-	`, nil
-}
-
-func (p *ContentfulPlugin) TerraformRenderComponentDependsOn(site string, component string) ([]string, error) {
-	return []string{}, nil
-}
-
-func (p *ContentfulPlugin) TerraformRenderComponentProviders(site string, component string) ([]string, error) {
-	return []string{}, nil
+	result := &mcsdk.ComponentSnippets{
+		Variables: "contentful_space_id = contentful_space.space.id",
+	}
+	return result, nil
 }
 
 func (p *ContentfulPlugin) getSiteConfig(site string) *ContentfulConfig {

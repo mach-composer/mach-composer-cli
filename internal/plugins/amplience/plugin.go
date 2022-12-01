@@ -5,8 +5,32 @@ import (
 
 	"github.com/mitchellh/mapstructure"
 
+	"github.com/labd/mach-composer/internal/plugins/mcsdk"
 	"github.com/labd/mach-composer/internal/plugins/shared"
 )
+
+func NewAmpliencePlugin() mcsdk.MachComposerPlugin {
+	state := &AmpliencePlugin{
+		provider:    "0.3.7",
+		siteConfigs: map[string]*AmplienceConfig{},
+	}
+
+	return mcsdk.NewPlugin(&mcsdk.PluginSchema{
+		Identifier: "amplience",
+
+		Configure: state.Configure,
+		IsEnabled: func() bool { return state.enabled },
+
+		// Config
+		SetGlobalConfig: state.SetGlobalConfig,
+		SetSiteConfig:   state.SetSiteConfig,
+
+		// Renders
+		RenderTerraformProviders: state.TerraformRenderProviders,
+		RenderTerraformResources: state.TerraformRenderResources,
+		RenderTerraformComponent: state.RenderTerraformComponent,
+	})
+}
 
 type AmpliencePlugin struct {
 	environment  string
@@ -16,31 +40,12 @@ type AmpliencePlugin struct {
 	enabled      bool
 }
 
-func NewAmpliencePlugin() *AmpliencePlugin {
-	return &AmpliencePlugin{
-		provider:    "0.3.7",
-		siteConfigs: map[string]*AmplienceConfig{},
-	}
-}
-
 func (p *AmpliencePlugin) Configure(environment string, provider string) error {
 	p.environment = environment
 	if provider != "" {
 		p.provider = provider
 	}
 	return nil
-}
-
-func (p *AmpliencePlugin) IsEnabled() bool {
-	return p.enabled
-}
-
-func (p *AmpliencePlugin) Identifier() string {
-	return "amplience"
-}
-
-func (p *AmpliencePlugin) SetRemoteStateBackend(data map[string]any) error {
-	return fmt.Errorf("not supported by this plugin")
 }
 
 func (p *AmpliencePlugin) SetGlobalConfig(data map[string]any) error {
@@ -60,22 +65,6 @@ func (p *AmpliencePlugin) SetSiteConfig(site string, data map[string]any) error 
 	}
 	p.siteConfigs[site] = &cfg
 	p.enabled = true
-	return nil
-}
-
-func (p *AmpliencePlugin) SetSiteComponentConfig(site string, component string, data map[string]any) error {
-	return nil
-}
-
-func (p *AmpliencePlugin) SetSiteEndpointsConfig(site string, data map[string]any) error {
-	return nil
-}
-
-func (p *AmpliencePlugin) SetComponentConfig(component string, data map[string]any) error {
-	return nil
-}
-
-func (p *AmpliencePlugin) SetComponentEndpointsConfig(component string, endpoints map[string]string) error {
 	return nil
 }
 
@@ -106,10 +95,6 @@ func (p *AmpliencePlugin) getSiteConfig(site string) *AmplienceConfig {
 	return result
 }
 
-func (p *AmpliencePlugin) TerraformRenderStateBackend(site string) (string, error) {
-	return "", nil
-}
-
 func (p *AmpliencePlugin) TerraformRenderProviders(site string) (string, error) {
 	result := fmt.Sprintf(`
 	amplience = {
@@ -135,14 +120,10 @@ func (p *AmpliencePlugin) TerraformRenderResources(site string) (string, error) 
 	return shared.RenderGoTemplate(template, cfg)
 }
 
-func (p *AmpliencePlugin) TerraformRenderComponentResources(site string, component string) (string, error) {
-	return "", nil
-}
-
-func (p *AmpliencePlugin) TerraformRenderComponentVars(site, component string) (string, error) {
+func (p *AmpliencePlugin) RenderTerraformComponent(site string, component string) (*mcsdk.ComponentSnippets, error) {
 	cfg := p.getSiteConfig(site)
 	if cfg == nil {
-		return "", nil
+		return nil, nil
 	}
 
 	template := `
@@ -150,13 +131,12 @@ func (p *AmpliencePlugin) TerraformRenderComponentVars(site, component string) (
 		amplience_client_secret = {{ .ClientSecret|printf "%q" }}
 		amplience_hub_id = {{ .HubID|printf "%q" }}
 	`
-	return shared.RenderGoTemplate(template, cfg)
-}
-
-func (p *AmpliencePlugin) TerraformRenderComponentDependsOn(site string, component string) ([]string, error) {
-	return []string{}, nil
-}
-
-func (p *AmpliencePlugin) TerraformRenderComponentProviders(site string, component string) ([]string, error) {
-	return []string{}, nil
+	vars, err := shared.RenderGoTemplate(template, cfg)
+	if err != nil {
+		return nil, err
+	}
+	result := &mcsdk.ComponentSnippets{
+		Variables: vars,
+	}
+	return result, nil
 }

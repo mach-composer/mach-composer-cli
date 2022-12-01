@@ -23,10 +23,23 @@ func TestSetSiteEndpointsConfig(t *testing.T) {
 	}
 
 	plugin := NewAWSPlugin()
-	err := plugin.SetSiteEndpointsConfig("my-site", data)
+	err := plugin.SetSiteConfig("my-site", map[string]any{})
 	require.NoError(t, err)
 
-	result := plugin.endpointsConfigs["my-site"]["internal"]
-	assert.Equal(t, intRef(5000), result.ThrottlingBurstLimit)
-	assert.Equal(t, intRef(10000), result.ThrottlingRateLimit)
+	err = plugin.SetComponentConfig("my-component", map[string]any{
+		"integrations": []string{"aws"},
+	})
+	require.NoError(t, err)
+
+	err = plugin.SetComponentEndpointsConfig("my-component", map[string]string{
+		"internal": "internal",
+	})
+	require.NoError(t, err)
+
+	err = plugin.SetSiteEndpointsConfig("my-site", data)
+	require.NoError(t, err)
+
+	result, err := plugin.RenderTerraformResources("my-site")
+	require.NoError(t, err)
+	assert.Contains(t, result, "throttling_burst_limit = 5000")
 }

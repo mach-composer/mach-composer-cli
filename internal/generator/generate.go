@@ -69,7 +69,7 @@ func renderSite(cfg *config.MachConfig, site *config.SiteConfig) (string, error)
 func renderTerraformConfig(cfg *config.MachConfig, site *config.SiteConfig) (string, error) {
 	providers := []string{}
 	for _, plugin := range cfg.Plugins.Enabled() {
-		content, err := plugin.TerraformRenderProviders(site.Identifier)
+		content, err := plugin.RenderTerraformProviders(site.Identifier)
 		if err != nil {
 			return "", err
 		}
@@ -81,7 +81,7 @@ func renderTerraformConfig(cfg *config.MachConfig, site *config.SiteConfig) (str
 		return "", fmt.Errorf("failed to resolve plugin for terraform state: %w", err)
 	}
 
-	backendConfig, err := statePlugin.TerraformRenderStateBackend(site.Identifier)
+	backendConfig, err := statePlugin.RenderTerraformStateBackend(site.Identifier)
 	if err != nil {
 		return "", fmt.Errorf("failed to render backend config: %w", err)
 	}
@@ -119,7 +119,7 @@ func renderTerraformConfig(cfg *config.MachConfig, site *config.SiteConfig) (str
 func renderTerraformResources(cfg *config.MachConfig, site *config.SiteConfig) (string, error) {
 	resources := []string{}
 	for _, plugin := range cfg.Plugins.Enabled() {
-		content, err := plugin.TerraformRenderResources(site.Identifier)
+		content, err := plugin.RenderTerraformResources(site.Identifier)
 		if err != nil {
 			return "", err
 		}
@@ -166,30 +166,19 @@ func renderComponent(cfg *config.MachConfig, site *config.SiteConfig, component 
 		if !pie.Contains(component.Definition.Integrations, plugin.Identifier()) {
 			continue
 		}
-
-		value, err := plugin.TerraformRenderComponentResources(site.Identifier, component.Name)
+		cr, err := plugin.RenderTerraformComponent(site.Identifier, component.Name)
 		if err != nil {
 			return "", err
 		}
-		pResources = append(pResources, value)
 
-		value, err = plugin.TerraformRenderComponentVars(site.Identifier, component.Name)
-		if err != nil {
-			return "", err
+		if cr == nil {
+			continue
 		}
-		pVars = append(pVars, value)
 
-		values, err := plugin.TerraformRenderComponentProviders(site.Identifier, component.Name)
-		if err != nil {
-			return "", err
-		}
-		pProviders = append(pProviders, values...)
-
-		values, err = plugin.TerraformRenderComponentDependsOn(site.Identifier, component.Name)
-		if err != nil {
-			return "", err
-		}
-		pDependsOn = append(pDependsOn, values...)
+		pResources = append(pResources, cr.Resources)
+		pVars = append(pVars, cr.Variables)
+		pProviders = append(pProviders, cr.Providers...)
+		pDependsOn = append(pDependsOn, cr.DependsOn...)
 	}
 
 	return renderer.componentTemplate.Execute(pongo2.Context{

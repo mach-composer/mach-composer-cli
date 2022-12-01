@@ -8,8 +8,39 @@ import (
 	"github.com/mitchellh/mapstructure"
 	"github.com/sirupsen/logrus"
 
+	"github.com/labd/mach-composer/internal/plugins/mcsdk"
 	"github.com/labd/mach-composer/internal/plugins/shared"
 )
+
+func NewAWSPlugin() mcsdk.MachComposerPlugin {
+	state := &AWSPlugin{
+		provider:         "3.74.1",
+		siteConfigs:      map[string]*SiteConfig{},
+		componentConfigs: map[string]ComponentConfig{},
+		endpointsConfigs: map[string]map[string]EndpointConfig{},
+	}
+
+	return mcsdk.NewPlugin(&mcsdk.PluginSchema{
+		Identifier: "aws",
+
+		Configure: state.Configure,
+		IsEnabled: state.IsEnabled,
+
+		// Config
+		SetRemoteStateBackend: state.SetRemoteStateBackend,
+		SetSiteConfig:         state.SetSiteConfig,
+
+		// Config endpoints
+		SetSiteEndpointsConfig:      state.SetSiteEndpointsConfig,
+		SetComponentEndpointsConfig: state.SetComponentEndpointsConfig,
+
+		// Renders
+		RenderTerraformStateBackend: state.TerraformRenderStateBackend,
+		RenderTerraformProviders:    state.TerraformRenderProviders,
+		RenderTerraformResources:    state.TerraformRenderResources,
+		RenderTerraformComponent:    state.RenderTerraformComponent,
+	})
+}
 
 type AWSPlugin struct {
 	environment      string
@@ -18,15 +49,6 @@ type AWSPlugin struct {
 	siteConfigs      map[string]*SiteConfig
 	componentConfigs map[string]ComponentConfig
 	endpointsConfigs map[string]map[string]EndpointConfig
-}
-
-func NewAWSPlugin() *AWSPlugin {
-	return &AWSPlugin{
-		provider:         "3.74.1",
-		siteConfigs:      map[string]*SiteConfig{},
-		componentConfigs: map[string]ComponentConfig{},
-		endpointsConfigs: map[string]map[string]EndpointConfig{},
-	}
 }
 
 func (p *AWSPlugin) Configure(environment string, provider string) error {
@@ -57,10 +79,6 @@ func (p *AWSPlugin) SetRemoteStateBackend(data map[string]any) error {
 	return nil
 }
 
-func (p *AWSPlugin) SetGlobalConfig(data map[string]any) error {
-	return nil
-}
-
 func (p *AWSPlugin) SetSiteConfig(site string, data map[string]any) error {
 	cfg := SiteConfig{}
 
@@ -77,10 +95,6 @@ func (p *AWSPlugin) SetSiteConfig(site string, data map[string]any) error {
 	}
 
 	p.siteConfigs[site] = &cfg
-	return nil
-}
-
-func (p *AWSPlugin) SetSiteComponentConfig(site string, component string, data map[string]any) error {
 	return nil
 }
 
@@ -117,14 +131,13 @@ func (p *AWSPlugin) SetSiteEndpointsConfig(site string, data map[string]any) err
 	return nil
 }
 
-func (p *AWSPlugin) SetComponentConfig(component string, data map[string]any) error {
-	return nil
-}
-
 func (p *AWSPlugin) SetComponentEndpointsConfig(component string, endpoints map[string]string) error {
-	cfg := ComponentConfig{
-		Endpoints: endpoints,
+	cfg, ok := p.componentConfigs[component]
+	if !ok {
+		cfg = ComponentConfig{}
+		p.componentConfigs[component] = cfg
 	}
+	cfg.Endpoints = endpoints
 	p.componentConfigs[component] = cfg
 	return nil
 }
@@ -213,18 +226,35 @@ func (p *AWSPlugin) TerraformRenderResources(site string) (string, error) {
 	return content, nil
 }
 
-func (p *AWSPlugin) TerraformRenderComponentResources(site string, component string) (string, error) {
-	return "", nil
-}
-
-func (p *AWSPlugin) TerraformRenderComponentVars(site string, component string) (string, error) {
+func (p *AWSPlugin) RenderTerraformComponent(site string, component string) (*mcsdk.ComponentSnippets, error) {
 	cfg := p.getSiteConfig(site)
 	if cfg == nil {
-		return "", nil
+		return nil, nil
 	}
-
 	componentCfg := p.componentConfigs[component]
 
+	result := &mcsdk.ComponentSnippets{
+		DependsOn: terraformRenderComponentDependsOn(&componentCfg),
+		Providers: TerraformRenderComponentProviders(cfg),
+	}
+
+	value, err := terraformRenderComponentVars(cfg, &componentCfg)
+	if err != nil {
+		return nil, err
+	}
+	result.Variables = value
+	return result, nil
+}
+
+func (p *AWSPlugin) getSiteConfig(site string) *SiteConfig {
+	cfg, ok := p.siteConfigs[site]
+	if !ok {
+		return nil
+	}
+	return cfg
+}
+
+func terraformRenderComponentVars(cfg *SiteConfig, componentCfg *ComponentConfig) (string, error) {
 	endpointNames := map[string]string{}
 	for key, value := range componentCfg.Endpoints {
 		endpointNames[shared.Slugify(key)] = shared.Slugify(value)
@@ -245,40 +275,24 @@ func (p *AWSPlugin) TerraformRenderComponentVars(site string, component string) 
 			api_gateway_id = aws_apigatewayv2_api.{{ $sEndpoint }}_gateway.id
 			api_gateway_execution_arn = aws_apigatewayv2_api.{{ $sEndpoint }}_gateway.execution_arn
 		}
-		{{ end }}
-	`
+		{{ end }}`
 	return shared.RenderGoTemplate(template, templateContext)
 }
 
-func (p *AWSPlugin) TerraformRenderComponentProviders(site string, component string) ([]string, error) {
-	cfg := p.getSiteConfig(site)
-	if cfg == nil {
-		return []string{}, nil
-	}
-	providers := []string{"aws = aws"}
-	for _, provider := range cfg.ExtraProviders {
-		providers = append(providers, fmt.Sprintf("aws.%s = aws.%s", provider.Name, provider.Name))
-	}
-	return providers, nil
-}
-
-func (p *AWSPlugin) TerraformRenderComponentDependsOn(site string, component string) ([]string, error) {
-	// This shouldn't be needed since we already pass the values to the component
-	// make it automatically depend on that value
+func terraformRenderComponentDependsOn(componentCfg *ComponentConfig) []string {
 	result := []string{}
-
-	componentCfg := p.componentConfigs[component]
 	for _, value := range componentCfg.Endpoints {
 		depends := fmt.Sprintf("aws_apigatewayv2_api.%s_gateway", shared.Slugify(value))
 		result = append(result, depends)
 	}
-	return result, nil
+	return result
 }
 
-func (p *AWSPlugin) getSiteConfig(site string) *SiteConfig {
-	cfg, ok := p.siteConfigs[site]
-	if !ok {
-		return nil
+func TerraformRenderComponentProviders(cfg *SiteConfig) []string {
+	providers := []string{"aws = aws"}
+	for _, provider := range cfg.ExtraProviders {
+		providers = append(providers, fmt.Sprintf("aws.%s = aws.%s", provider.Name, provider.Name))
 	}
-	return cfg
+	return providers
+
 }

@@ -7,6 +7,7 @@ import (
 	"github.com/mitchellh/mapstructure"
 	"github.com/sirupsen/logrus"
 
+	"github.com/labd/mach-composer/internal/plugins/mcsdk"
 	"github.com/labd/mach-composer/internal/plugins/shared"
 )
 
@@ -16,11 +17,26 @@ type CommercetoolsPlugin struct {
 	siteConfigs map[string]*SiteConfig
 }
 
-func NewCommercetoolsPlugin() *CommercetoolsPlugin {
-	return &CommercetoolsPlugin{
+func NewCommercetoolsPlugin() mcsdk.MachComposerPlugin {
+	state := &CommercetoolsPlugin{
 		provider:    "0.30.0",
 		siteConfigs: map[string]*SiteConfig{},
 	}
+
+	return mcsdk.NewPlugin(&mcsdk.PluginSchema{
+		Identifier: "commercetools",
+
+		Configure: state.Configure,
+		IsEnabled: state.IsEnabled,
+
+		// Config
+		SetSiteConfig: state.SetSiteConfig,
+
+		// Renders
+		RenderTerraformProviders: state.TerraformRenderProviders,
+		RenderTerraformResources: state.TerraformRenderResources,
+		RenderTerraformComponent: state.RenderTerraformComponent,
+	})
 }
 
 func (p *CommercetoolsPlugin) Configure(environment string, provider string) error {
@@ -33,18 +49,6 @@ func (p *CommercetoolsPlugin) Configure(environment string, provider string) err
 
 func (p *CommercetoolsPlugin) IsEnabled() bool {
 	return len(p.siteConfigs) > 0
-}
-
-func (p *CommercetoolsPlugin) Identifier() string {
-	return "commercetools"
-}
-
-func (p *CommercetoolsPlugin) SetRemoteStateBackend(data map[string]any) error {
-	return fmt.Errorf("not supported by this plugin")
-}
-
-func (p *CommercetoolsPlugin) SetGlobalConfig(data map[string]any) error {
-	return nil
 }
 
 func (p *CommercetoolsPlugin) SetSiteConfig(site string, data map[string]any) error {
@@ -82,30 +86,6 @@ func (p *CommercetoolsPlugin) SetSiteComponentConfig(site string, component stri
 	return nil
 }
 
-func (p *CommercetoolsPlugin) SetSiteEndpointsConfig(site string, data map[string]any) error {
-	return nil
-}
-
-func (p *CommercetoolsPlugin) SetComponentConfig(component string, data map[string]any) error {
-	return nil
-}
-
-func (p *CommercetoolsPlugin) SetComponentEndpointsConfig(component string, endpoints map[string]string) error {
-	return nil
-}
-
-func (p *CommercetoolsPlugin) getSiteConfig(site string) *SiteConfig {
-	cfg, ok := p.siteConfigs[site]
-	if !ok {
-		return nil
-	}
-	return cfg
-}
-
-func (p *CommercetoolsPlugin) TerraformRenderStateBackend(site string) (string, error) {
-	return "", nil
-}
-
 func (p *CommercetoolsPlugin) TerraformRenderProviders(site string) (string, error) {
 	cfg := p.getSiteConfig(site)
 	if cfg == nil {
@@ -135,22 +115,40 @@ func (p *CommercetoolsPlugin) TerraformRenderResources(site string) (string, err
 	return content, nil
 }
 
-func (p *CommercetoolsPlugin) TerraformRenderComponentResources(site string, component string) (string, error) {
-	return "", nil
-}
-
-func (p *CommercetoolsPlugin) TerraformRenderComponentVars(site string, component string) (string, error) {
+func (p *CommercetoolsPlugin) RenderTerraformComponent(site string, component string) (*mcsdk.ComponentSnippets, error) {
 	cfg := p.getSiteConfig(site)
 	if cfg == nil {
-		return "", nil
+		return nil, nil
+	}
+	componentCfg := cfg.getComponentSiteConfig(component)
+
+	vars, err := terraformRenderComponentVars(cfg, componentCfg)
+	if err != nil {
+		return nil, err
 	}
 
+	result := &mcsdk.ComponentSnippets{
+		Variables: vars,
+		DependsOn: []string{"null_resource.commercetools"},
+	}
+	return result, nil
+}
+
+func (p *CommercetoolsPlugin) getSiteConfig(site string) *SiteConfig {
+	cfg, ok := p.siteConfigs[site]
+	if !ok {
+		return nil
+	}
+	return cfg
+}
+
+func terraformRenderComponentVars(cfg *SiteConfig, componentCfg *ComponentConfig) (string, error) {
 	templateContext := struct {
 		Site      *SiteConfig
 		Component *ComponentConfig
 	}{
 		Site:      cfg,
-		Component: cfg.getComponentSiteConfig(component),
+		Component: componentCfg,
 	}
 
 	template := `
@@ -178,12 +176,4 @@ func (p *CommercetoolsPlugin) TerraformRenderComponentVars(site string, componen
 		}
 	`
 	return shared.RenderGoTemplate(template, templateContext)
-}
-
-func (p *CommercetoolsPlugin) TerraformRenderComponentDependsOn(site string, component string) ([]string, error) {
-	return []string{"null_resource.commercetools"}, nil
-}
-
-func (p *CommercetoolsPlugin) TerraformRenderComponentProviders(site string, component string) ([]string, error) {
-	return []string{}, nil
 }
