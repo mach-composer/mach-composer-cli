@@ -18,15 +18,22 @@ func NewPluginRepository() *PluginRepository {
 	}
 }
 
+func (p *PluginRepository) StartPlugins() {
+
+}
+
 func (p *PluginRepository) Load(name string, version string) error {
 	if plugin, ok := localPlugins[name]; ok {
 		p.Plugins[name] = plugin
 		return nil
 	}
 
-	// Load remote (TODO)
-
-	return fmt.Errorf("Plugin not found")
+	plugin, err := StartPlugin(name)
+	if err != nil {
+		panic(err)
+	}
+	p.Plugins[name] = plugin
+	return nil
 }
 
 // LoadDefault loads the default plugins, for backwards compatibility

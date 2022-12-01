@@ -28,7 +28,11 @@ func parseSitesNode(cfg *MachConfig, sitesNode *yaml.Node) error {
 		siteId := nodes["identifier"].Value
 
 		err := iterateYamlNodes(nodes, knownKeys, func(key string, data map[string]any) error {
-			return cfg.Plugins.SetSiteConfig(key, siteId, data)
+			err := cfg.Plugins.SetSiteConfig(key, siteId, data)
+			if err != nil {
+				return fmt.Errorf("plugin.SetSiteConfig failed: %ws", err)
+			}
+			return nil
 		})
 		if err != nil {
 			return err

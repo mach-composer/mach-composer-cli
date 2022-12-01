@@ -101,6 +101,8 @@ func resolvePluginConfig(data map[string]string) (*plugins.PluginRepository, err
 	} else {
 		pluginRepo.LoadDefault()
 	}
+	pluginRepo.StartPlugins()
+
 	return pluginRepo, nil
 }
 
