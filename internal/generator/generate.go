@@ -76,14 +76,17 @@ func renderTerraformConfig(cfg *config.MachConfig, site *config.SiteConfig) (str
 		providers = append(providers, content)
 	}
 
-	statePlugin, err := cfg.Plugins.Get(cfg.Global.TerraformStateProvider)
-	if err != nil {
-		return "", fmt.Errorf("failed to resolve plugin for terraform state: %w", err)
-	}
+	backendConfig := ""
+	if cfg.Global.TerraformStateProvider != "" {
+		statePlugin, err := cfg.Plugins.Get(cfg.Global.TerraformStateProvider)
+		if err != nil {
+			return "", fmt.Errorf("failed to resolve plugin for terraform state: %w", err)
+		}
 
-	backendConfig, err := statePlugin.RenderTerraformStateBackend(site.Identifier)
-	if err != nil {
-		return "", fmt.Errorf("failed to render backend config: %w", err)
+		backendConfig, err = statePlugin.RenderTerraformStateBackend(site.Identifier)
+		if err != nil {
+			return "", fmt.Errorf("failed to render backend config: %w", err)
+		}
 	}
 
 	template := `

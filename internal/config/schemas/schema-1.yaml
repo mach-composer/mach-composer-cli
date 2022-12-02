@@ -32,6 +32,15 @@ definitions:
         type: string
       variables_file:
         type: string
+      plugins:
+        type: object
+        patternProperties:
+          "^[a-zA-Z-]$":
+            type: object
+            additionalProperties: true
+            properties:
+              version:
+                type: string
 
   GlobalConfig:
     type: object
@@ -55,12 +64,20 @@ definitions:
   TerraformConfig:
     type: object
     description: Terraform configuration.
-    additionalProperties: false
+    additionalProperties: true
     properties:
       azure_remote_state:
         $ref: "#/definitions/AzureTFState"
       aws_remote_state:
         $ref: "#/definitions/AWSTFState"
+      remote_state:
+        type: object
+        additionalProperties: true
+        required:
+          - plugin
+        properties:
+          plugin:
+            type: string
       providers:
         $ref: "#/definitions/TerraformProviders"
 
@@ -82,6 +99,11 @@ definitions:
         type: string
       state_folder:
         type: string
+
+  RemoteState:
+    type: object
+    discriminator:
+      propertyName: plugin
 
   AWSTFState:
     type: object

@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/elliotchance/pie/v2"
+	"github.com/mach-composer/mach-composer-plugin-sdk/schema"
 	"github.com/sirupsen/logrus"
 	"gopkg.in/yaml.v3"
 
@@ -15,9 +16,13 @@ func parseSitesNode(cfg *MachConfig, sitesNode *yaml.Node) error {
 		return fmt.Errorf("decoding error: %w", err)
 	}
 
-	cloudPlugin, err := cfg.Plugins.Get(cfg.Global.Cloud)
-	if err != nil {
-		return err
+	var cloudPlugin schema.MachComposerPlugin
+	if cfg.Global.Cloud != "" {
+		var err error
+		cloudPlugin, err = cfg.Plugins.Get(cfg.Global.Cloud)
+		if err != nil {
+			return err
+		}
 	}
 
 	knownKeys := []string{
@@ -42,6 +47,12 @@ func parseSitesNode(cfg *MachConfig, sitesNode *yaml.Node) error {
 			data, err := nodeAsMap(node)
 			if err != nil {
 				return err
+			}
+			if cloudPlugin == nil {
+				if len(data) > 0 {
+					logrus.Error("Unable to register site endpoints when no cloud provider is configured")
+				}
+				continue
 			}
 			if err := cloudPlugin.SetSiteEndpointsConfig(siteId, data); err != nil {
 				return err

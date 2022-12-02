@@ -1,9 +1,12 @@
 package config
 
 import (
+	"errors"
 	"fmt"
 
 	"gopkg.in/yaml.v3"
+
+	"github.com/labd/mach-composer/internal/plugins"
 )
 
 func parseGlobalNode(cfg *MachConfig, globalNode *yaml.Node) error {
@@ -21,8 +24,12 @@ func parseGlobalNode(cfg *MachConfig, globalNode *yaml.Node) error {
 	knownKeys := []string{"cloud", "terraform_config", "environment"}
 	nodes := mapYamlNodes(globalNode.Content)
 
-	err := iterateYamlNodes(nodes, knownKeys, func(key string, data map[string]any) error {
-		return cfg.Plugins.SetGlobalConfig(key, data)
+	err := iterateYamlNodes(nodes, knownKeys, func(pluginName string, data map[string]any) error {
+		err := cfg.Plugins.SetGlobalConfig(pluginName, data)
+		if err != nil {
+			return err
+		}
+		return nil
 	})
 	if err != nil {
 		return err
@@ -38,11 +45,14 @@ func parseGlobalNode(cfg *MachConfig, globalNode *yaml.Node) error {
 				return err
 			}
 			if err := cfg.Plugins.SetRemoteState("aws", data); err != nil {
+				if _, ok := err.(*plugins.PluginNotFoundError); ok {
+					return errors.New("the aws plugin is required when setting aws_remote_state")
+				}
 				return err
 			}
 			cfg.Global.TerraformStateProvider = "aws"
-		}
-		if child, ok := childs["azure_remote_state"]; ok {
+			return nil
+		} else if child, ok := childs["azure_remote_state"]; ok {
 			data, err := nodeAsMap(child)
 			if err != nil {
 				return err
@@ -51,6 +61,24 @@ func parseGlobalNode(cfg *MachConfig, globalNode *yaml.Node) error {
 				return err
 			}
 			cfg.Global.TerraformStateProvider = "azure"
+			return nil
+		} else if child, ok := childs["remote_state"]; ok {
+			data, err := nodeAsMap(child)
+			if err != nil {
+				return err
+			}
+
+			pluginName, ok := data["plugin"].(string)
+			if !ok {
+				return fmt.Errorf("plugin needs to be defined for remote_state")
+			}
+
+			if err := cfg.Plugins.SetRemoteState(pluginName, data); err != nil {
+				return err
+			}
+			cfg.Global.TerraformStateProvider = pluginName
+			return nil
+
 		}
 	}
 

@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/elliotchance/pie/v2"
 	"gopkg.in/yaml.v3"
 
 	"github.com/labd/mach-composer/internal/plugins"
@@ -111,12 +112,8 @@ func (sc SiteComponent) HasCloudIntegration() bool {
 	if sc.Definition == nil {
 		log.Fatalf("Component %s was not resolved properly (missing definition)", sc.Name)
 	}
-	for _, i := range sc.Definition.Integrations {
-		if i == "aws" || i == "azure" {
-			return true
-		}
-	}
-	return false
+	return (pie.Contains(sc.Definition.Integrations, "aws") ||
+		pie.Contains(sc.Definition.Integrations, "azure"))
 }
 
 // UseVersionReference indicates if the module should be referenced with the
