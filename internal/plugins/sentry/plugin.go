@@ -3,10 +3,10 @@ package sentry
 import (
 	"fmt"
 
+	"github.com/mach-composer/mach-composer-plugin-helpers/helpers"
+	"github.com/mach-composer/mach-composer-plugin-sdk/plugin"
+	"github.com/mach-composer/mach-composer-plugin-sdk/schema"
 	"github.com/mitchellh/mapstructure"
-
-	"github.com/labd/mach-composer/internal/plugins/mcsdk"
-	"github.com/labd/mach-composer/internal/plugins/shared"
 )
 
 type SentryPlugin struct {
@@ -16,13 +16,13 @@ type SentryPlugin struct {
 	siteConfigs  map[string]*SiteConfig
 }
 
-func NewSentryPlugin() mcsdk.MachComposerPlugin {
+func NewSentryPlugin() schema.MachComposerPlugin {
 	state := &SentryPlugin{
 		provider:    "0.6.0",
 		siteConfigs: map[string]*SiteConfig{},
 	}
 
-	return mcsdk.NewPlugin(&mcsdk.PluginSchema{
+	return plugin.NewPlugin(&schema.PluginSchema{
 		Identifier: "sentry",
 
 		Configure: state.Configure,
@@ -93,7 +93,7 @@ func (p *SentryPlugin) TerraformRenderProviders(site string) (string, error) {
 		sentry = {
 			source = "jianyuan/sentry"
 			version = "%s"
-		}`, shared.VersionConstraint(p.provider))
+		}`, helpers.VersionConstraint(p.provider))
 	return result, nil
 }
 
@@ -109,10 +109,10 @@ func (p *SentryPlugin) TerraformRenderResources(site string) (string, error) {
 			base_url = {{ if .BaseURL }}{{ .BaseURL|printf "%q" }}{{ else }}"https://sentry.io/api/"{{ end }}
 		}
 	`
-	return shared.RenderGoTemplate(template, p.globalConfig)
+	return helpers.RenderGoTemplate(template, p.globalConfig)
 }
 
-func (p *SentryPlugin) RenderTerraformComponent(site string, component string) (*mcsdk.ComponentSnippets, error) {
+func (p *SentryPlugin) RenderTerraformComponent(site string, component string) (*schema.ComponentSchema, error) {
 	cfg := p.getComponentSiteConfig(site, component)
 
 	vars := fmt.Sprintf("sentry_dsn = \"%s\"", cfg.DSN)
@@ -125,7 +125,7 @@ func (p *SentryPlugin) RenderTerraformComponent(site string, component string) (
 		return nil, err
 	}
 
-	result := &mcsdk.ComponentSnippets{
+	result := &schema.ComponentSchema{
 		Variables: vars,
 		Resources: resources,
 	}
@@ -174,5 +174,5 @@ func terraformRenderComponentResources(site, component string, cfg *ComponentCon
 		{{ end }}
 		}
 	`
-	return shared.RenderGoTemplate(template, templateContext)
+	return helpers.RenderGoTemplate(template, templateContext)
 }

@@ -3,10 +3,10 @@ package contentful
 import (
 	"fmt"
 
+	"github.com/mach-composer/mach-composer-plugin-helpers/helpers"
+	"github.com/mach-composer/mach-composer-plugin-sdk/plugin"
+	"github.com/mach-composer/mach-composer-plugin-sdk/schema"
 	"github.com/mitchellh/mapstructure"
-
-	"github.com/labd/mach-composer/internal/plugins/mcsdk"
-	"github.com/labd/mach-composer/internal/plugins/shared"
 )
 
 type ContentfulPlugin struct {
@@ -17,12 +17,12 @@ type ContentfulPlugin struct {
 	enabled      bool
 }
 
-func NewContentfulPlugin() mcsdk.MachComposerPlugin {
+func NewContentfulPlugin() schema.MachComposerPlugin {
 	state := &ContentfulPlugin{
 		provider:    "0.1.0",
 		siteConfigs: map[string]*ContentfulConfig{},
 	}
-	return mcsdk.NewPlugin(&mcsdk.PluginSchema{
+	return plugin.NewPlugin(&schema.PluginSchema{
 		Identifier: "contentful",
 
 		Configure: state.Configure,
@@ -84,7 +84,7 @@ func (p *ContentfulPlugin) TerraformRenderProviders(site string) (string, error)
 		contentful = {
 			source = "labd/contentful"
 			version = "%s"
-		}`, shared.VersionConstraint(p.provider))
+		}`, helpers.VersionConstraint(p.provider))
 	return result, nil
 }
 
@@ -120,16 +120,16 @@ func (p *ContentfulPlugin) TerraformRenderResources(site string) (string, error)
 			value = contentful_apikey.apikey.access_token
 		  }
 	`
-	return shared.RenderGoTemplate(template, cfg)
+	return helpers.RenderGoTemplate(template, cfg)
 }
 
-func (p *ContentfulPlugin) RenderTerraformComponent(site string, component string) (*mcsdk.ComponentSnippets, error) {
+func (p *ContentfulPlugin) RenderTerraformComponent(site string, component string) (*schema.ComponentSchema, error) {
 	cfg := p.getSiteConfig(site)
 	if cfg == nil {
 		return nil, nil
 	}
 
-	result := &mcsdk.ComponentSnippets{
+	result := &schema.ComponentSchema{
 		Variables: "contentful_space_id = contentful_space.space.id",
 	}
 	return result, nil

@@ -9,13 +9,14 @@ import (
 	"os/exec"
 
 	"github.com/hashicorp/go-plugin"
-
-	"github.com/labd/mach-composer/internal/plugins/mcsdk"
+	"github.com/mach-composer/mach-composer-plugin-sdk/helpers"
+	"github.com/mach-composer/mach-composer-plugin-sdk/protocol"
+	"github.com/mach-composer/mach-composer-plugin-sdk/schema"
 )
 
-func StartPlugin(name string) (mcsdk.MachComposerPlugin, error) {
+func StartPlugin(name string) (schema.MachComposerPlugin, error) {
 	var pluginMap = map[string]plugin.Plugin{
-		"MachComposerPlugin": &mcsdk.Plugin{
+		"MachComposerPlugin": &protocol.Plugin{
 			Identifier: name,
 		},
 	}
@@ -28,10 +29,10 @@ func StartPlugin(name string) (mcsdk.MachComposerPlugin, error) {
 	}
 
 	// We're a host! Start by launching the plugin process.
-	logger := mcsdk.NewLogger(nil)
+	logger := helpers.NewLogger(nil)
 
 	client := plugin.NewClient(&plugin.ClientConfig{
-		HandshakeConfig: mcsdk.HandShakeConfig(),
+		HandshakeConfig: protocol.HandShakeConfig(),
 		Plugins:         pluginMap,
 		Cmd:             exec.Command(os.Args[0], "plugin", name),
 		Logger:          logger,
@@ -52,7 +53,7 @@ func StartPlugin(name string) (mcsdk.MachComposerPlugin, error) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	plugin, ok := raw.(mcsdk.MachComposerPlugin)
+	plugin, ok := raw.(schema.MachComposerPlugin)
 	if !ok {
 		return nil, fmt.Errorf("invalid plugin resolved")
 	}
