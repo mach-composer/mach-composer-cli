@@ -117,9 +117,14 @@ func processVariables(ctx context.Context, vars *variables.Variables, rawConfig 
 		vars = variables.NewVariables()
 	}
 
+	if err := vars.InterpolateNode(&rawConfig.Global); err != nil {
+		return nil, err
+	}
+
 	if err := vars.InterpolateNode(&rawConfig.Sites); err != nil {
 		return nil, err
 	}
+
 	if err := vars.InterpolateNode(&rawConfig.Components); err != nil {
 		return nil, err
 	}

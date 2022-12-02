@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.4.6 (2022-12-02)
+- Interpolate variable references in the global config block
+
 ## 2.4.5 (2022-12-02)
 - Fix an encoding bug when passing sops encrypted variables to the generated
   terraform file.
