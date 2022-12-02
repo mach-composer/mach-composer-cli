@@ -38,7 +38,7 @@ func validateConfig(data []byte) (bool, error) {
 
 	result, err := gojsonschema.Validate(*schemaLoader, *docLoader)
 	if err != nil {
-		return false, err
+		return false, fmt.Errorf("configuration file is invalid: %w", err)
 	}
 
 	// Deal with result
@@ -80,7 +80,7 @@ func getSchemaVersion(data []byte) (int, error) {
 func loadSchema(version int) (*gojsonschema.JSONLoader, error) {
 	body, err := schemas.ReadFile(fmt.Sprintf("schemas/schema-%d.yaml", version))
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to read file: %w", err)
 	}
 	return newYamlLoader(body)
 }
@@ -88,7 +88,7 @@ func loadSchema(version int) (*gojsonschema.JSONLoader, error) {
 func newYamlLoader(data []byte) (*gojsonschema.JSONLoader, error) {
 	var document map[string]interface{}
 	if err := yaml.Unmarshal(data, &document); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("yaml unmarshalling failed: %w", err)
 	}
 	loader := gojsonschema.NewRawLoader(document)
 
