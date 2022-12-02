@@ -1,32 +1,14 @@
 package generator
 
 import (
-	"embed"
 	"fmt"
 	"strings"
 
 	"github.com/elliotchance/pie/v2"
-	"github.com/flosch/pongo2/v5"
 	"github.com/mach-composer/mach-composer-plugin-helpers/helpers"
 
 	"github.com/labd/mach-composer/internal/config"
 )
-
-//go:embed templates/*
-var templates embed.FS
-
-type TemplateRenderer struct {
-	templateSet *pongo2.TemplateSet
-
-	componentTemplate *pongo2.Template
-}
-
-var renderer TemplateRenderer
-
-func init() {
-	renderer.templateSet = pongo2.NewSet("", &helpers.EmbedLoader{Content: templates})
-	renderer.componentTemplate = pongo2.Must(renderer.templateSet.FromFile("component.tf"))
-}
 
 // renderSite is responsible for generating the `site.tf` file. Therefore it is
 // the main entrypoint for generating the terraform file for each site.
@@ -161,10 +143,31 @@ func renderTerraformResources(cfg *config.MachConfig, site *config.SiteConfig) (
 // renderComponent uses templates/component.tf to generate a terraform snippet
 // for each component
 func renderComponent(cfg *config.MachConfig, site *config.SiteConfig, component *config.SiteComponent) (string, error) {
-	pVars := []string{}
-	pResources := []string{}
-	pDependsOn := []string{}
-	pProviders := []string{}
+	tc := struct {
+		ComponentName       string
+		SiteName            string
+		Environment         string
+		Source              string
+		PluginResources     []string
+		PluginProviders     []string
+		PluginDependsOn     []string
+		PluginVariables     []string
+		ComponentVariables  string
+		ComponentSecrets    string
+		ComponentVersion    string
+		HasCloudIntegration bool
+	}{
+		ComponentName:    component.Name,
+		ComponentVersion: component.Definition.Version,
+		SiteName:         site.Identifier,
+		Environment:      cfg.Global.Environment,
+		Source:           component.Definition.Source,
+		PluginResources:  []string{},
+		PluginVariables:  []string{},
+		PluginDependsOn:  []string{},
+		PluginProviders:  []string{},
+	}
+
 	for _, plugin := range cfg.Plugins.Enabled() {
 		if !pie.Contains(component.Definition.Integrations, plugin.Identifier()) {
 			continue
@@ -178,22 +181,70 @@ func renderComponent(cfg *config.MachConfig, site *config.SiteConfig, component 
 			continue
 		}
 
-		pResources = append(pResources, cr.Resources)
-		pVars = append(pVars, cr.Variables)
-		pProviders = append(pProviders, cr.Providers...)
-		pDependsOn = append(pDependsOn, cr.DependsOn...)
+		tc.PluginResources = append(tc.PluginResources, cr.Resources)
+		tc.PluginVariables = append(tc.PluginVariables, cr.Variables)
+		tc.PluginProviders = append(tc.PluginProviders, cr.Providers...)
+		tc.PluginDependsOn = append(tc.PluginDependsOn, cr.DependsOn...)
 	}
 
-	return renderer.componentTemplate.Execute(pongo2.Context{
-		"siteEnvironment":    cfg.Global.Environment,
-		"siteIdentifier":     site.Identifier,
-		"component":          component,
-		"componentVariables": helpers.SerializeToHCL("variables", component.Variables),
-		"componentSecrets":   helpers.SerializeToHCL("secrets", component.Secrets),
-		"definition":         component.Definition,
-		"pluginVariables":    pVars,
-		"pluginResources":    pResources,
-		"pluginProviders":    pProviders,
-		"pluginDependsOn":    pDependsOn,
-	})
+	template := `
+		# Module: {{ .ComponentName }}
+		{{ range $resource := .PluginResources }}
+			{{ $resource }}
+		{{ end }}
+
+		module "{{ .ComponentName }}" {
+			source = "{{ .Source }}"
+
+			{{ if .ComponentVariables }}
+				{{ .ComponentVariables }}
+			{{ end }}
+
+			{{ if .ComponentSecrets }}
+				{{ .ComponentSecrets }}
+			{{ end }}
+
+			{{ if .HasCloudIntegration }}
+			component_version       = "{{ .ComponentVersion }}"
+			environment             = "{{ .Environment }}"
+			site                    = "{{ .SiteName }}"
+			tags                    = local.tags
+			{{ end }}
+
+			{{ range $item := .PluginVariables }}
+				{{ $item }}
+			{{ end }}
+
+			providers = {
+				{{ range $item := .PluginProviders }}
+					{{ $item }},
+				{{ end }}
+			}
+
+			depends_on = [
+				{{ range $item := .PluginDependsOn }}
+					{{ $item }},
+				{{ end }}
+			]
+		}
+	`
+
+	if component.HasCloudIntegration() {
+		tc.HasCloudIntegration = true
+		tc.ComponentVariables = "variables = {}"
+		tc.ComponentSecrets = "secrets = {}"
+	}
+
+	if len(component.Variables) > 0 {
+		tc.ComponentVariables = helpers.SerializeToHCL("variables", component.Variables)
+	}
+	if len(component.Secrets) > 0 {
+		tc.ComponentSecrets = helpers.SerializeToHCL("secrets", component.Secrets)
+	}
+
+	if component.Definition.UseVersionReference() {
+		tc.Source += fmt.Sprintf("?ref=%s", component.Definition.Version)
+	}
+
+	return helpers.RenderGoTemplate(template, tc)
 }
