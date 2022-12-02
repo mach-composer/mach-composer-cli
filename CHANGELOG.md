@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.4.5 (2022-12-02)
+- Fix an encoding bug when passing sops encrypted variables to the generated
+  terraform file.
+
 ## 2.4.4 (2022-11-29)
 - Fix another config inheritance issue in the sentry plugin
 

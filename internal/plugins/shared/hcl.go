@@ -22,7 +22,14 @@ func SerializeToHCL(attributeName string, data any) string {
 func fixVariableReference(data string) string {
 	matches := regexVars.FindAllStringSubmatch(data, -1)
 	for _, match := range matches {
-		data = strings.Replace(data, match[0], match[1], 1)
+		replacement := match[1]
+
+		// Unescape quotes. Required for secret references, e.g.:
+		// 	data.sops_external.variables.data[\"my-key\"]
+		// should become:
+		// 	data.sops_external.variables.data["my-key"]
+		replacement = strings.ReplaceAll(replacement, `\"`, `"`)
+		data = strings.Replace(data, match[0], replacement, 1)
 	}
 
 	return data

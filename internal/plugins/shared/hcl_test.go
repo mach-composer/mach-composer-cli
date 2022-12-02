@@ -20,20 +20,27 @@ func TestSerializeToHCL(t *testing.T) {
 		{input: true, output: "variables = true\n"},
 		{input: false, output: "variables = false\n"},
 		{input: []string{"${foo}", "${bar}"}, output: "variables = [foo, bar]\n"},
-		{input: map[any]any{
-			63000012: "foobar",
+		{
+			input:  `${data.sops_external.variables.data["foo-bar"]}`,
+			output: `variables = data.sops_external.variables.data["foo-bar"]` + "\n",
 		},
-			output: "variables = {\n  \"63000012\" = \"foobar\"\n}\n"},
-
-		{input: map[string]any{
-			"my-key": map[string]any{
-				"my-value": []string{
-					"nl-NL",
-					"en-US",
+		{
+			input: map[any]any{
+				63000012: "foobar",
+			},
+			output: "variables = {\n  \"63000012\" = \"foobar\"\n}\n",
+		},
+		{
+			input: map[string]any{
+				"my-key": map[string]any{
+					"my-value": []string{
+						"nl-NL",
+						"en-US",
+					},
 				},
 			},
+			output: "variables = {\n  my-key = {\n    my-value = [\"nl-NL\", \"en-US\"]\n  }\n}\n",
 		},
-			output: "variables = {\n  my-key = {\n    my-value = [\"nl-NL\", \"en-US\"]\n  }\n}\n"},
 	}
 
 	for _, tc := range tests {

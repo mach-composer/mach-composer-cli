@@ -44,7 +44,7 @@ func (c *MachConfig) HasSite(ident string) bool {
 func (c *MachConfig) addFileToConfig(filename string) error {
 	b, err := os.ReadFile(filename)
 	if err != nil {
-		return fmt.Errorf("error reading variables file: %w", err)
+		return fmt.Errorf("error reading variables file %s: %w", filename, err)
 	}
 	filename = filepath.Base(filename)
 	c.extraFiles[filename] = b

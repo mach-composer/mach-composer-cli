@@ -38,7 +38,7 @@ func (v *Variables) Get(key string) (string, error) {
 		}
 
 		if v.Encrypted {
-			result := fmt.Sprintf(`data.sops_external.variables.data["%s"]`, trimmedKey)
+			result := fmt.Sprintf(`${data.sops_external.variables.data["%s"]}`, trimmedKey)
 			return result, nil
 		}
 

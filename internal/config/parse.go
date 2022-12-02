@@ -67,7 +67,7 @@ func ParseConfig(ctx context.Context, data []byte, vars *variables.Variables, fi
 	cfg.Variables = vars
 
 	if vars.Encrypted {
-		err := cfg.addFileToConfig(intermediate.MachComposer.VariablesFile)
+		err := cfg.addFileToConfig(vars.Filepath)
 		if err != nil {
 			return nil, err
 		}
