@@ -12,6 +12,20 @@ import (
 	"github.com/labd/mach-composer/internal/variables"
 )
 
+type ParseOptions struct {
+	Variables *variables.Variables
+	Plugins   *plugins.PluginRepository
+	Filename  string
+}
+
+type SyntaxError struct {
+	message string
+}
+
+func (e *SyntaxError) Error() string {
+	return e.message
+}
+
 func Load(ctx context.Context, filename string, varFilename string) (*MachConfig, error) {
 	var vars *variables.Variables
 	if varFilename != "" {
@@ -37,34 +51,39 @@ func Load(ctx context.Context, filename string, varFilename string) (*MachConfig
 		return nil, fmt.Errorf("failed to load config %s due to errors", filename)
 	}
 
-	return ParseConfig(ctx, body, vars, filename)
+	return ParseConfig(ctx, body, ParseOptions{
+		Variables: vars,
+		Filename:  filename,
+	})
 }
 
 // parseConfig is responsible for parsing a mach composer yaml config file and
 // creating the resulting MachConfig struct.
-func ParseConfig(ctx context.Context, data []byte, vars *variables.Variables, filename string) (*MachConfig, error) {
+func ParseConfig(ctx context.Context, data []byte, options ParseOptions) (*MachConfig, error) {
 	// Decode the yaml in an intermediate config file
 	intermediate := &_RawMachConfig{}
 	err := yaml.Unmarshal(data, intermediate)
 	if err != nil {
-		return nil, fmt.Errorf("failed to unmarshall yaml: %w", err)
+		return nil, fmt.Errorf("failed to unmarshal yaml: %w", err)
 	}
 
-	pluginRepo, err := resolvePluginConfig(intermediate.MachComposer.Plugins)
-	if err != nil {
-		return nil, err
-	}
-
-	vars, err = processVariables(ctx, vars, intermediate)
+	vars, err := processVariables(ctx, options.Variables, intermediate)
 	if err != nil {
 		return nil, err
 	}
 
 	cfg := NewMachConfig()
-	cfg.Filename = filepath.Base(filename)
+	cfg.Filename = filepath.Base(options.Filename)
 	cfg.MachComposer = intermediate.MachComposer
-	cfg.Plugins = pluginRepo
 	cfg.Variables = vars
+
+	cfg.Plugins = options.Plugins
+	if cfg.Plugins == nil {
+		cfg.Plugins = plugins.NewPluginRepository()
+	}
+	if err := cfg.Plugins.Load(intermediate.MachComposer.Plugins); err != nil {
+		return nil, err
+	}
 
 	if vars.Encrypted {
 		err := cfg.addFileToConfig(vars.Filepath)
@@ -74,10 +93,13 @@ func ParseConfig(ctx context.Context, data []byte, vars *variables.Variables, fi
 	}
 
 	if err := parseGlobalNode(cfg, &intermediate.Global); err != nil {
+		if _, ok := err.(*plugins.PluginNotFoundError); ok {
+			return nil, err
+		}
 		return nil, fmt.Errorf("failed to parse global node: %w", err)
 	}
 
-	if err := parseComponentsNode(cfg, &intermediate.Components, filename); err != nil {
+	if err := parseComponentsNode(cfg, &intermediate.Components, options.Filename); err != nil {
 		return nil, fmt.Errorf("failed to parse components node: %w", err)
 	}
 
@@ -86,24 +108,6 @@ func ParseConfig(ctx context.Context, data []byte, vars *variables.Variables, fi
 	}
 
 	return cfg, nil
-}
-
-// resolvePluginConfig loads the plugins
-func resolvePluginConfig(data map[string]string) (*plugins.PluginRepository, error) {
-	pluginRepo := plugins.NewPluginRepository()
-	if len(data) > 0 {
-		for name, version := range data {
-			err := pluginRepo.Load(name, version)
-			if err != nil {
-				return nil, err
-			}
-		}
-	} else {
-		pluginRepo.LoadDefault()
-	}
-	pluginRepo.StartPlugins()
-
-	return pluginRepo, nil
 }
 
 func processVariables(ctx context.Context, vars *variables.Variables, rawConfig *_RawMachConfig) (*variables.Variables, error) {

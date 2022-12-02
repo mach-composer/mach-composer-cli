@@ -7,7 +7,9 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"strings"
 
+	"github.com/elliotchance/pie/v2"
 	"github.com/hashicorp/go-plugin"
 	"github.com/mach-composer/mach-composer-plugin-sdk/helpers"
 	"github.com/mach-composer/mach-composer-plugin-sdk/protocol"
@@ -21,20 +23,38 @@ func StartPlugin(name string) (schema.MachComposerPlugin, error) {
 		},
 	}
 
-	// Create the checksum based on the current executable. This should be
-	// retrieved from a 'catalog' and cached.
-	pluginChecksum, err := getPluginChecksum(os.Args[0])
-	if err != nil {
-		return nil, err
+	// Safety check to not run external plugins during test for now
+	if strings.HasSuffix(os.Args[0], ".test") {
+		panic(fmt.Sprintf("Not loading %s: invalid command: %s", name, os.Args[0]))
 	}
 
 	// We're a host! Start by launching the plugin process.
 	logger := helpers.NewLogger(nil)
 
+	command := fmt.Sprintf("mach-composer-plugin-%s", name)
+	args := []string{}
+
+	if pie.Contains(LocalPluginNames, name) {
+		command = os.Args[0]
+		args = []string{"plugin", name}
+	} else {
+		path, err := exec.LookPath(command)
+		if err != nil {
+			return nil, err
+		}
+
+		command = path
+	}
+
+	pluginChecksum, err := getPluginChecksum(command)
+	if err != nil {
+		return nil, err
+	}
+
 	client := plugin.NewClient(&plugin.ClientConfig{
 		HandshakeConfig: protocol.HandShakeConfig(),
 		Plugins:         pluginMap,
-		Cmd:             exec.Command(os.Args[0], "plugin", name),
+		Cmd:             exec.Command(command, args...),
 		Logger:          logger,
 		SecureConfig: &plugin.SecureConfig{
 			Hash:     crc32.NewIEEE(),

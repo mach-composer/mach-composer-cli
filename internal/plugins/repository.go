@@ -5,7 +5,16 @@ import (
 
 	"github.com/elliotchance/pie/v2"
 	"github.com/mach-composer/mach-composer-plugin-sdk/schema"
+	"github.com/sirupsen/logrus"
 )
+
+type PluginNotFoundError struct {
+	Plugin string
+}
+
+func (e *PluginNotFoundError) Error() string {
+	return fmt.Sprintf("plugin %s not found", e.Plugin)
+}
 
 type PluginRepository struct {
 	Plugins map[string]schema.MachComposerPlugin
@@ -17,41 +26,57 @@ func NewPluginRepository() *PluginRepository {
 	}
 }
 
-func (p *PluginRepository) StartPlugins() {
+// resolvePluginConfig loads the plugins
+func (p *PluginRepository) Load(data map[string]map[string]string) error {
+	if data == nil {
+		logrus.Debug("No plugins specified; loading default plugins")
+		p.LoadDefault()
 
-}
-
-func (p *PluginRepository) Load(name string, version string) error {
-	if plugin, ok := localPlugins[name]; ok {
-		p.Plugins[name] = plugin
-		return nil
+	} else {
+		for name, properties := range data {
+			err := p.LoadPlugin(name, properties)
+			if err != nil {
+				return err
+			}
+		}
 	}
-
-	plugin, err := StartPlugin(name)
-	if err != nil {
-		panic(err)
-	}
-	p.Plugins[name] = plugin
 	return nil
 }
 
 // LoadDefault loads the default plugins, for backwards compatibility
 func (p *PluginRepository) LoadDefault() {
-	plugins := []string{"amplience", "aws", "azure", "contentful", "commercetools", "sentry"}
-	for _, name := range plugins {
-		if err := p.Load(name, "internal"); err != nil {
+	// Don't load default plugins if we already have
+	if len(p.Plugins) > 0 {
+		return
+	}
+
+	for _, name := range LocalPluginNames {
+		if err := p.LoadPlugin(name, map[string]string{}); err != nil {
 			panic(err)
 		}
 	}
 }
 
+func (p *PluginRepository) LoadPlugin(name string, properties map[string]string) error {
+	if _, ok := p.Plugins[name]; ok {
+		return fmt.Errorf("plugin %s is already loaded", name)
+	}
+
+	plugin, err := StartPlugin(name)
+	if err != nil {
+		return err
+	}
+	p.Plugins[name] = plugin
+	return nil
+}
+
 func (p *PluginRepository) Get(name string) (schema.MachComposerPlugin, error) {
 	if name == "" {
-		return nil, fmt.Errorf("invalid plugin name given, received: %#v", name)
+		panic("plugin name is empty") // this should never happen
 	}
 	plugin, ok := p.Plugins[name]
 	if !ok {
-		return nil, fmt.Errorf("plugin %s not found", name)
+		return nil, &PluginNotFoundError{Plugin: name}
 	}
 	return plugin, nil
 }
