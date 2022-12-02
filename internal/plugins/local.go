@@ -1,13 +1,12 @@
 package plugins
 
 import (
+	amplience "github.com/mach-composer/mach-composer-plugin-amplience/plugin"
 	aws "github.com/mach-composer/mach-composer-plugin-aws/plugin"
 	azure "github.com/mach-composer/mach-composer-plugin-azure/plugin"
-
-	"github.com/labd/mach-composer/internal/plugins/amplience"
-	"github.com/labd/mach-composer/internal/plugins/commercetools"
-	"github.com/labd/mach-composer/internal/plugins/contentful"
-	"github.com/labd/mach-composer/internal/plugins/sentry"
+	commercetools "github.com/mach-composer/mach-composer-plugin-commercetools/plugin"
+	contentful "github.com/mach-composer/mach-composer-plugin-contentful/plugin"
+	sentry "github.com/mach-composer/mach-composer-plugin-sentry/plugin"
 )
 
 var LocalPluginNames = []string{"amplience", "aws", "azure", "contentful", "commercetools", "sentry"}
