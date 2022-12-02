@@ -11,10 +11,10 @@ require (
 	github.com/go-git/go-git/v5 v5.4.2
 	github.com/hashicorp/hcl/v2 v2.15.0
 	github.com/lithammer/dedent v1.1.0
-	github.com/mach-composer/mach-composer-plugin-aws v0.0.0-20221202132913-a64d53e7b85c
-	github.com/mach-composer/mach-composer-plugin-azure v0.0.0-20221202081717-7276bf0fc396
-	github.com/mach-composer/mach-composer-plugin-helpers v0.0.0-20221202082822-b274218773a9
-	github.com/mach-composer/mach-composer-plugin-sdk v0.0.0-20221202120829-7679933d2df4
+	github.com/mach-composer/mach-composer-plugin-aws v0.0.1
+	github.com/mach-composer/mach-composer-plugin-azure v0.0.1
+	github.com/mach-composer/mach-composer-plugin-helpers v0.0.1
+	github.com/mach-composer/mach-composer-plugin-sdk v0.0.1
 	github.com/mach-composer/mach-composer-plugin-sentry v0.0.0-20221202133218-398e993a460c
 	github.com/mach-composer/mcc-sdk-go v0.0.3-0.20221122074702-8df13e53ecaa
 	github.com/mattn/go-isatty v0.0.16
@@ -49,8 +49,8 @@ require (
 	github.com/jbenet/go-context v0.0.0-20150711004518-d14ea06fba99 // indirect
 	github.com/kevinburke/ssh_config v1.2.0 // indirect
 	github.com/mach-composer/mach-composer-plugin-amplience v0.0.0-20221202134710-25c5de0f06e1 // indirect
-	github.com/mach-composer/mach-composer-plugin-commercetools v0.0.0-20221202133555-42738574643a // indirect
-	github.com/mach-composer/mach-composer-plugin-contentful v0.0.0-20221202134154-bf02b9990ff3 // indirect
+	github.com/mach-composer/mach-composer-plugin-commercetools v0.0.1 // indirect
+	github.com/mach-composer/mach-composer-plugin-contentful v0.0.1 // indirect
 	github.com/magiconair/properties v1.8.6 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-runewidth v0.0.14 // indirect
