@@ -1,5 +1,14 @@
 # Changelog
 
+## 3.0.0 (unreleased)
+This major releases introduces support for plugins in mach-composer. All previous
+supported plugins (also called integrations) are still bundled with the
+exectutable but will in the future be distributed separately.
+
+With this release it is also possible to use build custom plugins. A plugin
+should be created with the mach-composer-plugin-sdk and the resulting executable
+should be available on your $PATH as `mach-composer-plugin-<plugin>`
+
 ## 2.4.6 (2022-12-02)
 - Interpolate variable references in the global config block
 
