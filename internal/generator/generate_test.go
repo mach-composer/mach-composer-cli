@@ -7,6 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	"github.com/labd/mach-composer/internal/config"
+	"github.com/labd/mach-composer/internal/plugins"
 	"github.com/labd/mach-composer/internal/utils"
 )
 
@@ -15,19 +16,11 @@ func TestRenderSite(t *testing.T) {
 	---
 	mach_composer:
 	  version: 1.0.0
+	  plugins: {}
 	global:
 	  environment: test
-	  cloud: aws
-	  terraform_config:
-		aws_remote_state:
 	sites:
 	- identifier: my-site
-	  endpoints:
-		main: api.my-site.nl
-		internal:
-		  url: internal-api.my-site.nl
-		  throttling_burst_limit: 5000
-		  throttling_rate_limit: 10000
 	  components:
 	  - name: your-component
 		variables:
@@ -38,13 +31,14 @@ func TestRenderSite(t *testing.T) {
 	- name: your-component
 	  source: "git::https://github.com/<username>/<your-component>.git//terraform"
 	  version: 0.1.0
-	  endpoints:
-		internal: internal
-	  integrations:
-		- aws
-		- commercetools
 `))
-	cfg, err := config.ParseConfig(context.Background(), data, nil, "main.yml")
+	cfg, err := config.ParseConfig(
+		context.Background(),
+		data,
+		config.ParseOptions{
+			Filename: "main.yml",
+			Plugins:  plugins.NewPluginRepository(),
+		})
 	if err != nil {
 		t.Error(err)
 	}

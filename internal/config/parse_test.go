@@ -4,6 +4,7 @@ import (
 	"context"
 	"testing"
 
+	"github.com/sirupsen/logrus"
 	"github.com/spf13/afero"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -14,6 +15,94 @@ import (
 	"github.com/labd/mach-composer/internal/variables"
 )
 
+func TestMain(m *testing.M) {
+	logrus.SetLevel(logrus.DebugLevel)
+	m.Run()
+}
+
+func TestParseBasic(t *testing.T) {
+	data := []byte(utils.TrimIndent(`
+        ---
+        mach_composer:
+          version: 1.0.0
+		  plugins: {}
+        global:
+          environment: test
+        sites:
+        - identifier: my-site
+          components:
+          - name: your-component
+            variables:
+              FOO_VAR: my-value
+			  BAR_VAR: ${var.foo}
+			  MULTIPLE_VARS: ${var.foo.bar} ${var.bar.foo}
+            secrets:
+              MY_SECRET: secretvalue
+        components:
+        - name: your-component
+          source: "git::https://github.com/<username>/<your-component>.git//terraform"
+          version: 0.1.0
+    `))
+
+	vars := variables.NewVariables()
+	vars.Set("foo", "foobar")
+	vars.Set("foo.bar", "1")
+	vars.Set("bar.foo", "2")
+	config, err := ParseConfig(
+		context.Background(), data, ParseOptions{
+			Variables: vars,
+			Filename:  "main.yml",
+		})
+	if err != nil {
+		t.Error(err)
+	}
+
+	component := Component{
+		Name:         "your-component",
+		Source:       "git::https://github.com/<username>/<your-component>.git//terraform",
+		Version:      "0.1.0",
+		Branch:       "",
+		Integrations: []string{},
+		Endpoints:    nil,
+	}
+
+	expected := &MachConfig{
+		MachComposer: MachComposer{
+			Version: "1.0.0",
+		},
+		Global: GlobalConfig{
+			Environment: "test",
+		},
+		Sites: []SiteConfig{
+			{
+				Name:       "",
+				Identifier: "my-site",
+				Components: []SiteComponent{
+					{
+						Name: "your-component",
+						Variables: map[string]any{
+							"FOO_VAR":       "my-value",
+							"BAR_VAR":       "foobar",
+							"MULTIPLE_VARS": "1 2",
+						},
+						Secrets: map[string]any{
+							"MY_SECRET": "secretvalue",
+						},
+						Definition: &component,
+					},
+				},
+			},
+		},
+		Components: []Component{component},
+		extraFiles: map[string][]byte{},
+		Variables:  vars,
+	}
+	assert.Equal(t, expected.Global, config.Global)
+	assert.Equal(t, expected.Sites, config.Sites)
+	assert.Equal(t, expected.Components, config.Components)
+	assert.Equal(t, expected.Variables, config.Variables)
+}
+
 func TestParse(t *testing.T) {
 	data := []byte(utils.TrimIndent(`
         ---
@@ -22,12 +111,11 @@ func TestParse(t *testing.T) {
         global:
           environment: test
           terraform_config:
-            aws_remote_state:
-              bucket: "your bucket"
-              key_prefix: mach
+			remote_state:
+				plugin: "my-plugin"
 			providers:
 				aws: 3.0.0
-          cloud: aws
+          cloud: my-plugin
         sites:
         - identifier: my-site
           endpoints:
@@ -36,8 +124,8 @@ func TestParse(t *testing.T) {
               url: internal-api.my-site.nl
               throttling_burst_limit: 5000
               throttling_rate_limit: 10000
-          aws:
-            account_id: 123456789
+          my-plugin:
+            some-key: 123456789
             region: eu-central-1
           components:
           - name: your-component
@@ -54,25 +142,31 @@ func TestParse(t *testing.T) {
           endpoints:
             internal: internal
           integrations:
-            - aws
-            - commercetools
+            - my-plugin
     `))
 
 	vars := variables.NewVariables()
 	vars.Set("foo", "foobar")
 	vars.Set("foo.bar", "1")
 	vars.Set("bar.foo", "2")
-	config, err := ParseConfig(context.Background(), data, vars, "main.yml")
-	if err != nil {
-		t.Error(err)
-	}
+
+	pluginRepo := plugins.NewPluginRepository()
+	pluginRepo.Plugins["my-plugin"] = NewMockPlugin()
+
+	config, err := ParseConfig(
+		context.Background(), data, ParseOptions{
+			Variables: vars,
+			Filename:  "main.yml",
+			Plugins:   pluginRepo,
+		})
+	require.NoError(t, err)
 
 	component := Component{
 		Name:         "your-component",
 		Source:       "git::https://github.com/<username>/<your-component>.git//terraform",
 		Version:      "0.1.0",
 		Branch:       "",
-		Integrations: []string{"aws", "commercetools"},
+		Integrations: []string{"my-plugin"},
 		Endpoints: map[string]string{
 			"internal": "internal",
 		},
@@ -84,8 +178,8 @@ func TestParse(t *testing.T) {
 		},
 		Global: GlobalConfig{
 			Environment:            "test",
-			Cloud:                  "aws",
-			TerraformStateProvider: "aws",
+			Cloud:                  "my-plugin",
+			TerraformStateProvider: "my-plugin",
 			TerraformConfig: &TerraformConfig{
 				Providers: map[string]string{
 					"aws": "3.0.0",
@@ -173,7 +267,11 @@ func TestParseMissingVars(t *testing.T) {
 
 	// Empty variables, it should fail because var.foo cannot be resolved
 	vars := variables.Variables{}
-	_, err := ParseConfig(context.Background(), data, &vars, "main.yml")
+	_, err := ParseConfig(context.Background(), data,
+		ParseOptions{
+			Variables: &vars,
+			Filename:  "main.yml",
+		})
 	assert.Error(t, err)
 }
 
@@ -195,11 +293,10 @@ func TestParseComponentsNodeInline(t *testing.T) {
 	cfg := &MachConfig{
 		Plugins: plugins.NewPluginRepository(),
 		Global: GlobalConfig{
-			Cloud: "aws",
+			Cloud: "my-cloud",
 		},
 	}
-	err = cfg.Plugins.Load("aws", "internal")
-	require.NoError(t, err)
+	cfg.Plugins.Plugins["my-cloud"] = NewMockPlugin()
 
 	err = parseComponentsNode(cfg, &intermediate.Components, "main.yml")
 	require.NoError(t, err)
@@ -234,11 +331,10 @@ func TestParseComponentsNodeInclude(t *testing.T) {
 	cfg := &MachConfig{
 		Plugins: plugins.NewPluginRepository(),
 		Global: GlobalConfig{
-			Cloud: "aws",
+			Cloud: "my-cloud",
 		},
 	}
-	err = cfg.Plugins.Load("aws", "internal")
-	require.NoError(t, err)
+	cfg.Plugins.Plugins["my-cloud"] = NewMockPlugin()
 
 	err = parseComponentsNode(cfg, &intermediate.Components, "main.yml")
 	require.NoError(t, err)
