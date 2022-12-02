@@ -7,6 +7,8 @@ import (
 	"strings"
 
 	"github.com/elliotchance/pie/v2"
+	"github.com/mach-composer/mach-composer-plugin-sdk/schema"
+	"github.com/sirupsen/logrus"
 	"gopkg.in/yaml.v3"
 
 	"github.com/labd/mach-composer/internal/utils"
@@ -54,19 +56,29 @@ func parseComponentsNode(cfg *MachConfig, node *yaml.Node, source string) error 
 }
 
 func registerComponentEndpoints(cfg *MachConfig) error {
-	cloudPlugin, err := cfg.Plugins.Get(cfg.Global.Cloud)
-	if err != nil {
-		return err
+	var cloudPlugin schema.MachComposerPlugin
+	if cfg.Global.Cloud != "" {
+		var err error
+		cloudPlugin, err = cfg.Plugins.Get(cfg.Global.Cloud)
+		if err != nil {
+			return err
+		}
 	}
 
 	for i := range cfg.Components {
 		c := &cfg.Components[i]
+		if cloudPlugin == nil {
+			if len(c.Endpoints) > 0 {
+				logrus.Error("Unable to register component endpoints when no cloud provider is configured")
+			}
+			continue
+		}
 		err := cloudPlugin.SetComponentEndpointsConfig(c.Name, c.Endpoints)
 		if err != nil {
 			return err
 		}
 	}
-	return err
+	return nil
 }
 
 // Verify the components config and set default values where needed.
@@ -75,6 +87,10 @@ func verifyComponents(cfg *MachConfig) error {
 	for i := range cfg.Components {
 		c := &cfg.Components[i]
 
+		if c.Integrations == nil {
+			c.Integrations = make([]string, 0)
+		}
+
 		// Make sure the component names are unique. Otherwise raise an error
 		if pie.Contains(seen, c.Name) {
 			return fmt.Errorf("component %s is duplicate", c.Name)
@@ -82,7 +98,7 @@ func verifyComponents(cfg *MachConfig) error {
 
 		// If the component has no integrations (or now called plugins)
 		// specified then set it to the cloud integration
-		if len(c.Integrations) < 1 {
+		if cfg.Global.Cloud != "" && len(c.Integrations) < 1 {
 			c.Integrations = append(c.Integrations, cfg.Global.Cloud)
 		}
 
