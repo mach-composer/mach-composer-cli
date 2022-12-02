@@ -2,6 +2,8 @@ module github.com/labd/mach-composer
 
 go 1.19
 
+// replace github.com/mach-composer/mach-composer-plugin-sdk => ../mach-composer-plugin-sdk
+
 require (
 	github.com/creasty/defaults v1.6.0
 	github.com/fatih/color v1.13.0
