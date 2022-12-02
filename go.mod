@@ -7,13 +7,12 @@ require (
 	github.com/fatih/color v1.13.0
 	github.com/flosch/pongo2/v5 v5.0.0
 	github.com/go-git/go-git/v5 v5.4.2
-	github.com/hashicorp/go-hclog v1.3.1
 	github.com/hashicorp/hcl/v2 v2.15.0
 	github.com/lithammer/dedent v1.1.0
 	github.com/mach-composer/mach-composer-plugin-aws v0.0.0-20221202073728-a1a623130d38
 	github.com/mach-composer/mach-composer-plugin-azure v0.0.0-20221202081717-7276bf0fc396
 	github.com/mach-composer/mach-composer-plugin-helpers v0.0.0-20221202082822-b274218773a9
-	github.com/mach-composer/mach-composer-plugin-sdk v0.0.0-20221202071618-359695a58c1a
+	github.com/mach-composer/mach-composer-plugin-sdk v0.0.0-20221202120829-7679933d2df4
 	github.com/mach-composer/mcc-sdk-go v0.0.3-0.20221122074702-8df13e53ecaa
 	github.com/mattn/go-isatty v0.0.16
 	github.com/mitchellh/mapstructure v1.5.0
@@ -40,6 +39,7 @@ require (
 	github.com/go-git/go-billy/v5 v5.3.1 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/gosimple/unidecode v1.0.1 // indirect
+	github.com/hashicorp/go-hclog v1.3.1 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/hashicorp/yamux v0.1.1 // indirect
 	github.com/imdario/mergo v0.3.13 // indirect
@@ -88,7 +88,7 @@ require (
 	github.com/spf13/pflag v1.0.5
 	github.com/xeipuuv/gojsonpointer v0.0.0-20190905194746-02993c407bfb // indirect
 	github.com/xeipuuv/gojsonreference v0.0.0-20180127040603-bd5ef7bd5415 // indirect
-	github.com/zclconf/go-cty v1.12.1 // indirect
+	github.com/zclconf/go-cty v1.12.1
 	golang.org/x/sys v0.2.0 // indirect
 	golang.org/x/text v0.4.0 // indirect
 )

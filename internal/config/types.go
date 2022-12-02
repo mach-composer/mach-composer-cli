@@ -65,9 +65,9 @@ type _RawMachConfig struct {
 }
 
 type MachComposer struct {
-	Version       string            `yaml:"version"`
-	VariablesFile string            `yaml:"variables_file"`
-	Plugins       map[string]string `yaml:"plugins"`
+	Version       string                       `yaml:"version"`
+	VariablesFile string                       `yaml:"variables_file"`
+	Plugins       map[string]map[string]string `yaml:"plugins"`
 }
 
 type GlobalConfig struct {

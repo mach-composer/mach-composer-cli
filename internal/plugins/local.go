@@ -8,21 +8,9 @@ import (
 	"github.com/labd/mach-composer/internal/plugins/commercetools"
 	"github.com/labd/mach-composer/internal/plugins/contentful"
 	"github.com/labd/mach-composer/internal/plugins/sentry"
-	"github.com/mach-composer/mach-composer-plugin-sdk/schema"
 )
 
-var localPlugins map[string]schema.MachComposerPlugin
-
-func init() {
-	localPlugins = map[string]schema.MachComposerPlugin{
-		// "amplience": amplience.NewAmpliencePlugin(),
-		// "aws":           aws.NewAWSPlugin(),
-		// "azure":         azure.NewAzurePlugin(),
-		// "contentful":    contentful.NewContentfulPlugin(),
-		// "commercetools": commercetools.NewCommercetoolsPlugin(),
-		// "sentry":        sentry.NewSentryPlugin(),
-	}
-}
+var LocalPluginNames = []string{"amplience", "aws", "azure", "contentful", "commercetools", "sentry"}
 
 func GetLocalPlugins() map[string]func() {
 	return map[string]func(){
