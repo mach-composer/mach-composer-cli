@@ -7,9 +7,9 @@ import (
 
 	"github.com/elliotchance/pie/v2"
 	"github.com/flosch/pongo2/v5"
+	"github.com/mach-composer/mach-composer-plugin-helpers/helpers"
 
 	"github.com/labd/mach-composer/internal/config"
-	"github.com/labd/mach-composer/internal/plugins/shared"
 )
 
 //go:embed templates/*
@@ -24,7 +24,7 @@ type TemplateRenderer struct {
 var renderer TemplateRenderer
 
 func init() {
-	renderer.templateSet = pongo2.NewSet("", &shared.EmbedLoader{Content: templates})
+	renderer.templateSet = pongo2.NewSet("", &helpers.EmbedLoader{Content: templates})
 	renderer.componentTemplate = pongo2.Must(renderer.templateSet.FromFile("component.tf"))
 }
 
@@ -113,7 +113,7 @@ func renderTerraformConfig(cfg *config.MachConfig, site *config.SiteConfig) (str
 		BackendConfig: backendConfig,
 		IncludeSOPS:   cfg.Variables.Encrypted,
 	}
-	return shared.RenderGoTemplate(template, templateContext)
+	return helpers.RenderGoTemplate(template, templateContext)
 }
 
 func renderTerraformResources(cfg *config.MachConfig, site *config.SiteConfig) (string, error) {
@@ -152,7 +152,7 @@ func renderTerraformResources(cfg *config.MachConfig, site *config.SiteConfig) (
 		VarsFilename:  cfg.Variables.Filepath,
 		VarsEncrypted: cfg.Variables.Encrypted,
 	}
-	return shared.RenderGoTemplate(template, templateContext)
+	return helpers.RenderGoTemplate(template, templateContext)
 }
 
 // renderComponent uses templates/component.tf to generate a terraform snippet
@@ -185,8 +185,8 @@ func renderComponent(cfg *config.MachConfig, site *config.SiteConfig, component 
 		"siteEnvironment":    cfg.Global.Environment,
 		"siteIdentifier":     site.Identifier,
 		"component":          component,
-		"componentVariables": shared.SerializeToHCL("variables", component.Variables),
-		"componentSecrets":   shared.SerializeToHCL("secrets", component.Secrets),
+		"componentVariables": helpers.SerializeToHCL("variables", component.Variables),
+		"componentSecrets":   helpers.SerializeToHCL("secrets", component.Secrets),
 		"definition":         component.Definition,
 		"pluginVariables":    pVars,
 		"pluginResources":    pResources,

@@ -1,10 +1,10 @@
 package commercetools
 
 import (
-	"github.com/labd/mach-composer/internal/plugins/mcsdk"
+	"github.com/mach-composer/mach-composer-plugin-sdk/plugin"
 )
 
 func Serve() {
 	p := NewCommercetoolsPlugin()
-	mcsdk.ServePlugin(p)
+	plugin.ServePlugin(p)
 }

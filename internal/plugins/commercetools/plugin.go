@@ -4,11 +4,11 @@ import (
 	"fmt"
 
 	"github.com/creasty/defaults"
+	"github.com/mach-composer/mach-composer-plugin-helpers/helpers"
+	"github.com/mach-composer/mach-composer-plugin-sdk/plugin"
+	"github.com/mach-composer/mach-composer-plugin-sdk/schema"
 	"github.com/mitchellh/mapstructure"
 	"github.com/sirupsen/logrus"
-
-	"github.com/labd/mach-composer/internal/plugins/mcsdk"
-	"github.com/labd/mach-composer/internal/plugins/shared"
 )
 
 type CommercetoolsPlugin struct {
@@ -17,13 +17,13 @@ type CommercetoolsPlugin struct {
 	siteConfigs map[string]*SiteConfig
 }
 
-func NewCommercetoolsPlugin() mcsdk.MachComposerPlugin {
+func NewCommercetoolsPlugin() schema.MachComposerPlugin {
 	state := &CommercetoolsPlugin{
 		provider:    "0.30.0",
 		siteConfigs: map[string]*SiteConfig{},
 	}
 
-	return mcsdk.NewPlugin(&mcsdk.PluginSchema{
+	return plugin.NewPlugin(&schema.PluginSchema{
 		Identifier: "commercetools",
 
 		Configure: state.Configure,
@@ -97,7 +97,7 @@ func (p *CommercetoolsPlugin) TerraformRenderProviders(site string) (string, err
 		source = "labd/commercetools"
 		version = "%s"
 		}
-	`, shared.VersionConstraint(p.provider))
+	`, helpers.VersionConstraint(p.provider))
 	return result, nil
 }
 
@@ -115,7 +115,7 @@ func (p *CommercetoolsPlugin) TerraformRenderResources(site string) (string, err
 	return content, nil
 }
 
-func (p *CommercetoolsPlugin) RenderTerraformComponent(site string, component string) (*mcsdk.ComponentSnippets, error) {
+func (p *CommercetoolsPlugin) RenderTerraformComponent(site string, component string) (*schema.ComponentSchema, error) {
 	cfg := p.getSiteConfig(site)
 	if cfg == nil {
 		return nil, nil
@@ -127,7 +127,7 @@ func (p *CommercetoolsPlugin) RenderTerraformComponent(site string, component st
 		return nil, err
 	}
 
-	result := &mcsdk.ComponentSnippets{
+	result := &schema.ComponentSchema{
 		Variables: vars,
 		DependsOn: []string{"null_resource.commercetools"},
 	}
@@ -175,5 +175,5 @@ func terraformRenderComponentVars(cfg *SiteConfig, componentCfg *ComponentConfig
 			{{ end }}
 		}
 	`
-	return shared.RenderGoTemplate(template, templateContext)
+	return helpers.RenderGoTemplate(template, templateContext)
 }

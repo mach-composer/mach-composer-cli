@@ -3,19 +3,19 @@ package amplience
 import (
 	"fmt"
 
+	"github.com/mach-composer/mach-composer-plugin-helpers/helpers"
+	"github.com/mach-composer/mach-composer-plugin-sdk/plugin"
+	"github.com/mach-composer/mach-composer-plugin-sdk/schema"
 	"github.com/mitchellh/mapstructure"
-
-	"github.com/labd/mach-composer/internal/plugins/mcsdk"
-	"github.com/labd/mach-composer/internal/plugins/shared"
 )
 
-func NewAmpliencePlugin() mcsdk.MachComposerPlugin {
+func NewAmpliencePlugin() schema.MachComposerPlugin {
 	state := &AmpliencePlugin{
 		provider:    "0.3.7",
 		siteConfigs: map[string]*AmplienceConfig{},
 	}
 
-	return mcsdk.NewPlugin(&mcsdk.PluginSchema{
+	return plugin.NewPlugin(&schema.PluginSchema{
 		Identifier: "amplience",
 
 		Configure: state.Configure,
@@ -100,7 +100,7 @@ func (p *AmpliencePlugin) TerraformRenderProviders(site string) (string, error) 
 	amplience = {
 		source = "labd/amplience"
 		version = "%s"
-	}`, shared.VersionConstraint(p.provider))
+	}`, helpers.VersionConstraint(p.provider))
 	return result, nil
 }
 
@@ -117,10 +117,10 @@ func (p *AmpliencePlugin) TerraformRenderResources(site string) (string, error) 
 			hub_id           = {{ .HubID|printf "%q" }}
 		}
 	`
-	return shared.RenderGoTemplate(template, cfg)
+	return helpers.RenderGoTemplate(template, cfg)
 }
 
-func (p *AmpliencePlugin) RenderTerraformComponent(site string, component string) (*mcsdk.ComponentSnippets, error) {
+func (p *AmpliencePlugin) RenderTerraformComponent(site string, component string) (*schema.ComponentSchema, error) {
 	cfg := p.getSiteConfig(site)
 	if cfg == nil {
 		return nil, nil
@@ -131,11 +131,11 @@ func (p *AmpliencePlugin) RenderTerraformComponent(site string, component string
 		amplience_client_secret = {{ .ClientSecret|printf "%q" }}
 		amplience_hub_id = {{ .HubID|printf "%q" }}
 	`
-	vars, err := shared.RenderGoTemplate(template, cfg)
+	vars, err := helpers.RenderGoTemplate(template, cfg)
 	if err != nil {
 		return nil, err
 	}
-	result := &mcsdk.ComponentSnippets{
+	result := &schema.ComponentSchema{
 		Variables: vars,
 	}
 	return result, nil

@@ -1,19 +1,20 @@
 package plugins
 
 import (
+	aws "github.com/mach-composer/mach-composer-plugin-aws/plugin"
+	azure "github.com/mach-composer/mach-composer-plugin-azure/plugin"
+
 	"github.com/labd/mach-composer/internal/plugins/amplience"
-	"github.com/labd/mach-composer/internal/plugins/aws"
-	"github.com/labd/mach-composer/internal/plugins/azure"
 	"github.com/labd/mach-composer/internal/plugins/commercetools"
 	"github.com/labd/mach-composer/internal/plugins/contentful"
-	"github.com/labd/mach-composer/internal/plugins/mcsdk"
 	"github.com/labd/mach-composer/internal/plugins/sentry"
+	"github.com/mach-composer/mach-composer-plugin-sdk/schema"
 )
 
-var localPlugins map[string]mcsdk.MachComposerPlugin
+var localPlugins map[string]schema.MachComposerPlugin
 
 func init() {
-	localPlugins = map[string]mcsdk.MachComposerPlugin{
+	localPlugins = map[string]schema.MachComposerPlugin{
 		// "amplience": amplience.NewAmpliencePlugin(),
 		// "aws":           aws.NewAWSPlugin(),
 		// "azure":         azure.NewAzurePlugin(),
