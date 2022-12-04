@@ -15,7 +15,7 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-func StartPlugin(name string) (schema.MachComposerPlugin, error) {
+func startPlugin(name string) (schema.MachComposerPlugin, error) {
 	var pluginMap = map[string]plugin.Plugin{
 		"MachComposerPlugin": &protocol.Plugin{
 			Identifier: name,

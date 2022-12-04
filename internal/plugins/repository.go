@@ -62,7 +62,7 @@ func (p *PluginRepository) LoadPlugin(name string, properties map[string]string)
 		return fmt.Errorf("plugin %s is already loaded", name)
 	}
 
-	plugin, err := StartPlugin(name)
+	plugin, err := startPlugin(name)
 	if err != nil {
 		return err
 	}
