@@ -1,11 +1,12 @@
 package generator
 
 import (
+	"bytes"
 	"fmt"
 	"strings"
+	"text/template"
 
 	"github.com/elliotchance/pie/v2"
-	"github.com/mach-composer/mach-composer-plugin-helpers/helpers"
 
 	"github.com/labd/mach-composer/internal/config"
 )
@@ -98,7 +99,7 @@ func renderTerraformConfig(cfg *config.MachConfig, site *config.SiteConfig) (str
 		BackendConfig: backendConfig,
 		IncludeSOPS:   cfg.Variables.Encrypted,
 	}
-	return helpers.RenderGoTemplate(template, templateContext)
+	return renderGoTemplate(template, templateContext)
 }
 
 func renderTerraformResources(cfg *config.MachConfig, site *config.SiteConfig) (string, error) {
@@ -137,7 +138,7 @@ func renderTerraformResources(cfg *config.MachConfig, site *config.SiteConfig) (
 		VarsFilename:  cfg.Variables.Filepath,
 		VarsEncrypted: cfg.Variables.Encrypted,
 	}
-	return helpers.RenderGoTemplate(template, templateContext)
+	return renderGoTemplate(template, templateContext)
 }
 
 // renderComponent uses templates/component.tf to generate a terraform snippet
@@ -254,5 +255,18 @@ func renderComponent(cfg *config.MachConfig, site *config.SiteConfig, component 
 		tc.Source += fmt.Sprintf("?ref=%s", component.Definition.Version)
 	}
 
-	return helpers.RenderGoTemplate(template, tc)
+	return renderGoTemplate(template, tc)
+}
+
+func renderGoTemplate(t string, data any) (string, error) {
+	tpl, err := template.New("template").Parse(t)
+	if err != nil {
+		return "", err
+	}
+
+	var content bytes.Buffer
+	if err := tpl.Execute(&content, data); err != nil {
+		return "", err
+	}
+	return content.String(), nil
 }

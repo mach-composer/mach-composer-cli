@@ -7,6 +7,7 @@ go 1.19
 require (
 	github.com/fatih/color v1.13.0
 	github.com/go-git/go-git/v5 v5.4.2
+	github.com/hashicorp/go-hclog v1.3.1
 	github.com/hashicorp/hcl/v2 v2.15.0
 	github.com/lithammer/dedent v1.1.0
 	github.com/mach-composer/mach-composer-plugin-amplience v0.0.2-0.20221202171543-a1ddd2fe53ba
@@ -14,7 +15,6 @@ require (
 	github.com/mach-composer/mach-composer-plugin-azure v0.0.1
 	github.com/mach-composer/mach-composer-plugin-commercetools v0.0.1
 	github.com/mach-composer/mach-composer-plugin-contentful v0.0.1
-	github.com/mach-composer/mach-composer-plugin-helpers v0.0.1
 	github.com/mach-composer/mach-composer-plugin-sdk v0.0.1
 	github.com/mach-composer/mach-composer-plugin-sentry v0.0.1
 	github.com/mach-composer/mcc-sdk-go v0.0.3-0.20221122074702-8df13e53ecaa
@@ -43,12 +43,12 @@ require (
 	github.com/go-git/go-billy/v5 v5.3.1 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/gosimple/unidecode v1.0.1 // indirect
-	github.com/hashicorp/go-hclog v1.3.1 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/hashicorp/yamux v0.1.1 // indirect
 	github.com/imdario/mergo v0.3.13 // indirect
 	github.com/jbenet/go-context v0.0.0-20150711004518-d14ea06fba99 // indirect
 	github.com/kevinburke/ssh_config v1.2.0 // indirect
+	github.com/mach-composer/mach-composer-plugin-helpers v0.0.1 // indirect
 	github.com/magiconair/properties v1.8.6 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-runewidth v0.0.14 // indirect
@@ -95,7 +95,7 @@ require (
 	github.com/spf13/pflag v1.0.5
 	github.com/xeipuuv/gojsonpointer v0.0.0-20190905194746-02993c407bfb // indirect
 	github.com/xeipuuv/gojsonreference v0.0.0-20180127040603-bd5ef7bd5415 // indirect
-	github.com/zclconf/go-cty v1.12.1 // indirect
+	github.com/zclconf/go-cty v1.12.1
 	golang.org/x/sys v0.2.0 // indirect
 	golang.org/x/text v0.4.0 // indirect
 )
