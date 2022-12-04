@@ -18,14 +18,6 @@ type ParseOptions struct {
 	Filename  string
 }
 
-type SyntaxError struct {
-	message string
-}
-
-func (e *SyntaxError) Error() string {
-	return e.message
-}
-
 func Load(ctx context.Context, filename string, varFilename string) (*MachConfig, error) {
 	var vars *variables.Variables
 	if varFilename != "" {
@@ -69,6 +61,14 @@ func ParseConfig(ctx context.Context, data []byte, options ParseOptions) (*MachC
 
 	vars, err := processVariables(ctx, options.Variables, intermediate)
 	if err != nil {
+		if notFoundErr, ok := err.(*variables.NotFoundError); ok {
+			err = &SyntaxError{
+				message:  fmt.Sprintf("unable to resolve variable %#v", notFoundErr.Name),
+				line:     notFoundErr.Node.Line,
+				filename: options.Filename,
+				column:   notFoundErr.Node.Column,
+			}
+		}
 		return nil, err
 	}
 

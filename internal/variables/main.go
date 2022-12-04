@@ -13,6 +13,15 @@ import (
 	"github.com/labd/mach-composer/internal/utils"
 )
 
+type NotFoundError struct {
+	Name string
+	Node *yaml.Node
+}
+
+func (e *NotFoundError) Error() string {
+	return fmt.Sprintf("variable %s not found", e.Name)
+}
+
 // Support both ${var.foobar} as well as ${env.foobar}
 var varRegex = regexp.MustCompile(`\${((?:var|env)(?:\.[^\}]+)+)}`)
 
@@ -34,7 +43,7 @@ func (v *Variables) Get(key string) (string, error) {
 
 		result, ok := v.vars[trimmedKey]
 		if !ok {
-			return "", fmt.Errorf("missing variable %s", key)
+			return "", &NotFoundError{Name: key}
 		}
 
 		if v.Encrypted {
@@ -64,11 +73,14 @@ func (v *Variables) Set(key string, value string) {
 // Recursive function to replace the
 func (v *Variables) InterpolateNode(node *yaml.Node) error {
 	if node.Kind == yaml.ScalarNode {
-		if val, replaced, err := v.interpolateValue(node.Value); err != nil {
+		val, err := v.interpolateValue(node.Value)
+		if err != nil {
+			if notFoundErr, ok := err.(*NotFoundError); ok {
+				notFoundErr.Node = node
+			}
 			return err
-		} else if replaced {
-			node.Value = val
 		}
+		node.Value = val
 		return nil
 	}
 
@@ -87,21 +99,21 @@ func (v *Variables) InterpolateNode(node *yaml.Node) error {
 	return nil
 }
 
-func (v *Variables) interpolateValue(val string) (string, bool, error) {
+func (v *Variables) interpolateValue(val string) (string, error) {
 	matches := varRegex.FindAllStringSubmatch(val, 20)
 	if len(matches) == 0 {
-		return val, false, nil
+		return val, nil
 	}
 
 	for _, match := range matches {
 		replacement, err := v.Get(match[1])
 		if err != nil {
-			return "", false, err
+			return "", err
 		}
 		val = strings.ReplaceAll(val, match[0], replacement)
 	}
 
-	return val, true, nil
+	return val, nil
 }
 
 // newVariablesFromFile creates a new Variables struct based on the contents

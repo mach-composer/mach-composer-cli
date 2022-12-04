@@ -4,7 +4,6 @@ import (
 	"embed"
 	"errors"
 	"fmt"
-	"os"
 	"strconv"
 	"strings"
 
@@ -43,11 +42,13 @@ func validateConfig(data []byte) (bool, error) {
 
 	// Deal with result
 	if !result.Valid() {
-		fmt.Fprintln(os.Stderr, "The config is not valid:")
-		for _, desc := range result.Errors() {
-			fmt.Fprintf(os.Stderr, " - %s\n", desc)
+		err := &ValidationError{
+			errors: []string{},
 		}
-		return false, nil
+		for _, desc := range result.Errors() {
+			err.errors = append(err.errors, fmt.Sprintf("%s\n", desc))
+		}
+		return false, err
 	}
 	return true, nil
 }
@@ -86,7 +87,7 @@ func loadSchema(version int) (*gojsonschema.JSONLoader, error) {
 }
 
 func newYamlLoader(data []byte) (*gojsonschema.JSONLoader, error) {
-	var document map[string]interface{}
+	var document map[string]any
 	if err := yaml.Unmarshal(data, &document); err != nil {
 		return nil, fmt.Errorf("yaml unmarshalling failed: %w", err)
 	}
