@@ -10,7 +10,6 @@ import (
 
 	"github.com/elliotchance/pie/v2"
 	"github.com/hashicorp/go-plugin"
-	"github.com/mach-composer/mach-composer-plugin-sdk/helpers"
 	"github.com/mach-composer/mach-composer-plugin-sdk/protocol"
 	"github.com/mach-composer/mach-composer-plugin-sdk/schema"
 	"github.com/rs/zerolog/log"
@@ -28,8 +27,7 @@ func StartPlugin(name string) (schema.MachComposerPlugin, error) {
 		panic(fmt.Sprintf("Not loading %s: invalid command: %s", name, os.Args[0]))
 	}
 
-	// We're a host! Start by launching the plugin process.
-	logger := helpers.NewLogger(nil)
+	logger := NewHCLogAdapter(log.Logger)
 
 	command := fmt.Sprintf("mach-composer-plugin-%s", name)
 	args := []string{}
