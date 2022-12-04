@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/sirupsen/logrus"
+	"github.com/rs/zerolog/log"
 
 	"github.com/labd/mach-composer/internal/config"
 )
@@ -32,7 +32,7 @@ func TerraformPlan(ctx context.Context, cfg *config.MachConfig, locations map[st
 }
 
 func TerraformPlanSite(ctx context.Context, cfg *config.MachConfig, site *config.SiteConfig, path string, options *PlanOptions) error {
-	logrus.Debugf("Running terraform plan for site %s", site.Identifier)
+	log.Debug().Msgf("Running terraform plan for site %s", site.Identifier)
 
 	if !options.Reuse {
 		if err := RunTerraform(ctx, path, "init"); err != nil {

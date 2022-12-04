@@ -10,7 +10,7 @@ import (
 
 	"github.com/hashicorp/hcl/v2/hclparse"
 	"github.com/hashicorp/hcl/v2/hclwrite"
-	"github.com/sirupsen/logrus"
+	"github.com/rs/zerolog/log"
 
 	"github.com/labd/mach-composer/internal/config"
 )
@@ -32,7 +32,7 @@ func WriteFiles(cfg *config.MachConfig, options *GenerateOptions) (map[string]st
 		path := locations[site.Identifier]
 		filename := filepath.Join(path, "site.tf")
 
-		logrus.Infof("Writing %s\n", filename)
+		log.Info().Msgf("Writing %s", filename)
 
 		body, err := renderSite(cfg, &site)
 		if err != nil {
@@ -42,7 +42,7 @@ func WriteFiles(cfg *config.MachConfig, options *GenerateOptions) (map[string]st
 		// Format and validate the file
 		formatted := formatFile([]byte(body))
 		if err := validateFile(formatted); err != nil {
-			logrus.Error("The generated terraform code is invalid. " +
+			log.Error().Msg("The generated terraform code is invalid. " +
 				"This is a bug in mach composer. Please report the issue at " +
 				"https://github.com/labd/mach-composer")
 			// os.Exit(255)
@@ -59,7 +59,7 @@ func WriteFiles(cfg *config.MachConfig, options *GenerateOptions) (map[string]st
 		// Write extra files
 		for extraFilename, content := range cfg.GetFiles() {
 			extraFilename = filepath.Join(path, extraFilename)
-			logrus.Infof("Copying %s\n", extraFilename)
+			log.Info().Msgf("Copying %s\n", extraFilename)
 			if err := os.WriteFile(extraFilename, content, 0700); err != nil {
 				return nil, fmt.Errorf("error writing extra file: %w", err)
 			}
@@ -113,9 +113,9 @@ func validateFile(src []byte) error {
 
 	_, diags := parser.ParseHCL(src, "site.tf")
 	if diags.HasErrors() {
-		logrus.Debugln("Generate HCL has errors:")
+		log.Debug().Msg("Generate HCL has errors:")
 		for _, err := range diags.Errs() {
-			logrus.Debugln(err)
+			log.Debug().Err(err).Msg("error")
 		}
 		return errors.New("generated HCL is invalid")
 	}

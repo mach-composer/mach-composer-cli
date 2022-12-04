@@ -3,7 +3,7 @@ package runner
 import (
 	"context"
 
-	"github.com/sirupsen/logrus"
+	"github.com/rs/zerolog/log"
 
 	"github.com/labd/mach-composer/internal/config"
 )
@@ -29,7 +29,7 @@ func TerraformInit(ctx context.Context, cfg *config.MachConfig, locations map[st
 }
 
 func TerraformInitSite(ctx context.Context, cfg *config.MachConfig, site *config.SiteConfig, path string, options *InitOptions) error {
-	logrus.Debugf("Running terraform init for site %s", site.Identifier)
+	log.Debug().Msgf("Running terraform init for site %s", site.Identifier)
 
 	return RunTerraform(ctx, path, "init")
 }

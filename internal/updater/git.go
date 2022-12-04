@@ -16,7 +16,7 @@ import (
 	"github.com/go-git/go-git/v5/plumbing"
 	"github.com/go-git/go-git/v5/plumbing/object"
 	"github.com/go-git/go-git/v5/plumbing/storer"
-	"github.com/sirupsen/logrus"
+	"github.com/rs/zerolog/log"
 
 	"github.com/labd/mach-composer/internal/config"
 	"github.com/labd/mach-composer/internal/utils"
@@ -130,10 +130,10 @@ func fetchGitRepository(ctx context.Context, source *gitSource, cacheDir string)
 	_, err := os.Stat(dest)
 	if os.IsNotExist(err) {
 		output := runGit(ctx, ".", "clone", "--bare", source.Repository, dest)
-		logrus.Debug(string(output))
+		log.Debug().Msgf(string(output))
 	} else {
 		output := runGit(ctx, dest, "fetch", "-f", "origin", "*:*")
-		logrus.Debug(string(output))
+		log.Debug().Msgf(string(output))
 	}
 }
 
@@ -278,7 +278,7 @@ func Commit(ctx context.Context, fileNames []string, message string) error {
 
 // runGit executes the git command
 func runGit(ctx context.Context, cwd string, args ...string) []byte {
-	logrus.Debugf("Running: git %s\n", strings.Join(args, " "))
+	log.Debug().Msgf("Running: git %s\n", strings.Join(args, " "))
 	cmd := exec.CommandContext(
 		ctx,
 		"git",

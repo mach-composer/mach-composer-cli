@@ -3,7 +3,8 @@ package main
 import (
 	"os"
 
-	"github.com/sirupsen/logrus"
+	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 
 	"github.com/labd/mach-composer/cmd/mach-composer/cloudcmd"
@@ -28,15 +29,23 @@ var (
 			if err != nil {
 				panic(err)
 			}
+
+			logger := zerolog.New(os.Stdout)
 			if verbose {
-				logrus.SetLevel(logrus.DebugLevel)
+				logger = logger.Level(zerolog.TraceLevel)
+			} else {
+				logger = logger.Level(zerolog.InfoLevel)
 			}
-			logrus.SetFormatter(&logrus.TextFormatter{
-				DisableTimestamp:       true,
-				DisableLevelTruncation: true,
-				DisableSorting:         true,
-				PadLevelText:           true,
-			})
+			logger = logger.Output(zerolog.NewConsoleWriter(
+				func(w *zerolog.ConsoleWriter) {
+					w.PartsOrder = []string{
+						zerolog.LevelFieldName,
+						zerolog.CallerFieldName,
+						zerolog.MessageFieldName,
+					}
+				},
+			))
+			log.Logger = logger
 		},
 	}
 )

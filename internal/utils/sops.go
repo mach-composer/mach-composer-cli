@@ -6,11 +6,11 @@ import (
 	"os/exec"
 	"strings"
 
-	"github.com/sirupsen/logrus"
+	"github.com/rs/zerolog/log"
 )
 
 func RunSops(ctx context.Context, cwd string, args ...string) ([]byte, error) {
-	logrus.Debugf("Running: sops %s\n", strings.Join(args, " "))
+	log.Debug().Msgf("Running: sops %s\n", strings.Join(args, " "))
 	cmd := exec.CommandContext(
 		ctx,
 		"sops",

@@ -7,11 +7,11 @@ import (
 	"os/exec"
 	"strings"
 
-	"github.com/sirupsen/logrus"
+	"github.com/rs/zerolog/log"
 )
 
 func RunInteractive(ctx context.Context, command string, cwd string, args ...string) error {
-	logrus.Debugf("Running: %s %s\n", command, strings.Join(args, " "))
+	log.Debug().Msgf("Running: %s %s\n", command, strings.Join(args, " "))
 
 	cmd := exec.CommandContext(
 		ctx,

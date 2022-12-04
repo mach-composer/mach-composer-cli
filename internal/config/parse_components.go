@@ -8,7 +8,7 @@ import (
 
 	"github.com/elliotchance/pie/v2"
 	"github.com/mach-composer/mach-composer-plugin-sdk/schema"
-	"github.com/sirupsen/logrus"
+	"github.com/rs/zerolog/log"
 	"gopkg.in/yaml.v3"
 
 	"github.com/labd/mach-composer/internal/utils"
@@ -69,7 +69,7 @@ func registerComponentEndpoints(cfg *MachConfig) error {
 		c := &cfg.Components[i]
 		if cloudPlugin == nil {
 			if len(c.Endpoints) > 0 {
-				logrus.Error("Unable to register component endpoints when no cloud provider is configured")
+				log.Error().Msg("Unable to register component endpoints when no cloud provider is configured")
 			}
 			continue
 		}

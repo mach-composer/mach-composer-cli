@@ -5,7 +5,7 @@ import (
 
 	"github.com/elliotchance/pie/v2"
 	"github.com/mach-composer/mach-composer-plugin-sdk/schema"
-	"github.com/sirupsen/logrus"
+	"github.com/rs/zerolog/log"
 )
 
 type PluginNotFoundError struct {
@@ -29,7 +29,7 @@ func NewPluginRepository() *PluginRepository {
 // resolvePluginConfig loads the plugins
 func (p *PluginRepository) Load(data map[string]map[string]string) error {
 	if data == nil {
-		logrus.Debug("No plugins specified; loading default plugins")
+		log.Debug().Msg("No plugins specified; loading default plugins")
 		p.LoadDefault()
 
 	} else {

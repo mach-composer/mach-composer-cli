@@ -2,10 +2,9 @@ package updater
 
 import (
 	"fmt"
-	"log"
 	"strings"
 
-	"github.com/sirupsen/logrus"
+	"github.com/rs/zerolog/log"
 	"gopkg.in/yaml.v3"
 
 	"github.com/labd/mach-composer/internal/utils"
@@ -15,7 +14,7 @@ func MachConfigUpdater(src []byte, updateSet *UpdateSet) []byte {
 	data := PartialRawConfig{}
 	err := yaml.Unmarshal(src, &data)
 	if err != nil {
-		log.Fatalln(err)
+		log.Fatal().Err(err).Msg("failed to unmarshal")
 	}
 
 	nodes := mapComponentNodes(&data.Components)
@@ -28,7 +27,7 @@ func MachConfigUpdater(src []byte, updateSet *UpdateSet) []byte {
 	for _, c := range updateSet.updates {
 		node, ok := nodes[c.Component.Name]
 		if !ok {
-			logrus.Warn("Component with update not found in yaml file")
+			log.Warn().Msg("Component with update not found in yaml file")
 			continue
 		}
 
@@ -38,7 +37,7 @@ func MachConfigUpdater(src []byte, updateSet *UpdateSet) []byte {
 				// sequential
 				vn := node.Content[i+1]
 				if vn.Value != c.Component.Version {
-					log.Fatal("Unexpected version")
+					log.Fatal().Msg("Unexpected version")
 				}
 
 				// Make sure the version is always quoted. This is currently not
@@ -84,13 +83,13 @@ func mapComponentNodes(node *yaml.Node) map[string]*yaml.Node {
 func MachFileWriter(updates *UpdateSet) {
 	input, err := utils.AFS.ReadFile(updates.filename)
 	if err != nil {
-		log.Fatalln(err)
+		log.Fatal().Err(err).Msg("failed to read file")
 	}
 
 	output := MachConfigUpdater(input, updates)
 
 	err = utils.AFS.WriteFile(updates.filename, output, 0644)
 	if err != nil {
-		log.Fatalln(err)
+		log.Fatal().Err(err).Msg("failed to write file")
 	}
 }

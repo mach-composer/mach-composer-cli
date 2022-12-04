@@ -7,7 +7,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/sirupsen/logrus"
+	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 
 	"github.com/labd/mach-composer/internal/cli"
@@ -51,7 +51,7 @@ func preprocessGenerateFlags() {
 			if errors.Is(err, os.ErrNotExist) {
 				cli.PrintExitError(fmt.Sprintf("Variable file %s does not exist", generateFlags.varFile))
 			}
-			logrus.Errorf("error: %s\n", err.Error())
+			log.Error().Msgf("error: %s\n", err.Error())
 			os.Exit(1)
 		}
 	}

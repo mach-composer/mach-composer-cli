@@ -7,7 +7,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/sirupsen/logrus"
+	"github.com/rs/zerolog/log"
 	"gopkg.in/yaml.v3"
 
 	"github.com/labd/mach-composer/internal/utils"
@@ -50,7 +50,7 @@ func (v *Variables) Get(key string) (string, error) {
 		return os.Getenv(trimmedKey), nil
 	}
 
-	logrus.Warningf("Unsupported variables type %s", key)
+	log.Warn().Msgf("Unsupported variables type %s", key)
 	return "", nil
 }
 
@@ -120,7 +120,7 @@ func NewVariablesFromFile(ctx context.Context, filename string) (*Variables, err
 		return nil, err
 	}
 	if isEncrypted {
-		logrus.Debug("Detected SOPS encryption; decrypting...")
+		log.Debug().Msgf("Detected SOPS encryption; decrypting...")
 		body, err = utils.DecryptYaml(ctx, filename)
 		if err != nil {
 			return nil, err

@@ -5,7 +5,7 @@ import (
 
 	"github.com/elliotchance/pie/v2"
 	"github.com/mach-composer/mach-composer-plugin-sdk/schema"
-	"github.com/sirupsen/logrus"
+	"github.com/rs/zerolog/log"
 	"gopkg.in/yaml.v3"
 
 	"github.com/labd/mach-composer/internal/variables"
@@ -50,7 +50,7 @@ func parseSitesNode(cfg *MachConfig, sitesNode *yaml.Node) error {
 			}
 			if cloudPlugin == nil {
 				if len(data) > 0 {
-					logrus.Error("Unable to register site endpoints when no cloud provider is configured")
+					log.Error().Msg("Unable to register site endpoints when no cloud provider is configured")
 				}
 				continue
 			}
@@ -144,7 +144,7 @@ func migrateCommercetools(site, name string, nodes map[string]*yaml.Node) {
 		return
 	}
 
-	logrus.Warnf("%s: %s store_variables and store_secrets should be children of the commercetools node\n", site, name)
+	log.Warn().Msgf("%s: %s store_variables and store_secrets should be children of the commercetools node", site, name)
 	if _, ok := nodes["commercetools"]; !ok {
 		nodes["commercetools"] = &yaml.Node{
 			Kind:    yaml.MappingNode,

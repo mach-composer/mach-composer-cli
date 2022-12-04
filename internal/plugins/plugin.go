@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"hash/crc32"
 	"io"
-	"log"
 	"os"
 	"os/exec"
 	"strings"
@@ -14,6 +13,7 @@ import (
 	"github.com/mach-composer/mach-composer-plugin-sdk/helpers"
 	"github.com/mach-composer/mach-composer-plugin-sdk/protocol"
 	"github.com/mach-composer/mach-composer-plugin-sdk/schema"
+	"github.com/rs/zerolog/log"
 )
 
 func StartPlugin(name string) (schema.MachComposerPlugin, error) {
@@ -65,13 +65,13 @@ func StartPlugin(name string) (schema.MachComposerPlugin, error) {
 	// Connect via RPC
 	rpcClient, err := client.Client()
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal().Err(err).Msg("failed to connect to plugin")
 	}
 
 	// Request the plugin
 	raw, err := rpcClient.Dispense("MachComposerPlugin")
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal().Err(err).Msg("failed to init the plugin")
 	}
 	plugin, ok := raw.(schema.MachComposerPlugin)
 	if !ok {
