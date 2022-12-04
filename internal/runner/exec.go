@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"os/exec"
 
 	"github.com/labd/mach-composer/internal/utils"
 )
@@ -14,5 +15,11 @@ func RunTerraform(ctx context.Context, cwd string, args ...string) error {
 			return fmt.Errorf("The generated files are not found: %w", err)
 		}
 	}
-	return utils.RunInteractive(ctx, "terraform", cwd, args...)
+
+	execPath, err := exec.LookPath("terraform")
+	if err != nil {
+		return err
+	}
+
+	return utils.RunInteractive(ctx, execPath, cwd, args...)
 }
