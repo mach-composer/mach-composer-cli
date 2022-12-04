@@ -236,10 +236,18 @@ func renderComponent(cfg *config.MachConfig, site *config.SiteConfig, component 
 	}
 
 	if len(component.Variables) > 0 {
-		tc.ComponentVariables = helpers.SerializeToHCL("variables", component.Variables)
+		val, err := serializeToHCL("variables", component.Variables)
+		if err != nil {
+			return "", nil
+		}
+		tc.ComponentVariables = val
 	}
 	if len(component.Secrets) > 0 {
-		tc.ComponentSecrets = helpers.SerializeToHCL("secrets", component.Secrets)
+		val, err := serializeToHCL("secrets", component.Secrets)
+		if err != nil {
+			return "", nil
+		}
+		tc.ComponentSecrets = val
 	}
 
 	if component.Definition.UseVersionReference() {
