@@ -10,6 +10,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 
+	"github.com/labd/mach-composer/internal/cli"
 	"github.com/labd/mach-composer/internal/config"
 )
 
@@ -41,17 +42,14 @@ func registerGenerateFlags(cmd *cobra.Command) {
 func preprocessGenerateFlags() {
 	if _, err := os.Stat(generateFlags.configFile); err != nil {
 		if errors.Is(err, os.ErrNotExist) {
-			logrus.Errorf("%s: Config file not found\n", generateFlags.configFile)
-			os.Exit(1)
+			cli.PrintExitError(fmt.Sprintf("Config file %s does not exist", generateFlags.configFile))
 		}
-		fmt.Printf("error: %s\n", err.Error())
-		os.Exit(1)
+		cli.PrintExitError(err.Error())
 	}
 	if generateFlags.varFile != "" {
 		if _, err := os.Stat(generateFlags.varFile); err != nil {
 			if errors.Is(err, os.ErrNotExist) {
-				logrus.Errorf("%s: Variables file not found\n", generateFlags.varFile)
-				os.Exit(1)
+				cli.PrintExitError(fmt.Sprintf("Variable file %s does not exist", generateFlags.varFile))
 			}
 			logrus.Errorf("error: %s\n", err.Error())
 			os.Exit(1)
@@ -73,8 +71,7 @@ func handleError(err error) error {
 	if err == nil {
 		return nil
 	}
-	fmt.Fprintf(os.Stderr, "Error encountered: %s\n", err)
-	os.Exit(1)
+	cli.PrintExitError("An error occured:", err.Error())
 	return nil
 }
 
@@ -82,8 +79,7 @@ func handleError(err error) error {
 func LoadConfig(ctx context.Context) *config.MachConfig {
 	cfg, err := config.Load(ctx, generateFlags.configFile, generateFlags.varFile)
 	if err != nil {
-		fmt.Fprintln(os.Stderr, err.Error())
-		os.Exit(1)
+		cli.PrintExitError("An error occured while loading the config file", err.Error())
 	}
 	return cfg
 }

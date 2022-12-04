@@ -16,6 +16,7 @@ import (
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/clientcredentials"
 
+	"github.com/labd/mach-composer/internal/cli"
 	"github.com/labd/mach-composer/internal/cloud"
 	"github.com/labd/mach-composer/internal/utils"
 )
@@ -77,7 +78,7 @@ func handleError(err error) error {
 	if openApiErr, ok := err.(*mccsdk.GenericOpenAPIError); ok {
 		remoteErr := openApiErr.Model()
 		if svcErr, ok := remoteErr.(mccsdk.Error); ok {
-			fmt.Printf("error: %s\n", svcErr.GetError())
+			cli.PrintExitError("Error during API", svcErr.GetError())
 		} else {
 			var errorMsg string
 
@@ -92,7 +93,7 @@ func handleError(err error) error {
 			fmt.Println("Server returned an error:", errorMsg)
 		}
 	} else {
-		fmt.Println("Internal error: ", err)
+		cli.PrintExitError("Server error", err.Error())
 	}
 
 	os.Exit(1)
