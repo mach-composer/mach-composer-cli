@@ -14,8 +14,8 @@ import (
 //go:embed schemas/*
 var schemas embed.FS
 
-func validateConfig(data []byte) (bool, error) {
-	version, err := getSchemaVersion(data)
+func validateConfig(document *yaml.Node) (bool, error) {
+	version, err := getSchemaVersion(document)
 	if err != nil {
 		return false, err
 	}
@@ -30,7 +30,7 @@ func validateConfig(data []byte) (bool, error) {
 		return false, err
 	}
 
-	docLoader, err := newYamlLoader(data)
+	docLoader, err := newYamlLoader(document)
 	if err != nil {
 		return false, err
 	}
@@ -53,15 +53,14 @@ func validateConfig(data []byte) (bool, error) {
 	return true, nil
 }
 
-func getSchemaVersion(data []byte) (int, error) {
+func getSchemaVersion(document *yaml.Node) (int, error) {
 	type PartialMachConfig struct {
 		MachComposer MachComposer `yaml:"mach_composer"`
 	}
 
 	// Decode the yaml in an intermediate config file
 	intermediate := &PartialMachConfig{}
-	err := yaml.Unmarshal(data, intermediate)
-	if err != nil {
+	if err := document.Decode(intermediate); err != nil {
 		return 0, err
 	}
 
@@ -83,15 +82,25 @@ func loadSchema(version int) (*gojsonschema.JSONLoader, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to read file: %w", err)
 	}
-	return newYamlLoader(body)
+	return newFileLoader(body)
 }
 
-func newYamlLoader(data []byte) (*gojsonschema.JSONLoader, error) {
-	var document map[string]any
-	if err := yaml.Unmarshal(data, &document); err != nil {
+func newFileLoader(document []byte) (*gojsonschema.JSONLoader, error) {
+	var data map[string]any
+	if err := yaml.Unmarshal(document, &data); err != nil {
 		return nil, fmt.Errorf("yaml unmarshalling failed: %w", err)
 	}
-	loader := gojsonschema.NewRawLoader(document)
+	loader := gojsonschema.NewRawLoader(data)
+
+	return &loader, nil
+}
+
+func newYamlLoader(document *yaml.Node) (*gojsonschema.JSONLoader, error) {
+	var data map[string]any
+	if err := document.Decode(&data); err != nil {
+		return nil, fmt.Errorf("yaml unmarshalling failed: %w", err)
+	}
+	loader := gojsonschema.NewRawLoader(data)
 
 	return &loader, nil
 }

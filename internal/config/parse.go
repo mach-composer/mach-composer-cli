@@ -34,8 +34,14 @@ func Load(ctx context.Context, filename string, varFilename string) (*MachConfig
 		return nil, err
 	}
 
+	// Read the yaml nodes
+	document := &yaml.Node{}
+	if err := yaml.Unmarshal(body, document); err != nil {
+		return nil, err
+	}
+
 	// Basic validation if the config file is valid based on a json schema
-	isValid, err := validateConfig(body)
+	isValid, err := validateConfig(document)
 	if err != nil {
 		return nil, err
 	}
@@ -43,7 +49,7 @@ func Load(ctx context.Context, filename string, varFilename string) (*MachConfig
 		return nil, fmt.Errorf("failed to load config %s due to errors", filename)
 	}
 
-	return ParseConfig(ctx, body, ParseOptions{
+	return ParseConfig(ctx, document, ParseOptions{
 		Variables: vars,
 		Filename:  filename,
 	})
@@ -51,11 +57,10 @@ func Load(ctx context.Context, filename string, varFilename string) (*MachConfig
 
 // parseConfig is responsible for parsing a mach composer yaml config file and
 // creating the resulting MachConfig struct.
-func ParseConfig(ctx context.Context, data []byte, options ParseOptions) (*MachConfig, error) {
+func ParseConfig(ctx context.Context, document *yaml.Node, options ParseOptions) (*MachConfig, error) {
 	// Decode the yaml in an intermediate config file
 	intermediate := &_RawMachConfig{}
-	err := yaml.Unmarshal(data, intermediate)
-	if err != nil {
+	if err := document.Decode(intermediate); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal yaml: %w", err)
 	}
 

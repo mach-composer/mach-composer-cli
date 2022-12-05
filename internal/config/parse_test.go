@@ -44,12 +44,16 @@ func TestParseBasic(t *testing.T) {
           version: 0.1.0
     `))
 
+	document := &yaml.Node{}
+	err := yaml.Unmarshal(data, document)
+	require.NoError(t, err)
+
 	vars := variables.NewVariables()
 	vars.Set("foo", "foobar")
 	vars.Set("foo.bar", "1")
 	vars.Set("bar.foo", "2")
 	config, err := ParseConfig(
-		context.Background(), data, ParseOptions{
+		context.Background(), document, ParseOptions{
 			Variables: vars,
 			Filename:  "main.yml",
 		})
@@ -153,8 +157,12 @@ func TestParse(t *testing.T) {
 	pluginRepo := plugins.NewPluginRepository()
 	pluginRepo.Plugins["my-plugin"] = NewMockPlugin()
 
+	document := &yaml.Node{}
+	err := yaml.Unmarshal(data, document)
+	require.NoError(t, err)
+
 	config, err := ParseConfig(
-		context.Background(), data, ParseOptions{
+		context.Background(), document, ParseOptions{
 			Variables: vars,
 			Filename:  "main.yml",
 			Plugins:   pluginRepo,
@@ -265,9 +273,13 @@ func TestParseMissingVars(t *testing.T) {
             - aws
     `))
 
+	document := &yaml.Node{}
+	err := yaml.Unmarshal(data, document)
+	require.NoError(t, err)
+
 	// Empty variables, it should fail because var.foo cannot be resolved
 	vars := variables.Variables{}
-	_, err := ParseConfig(context.Background(), data,
+	_, err = ParseConfig(context.Background(), document,
 		ParseOptions{
 			Variables: &vars,
 			Filename:  "main.yml",

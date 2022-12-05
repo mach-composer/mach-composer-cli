@@ -5,6 +5,8 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+	"gopkg.in/yaml.v3"
 
 	"github.com/labd/mach-composer/internal/config"
 	"github.com/labd/mach-composer/internal/plugins"
@@ -32,9 +34,14 @@ func TestRenderSite(t *testing.T) {
 	  source: "git::https://github.com/<username>/<your-component>.git//terraform"
 	  version: 0.1.0
 `))
+
+	document := &yaml.Node{}
+	err := yaml.Unmarshal(data, document)
+	require.NoError(t, err)
+
 	cfg, err := config.ParseConfig(
 		context.Background(),
-		data,
+		document,
 		config.ParseOptions{
 			Filename: "main.yml",
 			Plugins:  plugins.NewPluginRepository(),
