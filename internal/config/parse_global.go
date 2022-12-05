@@ -78,7 +78,6 @@ func parseGlobalNode(cfg *MachConfig, globalNode *yaml.Node) error {
 			}
 			cfg.Global.TerraformStateProvider = pluginName
 			return nil
-
 		}
 	}
 

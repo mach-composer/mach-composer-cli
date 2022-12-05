@@ -31,7 +31,6 @@ func (p *PluginRepository) Load(data map[string]map[string]string) error {
 	if data == nil {
 		log.Debug().Msg("No plugins specified; loading default plugins")
 		p.LoadDefault()
-
 	} else {
 		for name, properties := range data {
 			err := p.LoadPlugin(name, properties)
