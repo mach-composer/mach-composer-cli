@@ -38,7 +38,7 @@ func getClient(cmd *cobra.Command) (*mccsdk.APIClient, context.Context) {
 		oauth2Config := &clientcredentials.Config{
 			ClientID:     clientID,
 			ClientSecret: clientSecret,
-			Scopes:       []string{"foobar"},
+			Scopes:       []string{},
 			TokenURL:     endpoints.TokenURL,
 		}
 		cfg.HTTPClient = oauth2Config.Client(
