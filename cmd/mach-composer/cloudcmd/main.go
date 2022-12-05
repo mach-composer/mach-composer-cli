@@ -31,7 +31,7 @@ var cloudLoginCmd = &cobra.Command{
 
 		authConfig := oauth2.Config{
 			Scopes:   []string{"openid"},
-			ClientID: "b0b9ccbd-0613-4ccf-86a1-dab07b8b5619",
+			ClientID: cliClientID,
 			Endpoint: getAuthEndpoint(),
 		}
 

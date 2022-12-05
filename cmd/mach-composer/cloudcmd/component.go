@@ -9,6 +9,8 @@ import (
 	"github.com/labd/mach-composer/internal/cloud"
 )
 
+const cliClientID = "b0b9ccbd-0613-4ccf-86a1-dab07b8b5619"
+
 var componentCreateCmd = &cobra.Command{
 	Use:   "create-component [name]",
 	Short: "Register a new component",

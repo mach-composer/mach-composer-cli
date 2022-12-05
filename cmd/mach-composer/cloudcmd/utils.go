@@ -45,6 +45,7 @@ func getClient(cmd *cobra.Command) (*mccsdk.APIClient, context.Context) {
 			context.WithValue(ctx, oauth2.HTTPClient, cfg.HTTPClient))
 	} else {
 		oauth2Config := &oauth2.Config{
+			ClientID: cliClientID,
 			Endpoint: endpoints,
 		}
 
