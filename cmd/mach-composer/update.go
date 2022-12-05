@@ -9,6 +9,7 @@ import (
 
 	"github.com/spf13/cobra"
 
+	"github.com/labd/mach-composer/internal/cli"
 	"github.com/labd/mach-composer/internal/updater"
 )
 
@@ -77,7 +78,10 @@ func updateFunc(ctx context.Context, args []string) error {
 			changes = updateSet.ComponentChangeLog(componentName)
 		}
 	} else {
-		u.UpdateAllComponents(ctx)
+		err := u.UpdateAllComponents(ctx)
+		if err != nil {
+			cli.PrintExitError(err.Error())
+		}
 
 		updateSet := u.GetUpdateSet()
 		if writeChanges && u.Write(ctx) {

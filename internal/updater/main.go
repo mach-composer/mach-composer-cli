@@ -2,10 +2,10 @@ package updater
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"path/filepath"
 	"strings"
+	"sync"
 
 	"gopkg.in/yaml.v3"
 
@@ -37,6 +37,16 @@ type PartialRawConfig struct {
 type WorkerJob struct {
 	component *config.Component
 	cfg       *PartialConfig
+}
+
+type UpdateError struct {
+	msg       string
+	component string
+	source    string
+}
+
+func (e *UpdateError) Error() string {
+	return e.msg
 }
 
 type Updater struct {
@@ -71,10 +81,14 @@ func NewUpdater(ctx context.Context, filename string) (*Updater, error) {
 }
 
 // UpdateAllComponents updates all the components in the config file.
-func (u *Updater) UpdateAllComponents(ctx context.Context) {
-	updateSet := FindUpdates(ctx, u.config, u.filename)
+func (u *Updater) UpdateAllComponents(ctx context.Context) error {
+	updateSet, err := FindUpdates(ctx, u.config, u.filename)
+	if err != nil {
+		return err
+	}
 	u.updates = updateSet.updates
 	fmt.Printf("%d components have updates available\n", len(u.updates))
+	return nil
 }
 
 // UpdateComponent updates a specific component. When the version is empty it
@@ -133,22 +147,28 @@ func (u *Updater) Write(ctx context.Context) bool {
 	return true
 }
 
-func FindUpdates(ctx context.Context, cfg *PartialConfig, filename string) *UpdateSet {
+func FindUpdates(ctx context.Context, cfg *PartialConfig, filename string) (*UpdateSet, error) {
 	numUpdates := len(cfg.Components)
 	jobs := make(chan WorkerJob, numUpdates)
 	results := make(chan *ChangeSet, numUpdates)
+	errors := make(chan error, numUpdates)
 
 	fmt.Printf("Checking if there are updates for %d components\n", numUpdates)
 
+	var wg sync.WaitGroup
 	const numWorkers = 4
 
 	// Start 4 workers
 	for i := 0; i < numWorkers; i++ {
+		wg.Add(1)
 		go func() {
+			defer wg.Done()
+
 			for j := range jobs {
 				cs, err := GetLastVersion(ctx, j.component, j.cfg.filename)
 				if err != nil {
-					panic(err)
+					errors <- err
+					return
 				}
 
 				results <- cs
@@ -165,12 +185,23 @@ func FindUpdates(ctx context.Context, cfg *PartialConfig, filename string) *Upda
 	}
 	close(jobs)
 
+	wg.Wait()
+	close(errors)
+
+	for err := range errors {
+		return nil, err
+	}
+
 	// Process results as we receive them from the channel
 	updates := UpdateSet{
 		filename: filename,
 	}
 	for i := 0; i < numUpdates; i++ {
 		changeSet := <-results
+
+		if changeSet == nil {
+			continue
+		}
 
 		output := OutputChanges(changeSet)
 		fmt.Print(output)
@@ -180,7 +211,7 @@ func FindUpdates(ctx context.Context, cfg *PartialConfig, filename string) *Upda
 		}
 	}
 
-	return &updates
+	return &updates, nil
 }
 
 func FindSpecificUpdate(ctx context.Context, cfg *PartialConfig, filename string, component *config.Component) (*UpdateSet, error) {
@@ -203,5 +234,11 @@ func GetLastVersion(ctx context.Context, c *config.Component, origin string) (*C
 	if strings.HasPrefix(c.Source, "git:") {
 		return GetLastVersionGit(ctx, c, origin)
 	}
-	return nil, errors.New("unrecognized component source")
+
+	err := &UpdateError{
+		msg:       fmt.Sprintf("unrecognized component source for %s: %s", c.Name, c.Source),
+		component: c.Name,
+		source:    c.Source,
+	}
+	return nil, err
 }
