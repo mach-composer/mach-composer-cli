@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.2.3 (2022-12-06)
+
+- Upgrade commercetools provider to `1.5.1`
+- Make `messages` definition in commercetools project compatible with 1.x version of commercetools provider
+
+
 ## 1.2.2 (2022-06-22)
 
 - Fix error on 'mach configuration' check on YAML files that gets rendered to list data.
