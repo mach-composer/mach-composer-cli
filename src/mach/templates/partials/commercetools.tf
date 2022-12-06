@@ -15,7 +15,7 @@ resource "commercetools_project_settings" "project" {
     countries  = [{% for country in commercetools.project_settings.countries %}{{ country|tf }}{% if not loop.last %},{% endif %}{% endfor %}]
     currencies = [{% for currency in commercetools.project_settings.currencies %}{{ currency|tf }}{% if not loop.last %},{% endif %}{% endfor %}]
     languages  = [{% for language in commercetools.project_settings.languages %}{{ language|tf }}{% if not loop.last %},{% endif %}{% endfor %}]
-    messages   = {
+    messages {
         enabled = {{ commercetools.project_settings.messages_enabled | string | lower }}
     }
 }
