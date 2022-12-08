@@ -115,6 +115,31 @@ func (l *LogAdapter) ResetNamed(name string) hclog.Logger {
 	}
 }
 
+func (l *LogAdapter) GetLevel() hclog.Level {
+	switch l.logger.GetLevel() {
+	case zerolog.TraceLevel:
+		return hclog.Trace
+	case zerolog.DebugLevel:
+		return hclog.Debug
+	case zerolog.InfoLevel:
+		return hclog.Info
+	case zerolog.WarnLevel:
+		return hclog.Warn
+	case zerolog.ErrorLevel:
+		return hclog.Error
+	case zerolog.NoLevel:
+		return hclog.NoLevel
+	case zerolog.Disabled:
+		return hclog.Off
+	case zerolog.FatalLevel:
+		return hclog.Error
+	case zerolog.PanicLevel:
+		return hclog.Error
+	default:
+		return hclog.Error
+	}
+}
+
 // Updates the level. This should affect all related loggers as well,
 // unless they were created with IndependentLevels. If an
 // implementation cannot update the level on the fly, it should no-op.
