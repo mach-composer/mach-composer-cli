@@ -22,14 +22,14 @@ func renderSite(cfg *config.MachConfig, site *config.SiteConfig) (string, error)
 	// Render the terraform config
 	val, err := renderTerraformConfig(cfg, site)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("renderTerraformConfig: %w", err)
 	}
 	result = append(result, val)
 
 	// Render all the global resources
 	val, err = renderTerraformResources(cfg, site)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("failed to render resources: %w", err)
 	}
 	result = append(result, val)
 
@@ -54,7 +54,7 @@ func renderTerraformConfig(cfg *config.MachConfig, site *config.SiteConfig) (str
 	for _, plugin := range cfg.Plugins.Enabled() {
 		content, err := plugin.RenderTerraformProviders(site.Identifier)
 		if err != nil {
-			return "", err
+			return "", fmt.Errorf("plugin %s failed to render providers: %w", plugin.Name, err)
 		}
 		providers = append(providers, content)
 	}
@@ -107,7 +107,7 @@ func renderTerraformResources(cfg *config.MachConfig, site *config.SiteConfig) (
 	for _, plugin := range cfg.Plugins.Enabled() {
 		content, err := plugin.RenderTerraformResources(site.Identifier)
 		if err != nil {
-			return "", err
+			return "", fmt.Errorf("plugin %s failed to render resources: %w", plugin.Name, err)
 		}
 		resources = append(resources, content)
 	}
@@ -175,7 +175,7 @@ func renderComponent(cfg *config.MachConfig, site *config.SiteConfig, component 
 		}
 		cr, err := plugin.RenderTerraformComponent(site.Identifier, component.Name)
 		if err != nil {
-			return "", err
+			return "", fmt.Errorf("plugin %s failed to render component: %w", plugin.Name, err)
 		}
 
 		if cr == nil {
