@@ -3,7 +3,6 @@ package config
 import (
 	"fmt"
 
-	"github.com/elliotchance/pie/v2"
 	"github.com/mach-composer/mach-composer-plugin-sdk/schema"
 	"github.com/rs/zerolog/log"
 	"gopkg.in/yaml.v3"
@@ -68,26 +67,25 @@ func parseSitesNode(cfg *MachConfig, sitesNode *yaml.Node) error {
 }
 
 func parseSiteComponentsNode(cfg *MachConfig, site string, node *yaml.Node) error {
-	knownKeys := []string{
-		"name", "variables", "secrets",
-		"store_variables", "store_secrets",
-	}
-
 	for _, component := range node.Content {
 		nodes := mapYamlNodes(component.Content)
 		identifier := nodes["name"].Value
 
 		migrateCommercetools(site, identifier, nodes)
 
-		for key, node := range nodes {
-			if pie.Contains(knownKeys, key) {
-				continue
+		for name := range cfg.Plugins.All() {
+			pluginNode, ok := nodes[name]
+			data := map[string]any{}
+
+			if ok {
+				var err error
+				data, err = nodeAsMap(pluginNode)
+				if err != nil {
+					return err
+				}
 			}
-			data, err := nodeAsMap(node)
-			if err != nil {
-				return err
-			}
-			if err := cfg.Plugins.SetSiteComponentConfig(site, identifier, key, data); err != nil {
+
+			if err := cfg.Plugins.SetSiteComponentConfig(site, identifier, name, data); err != nil {
 				return err
 			}
 		}

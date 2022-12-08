@@ -34,11 +34,6 @@ func parseComponentsNode(cfg *MachConfig, node *yaml.Node, source string) error 
 	if err := verifyComponents(cfg); err != nil {
 		return fmt.Errorf("verify of components failed: %w", err)
 	}
-
-	if err := registerComponentEndpoints(cfg); err != nil {
-		return fmt.Errorf("verify of components failed: %w", err)
-	}
-
 	knownKeys := []string{
 		"name", "source", "version", "branch", "integrations", "endpoints",
 	}
@@ -52,6 +47,11 @@ func parseComponentsNode(cfg *MachConfig, node *yaml.Node, source string) error 
 			return err
 		}
 	}
+
+	if err := registerComponentEndpoints(cfg); err != nil {
+		return fmt.Errorf("register of components failed: %w", err)
+	}
+
 	return nil
 }
 
@@ -73,9 +73,11 @@ func registerComponentEndpoints(cfg *MachConfig) error {
 			}
 			continue
 		}
-		err := cloudPlugin.SetComponentEndpointsConfig(c.Name, c.Endpoints)
-		if err != nil {
-			return err
+		if len(c.Endpoints) > 0 {
+			err := cloudPlugin.SetComponentEndpointsConfig(c.Name, c.Endpoints)
+			if err != nil {
+				return err
+			}
 		}
 	}
 	return nil
