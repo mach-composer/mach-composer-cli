@@ -12,6 +12,11 @@ type PluginNotFoundError struct {
 	Plugin string
 }
 
+type Plugin struct {
+	schema.MachComposerPlugin
+	Name string
+}
+
 func (e *PluginNotFoundError) Error() string {
 	return fmt.Sprintf("plugin %s not found", e.Plugin)
 }
@@ -84,9 +89,12 @@ func (p *PluginRepository) All() map[string]schema.MachComposerPlugin {
 	return p.Plugins
 }
 
-func (p *PluginRepository) Enabled() []schema.MachComposerPlugin {
-	plugins := pie.Values(p.Plugins)
-	return pie.Filter(plugins, func(p schema.MachComposerPlugin) bool { return p.IsEnabled() })
+func (p *PluginRepository) Enabled() []Plugin {
+	plugins := []Plugin{}
+	for _, name := range pie.Sort(pie.Keys(p.Plugins)) {
+		plugins = append(plugins, Plugin{Name: name, MachComposerPlugin: p.Plugins[name]})
+	}
+	return pie.Filter(plugins, func(p Plugin) bool { return p.IsEnabled() })
 }
 
 func (p *PluginRepository) SetRemoteState(name string, data map[string]any) error {
