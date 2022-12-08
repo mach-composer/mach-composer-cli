@@ -2,21 +2,19 @@ module github.com/labd/mach-composer
 
 go 1.19
 
-// replace github.com/mach-composer/mach-composer-plugin-sdk => ../mach-composer-plugin-sdk
-
 require (
 	github.com/fatih/color v1.13.0
 	github.com/go-git/go-git/v5 v5.4.2
-	github.com/hashicorp/go-hclog v1.3.1
+	github.com/hashicorp/go-hclog v1.4.0
 	github.com/hashicorp/hcl/v2 v2.15.0
 	github.com/lithammer/dedent v1.1.0
-	github.com/mach-composer/mach-composer-plugin-amplience v0.0.2-0.20221202171543-a1ddd2fe53ba
-	github.com/mach-composer/mach-composer-plugin-aws v0.0.1
-	github.com/mach-composer/mach-composer-plugin-azure v0.0.1
-	github.com/mach-composer/mach-composer-plugin-commercetools v0.0.1
-	github.com/mach-composer/mach-composer-plugin-contentful v0.0.1
-	github.com/mach-composer/mach-composer-plugin-sdk v0.0.1
-	github.com/mach-composer/mach-composer-plugin-sentry v0.0.1
+	github.com/mach-composer/mach-composer-plugin-amplience v0.0.2
+	github.com/mach-composer/mach-composer-plugin-aws v0.0.2
+	github.com/mach-composer/mach-composer-plugin-azure v0.0.3
+	github.com/mach-composer/mach-composer-plugin-commercetools v0.0.4
+	github.com/mach-composer/mach-composer-plugin-contentful v0.0.2
+	github.com/mach-composer/mach-composer-plugin-sdk v0.0.2
+	github.com/mach-composer/mach-composer-plugin-sentry v0.0.3
 	github.com/mach-composer/mcc-sdk-go v0.0.3-0.20221122074702-8df13e53ecaa
 	github.com/mattn/go-isatty v0.0.16
 	github.com/skratchdot/open-golang v0.0.0-20200116055534-eef842397966
@@ -48,7 +46,7 @@ require (
 	github.com/imdario/mergo v0.3.13 // indirect
 	github.com/jbenet/go-context v0.0.0-20150711004518-d14ea06fba99 // indirect
 	github.com/kevinburke/ssh_config v1.2.0 // indirect
-	github.com/mach-composer/mach-composer-plugin-helpers v0.0.1 // indirect
+	github.com/mach-composer/mach-composer-plugin-helpers v0.0.2 // indirect
 	github.com/magiconair/properties v1.8.6 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-runewidth v0.0.14 // indirect
@@ -66,12 +64,12 @@ require (
 	github.com/subosito/gotenv v1.4.1 // indirect
 	github.com/xanzy/ssh-agent v0.3.3 // indirect
 	golang.org/x/crypto v0.3.0 // indirect
-	golang.org/x/exp v0.0.0-20221126150942-6ab00d035af9 // indirect
+	golang.org/x/exp v0.0.0-20221208152030-732eee02a75a // indirect
 	golang.org/x/mod v0.7.0 // indirect
-	golang.org/x/net v0.2.0 // indirect
+	golang.org/x/net v0.4.0 // indirect
 	golang.org/x/tools v0.3.0 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
-	google.golang.org/genproto v0.0.0-20221201204527-e3fa12d562f3 // indirect
+	google.golang.org/genproto v0.0.0-20221207170731-23e4bf6bdc37 // indirect
 	google.golang.org/grpc v1.51.0 // indirect
 	google.golang.org/protobuf v1.28.1 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
@@ -86,7 +84,7 @@ require (
 	github.com/elliotchance/pie/v2 v2.1.0
 	github.com/google/go-cmp v0.5.9 // indirect
 	github.com/grokify/go-pkce v0.2.0
-	github.com/hashicorp/go-plugin v1.4.6
+	github.com/hashicorp/go-plugin v1.4.8
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/mitchellh/go-wordwrap v1.0.1 // indirect
 	github.com/olekukonko/tablewriter v0.0.5
@@ -96,6 +94,6 @@ require (
 	github.com/xeipuuv/gojsonpointer v0.0.0-20190905194746-02993c407bfb // indirect
 	github.com/xeipuuv/gojsonreference v0.0.0-20180127040603-bd5ef7bd5415 // indirect
 	github.com/zclconf/go-cty v1.12.1
-	golang.org/x/sys v0.2.0 // indirect
-	golang.org/x/text v0.4.0 // indirect
+	golang.org/x/sys v0.3.0 // indirect
+	golang.org/x/text v0.5.0 // indirect
 )
