@@ -35,7 +35,7 @@ func NewPluginRepository() *PluginRepository {
 func (p *PluginRepository) Load(data map[string]map[string]string) error {
 	if data == nil {
 		log.Debug().Msg("No plugins specified; loading default plugins")
-		p.LoadDefault()
+		return p.LoadDefault()
 	} else {
 		for name, properties := range data {
 			err := p.LoadPlugin(name, properties)
@@ -48,17 +48,18 @@ func (p *PluginRepository) Load(data map[string]map[string]string) error {
 }
 
 // LoadDefault loads the default plugins, for backwards compatibility
-func (p *PluginRepository) LoadDefault() {
+func (p *PluginRepository) LoadDefault() error {
 	// Don't load default plugins if we already have
 	if len(p.Plugins) > 0 {
-		return
+		return nil
 	}
 
 	for _, name := range LocalPluginNames {
 		if err := p.LoadPlugin(name, map[string]string{}); err != nil {
-			panic(err)
+			return err
 		}
 	}
+	return nil
 }
 
 func (p *PluginRepository) LoadPlugin(name string, properties map[string]string) error {
@@ -68,7 +69,7 @@ func (p *PluginRepository) LoadPlugin(name string, properties map[string]string)
 
 	plugin, err := startPlugin(name)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to start plugin %s: %w", name, err)
 	}
 	p.Plugins[name] = plugin
 	return nil

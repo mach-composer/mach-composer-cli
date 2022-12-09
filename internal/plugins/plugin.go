@@ -34,6 +34,16 @@ func startPlugin(name string) (schema.MachComposerPlugin, error) {
 
 	if pie.Contains(LocalPluginNames, name) {
 		command = os.Args[0]
+
+		// If mach-composer is started from the $PATH the we need to resolve
+		// the command
+		if !strings.Contains(command, "/") {
+			path, err := exec.LookPath(command)
+			if err != nil {
+				return nil, err
+			}
+			command = path
+		}
 		args = []string{"plugin", name}
 	} else {
 		path, err := exec.LookPath(command)
