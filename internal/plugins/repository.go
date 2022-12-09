@@ -127,7 +127,11 @@ func (p *PluginRepository) SetSiteComponentConfig(site, component, name string, 
 	if err != nil {
 		return err
 	}
-	return plugin.SetSiteComponentConfig(site, component, data)
+	if err := plugin.SetSiteComponentConfig(site, component, data); err != nil {
+		log.Error().Err(err).Msgf("failed %s.SetSiteComponentConfig(%s, %s)", name, site, component)
+		return err
+	}
+	return nil
 }
 
 func (p *PluginRepository) SetComponentConfig(name, component string, data map[string]any) error {

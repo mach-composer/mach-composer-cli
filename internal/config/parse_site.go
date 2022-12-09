@@ -24,22 +24,25 @@ func parseSitesNode(cfg *MachConfig, sitesNode *yaml.Node) error {
 		}
 	}
 
-	knownKeys := []string{
-		"name", "identifier", "endpoints", "components",
-	}
 	for _, site := range sitesNode.Content {
 		nodes := mapYamlNodes(site.Content)
 		siteId := nodes["identifier"].Value
 
-		err := iterateYamlNodes(nodes, knownKeys, func(key string, data map[string]any) error {
-			err := cfg.Plugins.SetSiteConfig(key, siteId, data)
-			if err != nil {
+		for name := range cfg.Plugins.All() {
+			data := map[string]any{}
+
+			pluginNode, ok := nodes[name]
+			if ok {
+				var err error
+				data, err = nodeAsMap(pluginNode)
+				if err != nil {
+					return err
+				}
+			}
+
+			if err := cfg.Plugins.SetSiteConfig(name, siteId, data); err != nil {
 				return fmt.Errorf("plugin.SetSiteConfig failed: %ws", err)
 			}
-			return nil
-		})
-		if err != nil {
-			return err
 		}
 
 		if node, ok := nodes["endpoints"]; ok {
@@ -54,7 +57,7 @@ func parseSitesNode(cfg *MachConfig, sitesNode *yaml.Node) error {
 				continue
 			}
 			if err := cloudPlugin.SetSiteEndpointsConfig(siteId, data); err != nil {
-				return err
+				return fmt.Errorf("cloudPlugin.SetSiteEndpointConfig: %w", err)
 			}
 		}
 
@@ -74,9 +77,9 @@ func parseSiteComponentsNode(cfg *MachConfig, site string, node *yaml.Node) erro
 		migrateCommercetools(site, identifier, nodes)
 
 		for name := range cfg.Plugins.All() {
-			pluginNode, ok := nodes[name]
 			data := map[string]any{}
 
+			pluginNode, ok := nodes[name]
 			if ok {
 				var err error
 				data, err = nodeAsMap(pluginNode)
