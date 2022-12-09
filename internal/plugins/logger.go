@@ -25,27 +25,27 @@ func (l *LogAdapter) Log(level hclog.Level, msg string, args ...interface{}) {
 }
 
 func (l *LogAdapter) Trace(msg string, args ...interface{}) {
-	l.logger.Trace().Msgf(msg, args...)
+	l.logger.Trace().Fields(args).Msgf(msg)
 }
 
 // Emit a message and key/value pairs at the DEBUG level
 func (l *LogAdapter) Debug(msg string, args ...interface{}) {
-	l.logger.Debug().Msgf(msg, args...)
+	l.logger.Debug().Fields(args).Msgf(msg)
 }
 
 // Emit a message and key/value pairs at the INFO level
 func (l *LogAdapter) Info(msg string, args ...interface{}) {
-	l.logger.Info().Msgf(msg, args...)
+	l.logger.Info().Fields(args).Msgf(msg)
 }
 
 // Emit a message and key/value pairs at the WARN level
 func (l *LogAdapter) Warn(msg string, args ...interface{}) {
-	l.logger.Warn().Msgf(msg, args...)
+	l.logger.Warn().Fields(args).Msgf(msg)
 }
 
 // Emit a message and key/value pairs at the ERROR level
 func (l *LogAdapter) Error(msg string, args ...interface{}) {
-	l.logger.Error().Msgf(msg, args...)
+	l.logger.Error().Fields(args).Msgf(msg)
 }
 
 // Indicate if TRACE logs would be emitted. This and the other Is* guards
@@ -97,7 +97,10 @@ func (l *LogAdapter) Name() string {
 // name. That way, a major subsystem can use this to decorate all it's own logs
 // without losing context.
 func (l *LogAdapter) Named(name string) hclog.Logger {
-	fullName := fmt.Sprintf("%s.%s", l.name, name)
+	fullName := name
+	if l.name != "" {
+		fullName = fmt.Sprintf("%s.%s", l.name, name)
+	}
 
 	return &LogAdapter{
 		name:   fullName,
