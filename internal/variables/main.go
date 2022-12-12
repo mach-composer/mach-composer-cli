@@ -25,8 +25,14 @@ func (e *NotFoundError) Error() string {
 // Support both ${var.foobar} as well as ${env.foobar}
 var varRegex = regexp.MustCompile(`\${((?:var|env)(?:\.[^\}]+)+)}`)
 
+type Value struct {
+	Origin    string
+	Value     string
+	Encrypted bool
+}
+
 type Variables struct {
-	vars           map[string]string
+	vars           map[string]Value
 	EncryptedFiles []string
 
 	// For now we only support loading one external file. To support multilpe
@@ -36,7 +42,7 @@ type Variables struct {
 
 func NewVariables() *Variables {
 	v := &Variables{
-		vars:           make(map[string]string),
+		vars:           make(map[string]Value),
 		EncryptedFiles: []string{},
 	}
 	return v
@@ -51,13 +57,12 @@ func (v *Variables) Get(key string) (string, error) {
 			return "", &NotFoundError{Name: key}
 		}
 
-		// FIXME: we should check the source of the var for this
-		if len(v.EncryptedFiles) > 0 {
+		if result.Encrypted {
 			result := fmt.Sprintf(`${data.sops_external.variables.data["%s"]}`, trimmedKey)
 			return result, nil
 		}
 
-		return result, nil
+		return result.Value, nil
 	}
 
 	if strings.HasPrefix(key, "env.") {
@@ -70,10 +75,7 @@ func (v *Variables) Get(key string) (string, error) {
 }
 
 func (v *Variables) Set(key string, value string) {
-	if v.vars == nil {
-		v.vars = make(map[string]string)
-	}
-	v.vars[key] = value
+	v.vars[key] = Value{Value: value}
 }
 
 func (v *Variables) HasEncrypted() bool {
@@ -137,30 +139,26 @@ func (v *Variables) Load(ctx context.Context, filename string) error {
 		return err
 	}
 
-	isEncrypted, err := yamlIsEncrypted(body)
-	if err != nil {
+	values := make(map[string]any)
+	if err := yaml.Unmarshal(body, &values); err != nil {
 		return err
 	}
-	if isEncrypted {
-		log.Info().Msgf("Detected SOPS encryption; decrypting...")
-		body, err = utils.DecryptYaml(ctx, filename)
-		if err != nil {
-			return err
-		}
 
+	isEncrypted := false
+	if _, ok := values["sops"]; ok {
+		isEncrypted = true
 		v.EncryptedFiles = append(v.EncryptedFiles, filename)
+		delete(values, "sops")
 	}
 
-	dst := make(map[string]any)
-	if err := yaml.Unmarshal(body, &dst); err != nil {
-		return err
-	}
+	dst := map[string]Value{}
+	serializeNestedVariables(values, dst, "")
 
-	if isEncrypted {
-		delete(dst, "sops")
+	for key, val := range dst {
+		val.Encrypted = isEncrypted
+		val.Origin = filename
+		v.vars[key] = val
 	}
-
-	serializeNestedVariables(dst, v.vars, "")
 
 	v.loadedFile = true
 	return nil
@@ -182,7 +180,7 @@ func (v *Variables) Load(ctx context.Context, filename string) error {
 //		"foo": "bar",
 //		"my.var": "10",
 //	}
-func serializeNestedVariables(in map[string]interface{}, out map[string]string, prefix string) {
+func serializeNestedVariables(in map[string]any, out map[string]Value, prefix string) {
 	for k, v := range in {
 		var key string
 		if prefix != "" {
@@ -193,24 +191,11 @@ func serializeNestedVariables(in map[string]interface{}, out map[string]string, 
 
 		switch v := v.(type) {
 		case string:
-			out[key] = v
+			out[key] = Value{Value: v}
 		case int:
-			out[key] = fmt.Sprint(v)
+			out[key] = Value{Value: fmt.Sprint(v)}
 		case map[string]any:
 			serializeNestedVariables(v, out, key)
 		}
 	}
-}
-
-// Check if the file is encrypted with sops
-func yamlIsEncrypted(data []byte) (bool, error) {
-	dst := make(map[string]interface{})
-	err := yaml.Unmarshal(data, &dst)
-	if err != nil {
-		return false, err
-	}
-	if _, ok := dst["sops"]; ok {
-		return true, nil
-	}
-	return false, nil
 }
