@@ -51,12 +51,59 @@ brews:
       name: goreleaserbot
       email: opensource@labdigital.nl
     homepage: "https://machcomposer.io/"
-    description: "MACH composer is a framework that you use to orchestrate and extend modern digital commerce & experience platforms, based on MACH technologies and cloud native services.."
+    description: |
+      MACH composer is a framework that you use to orchestrate and extend
+      modern digital commerce & experience platforms, based on MACH
+      technologies and cloud native services..
     license: "MIT"
     dependencies:
       - name: terraform
       - name: git
         type: optional
+
+chocolateys:
+  - title: MACH composer
+    owners: Lab
+    authors: Lab Digital
+
+    project_url: https://machcomposer.com/
+    license_url: https://github.com/labd/mach-composer/blob/main/LICENSE
+    project_source_url: https://github.com/labd/mach-composer
+    docs_url: https://docs.machcomposer.io
+    bug_tracker_url: https://github.com/labd/mach-composer/issues
+
+    # Template for the url which is determined by the given Token (github,
+    # gitlab or gitea)
+    # Default depends on the client.
+    url_template: "https://github.com/labd/mach-composer/releases/download/{{ .Tag }}/{{ .ArtifactName }}"
+
+    # App's icon.
+    # Default is empty.
+    icon_url: 'https://avatars.githubusercontent.com/u/82937813?s=200&v=4'
+
+    # Your app's copyright details.
+    # Default is empty.
+    copyright: 2020-2022 Lab Digital
+
+    # Your app's tag list.
+    # Default is empty.
+    tags: "mach terraform"
+
+    summary: A framework to orchestrate MACH platforms
+    description: |
+      MACH composer is a framework that you use to orchestrate and extend
+      modern digital commerce & experience platforms, based on MACH
+      technologies and cloud native services..
+
+    # Your app's release notes.
+    # A description of the changes made in this release of the package.
+    # Supports markdown. To prevent the need to continually update this field,
+    # providing a URL to an external list of Release Notes is perfectly
+    # acceptable.
+    # Default is empty.
+    release_notes: "https://github.com/labd/mach-composer/releases/tag/v{{ .Version }}"
+
+    api_key: '{{ .Env.CHOCOLATEY_API_KEY }}'
 
 archives:
   - id: mach-composer
