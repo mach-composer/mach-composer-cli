@@ -3,9 +3,10 @@ package main
 import (
 	"context"
 
+	"github.com/spf13/cobra"
+
 	"github.com/labd/mach-composer/internal/generator"
 	"github.com/labd/mach-composer/internal/runner"
-	"github.com/spf13/cobra"
 )
 
 var initCmd = &cobra.Command{
@@ -25,7 +26,7 @@ func init() {
 }
 
 func initFunc(ctx context.Context, args []string) error {
-	cfg := LoadConfig(ctx)
+	cfg := loadConfig(ctx, true)
 	generateFlags.ValidateSite(cfg)
 
 	paths, err := generator.WriteFiles(cfg, &generator.GenerateOptions{

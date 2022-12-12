@@ -75,9 +75,16 @@ func handleError(err error) error {
 	return nil
 }
 
-// LoadConfig parses and validates the given config file path.
-func LoadConfig(ctx context.Context) *config.MachConfig {
-	cfg, err := config.Load(ctx, generateFlags.configFile, generateFlags.varFile)
+// loadConfig parses and validates the given config file path.
+func loadConfig(ctx context.Context, resolveVars bool) *config.MachConfig {
+	opts := &config.ConfigOptions{
+		NoResolveVars: !resolveVars,
+	}
+	if generateFlags.varFile != "" {
+		opts.VarFilenames = []string{generateFlags.varFile}
+	}
+
+	cfg, err := config.Open(ctx, generateFlags.configFile, opts)
 	if err != nil {
 		cli.PrintExitError("An error occured while loading the config file", err.Error())
 	}

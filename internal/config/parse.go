@@ -12,35 +12,21 @@ import (
 	"github.com/labd/mach-composer/internal/variables"
 )
 
-type ParseOptions struct {
-	Variables *variables.Variables
-	Plugins   *plugins.PluginRepository
-	Filename  string
+type ConfigOptions struct {
+	VarFilenames []string
+	Plugins      *plugins.PluginRepository
+
+	NoResolveVars bool
 }
 
-func Load(ctx context.Context, filename string, varFilename string) (*MachConfig, error) {
-	var vars *variables.Variables
-	if varFilename != "" {
-		var err error
-		vars, err = variables.NewVariablesFromFile(ctx, varFilename)
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	// Read the config file from the given filename
-	body, err := utils.AFS.ReadFile(filename)
+func Open(ctx context.Context, filename string, opts *ConfigOptions) (*MachConfig, error) {
+	// Load the yaml file and do basic validation if the config file is valid
+	// based on a json schema
+	document, err := loadYamlFile(filename)
 	if err != nil {
 		return nil, err
 	}
 
-	// Read the yaml nodes
-	document := &yaml.Node{}
-	if err := yaml.Unmarshal(body, document); err != nil {
-		return nil, err
-	}
-
-	// Basic validation if the config file is valid based on a json schema
 	isValid, err := validateConfig(document)
 	if err != nil {
 		return nil, err
@@ -49,49 +35,63 @@ func Load(ctx context.Context, filename string, varFilename string) (*MachConfig
 		return nil, fmt.Errorf("failed to load config %s due to errors", filename)
 	}
 
-	return ParseConfig(ctx, document, ParseOptions{
-		Variables: vars,
-		Filename:  filename,
-	})
+	// Decode the yaml in an intermediate config file
+	raw, err := newRawConfig(filename, document)
+	if err != nil {
+		return nil, err
+	}
+
+	// Load the plugins
+	raw.plugins = opts.Plugins
+	if raw.plugins == nil {
+		raw.plugins = plugins.NewPluginRepository()
+		if err := raw.plugins.Load(raw.MachComposer.Plugins); err != nil {
+			return nil, err
+		}
+	}
+
+	for _, f := range opts.VarFilenames {
+		if err := raw.variables.Load(ctx, f); err != nil {
+			return nil, err
+		}
+	}
+
+	// For some actions we don't want to resolve variables since they then need
+	// to be passed as argument.
+	if !opts.NoResolveVars {
+		if err := resolveVariables(ctx, raw); err != nil {
+			if notFoundErr, ok := err.(*variables.NotFoundError); ok {
+				err = &SyntaxError{
+					message:  fmt.Sprintf("unable to resolve variable %#v", notFoundErr.Name),
+					line:     notFoundErr.Node.Line,
+					filename: raw.filename,
+					column:   notFoundErr.Node.Column,
+				}
+			}
+			return nil, err
+		}
+	}
+
+	return resolveConfig(ctx, raw)
 }
 
 // parseConfig is responsible for parsing a mach composer yaml config file and
 // creating the resulting MachConfig struct.
-func ParseConfig(ctx context.Context, document *yaml.Node, options ParseOptions) (*MachConfig, error) {
-	// Decode the yaml in an intermediate config file
-	intermediate := &_RawMachConfig{}
-	if err := document.Decode(intermediate); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal yaml: %w", err)
-	}
-
-	vars, err := processVariables(ctx, options.Variables, intermediate)
-	if err != nil {
-		if notFoundErr, ok := err.(*variables.NotFoundError); ok {
-			err = &SyntaxError{
-				message:  fmt.Sprintf("unable to resolve variable %#v", notFoundErr.Name),
-				line:     notFoundErr.Node.Line,
-				filename: options.Filename,
-				column:   notFoundErr.Node.Column,
-			}
-		}
+func resolveConfig(ctx context.Context, intermediate *rawConfig) (*MachConfig, error) {
+	if err := intermediate.validate(); err != nil {
 		return nil, err
 	}
 
-	cfg := NewMachConfig()
-	cfg.Filename = filepath.Base(options.Filename)
-	cfg.MachComposer = intermediate.MachComposer
-	cfg.Variables = vars
-
-	cfg.Plugins = options.Plugins
-	if cfg.Plugins == nil {
-		cfg.Plugins = plugins.NewPluginRepository()
-	}
-	if err := cfg.Plugins.Load(intermediate.MachComposer.Plugins); err != nil {
-		return nil, err
+	cfg := &MachConfig{
+		extraFiles:   make(map[string][]byte, 0),
+		Filename:     filepath.Base(intermediate.filename),
+		MachComposer: intermediate.MachComposer,
+		Variables:    intermediate.variables,
+		Plugins:      intermediate.plugins,
 	}
 
-	if vars.Encrypted {
-		err := cfg.addFileToConfig(vars.Filepath)
+	for _, f := range cfg.Variables.EncryptedFiles {
+		err := cfg.addFileToConfig(f)
 		if err != nil {
 			return nil, err
 		}
@@ -104,7 +104,7 @@ func ParseConfig(ctx context.Context, document *yaml.Node, options ParseOptions)
 		return nil, fmt.Errorf("failed to parse global node: %w", err)
 	}
 
-	if err := parseComponentsNode(cfg, &intermediate.Components, options.Filename); err != nil {
+	if err := parseComponentsNode(cfg, &intermediate.Components, intermediate.filename); err != nil {
 		return nil, fmt.Errorf("failed to parse components node: %w", err)
 	}
 
@@ -115,30 +115,41 @@ func ParseConfig(ctx context.Context, document *yaml.Node, options ParseOptions)
 	return cfg, nil
 }
 
-func processVariables(ctx context.Context, vars *variables.Variables, rawConfig *_RawMachConfig) (*variables.Variables, error) {
-	if vars == nil && rawConfig.MachComposer.VariablesFile != "" {
-		var err error
-		vars, err = variables.NewVariablesFromFile(ctx, rawConfig.MachComposer.VariablesFile)
-		if err != nil {
-			return nil, err
+func resolveVariables(ctx context.Context, rawConfig *rawConfig) error {
+	vars := rawConfig.variables
+
+	if rawConfig.MachComposer.VariablesFile != "" {
+		if err := vars.Load(ctx, rawConfig.MachComposer.VariablesFile); err != nil {
+			return err
 		}
 	}
 
-	if vars == nil {
-		vars = variables.NewVariables()
-	}
-
 	if err := vars.InterpolateNode(&rawConfig.Global); err != nil {
-		return nil, err
+		return err
 	}
 
 	if err := vars.InterpolateNode(&rawConfig.Sites); err != nil {
-		return nil, err
+		return err
 	}
 
 	if err := vars.InterpolateNode(&rawConfig.Components); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func loadYamlFile(filename string) (*yaml.Node, error) {
+	// Read the config file from the given filename
+	body, err := utils.AFS.ReadFile(filename)
+	if err != nil {
 		return nil, err
 	}
 
-	return vars, nil
+	// Read the yaml nodes
+	document := &yaml.Node{}
+	if err := yaml.Unmarshal(body, document); err != nil {
+		return nil, err
+	}
+	return document, nil
 }

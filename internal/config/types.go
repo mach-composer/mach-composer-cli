@@ -14,6 +14,46 @@ import (
 	"github.com/labd/mach-composer/internal/variables"
 )
 
+type rawConfig struct {
+	filename  string                    `yaml:"-"`
+	plugins   *plugins.PluginRepository `yaml:"-"`
+	variables *variables.Variables      `yaml:"-"`
+
+	MachComposer MachComposer `yaml:"mach_composer"`
+	Global       yaml.Node    `yaml:"global"`
+	Sites        yaml.Node    `yaml:"sites"`
+	Components   yaml.Node    `yaml:"components"`
+}
+
+func (r *rawConfig) validate() error {
+	if r.MachComposer.Version == "" {
+		return fmt.Errorf("no version")
+	}
+
+	if r.filename == "" {
+		return fmt.Errorf("filename must be set")
+	}
+	if r.variables == nil {
+		return fmt.Errorf("variables cannot be nil")
+	}
+	if r.plugins == nil {
+		return fmt.Errorf("plugins cannot be nil")
+	}
+
+	return nil
+}
+
+func newRawConfig(filename string, document *yaml.Node) (*rawConfig, error) {
+	r := &rawConfig{
+		filename:  filename,
+		variables: variables.NewVariables(),
+	}
+	if err := document.Decode(r); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal yaml: %w", err)
+	}
+	return r, nil
+}
+
 type MachConfig struct {
 	Filename     string       `yaml:"-"`
 	MachComposer MachComposer `yaml:"mach_composer"`
@@ -25,12 +65,6 @@ type MachConfig struct {
 	Plugins     *plugins.PluginRepository `yaml:"-"`
 	Variables   *variables.Variables      `yaml:"-"`
 	IsEncrypted bool                      `yaml:"-"`
-}
-
-func NewMachConfig() *MachConfig {
-	cfg := &MachConfig{}
-	cfg.extraFiles = make(map[string][]byte, 0)
-	return cfg
 }
 
 func (c *MachConfig) HasSite(ident string) bool {
@@ -54,14 +88,6 @@ func (c *MachConfig) addFileToConfig(filename string) error {
 
 func (c *MachConfig) GetFiles() map[string][]byte {
 	return c.extraFiles
-}
-
-type _RawMachConfig struct {
-	Filename     string
-	MachComposer MachComposer `yaml:"mach_composer"`
-	Global       yaml.Node    `yaml:"global"`
-	Sites        yaml.Node    `yaml:"sites"`
-	Components   yaml.Node    `yaml:"components"`
 }
 
 type MachComposer struct {
@@ -107,13 +133,11 @@ type TerraformConfig struct {
 	Providers map[string]string `yaml:"providers"`
 }
 
-// TODO: should check if the integration is the cloud provider
-func (sc SiteComponent) HasCloudIntegration() bool {
+func (sc SiteComponent) HasCloudIntegration(g *GlobalConfig) bool {
 	if sc.Definition == nil {
 		log.Fatalf("Component %s was not resolved properly (missing definition)", sc.Name)
 	}
-	return (pie.Contains(sc.Definition.Integrations, "aws") ||
-		pie.Contains(sc.Definition.Integrations, "azure"))
+	return pie.Contains(sc.Definition.Integrations, g.Cloud)
 }
 
 // UseVersionReference indicates if the module should be referenced with the

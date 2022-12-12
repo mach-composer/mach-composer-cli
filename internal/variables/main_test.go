@@ -26,7 +26,10 @@ func TestNewVariablesFromFile(t *testing.T) {
 	err := utils.AFS.WriteFile("variables.yaml", []byte(content), 0644)
 	require.NoError(t, err)
 
-	vars, err := NewVariablesFromFile(context.Background(), "variables.yaml")
+	vars := NewVariables()
+	assert.NoError(t, err)
+
+	err = vars.Load(context.Background(), "variables.yaml")
 	assert.NoError(t, err)
 
 	expected := map[string]string{

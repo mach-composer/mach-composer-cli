@@ -94,7 +94,8 @@ func createAuthHandler(ctx context.Context, options *Options) (authhandler.Autho
 				close(errs)
 			}
 			if err := server.Shutdown(ctx); err != nil {
-				panic(err)
+				errs <- err
+				close(errs)
 			}
 		}()
 

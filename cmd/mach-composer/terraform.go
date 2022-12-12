@@ -29,7 +29,7 @@ func init() {
 }
 
 func terraformFunc(ctx context.Context, args []string) error {
-	cfg := LoadConfig(ctx)
+	cfg := loadConfig(ctx, true)
 	generateFlags.ValidateSite(cfg)
 
 	fileLocations := generator.FileLocations(cfg, &generator.GenerateOptions{

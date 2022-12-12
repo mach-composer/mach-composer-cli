@@ -37,7 +37,7 @@ func init() {
 }
 
 func applyFunc(ctx context.Context, args []string) error {
-	cfg := LoadConfig(ctx)
+	cfg := loadConfig(ctx, true)
 	generateFlags.ValidateSite(cfg)
 
 	// Note that we do this in multiple passes to minimize ending up with

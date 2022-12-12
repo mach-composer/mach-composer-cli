@@ -26,15 +26,20 @@ func (e *NotFoundError) Error() string {
 var varRegex = regexp.MustCompile(`\${((?:var|env)(?:\.[^\}]+)+)}`)
 
 type Variables struct {
-	vars      map[string]string
-	Filepath  string
-	Encrypted bool
+	vars           map[string]string
+	EncryptedFiles []string
+
+	// For now we only support loading one external file. To support multilpe
+	// we need to track variable sources to check if they are encrypted or not
+	loadedFile bool
 }
 
 func NewVariables() *Variables {
-	vars := &Variables{}
-	vars.vars = make(map[string]string)
-	return vars
+	v := &Variables{
+		vars:           make(map[string]string),
+		EncryptedFiles: []string{},
+	}
+	return v
 }
 
 func (v *Variables) Get(key string) (string, error) {
@@ -46,7 +51,8 @@ func (v *Variables) Get(key string) (string, error) {
 			return "", &NotFoundError{Name: key}
 		}
 
-		if v.Encrypted {
+		// FIXME: we should check the source of the var for this
+		if len(v.EncryptedFiles) > 0 {
 			result := fmt.Sprintf(`${data.sops_external.variables.data["%s"]}`, trimmedKey)
 			return result, nil
 		}
@@ -68,6 +74,10 @@ func (v *Variables) Set(key string, value string) {
 		v.vars = make(map[string]string)
 	}
 	v.vars[key] = value
+}
+
+func (v *Variables) HasEncrypted() bool {
+	return len(v.EncryptedFiles) > 0
 }
 
 // Recursive function to replace the
@@ -118,41 +128,42 @@ func (v *Variables) interpolateValue(val string) (string, error) {
 
 // newVariablesFromFile creates a new Variables struct based on the contents
 // of the given file.
-func NewVariablesFromFile(ctx context.Context, filename string) (*Variables, error) {
+func (v *Variables) Load(ctx context.Context, filename string) error {
+	if v.loadedFile {
+		panic("Only one external file is supported currently")
+	}
 	body, err := utils.AFS.ReadFile(filename)
 	if err != nil {
-		return nil, err
+		return err
 	}
-
-	vars := NewVariables()
-	vars.Filepath = filename
 
 	isEncrypted, err := yamlIsEncrypted(body)
 	if err != nil {
-		return nil, err
+		return err
 	}
 	if isEncrypted {
-		log.Debug().Msgf("Detected SOPS encryption; decrypting...")
+		log.Info().Msgf("Detected SOPS encryption; decrypting...")
 		body, err = utils.DecryptYaml(ctx, filename)
 		if err != nil {
-			return nil, err
+			return err
 		}
 
-		vars.Encrypted = true
+		v.EncryptedFiles = append(v.EncryptedFiles, filename)
 	}
 
 	dst := make(map[string]any)
 	if err := yaml.Unmarshal(body, &dst); err != nil {
-		return nil, err
+		return err
 	}
 
-	if vars.Encrypted {
+	if isEncrypted {
 		delete(dst, "sops")
 	}
 
-	serializeNestedVariables(dst, vars.vars, "")
+	serializeNestedVariables(dst, v.vars, "")
 
-	return vars, nil
+	v.loadedFile = true
+	return nil
 }
 
 // serializeNestedVariables reads a map recursively building a list of variable

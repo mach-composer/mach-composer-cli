@@ -97,7 +97,7 @@ func renderTerraformConfig(cfg *config.MachConfig, site *config.SiteConfig) (str
 	}{
 		Providers:     providers,
 		BackendConfig: backendConfig,
-		IncludeSOPS:   cfg.Variables.Encrypted,
+		IncludeSOPS:   cfg.Variables.HasEncrypted(),
 	}
 	return renderGoTemplate(template, templateContext)
 }
@@ -113,15 +113,15 @@ func renderTerraformResources(cfg *config.MachConfig, site *config.SiteConfig) (
 	}
 
 	template := `
-		{{ if .VarsEncrypted }}
+		{{ range $filename := .EncryptedVariableFiles }}
 			data "local_file" "variables" {
-			filename = "{{ .VarsFilename }}"
-		}
+				filename = "{{ $filename }}"
+			}
 
-		data "sops_external" "variables" {
-			source     = data.local_file.variables.content
-			input_type = "yaml"
-		}
+			data "sops_external" "variables" {
+				source     = data.local_file.variables.content
+				input_type = "yaml"
+			}
 		{{ end }}
 
 		# Plugins
@@ -130,13 +130,11 @@ func renderTerraformResources(cfg *config.MachConfig, site *config.SiteConfig) (
 		{{ end }}
 	`
 	templateContext := struct {
-		Resources     []string
-		VarsFilename  string
-		VarsEncrypted bool
+		Resources              []string
+		EncryptedVariableFiles []string
 	}{
-		Resources:     resources,
-		VarsFilename:  cfg.Variables.Filepath,
-		VarsEncrypted: cfg.Variables.Encrypted,
+		Resources:              resources,
+		EncryptedVariableFiles: cfg.Variables.EncryptedFiles,
 	}
 	return renderGoTemplate(template, templateContext)
 }
@@ -230,7 +228,7 @@ func renderComponent(cfg *config.MachConfig, site *config.SiteConfig, component 
 		}
 	`
 
-	if component.HasCloudIntegration() {
+	if component.HasCloudIntegration(&cfg.Global) {
 		tc.HasCloudIntegration = true
 		tc.ComponentVariables = "variables = {}"
 		tc.ComponentSecrets = "secrets = {}"

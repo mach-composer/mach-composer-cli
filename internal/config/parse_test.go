@@ -48,18 +48,22 @@ func TestParseBasic(t *testing.T) {
 	err := yaml.Unmarshal(data, document)
 	require.NoError(t, err)
 
+	// Decode the yaml in an intermediate config file
+	intermediate, err := newRawConfig("test.yml", document)
+	require.NoError(t, err)
+
 	vars := variables.NewVariables()
 	vars.Set("foo", "foobar")
 	vars.Set("foo.bar", "1")
 	vars.Set("bar.foo", "2")
-	config, err := ParseConfig(
-		context.Background(), document, ParseOptions{
-			Variables: vars,
-			Filename:  "main.yml",
-		})
-	if err != nil {
-		t.Error(err)
-	}
+	intermediate.variables = vars
+	intermediate.plugins = plugins.NewPluginRepository()
+
+	err = resolveVariables(context.Background(), intermediate)
+	require.NoError(t, err)
+
+	config, err := resolveConfig(context.Background(), intermediate)
+	require.NoError(t, err)
 
 	component := Component{
 		Name:         "your-component",
@@ -155,18 +159,22 @@ func TestParse(t *testing.T) {
 	vars.Set("bar.foo", "2")
 
 	pluginRepo := plugins.NewPluginRepository()
-	pluginRepo.Plugins["my-plugin"] = NewMockPlugin()
+	pluginRepo.Plugins["my-plugin"] = plugins.NewMockPlugin()
 
 	document := &yaml.Node{}
 	err := yaml.Unmarshal(data, document)
 	require.NoError(t, err)
 
-	config, err := ParseConfig(
-		context.Background(), document, ParseOptions{
-			Variables: vars,
-			Filename:  "main.yml",
-			Plugins:   pluginRepo,
-		})
+	intermediate, err := newRawConfig("main.yml", document)
+	require.NoError(t, err)
+
+	intermediate.plugins = pluginRepo
+	intermediate.variables = vars
+
+	err = resolveVariables(context.Background(), intermediate)
+	require.NoError(t, err)
+
+	config, err := resolveConfig(context.Background(), intermediate)
 	require.NoError(t, err)
 
 	component := Component{
@@ -232,7 +240,7 @@ func TestParse(t *testing.T) {
 	assert.Equal(t, expected.Variables, config.Variables)
 }
 
-func TestParseMissingVars(t *testing.T) {
+func TestResolveMissingVar(t *testing.T) {
 	data := []byte(utils.TrimIndent(`
         ---
         mach_composer:
@@ -277,13 +285,11 @@ func TestParseMissingVars(t *testing.T) {
 	err := yaml.Unmarshal(data, document)
 	require.NoError(t, err)
 
-	// Empty variables, it should fail because var.foo cannot be resolved
-	vars := variables.Variables{}
-	_, err = ParseConfig(context.Background(), document,
-		ParseOptions{
-			Variables: &vars,
-			Filename:  "main.yml",
-		})
+	intermediate, err := newRawConfig("main.yml", document)
+	require.NoError(t, err)
+	intermediate.variables = &variables.Variables{}
+
+	err = resolveVariables(context.Background(), intermediate)
 	assert.Error(t, err)
 }
 
@@ -308,7 +314,7 @@ func TestParseComponentsNodeInline(t *testing.T) {
 			Cloud: "my-cloud",
 		},
 	}
-	cfg.Plugins.Plugins["my-cloud"] = NewMockPlugin()
+	cfg.Plugins.Plugins["my-cloud"] = plugins.NewMockPlugin()
 
 	err = parseComponentsNode(cfg, &intermediate.Components, "main.yml")
 	require.NoError(t, err)
@@ -346,7 +352,7 @@ func TestParseComponentsNodeInclude(t *testing.T) {
 			Cloud: "my-cloud",
 		},
 	}
-	cfg.Plugins.Plugins["my-cloud"] = NewMockPlugin()
+	cfg.Plugins.Plugins["my-cloud"] = plugins.NewMockPlugin()
 
 	err = parseComponentsNode(cfg, &intermediate.Components, "main.yml")
 	require.NoError(t, err)

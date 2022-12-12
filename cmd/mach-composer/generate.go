@@ -24,7 +24,7 @@ func init() {
 }
 
 func generateFunc(ctx context.Context, args []string) error {
-	cfg := LoadConfig(ctx)
+	cfg := loadConfig(ctx, true)
 	generateFlags.ValidateSite(cfg)
 
 	genOptions := &generator.GenerateOptions{

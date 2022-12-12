@@ -4,9 +4,9 @@ import (
 	"context"
 	"testing"
 
+	"github.com/spf13/afero"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"gopkg.in/yaml.v3"
 
 	"github.com/labd/mach-composer/internal/config"
 	"github.com/labd/mach-composer/internal/plugins"
@@ -14,13 +14,15 @@ import (
 )
 
 func TestRenderSite(t *testing.T) {
-	data := []byte(utils.TrimIndent(`
+	content := []byte(utils.TrimIndent(`
 	---
 	mach_composer:
 	  version: 1.0.0
 	  plugins: {}
 	global:
 	  environment: test
+	  terraform_config: {}
+	  cloud: "aws"
 	sites:
 	- identifier: my-site
 	  components:
@@ -34,21 +36,20 @@ func TestRenderSite(t *testing.T) {
 	  source: "git::https://github.com/<username>/<your-component>.git//terraform"
 	  version: 0.1.0
 `))
+	utils.FS = afero.NewMemMapFs()
+	utils.AFS = &afero.Afero{Fs: utils.FS}
 
-	document := &yaml.Node{}
-	err := yaml.Unmarshal(data, document)
+	err := utils.AFS.WriteFile("main.yml", []byte(content), 0644)
 	require.NoError(t, err)
 
-	cfg, err := config.ParseConfig(
-		context.Background(),
-		document,
-		config.ParseOptions{
-			Filename: "main.yml",
-			Plugins:  plugins.NewPluginRepository(),
+	pr := plugins.NewPluginRepository()
+	pr.Plugins["aws"] = plugins.NewMockPlugin()
+
+	cfg, err := config.Open(
+		context.Background(), "main.yml", &config.ConfigOptions{
+			Plugins: pr,
 		})
-	if err != nil {
-		t.Error(err)
-	}
+	require.NoError(t, err)
 
 	body, err := renderSite(cfg, &cfg.Sites[0])
 	assert.NoError(t, err)
