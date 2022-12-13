@@ -1,6 +1,6 @@
 # Changelog
 
-## 3.0.0 (unreleased)
+## 2.5.0-rc.1 (2022-12-13)
 This major releases introduces support for plugins in mach-composer. All previous
 supported plugins (also called integrations) are still bundled with the
 exectutable but will in the future be distributed separately.
