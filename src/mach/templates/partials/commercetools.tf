@@ -18,6 +18,7 @@ resource "commercetools_project_settings" "project" {
     messages {
         enabled = {{ commercetools.project_settings.messages_enabled | string | lower }}
     }
+    enable_search_index_products = true
 }
 {% endif %}
 
