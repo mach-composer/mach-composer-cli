@@ -113,6 +113,7 @@
               "EUR"
             ]
           ],
+          "enable_search_index_products": [true],
           "languages": [
             [
               "nl-NL",
