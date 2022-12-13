@@ -8,13 +8,13 @@ require (
 	github.com/hashicorp/go-hclog v1.4.0
 	github.com/hashicorp/hcl/v2 v2.15.0
 	github.com/lithammer/dedent v1.1.0
-	github.com/mach-composer/mach-composer-plugin-amplience v0.0.2
-	github.com/mach-composer/mach-composer-plugin-aws v0.0.2
-	github.com/mach-composer/mach-composer-plugin-azure v0.0.3
-	github.com/mach-composer/mach-composer-plugin-commercetools v0.0.4
-	github.com/mach-composer/mach-composer-plugin-contentful v0.0.2
-	github.com/mach-composer/mach-composer-plugin-sdk v0.0.3
-	github.com/mach-composer/mach-composer-plugin-sentry v0.0.3
+	github.com/mach-composer/mach-composer-plugin-amplience v0.0.3
+	github.com/mach-composer/mach-composer-plugin-aws v0.0.3
+	github.com/mach-composer/mach-composer-plugin-azure v0.0.5
+	github.com/mach-composer/mach-composer-plugin-commercetools v0.0.7
+	github.com/mach-composer/mach-composer-plugin-contentful v0.0.4
+	github.com/mach-composer/mach-composer-plugin-sdk v0.0.4
+	github.com/mach-composer/mach-composer-plugin-sentry v0.0.4
 	github.com/mach-composer/mcc-sdk-go v0.0.3-0.20221122074702-8df13e53ecaa
 	github.com/mattn/go-isatty v0.0.16
 	github.com/skratchdot/open-golang v0.0.0-20200116055534-eef842397966

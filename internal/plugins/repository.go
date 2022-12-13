@@ -2,6 +2,7 @@ package plugins
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/elliotchance/pie/v2"
 	"github.com/mach-composer/mach-composer-plugin-sdk/schema"
@@ -32,11 +33,13 @@ func (e *PluginNotFoundError) Error() string {
 
 type PluginRepository struct {
 	Plugins map[string]schema.MachComposerPlugin
+	Schemas map[string]schema.ValidationSchema
 }
 
 func NewPluginRepository() *PluginRepository {
 	return &PluginRepository{
 		Plugins: make(map[string]schema.MachComposerPlugin),
+		Schemas: make(map[string]schema.ValidationSchema),
 	}
 }
 
@@ -81,6 +84,24 @@ func (p *PluginRepository) LoadPlugin(name string, properties map[string]string)
 		return fmt.Errorf("failed to start plugin %s: %w", name, err)
 	}
 	p.Plugins[name] = plugin
+	p.LoadSchema(name)
+	return nil
+}
+
+func (p *PluginRepository) LoadSchema(name string) error {
+	plugin, err := p.Get(name)
+	if err != nil {
+		return err
+	}
+
+	// Load validation schema
+	schema, err := plugin.GetValidationSchema()
+	if err != nil {
+		return fmt.Errorf("failed to load plugin schema %s: %w", name, err)
+	}
+	if schema != nil {
+		p.Schemas[name] = *schema
+	}
 	return nil
 }
 
@@ -93,6 +114,19 @@ func (p *PluginRepository) Get(name string) (schema.MachComposerPlugin, error) {
 		return nil, &PluginNotFoundError{Plugin: name}
 	}
 	return plugin, nil
+}
+
+func (p *PluginRepository) GetSchema(name string) (*schema.ValidationSchema, error) {
+	if name == "" {
+		panic("plugin name is empty") // this should never happen
+	}
+
+	// this should not happen in a regular use-case
+	schema, ok := p.Schemas[name]
+	if !ok {
+		return nil, fmt.Errorf("No schema found for %s (internal error)", name)
+	}
+	return &schema, nil
 }
 
 func (p *PluginRepository) All() map[string]schema.MachComposerPlugin {

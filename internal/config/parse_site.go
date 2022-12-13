@@ -41,7 +41,7 @@ func parseSitesNode(cfg *MachConfig, sitesNode *yaml.Node) error {
 			}
 
 			if err := cfg.Plugins.SetSiteConfig(name, siteId, data); err != nil {
-				return fmt.Errorf("plugin.SetSiteConfig failed: %ws", err)
+				return fmt.Errorf("plugin.SetSiteConfig failed: %w", err)
 			}
 		}
 

@@ -1,6 +1,8 @@
 package plugins
 
 import (
+	"encoding/json"
+
 	"github.com/mach-composer/mach-composer-plugin-sdk/plugin"
 	"github.com/mach-composer/mach-composer-plugin-sdk/schema"
 )
@@ -14,8 +16,9 @@ func NewMockPlugin() schema.MachComposerPlugin {
 	state := MockPlugin{}
 
 	return plugin.NewPlugin(&schema.PluginSchema{
-		Configure: state.Configure,
-		IsEnabled: func() bool { return true },
+		Configure:           state.Configure,
+		GetValidationSchema: state.GetValidationSchema,
+		IsEnabled:           func() bool { return true },
 	})
 }
 
@@ -25,4 +28,34 @@ func (p *MockPlugin) Configure(environment string, provider string) error {
 		p.Provider = provider
 	}
 	return nil
+}
+
+func (p *MockPlugin) GetValidationSchema() (*schema.ValidationSchema, error) {
+	content := []byte(`
+	{
+		"type": "object",
+		"required": ["requiredValue"],
+		"additionalProperties": false,
+		"properties": {
+		  "boolValue": {
+			"type": "boolean"
+		  },
+		  "stringValue": {
+			"type": "string"
+		  },
+		  "requiredValue": {
+			"type": "string"
+		  },
+		  "intValue": {
+			"type": "number"
+		  }
+		}
+	  }
+	`)
+	result := schema.ValidationSchema{}
+	if err := json.Unmarshal(content, &result.SiteConfigSchema); err != nil {
+		panic(err)
+	}
+
+	return &result, nil
 }

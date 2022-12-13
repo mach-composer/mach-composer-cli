@@ -64,6 +64,7 @@ func init() {
 	rootCmd.AddCommand(generateCmd)
 	rootCmd.AddCommand(initCmd)
 	rootCmd.AddCommand(planCmd)
+	rootCmd.AddCommand(schemaCmd)
 	rootCmd.AddCommand(sitesCmd)
 	rootCmd.AddCommand(updateCmd)
 	rootCmd.AddCommand(terraformCmd)

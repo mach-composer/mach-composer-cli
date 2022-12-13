@@ -2,6 +2,7 @@ package config
 
 import (
 	"embed"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"strconv"
@@ -9,10 +10,31 @@ import (
 
 	"github.com/xeipuuv/gojsonschema"
 	"gopkg.in/yaml.v3"
+
+	"github.com/labd/mach-composer/internal/plugins"
 )
 
 //go:embed schemas/*
 var schemas embed.FS
+
+func GenerateSchema(filename string, pr *plugins.PluginRepository) (string, error) {
+	raw, err := loadConfig(filename, pr)
+	if err != nil {
+		return "", err
+	}
+
+	data, err := createFullSchema(raw.plugins, &raw.Global)
+	if err != nil {
+		return "", err
+	}
+
+	result, err := json.MarshalIndent(data, "", "    ")
+	if err != nil {
+		return "", err
+	}
+
+	return string(result), nil
+}
 
 func validateConfig(document *yaml.Node) (bool, error) {
 	version, err := getSchemaVersion(document)
@@ -36,6 +58,36 @@ func validateConfig(document *yaml.Node) (bool, error) {
 	}
 
 	result, err := gojsonschema.Validate(*schemaLoader, *docLoader)
+	if err != nil {
+		return false, fmt.Errorf("configuration file is invalid: %w", err)
+	}
+
+	// Deal with result
+	if !result.Valid() {
+		err := &ValidationError{
+			errors: []string{},
+		}
+		for _, desc := range result.Errors() {
+			err.errors = append(err.errors, fmt.Sprintf("%s\n", desc))
+		}
+		return false, err
+	}
+	return true, nil
+}
+
+func validateCompleteConfig(raw *rawConfig) (bool, error) {
+	schemaData, err := createFullSchema(raw.plugins, &raw.Global)
+	if err != nil {
+		return false, err
+	}
+	schemaLoader := gojsonschema.NewRawLoader(schemaData)
+
+	docLoader, err := newYamlLoader(raw.document)
+	if err != nil {
+		return false, err
+	}
+
+	result, err := gojsonschema.Validate(schemaLoader, *docLoader)
 	if err != nil {
 		return false, fmt.Errorf("configuration file is invalid: %w", err)
 	}
@@ -95,12 +147,102 @@ func newFileLoader(document []byte) (*gojsonschema.JSONLoader, error) {
 	return &loader, nil
 }
 
+// newYamlLoader allows us to validate yaml file with the gojsonschema. First we
+// convert the nodes to a map[string]any and then we serialize it to a json
+// string for validation. This extra serialization helps validation since
+// yaml is rather lax regarding data-types (ints vs strings vs floats)
 func newYamlLoader(document *yaml.Node) (*gojsonschema.JSONLoader, error) {
 	var data map[string]any
 	if err := document.Decode(&data); err != nil {
 		return nil, fmt.Errorf("yaml unmarshalling failed: %w", err)
 	}
-	loader := gojsonschema.NewRawLoader(data)
 
+	body, err := json.Marshal(data)
+	if err != nil {
+		panic(err)
+	}
+
+	loader := gojsonschema.NewStringLoader(string(body))
 	return &loader, nil
+}
+
+func createFullSchema(pr *plugins.PluginRepository, globalNode *yaml.Node) (map[string]any, error) {
+	g := GlobalConfig{}
+	if err := globalNode.Decode(&g); err != nil {
+		return nil, fmt.Errorf("decoding error: %w", err)
+	}
+
+	body, err := schemas.ReadFile(fmt.Sprintf("schemas/schema-%d.yaml", 1))
+	if err != nil {
+		return nil, fmt.Errorf("failed to read file: %w", err)
+	}
+
+	var data map[string]any
+	if err := yaml.Unmarshal(body, &data); err != nil {
+		return nil, fmt.Errorf("yaml unmarshalling failed: %w", err)
+	}
+
+	definitions, ok := data["definitions"].(map[string]any)
+	if !ok {
+		return nil, fmt.Errorf("unable to read schema")
+	}
+
+	statePluginName, ok := g.TerraformConfig.RemoteState["plugin"]
+	if ok {
+		stateSchema, err := pr.GetSchema(statePluginName)
+		if err != nil {
+			return nil, fmt.Errorf("unable to get state schema")
+		}
+		definitions["RemoteState"] = stateSchema.RemoteStateSchema
+	}
+
+	// Disable additionalProperties
+	setAdditionalProperties(definitions["GlobalConfig"], false)
+	setAdditionalProperties(definitions["SiteConfig"], false)
+	setAdditionalProperties(definitions["SiteComponentConfig"], false)
+	setAdditionalProperties(definitions["SiteEndpointConfig"], false)
+	setAdditionalProperties(definitions["ComponentConfig"], false)
+	setAdditionalProperties(definitions["ComponentEndpointConfig"], false)
+
+	// Site config
+	for name := range pr.All() {
+		schema, err := pr.GetSchema(name)
+		if err != nil {
+			return nil, err
+		}
+
+		setObjectProperties(definitions["GlobalConfig"], name, schema.GlobalConfigSchema)
+		setObjectProperties(definitions["SiteConfig"], name, schema.SiteConfigSchema)
+		setObjectProperties(definitions["SiteComponentConfig"], name, schema.SiteComponentConfigSchema)
+		setObjectProperties(definitions["SiteEndpointConfig"], name, schema.SiteEndpointsConfig)
+		setObjectProperties(definitions["ComponentConfig"], name, schema.ComponentConfigSchema)
+		setObjectProperties(definitions["ComponentEndpointConfig"], name, schema.ComponentEndpointsConfigSchema)
+	}
+
+	return data, nil
+}
+
+func setAdditionalProperties(values any, value bool) {
+	items, ok := values.(map[string]any)
+	if !ok {
+		panic("error parsing schema") // Program error
+	}
+	items["additionalProperties"] = value
+}
+
+func setObjectProperties(values any, name string, p map[string]any) {
+	if len(p) < 1 {
+		return
+	}
+
+	item, ok := values.(map[string]any)
+	if !ok {
+		panic("error parsing schema") // Program error
+	}
+
+	properties, ok := item["properties"].(map[string]any)
+	if !ok {
+		panic("error parsing schema") // Program error
+	}
+	properties[name] = p
 }

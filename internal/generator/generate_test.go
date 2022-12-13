@@ -44,6 +44,8 @@ func TestRenderSite(t *testing.T) {
 
 	pr := plugins.NewPluginRepository()
 	pr.Plugins["aws"] = plugins.NewMockPlugin()
+	err = pr.LoadSchema("aws")
+	require.NoError(t, err)
 
 	cfg, err := config.Open(
 		context.Background(), "main.yml", &config.ConfigOptions{

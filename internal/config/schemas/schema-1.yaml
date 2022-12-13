@@ -10,7 +10,7 @@ properties:
   sites:
     type: array
     items:
-      $ref: "#/definitions/Site"
+      $ref: "#/definitions/SiteConfig"
   components:
     oneOf:
       - type: string
@@ -66,207 +66,25 @@ definitions:
     description: Terraform configuration.
     additionalProperties: true
     properties:
-      azure_remote_state:
-        $ref: "#/definitions/AzureTFState"
-      aws_remote_state:
-        $ref: "#/definitions/AWSTFState"
       remote_state:
-        type: object
-        additionalProperties: true
-        required:
-          - plugin
-        properties:
-          plugin:
-            type: string
-      providers:
-        $ref: "#/definitions/TerraformProviders"
-
-  AzureTFState:
-    type: object
-    description: Azure storage account state backend configuration.
-    additionalProperties: false
-    required:
-      - resource_group
-      - storage_account
-      - container_name
-      - state_folder
-    properties:
-      resource_group:
-        type: string
-      storage_account:
-        type: string
-      container_name:
-        type: string
-      state_folder:
-        type: string
+        allOf:
+          - type: object
+            additionalProperties: true
+            required:
+              - plugin
+            properties:
+              plugin:
+                type: string
+          - $ref: "#/definitions/RemoteState"
 
   RemoteState:
     type: object
-    discriminator:
-      propertyName: plugin
+    properties: {}
 
-  AWSTFState:
-    type: object
-    description: AWS S3 bucket state backend configuration.
-    required:
-      - bucket
-      - key_prefix
-      - region
-    properties:
-      bucket:
-        type: string
-      key_prefix:
-        type: string
-      region:
-        type: string
-      role_arn:
-        type: string
-      lock_table:
-        type: string
-
-  TerraformProviders:
-    type: object
-    additionalProperties: false
-    properties:
-      aws:
-        type: string
-      azure:
-        type: string
-      commercetools:
-        type: string
-      sentry:
-        type: string
-      contentful:
-        type: string
-      amplience:
-        type: string
-    description: Terraform provider version overwrites.
-
-  SentryConfig:
-    type: object
-    description: Global Sentry configuration.
-    properties:
-      dsn:
-        type: string
-      rate_limit_window:
-        type: integer
-      rate_limit_count:
-        type: integer
-      auth_token:
-        type: string
-      base_url:
-        type: string
-      project:
-        type: string
-      organization:
-        type: string
-
-  AzureConfig:
-    type: object
-    description: Azure configuration.
-    required:
-      - tenant_id
-      - subscription_id
-      - region
-    additionalProperties: false
-    properties:
-      tenant_id:
-        type: string
-      subscription_id:
-        type: string
-      region:
-        type: string
-      frontdoor:
-        $ref: "#/definitions/AzureFrontdoorSettings"
-      resources_prefix:
-        type: string
-      service_object_ids:
-        type: object
-        additionalProperties:
-          type: string
-      service_plans:
-        type: object
-        additionalProperties:
-          $ref: "#/definitions/AzureServicePlan"
-
-  AzureFrontdoorSettings:
-    type: object
-    required:
-      - dns_resource_group
-    properties:
-      dns_resource_group:
-        type: string
-      ssl_key_vault:
-        $ref: "#/definitions/AzureFrontdoorSslConfig"
-      suppress_changes:
-        type: boolean
-    description: Frontdoor settings.
-
-  AzureFrontdoorSslConfig:
-    type: object
-    required:
-      - name
-      - resource_group
-      - secret_name
-    properties:
-      name:
-        type: string
-      resource_group:
-        type: string
-      secret_name:
-        type: string
-
-  AzureServicePlan:
-    type: object
-    required:
-      - kind
-      - tier
-      - size
-    additionalProperties: false
-    properties:
-      kind:
-        type: string
-      tier:
-        type: string
-      size:
-        type: string
-      capacity:
-        type: integer
-      dedicated_resource_group:
-        type: boolean
-      per_site_scaling:
-        type: boolean
-
-  ContentfulConfig:
-    type: object
-    required:
-      - cma_token
-      - organization_id
-    additionalProperties: false
-    properties:
-      cma_token:
-        type: string
-      organization_id:
-        type: string
-    description: Generic Contenful configuration.
-
-  AmplienceConfig:
-    type: object
-    required:
-      - client_id
-      - client_secret
-    additionalProperties: false
-    properties:
-      client_id:
-        type: string
-      client_secret:
-        type: string
-    description: Generic Amplience configuration.
-
-  Site:
+  SiteConfig:
     type: object
     description: Site definition.
-    additionalProperties: false
+    additionalProperties: true
     required:
       - identifier
     properties:
@@ -278,29 +96,15 @@ definitions:
           "^[A-Za-z0-9+-]+$":
             oneOf:
               - type: string
-              - $ref: "#/definitions/Endpoint"
-      commercetools:
-        $ref: "#/definitions/CommercetoolsSettings"
-      contentful:
-        $ref: "#/definitions/ContentfulSettings"
-      amplience:
-        $ref: "#/definitions/AmplienceSettings"
-      apollo_federation:
-        $ref: "#/definitions/ApolloFederationSettings"
-      azure:
-        $ref: "#/definitions/SiteAzureSettings"
-      aws:
-        $ref: "#/definitions/SiteAWSSettings"
+              - $ref: "#/definitions/SiteEndpointConfig"
       components:
         type: array
         items:
-          $ref: "#/definitions/Component"
-      sentry:
-        $ref: "#/definitions/SentryDsn"
+          $ref: "#/definitions/SiteComponentConfig"
 
-  Endpoint:
+  SiteEndpointConfig:
     type: object
-    additionalProperties: false
+    additionalProperties: true
     required:
       - url
     properties:
@@ -310,39 +114,11 @@ definitions:
         type: string
       zone:
         type: string
-      aws:
-        $ref: "#/definitions/AWSEndpoint"
-      azure:
-        $ref: "#/definitions/AzureEndpoint"
 
-  AWSEndpoint:
-    type: object
-    additionalProperties: false
-    properties:
-      throttling_burst_limit:
-        type: integer
-      throttling_rate_limit:
-        type: integer
-      enable_cdn:
-        type: boolean
-
-  AzureEndpoint:
-    type: object
-    additionalProperties: false
-    properties:
-      session_affinity_enabled:
-        type: boolean
-      session_affinity_ttl_seconds:
-        type: integer
-      waf_policy_id:
-        type: string
-      internal_name:
-        type: string
-
-  Component:
+  SiteComponentConfig:
     type: object
     description: Component configuration.
-    additionalProperties: false
+    additionalProperties: true
     required:
       - name
     properties:
@@ -352,377 +128,12 @@ definitions:
         type: object
       secrets:
         type: object
-      store_variables:
-        type: object
-        additionalProperties:
-          type: object
-      store_secrets:
-        type: object
-        additionalProperties:
-          type: object
       health_check_path:
         type: string
-      sentry:
-        $ref: "#/definitions/SentryDsn"
-      azure:
-        $ref: "#/definitions/ComponentAzureConfig"
-
-  SentryDsn:
-    type: object
-    description: Specific sentry DSN settings.
-    additionalProperties: false
-    properties:
-      dsn:
-        type: string
-      project:
-        type: string
-      rate_limit_window:
-        type: integer
-      rate_limit_count:
-        type: integer
-
-  ComponentAzureConfig:
-    type: object
-    properties:
-      service_plan:
-        type: string
-      short_name:
-        type: string
-
-  CommercetoolsSettings:
-    type: object
-    description: commercetools configuration.
-    additionalProperties: false
-    required:
-      - project_key
-      - client_id
-      - client_secret
-      - scopes
-    properties:
-      project_key:
-        type: string
-      client_id:
-        type: string
-      client_secret:
-        type: string
-      scopes:
-        type: string
-      token_url:
-        type: string
-        default: "https://auth.europe-west1.gcp.commercetools.com"
-      api_url:
-        type: string
-        default: "https://api.europe-west1.gcp.commercetools.com"
-      project_settings:
-        $ref: "#/definitions/CommercetoolsProjectSettings"
-      channels:
-        type: array
-        items:
-          $ref: "#/definitions/CommercetoolsChannel"
-      taxes:
-        type: array
-        items:
-          $ref: "#/definitions/CommercetoolsTax"
-      tax_categories:
-        type: array
-        items:
-          $ref: "#/definitions/CommercetoolsTaxCategory"
-      stores:
-        type: array
-        items:
-          $ref: "#/definitions/CommercetoolsStore"
-      zones:
-        type: array
-        items:
-          $ref: "#/definitions/CommercetoolsZone"
-      frontend:
-        $ref: "#/definitions/CommercetoolsFrontendSettings"
-
-  CommercetoolsProjectSettings:
-    type: object
-    properties:
-      currencies:
-        type: array
-        items:
-          type: string
-      languages:
-        type: array
-        items:
-          type: string
-      countries:
-        type: array
-        items:
-          type: string
-      messages_enabled:
-        type: boolean
-        default: true
-
-  CommercetoolsChannel:
-    type: object
-    description: commercetools channel definition.
-    required:
-      - key
-      - roles
-    properties:
-      key:
-        type: string
-      roles:
-        type: array
-        items:
-          type: string
-      name:
-        type: object
-        additionalProperties:
-          type: string
-      description:
-        type: object
-        additionalProperties:
-          type: string
-
-  CommercetoolsTax:
-    type: object
-    additionalProperties: false
-    required:
-      - country
-      - amount
-      - name
-    properties:
-      country:
-        type: string
-      amount:
-        type: number
-      name:
-        type: string
-      included_in_price:
-        type: boolean
-        default: true
-    description: commercetools tax definition.
-
-  CommercetoolsTaxCategory:
-    type: object
-    description: commercetools tax categories definition.
-    additionalProperties: false
-    required:
-      - key
-      - name
-    properties:
-      key:
-        type: string
-      name:
-        type: string
-      rates:
-        type: array
-        items:
-          $ref: "#/definitions/CommercetoolsTax"
-
-  CommercetoolsStore:
-    type: object
-    additionalProperties: false
-    required:
-      - key
-    properties:
-      key:
-        type: string
-      name:
-        type: object
-        additionalProperties:
-          type: string
-      managed:
-        type: boolean
-        default: true
-      languages:
-        type: array
-        items:
-          type: string
-      distribution_channels:
-        type: array
-        items:
-          type: string
-      supply_channels:
-        type: array
-        items:
-          type: string
-    description: commercetools store definition.
-
-  CommercetoolsZone:
-    type: object
-    required:
-      - name
-    properties:
-      name:
-        type: string
-      description:
-        type: string
-      locations:
-        type: array
-        items:
-          $ref: "#/definitions/CommercetoolsZoneLocation"
-
-  CommercetoolsZoneLocation:
-    type: object
-    description: "CommercetoolsZoneLocation(country: str, state: str = '')"
-    required:
-      - country
-    properties:
-      country:
-        type: string
-      state:
-        type: string
-
-  CommercetoolsFrontendSettings:
-    type: object
-    properties:
-      create_credentials:
-        type: boolean
-        default: true
-      permission_scopes:
-        type: array
-        items:
-          type: string
-        default:
-          - create_anonymous_token
-          - manage_my_profile
-          - manage_my_orders
-          - manage_my_shopping_lists
-          - manage_my_payments
-          - view_products
-          - view_project_settings
-
-  ContentfulSettings:
-    type: object
-    description: Contentful settings.
-    additionalProperties: false
-    required:
-      - space
-    properties:
-      space:
-        type: string
-      default_locale:
-        type: string
-        default: en-US
-      cma_token:
-        type: string
-      organization_id:
-        type: string
-
-  AmplienceSettings:
-    type: object
-    description: Amplience settings.
-    additionalProperties: false
-    required:
-      - hub_id
-    properties:
-      hub_id:
-        type: string
-      client_id:
-        type: string
-      client_secret:
-        type: string
-
-  ApolloFederationSettings:
-    type: object
-    additionalProperties: false
-    required:
-      - api_key
-      - graph
-      - graph_variant
-    properties:
-      api_key:
-        type: string
-      graph:
-        type: string
-      graph_variant:
-        type: string
-    description: Apollo Federation settings.
-
-  SiteAzureSettings:
-    type: object
-    description: Site-specific Azure settings.
-    additionalProperties: false
-    properties:
-      frontdoor:
-        $ref: "#/definitions/AzureFrontdoorSettings"
-      alert_group:
-        $ref: "#/definitions/AlertGroup"
-      resource_group:
-        type: string
-      tenant_id:
-        type: string
-      subscription_id:
-        type: string
-      region:
-        type: string
-      service_object_ids:
-        type: object
-        additionalProperties:
-          type: string
-      service_plans:
-        type: object
-        additionalProperties:
-          $ref: "#/definitions/AzureServicePlan"
-
-  AlertGroup:
-    type: object
-    description: Alert group configuration.
-    additionalProperties: false
-    required:
-      - name
-    properties:
-      name:
-        type: string
-      alert_emails:
-        type: array
-        items:
-          type: string
-      webhook_url:
-        type: string
-      logic_app:
-        type: string
-
-  SiteAWSSettings:
-    type: object
-    description: Site-specific AWS settings.
-    required:
-      - account_id
-      - region
-    properties:
-      account_id:
-        type: string
-      region:
-        type: string
-      deploy_role_name:
-        type: string
-      default_tags:
-        type: object
-        patternProperties:
-          "^[A-Za-z0-9+-]+$":
-            type: string
-      extra_providers:
-        type: array
-        items:
-          $ref: "#/definitions/AWSProvider"
-
-  AWSProvider:
-    type: object
-    additionalProperties: false
-    required:
-      - name
-      - region
-    properties:
-      name:
-        type: string
-      region:
-        type: string
-      default_tags:
-        type: object
-        patternProperties:
-          "^[A-Za-z0-9+-]+$":
-            type: string
-    description: AWS provider configuration.
 
   ComponentConfig:
     type: object
-    additionalProperties: false
+    additionalProperties: true
     required:
       - name
       - source
@@ -739,15 +150,16 @@ definitions:
         items:
           type: string
       endpoints:
-        type: object
-        additionalProperties: false
-        patternProperties:
-          "[a-zA-Z0-9]+":
-            type: string
+        $ref: "#/definitions/ComponentEndpointConfig"
       health_check_path:
         type: string
-      azure:
-        $ref: "#/definitions/ComponentAzureConfig"
       branch:
         type: string
     description: Component definition.
+
+  ComponentEndpointConfig:
+    type: object
+    additionalProperties: false
+    patternProperties:
+      "[a-zA-Z0-9]+":
+        type: string

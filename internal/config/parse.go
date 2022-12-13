@@ -20,34 +20,18 @@ type ConfigOptions struct {
 }
 
 func Open(ctx context.Context, filename string, opts *ConfigOptions) (*MachConfig, error) {
-	// Load the yaml file and do basic validation if the config file is valid
-	// based on a json schema
-	document, err := loadYamlFile(filename)
+	raw, err := loadConfig(filename, opts.Plugins)
 	if err != nil {
 		return nil, err
 	}
 
-	isValid, err := validateConfig(document)
+	// Validate again
+	isValid, err := validateCompleteConfig(raw)
 	if err != nil {
 		return nil, err
 	}
 	if !isValid {
 		return nil, fmt.Errorf("failed to load config %s due to errors", filename)
-	}
-
-	// Decode the yaml in an intermediate config file
-	raw, err := newRawConfig(filename, document)
-	if err != nil {
-		return nil, err
-	}
-
-	// Load the plugins
-	raw.plugins = opts.Plugins
-	if raw.plugins == nil {
-		raw.plugins = plugins.NewPluginRepository()
-		if err := raw.plugins.Load(raw.MachComposer.Plugins); err != nil {
-			return nil, err
-		}
 	}
 
 	for _, f := range opts.VarFilenames {
@@ -73,6 +57,41 @@ func Open(ctx context.Context, filename string, opts *ConfigOptions) (*MachConfi
 	}
 
 	return resolveConfig(ctx, raw)
+}
+
+func loadConfig(filename string, pr *plugins.PluginRepository) (*rawConfig, error) {
+	// Load the yaml file and do basic validation if the config file is valid
+	// based on a json schema
+	document, err := loadYamlFile(filename)
+	if err != nil {
+		return nil, err
+	}
+
+	// Initial validation. We validate the document twice, once only the
+	// structure and later again when we loaded the plugins
+	isValid, err := validateConfig(document)
+	if err != nil {
+		return nil, err
+	}
+	if !isValid {
+		return nil, fmt.Errorf("failed to load config %s due to errors", filename)
+	}
+
+	// Decode the yaml in an intermediate config file
+	raw, err := newRawConfig(filename, document)
+	if err != nil {
+		return nil, err
+	}
+
+	// Load the plugins
+	raw.plugins = pr
+	if raw.plugins == nil {
+		raw.plugins = plugins.NewPluginRepository()
+		if err := raw.plugins.Load(raw.MachComposer.Plugins); err != nil {
+			return nil, err
+		}
+	}
+	return raw, nil
 }
 
 // parseConfig is responsible for parsing a mach composer yaml config file and

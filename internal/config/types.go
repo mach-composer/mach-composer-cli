@@ -15,6 +15,7 @@ import (
 )
 
 type rawConfig struct {
+	document  *yaml.Node                `yaml:"-"`
 	filename  string                    `yaml:"-"`
 	plugins   *plugins.PluginRepository `yaml:"-"`
 	variables *variables.Variables      `yaml:"-"`
@@ -47,6 +48,7 @@ func newRawConfig(filename string, document *yaml.Node) (*rawConfig, error) {
 	r := &rawConfig{
 		filename:  filename,
 		variables: variables.NewVariables(),
+		document:  document,
 	}
 	if err := document.Decode(r); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal yaml: %w", err)
@@ -130,7 +132,8 @@ type Component struct {
 }
 
 type TerraformConfig struct {
-	Providers map[string]string `yaml:"providers"`
+	Providers   map[string]string `yaml:"providers"`
+	RemoteState map[string]string `yaml:"remote_state"`
 }
 
 func (sc SiteComponent) HasCloudIntegration(g *GlobalConfig) bool {
