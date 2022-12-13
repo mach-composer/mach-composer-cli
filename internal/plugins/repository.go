@@ -17,6 +17,15 @@ type Plugin struct {
 	Name string
 }
 
+type PluginError struct {
+	msg    string
+	plugin string
+}
+
+func (e *PluginError) Error() string {
+	return e.msg
+}
+
 func (e *PluginNotFoundError) Error() string {
 	return fmt.Sprintf("plugin %s not found", e.Plugin)
 }
@@ -103,7 +112,7 @@ func (p *PluginRepository) SetRemoteState(name string, data map[string]any) erro
 	if err != nil {
 		return err
 	}
-	return plugin.SetRemoteStateBackend(data)
+	return p.handleErr(name, plugin.SetRemoteStateBackend(data))
 }
 
 func (p *PluginRepository) SetGlobalConfig(name string, data map[string]any) error {
@@ -111,7 +120,7 @@ func (p *PluginRepository) SetGlobalConfig(name string, data map[string]any) err
 	if err != nil {
 		return err
 	}
-	return plugin.SetGlobalConfig(data)
+	return p.handleErr(name, plugin.SetGlobalConfig(data))
 }
 
 func (p *PluginRepository) SetSiteConfig(name string, site string, data map[string]any) error {
@@ -119,7 +128,7 @@ func (p *PluginRepository) SetSiteConfig(name string, site string, data map[stri
 	if err != nil {
 		return err
 	}
-	return plugin.SetSiteConfig(site, data)
+	return p.handleErr(name, plugin.SetSiteConfig(site, data))
 }
 
 func (p *PluginRepository) SetSiteComponentConfig(site, component, name string, data map[string]any) error {
@@ -127,11 +136,7 @@ func (p *PluginRepository) SetSiteComponentConfig(site, component, name string, 
 	if err != nil {
 		return err
 	}
-	if err := plugin.SetSiteComponentConfig(site, component, data); err != nil {
-		log.Error().Err(err).Msgf("failed %s.SetSiteComponentConfig(%s, %s)", name, site, component)
-		return err
-	}
-	return nil
+	return p.handleErr(name, plugin.SetSiteComponentConfig(site, component, data))
 }
 
 func (p *PluginRepository) SetComponentConfig(name, component string, data map[string]any) error {
@@ -139,5 +144,24 @@ func (p *PluginRepository) SetComponentConfig(name, component string, data map[s
 	if err != nil {
 		return err
 	}
-	return plugin.SetComponentConfig(component, data)
+	return p.handleErr(name, plugin.SetComponentConfig(component, data))
+}
+
+func (p *PluginRepository) handleErr(plugin string, err error) error {
+	if err == nil {
+		return nil
+	}
+
+	log.Error().Err(err).Stack().Msgf("plugin %s returned an error", plugin)
+
+	if strings.Contains(err.Error(), "reading body EOF") {
+		return &PluginError{
+			plugin: plugin,
+			msg:    fmt.Sprintf("the %s plugin crashed. This is a bug in the plugin.", plugin),
+		}
+	}
+	return &PluginError{
+		plugin: plugin,
+		msg:    err.Error(),
+	}
 }

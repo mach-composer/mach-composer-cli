@@ -83,7 +83,7 @@ func startPlugin(name string) (schema.MachComposerPlugin, error) {
 	}
 	plugin, ok := raw.(schema.MachComposerPlugin)
 	if !ok {
-		return nil, fmt.Errorf("invalid plugin resolved")
+		return nil, fmt.Errorf("incompatible plugin resolved")
 	}
 	return plugin, nil
 }
