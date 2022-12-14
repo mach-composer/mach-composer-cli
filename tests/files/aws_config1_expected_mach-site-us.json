@@ -114,7 +114,7 @@
               "USD"
             ]
           ],
-          "enable_search_index_products": [true],
+          "enable_search_index_products": [false],
           "languages": [
             [
               "en-US"

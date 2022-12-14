@@ -228,7 +228,7 @@ class CommercetoolsProjectSettings(JsonSchemaMixin):
     languages: Optional[List[str]] = fields.none()
     countries: Optional[List[str]] = fields.none()
     messages_enabled: bool = fields.default(True)
-    site_search_index_enabled: bool = fields.default(True)
+    site_search_index_enabled: bool = fields.default(False)
 
 
 @dataclass_json
