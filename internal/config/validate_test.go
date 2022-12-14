@@ -27,12 +27,16 @@ func TestCreateSchema(t *testing.T) {
 		    stringValue: 027113887083
 			boolValue: -1
 			intValue: no-int
+			mapOfInts:
+		    	1324: 027113887083
           components:
           - name: your-component
             variables:
               FOO_VAR: my-value
 			  BAR_VAR: ${var.foo}
 			  MULTIPLE_VARS: ${var.foo.bar} ${var.bar.foo}
+			  NESTED:
+			  	VARS: OK
             secrets:
               MY_SECRET: secretvalue
         components:

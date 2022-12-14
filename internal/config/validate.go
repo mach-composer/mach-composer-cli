@@ -157,7 +157,9 @@ func newYamlLoader(document *yaml.Node) (*gojsonschema.JSONLoader, error) {
 		return nil, fmt.Errorf("yaml unmarshalling failed: %w", err)
 	}
 
-	body, err := json.Marshal(data)
+	transformed := transformYamlData(data)
+
+	body, err := json.Marshal(transformed)
 	if err != nil {
 		panic(err)
 	}
@@ -245,4 +247,29 @@ func setObjectProperties(values any, name string, p map[string]any) {
 		panic("error parsing schema") // Program error
 	}
 	properties[name] = p
+}
+
+// transformYamlData returns the given data whereby keys of maps are always
+// strings so that i can be serialized to json
+func transformYamlData(d any) any {
+	switch t := d.(type) {
+	case map[string]any:
+		result := map[string]any{}
+		for k, v := range t {
+			result[k] = transformYamlData(v)
+		}
+		return result
+	case map[any]any:
+		result := map[string]any{}
+		for k, v := range t {
+			key := fmt.Sprintf("%v", k)
+			result[key] = transformYamlData(v)
+		}
+		return result
+	case []any:
+		for i, v := range t {
+			t[i] = transformYamlData(v)
+		}
+	}
+	return d
 }
