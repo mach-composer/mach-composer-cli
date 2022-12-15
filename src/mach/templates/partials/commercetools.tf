@@ -16,8 +16,11 @@ resource "commercetools_project_settings" "project" {
     currencies = [{% for currency in commercetools.project_settings.currencies %}{{ currency|tf }}{% if not loop.last %},{% endif %}{% endfor %}]
     languages  = [{% for language in commercetools.project_settings.languages %}{{ language|tf }}{% if not loop.last %},{% endif %}{% endfor %}]
     messages {
-        enabled = {{ commercetools.project_settings.messages_enabled | string | lower }}
+        enabled = {{ commercetools.project_settings.messages_enabled|tf }}
     }
+    {% if commercetools.project_settings.enable_search_index_products is not none %}
+    enable_search_index_products = {{ commercetools.project_settings.enable_search_index_products|tf }}
+    {% endif %}
 }
 {% endif %}
 
