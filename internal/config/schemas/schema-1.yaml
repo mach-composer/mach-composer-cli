@@ -29,7 +29,8 @@ definitions:
     additionalProperties: false
     properties:
       version:
-        type: string
+        type: number
+        format: int
       variables_file:
         type: string
       plugins:
