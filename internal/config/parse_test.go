@@ -325,6 +325,49 @@ func TestParseComponentsNodeInline(t *testing.T) {
 	assert.Equal(t, "your-component", cfg.Components[0].Name)
 }
 
+func TestParseComponentsNodeRef(t *testing.T) {
+	utils.FS = afero.NewMemMapFs()
+	utils.AFS = &afero.Afero{Fs: utils.FS}
+
+	content := utils.TrimIndent(`
+	components:
+		- name: your-component
+		  source: "git::https://github.com/<username>/<your-component>.git//terraform"
+		  version: 0.1.0
+	`)
+
+	err := utils.AFS.WriteFile("components.yml", []byte(content), 0644)
+	require.NoError(t, err)
+
+	var intermediate struct {
+		Components yaml.Node `yaml:"components"`
+	}
+
+	data := []byte(utils.TrimIndent(`
+        components:
+			$ref: components.yml#/components
+  `))
+
+	err = yaml.Unmarshal(data, &intermediate)
+	require.NoError(t, err)
+
+	err = loadRefData(context.Background(), &intermediate.Components, "")
+	require.NoError(t, err)
+
+	cfg := &MachConfig{
+		Plugins: plugins.NewPluginRepository(),
+		Global: GlobalConfig{
+			Cloud: "my-cloud",
+		},
+	}
+	cfg.Plugins.Plugins["my-cloud"] = plugins.NewMockPlugin()
+
+	err = parseComponentsNode(cfg, &intermediate.Components, "main.yml")
+	require.NoError(t, err)
+	assert.Len(t, cfg.Components, 1)
+	assert.Equal(t, "your-component", cfg.Components[0].Name)
+}
+
 func TestParseComponentsNodeInclude(t *testing.T) {
 	utils.FS = afero.NewMemMapFs()
 	utils.AFS = &afero.Afero{Fs: utils.FS}

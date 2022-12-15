@@ -1,8 +1,15 @@
 package config
 
 import (
+	"context"
+	"fmt"
+	"path/filepath"
+	"strings"
+
 	"github.com/elliotchance/pie/v2"
 	"gopkg.in/yaml.v3"
+
+	"github.com/labd/mach-composer/internal/utils"
 )
 
 func nodeAsMap(n *yaml.Node) (map[string]any, error) {
@@ -13,8 +20,16 @@ func nodeAsMap(n *yaml.Node) (map[string]any, error) {
 	return target, nil
 }
 
+// mapYamlNodes cretes a map[key]node from a slice of yaml.Node's. It assumes
+// that the nodes are pairs, e.g. [key, value, key, value]
 func mapYamlNodes(nodes []*yaml.Node) map[string]*yaml.Node {
 	result := map[string]*yaml.Node{}
+
+	// Check if there are an even number of nodes as we expect a
+	// key, value nodes
+	if len(nodes)%2 != 0 {
+		return nil
+	}
 	for i := 0; i < len(nodes); i += 2 {
 		key := nodes[i].Value
 		value := nodes[i+1]
@@ -43,4 +58,57 @@ func iterateYamlNodes(
 	}
 
 	return nil
+}
+
+func loadRefData(ctx context.Context, node *yaml.Node, cwd string) error {
+	if node.Kind != yaml.MappingNode {
+		return nil
+	}
+
+	data := mapYamlNodes(node.Content)
+	ref, ok := data["$ref"]
+	if !ok {
+		return nil
+	}
+
+	newNode, err := loadRefDocument(ctx, ref.Value, cwd)
+	if err != nil {
+		return err
+	}
+	node.Kind = newNode.Kind
+	node.Content = newNode.Content
+
+	return nil
+}
+
+func loadRefDocument(ctx context.Context, filename, cwd string) (*yaml.Node, error) {
+	parts := strings.SplitN(filename, "#", 2)
+	fname := filepath.Join(cwd, parts[0])
+
+	body, err := utils.AFS.ReadFile(fname)
+	if err != nil {
+		return nil, err
+	}
+	result := &yaml.Node{}
+	if err = yaml.Unmarshal(body, result); err != nil {
+		return nil, err
+	}
+
+	root := result.Content[0]
+
+	if len(parts) > 1 {
+		path := strings.TrimPrefix(parts[1], "/")
+		node := root
+		for _, p := range strings.Split(path, "/") {
+			nodes := mapYamlNodes(node.Content)
+			n, ok := nodes[p]
+			if !ok {
+				return nil, fmt.Errorf("unable to resolve node %s", parts[1])
+			}
+			node = n
+		}
+		root = node
+	}
+
+	return root, nil
 }

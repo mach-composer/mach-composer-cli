@@ -3,6 +3,7 @@ package config
 import (
 	"context"
 	"fmt"
+	"path"
 	"path/filepath"
 
 	"gopkg.in/yaml.v3"
@@ -20,7 +21,7 @@ type ConfigOptions struct {
 }
 
 func Open(ctx context.Context, filename string, opts *ConfigOptions) (*MachConfig, error) {
-	raw, err := loadConfig(filename, opts.Plugins)
+	raw, err := loadConfig(ctx, filename, opts.Plugins)
 	if err != nil {
 		return nil, err
 	}
@@ -59,7 +60,7 @@ func Open(ctx context.Context, filename string, opts *ConfigOptions) (*MachConfi
 	return resolveConfig(ctx, raw)
 }
 
-func loadConfig(filename string, pr *plugins.PluginRepository) (*rawConfig, error) {
+func loadConfig(ctx context.Context, filename string, pr *plugins.PluginRepository) (*rawConfig, error) {
 	// Load the yaml file and do basic validation if the config file is valid
 	// based on a json schema
 	document, err := loadYamlFile(filename)
@@ -80,6 +81,10 @@ func loadConfig(filename string, pr *plugins.PluginRepository) (*rawConfig, erro
 	// Decode the yaml in an intermediate config file
 	raw, err := newRawConfig(filename, document)
 	if err != nil {
+		return nil, err
+	}
+
+	if err := loadRefData(ctx, &raw.Components, path.Dir(filename)); err != nil {
 		return nil, err
 	}
 
