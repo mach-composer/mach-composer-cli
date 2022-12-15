@@ -1,6 +1,7 @@
 package config
 
 import (
+	"context"
 	"embed"
 	"encoding/json"
 	"errors"
@@ -17,8 +18,8 @@ import (
 //go:embed schemas/*
 var schemas embed.FS
 
-func GenerateSchema(filename string, pr *plugins.PluginRepository) (string, error) {
-	raw, err := loadConfig(filename, pr)
+func GenerateSchema(ctx context.Context, filename string, pr *plugins.PluginRepository) (string, error) {
+	raw, err := loadConfig(ctx, filename, pr)
 	if err != nil {
 		return "", err
 	}

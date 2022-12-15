@@ -14,6 +14,10 @@ properties:
   components:
     oneOf:
       - type: string
+      - type: object
+        properties:
+          '$ref':
+            type: string
       - type: array
         items:
           $ref: "#/definitions/ComponentConfig"

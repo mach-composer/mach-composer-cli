@@ -28,7 +28,7 @@ var schemaCmd = &cobra.Command{
 			cli.PrintExitError(err.Error())
 		}
 
-		schema, err := config.GenerateSchema(filename, nil)
+		schema, err := config.GenerateSchema(cmd.Context(), filename, nil)
 		if err != nil {
 			cli.PrintExitError(err.Error())
 		}
