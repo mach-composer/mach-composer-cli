@@ -129,6 +129,12 @@ definitions:
         type: object
       secrets:
         type: object
+      store_variables:
+        description: Commercetools store specific variables (deprecated)
+        type: object
+      store_secrets:
+        description: Commercetools store specific variables (deprecated)
+        type: object
       health_check_path:
         type: string
 
