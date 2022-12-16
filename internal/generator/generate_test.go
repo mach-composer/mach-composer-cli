@@ -17,7 +17,7 @@ func TestRenderSite(t *testing.T) {
 	content := []byte(utils.TrimIndent(`
 	---
 	mach_composer:
-	  version: 1.0.0
+	  version: 1
 	  plugins: {}
 	global:
 	  environment: test
