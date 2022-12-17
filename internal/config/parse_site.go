@@ -3,26 +3,17 @@ package config
 import (
 	"fmt"
 
-	"github.com/mach-composer/mach-composer-plugin-sdk/schema"
-	"github.com/rs/zerolog/log"
+	"github.com/elliotchance/pie/v2"
 	"gopkg.in/yaml.v3"
 
 	"github.com/labd/mach-composer/internal/cli"
+	"github.com/labd/mach-composer/internal/utils"
 	"github.com/labd/mach-composer/internal/variables"
 )
 
 func parseSitesNode(cfg *MachConfig, sitesNode *yaml.Node) error {
 	if err := sitesNode.Decode(&cfg.Sites); err != nil {
 		return fmt.Errorf("decoding error: %w", err)
-	}
-
-	var cloudPlugin schema.MachComposerPlugin
-	if cfg.Global.Cloud != "" {
-		var err error
-		cloudPlugin, err = cfg.Plugins.Get(cfg.Global.Cloud)
-		if err != nil {
-			return err
-		}
 	}
 
 	for _, site := range sitesNode.Content {
@@ -47,19 +38,7 @@ func parseSitesNode(cfg *MachConfig, sitesNode *yaml.Node) error {
 		}
 
 		if node, ok := nodes["endpoints"]; ok {
-			data, err := nodeAsMap(node)
-			if err != nil {
-				return err
-			}
-			if cloudPlugin == nil {
-				if len(data) > 0 {
-					log.Error().Msg("Unable to register site endpoints when no cloud provider is configured")
-				}
-				continue
-			}
-			if err := cloudPlugin.SetSiteEndpointsConfig(siteId, data); err != nil {
-				return fmt.Errorf("cloudPlugin.SetSiteEndpointConfig: %w", err)
-			}
+			parseSiteEndpointNode(cfg, siteId, node)
 		}
 
 		if err := parseSiteComponentsNode(cfg, siteId, nodes["components"]); err != nil {
@@ -68,6 +47,101 @@ func parseSitesNode(cfg *MachConfig, sitesNode *yaml.Node) error {
 	}
 
 	return resolveSiteComponents(cfg)
+}
+
+func parseSiteEndpointNode(cfg *MachConfig, siteId string, node *yaml.Node) error {
+	nodes := mapYamlNodes(node.Content)
+	knownTags := []string{"url", "key", "zone"}
+
+	for endpointId, endpointNode := range nodes {
+		if endpointNode.Kind == yaml.ScalarNode {
+			cli.DeprecationWarning(&cli.DeprecationOptions{
+				Message: fmt.Sprintf("endpoint '%s' should be mapping node with a plugin tag", endpointId),
+				Details: utils.TrimIndent(`
+					For example instead of:
+						endpoints:
+							my-endpoint: my-url.example.org
+
+					You should use:
+						endpoints:
+							my-endpoint:
+								aws:
+									url: my-url.example.org
+				`),
+			})
+
+			cloudPlugin, err := cfg.Plugins.Get(cfg.Global.Cloud)
+			if err != nil {
+				return err
+			}
+
+			data := map[string]any{
+				"url": endpointNode.Value,
+			}
+
+			if err := cloudPlugin.SetSiteEndpointConfig(siteId, endpointId, data); err != nil {
+				return fmt.Errorf("cloudPlugin.SetSiteEndpointConfig: %w", err)
+			}
+
+			continue
+		}
+
+		childs := mapYamlNodes(endpointNode.Content)
+
+		if len(pie.Intersect(knownTags, pie.Keys(childs))) > 0 {
+			cli.DeprecationWarning(&cli.DeprecationOptions{
+				Message: fmt.Sprintf("All endpoint properties on '%s' should be moved within the plugin tag", endpointId),
+				Details: utils.TrimIndent(`
+					For example instead of:
+						endpoints:
+							my-endpoint:
+								url: my-url.example.org
+								aws:
+									throttling_burst_limit: 5000
+									throttling_rate_limit: 10000
+
+					You should use:
+						endpoints:
+							my-endpoint:
+								aws:
+									url: my-url.example.org
+									throttling_burst_limit: 5000
+									throttling_rate_limit: 10000
+				`),
+			})
+		}
+
+		legacyData := map[string]any{}
+		for key, node := range childs {
+			if pie.Contains(knownTags, key) {
+				legacyData[key] = node.Value
+			}
+		}
+
+		for key, node := range childs {
+			if pie.Contains(knownTags, key) {
+				continue
+			}
+
+			data, err := nodeAsMap(node)
+			if err != nil {
+				return err
+			}
+
+			// Copy the old legacy data in the resulting data. Can be removed
+			// once we always require the nodes to be part of the plugin
+			for k, v := range legacyData {
+				if _, ok := data[k]; !ok {
+					data[k] = v
+				}
+			}
+
+			if err := cfg.Plugins.SetSiteEndpointConfig(key, siteId, endpointId, data); err != nil {
+				return fmt.Errorf("plugins.SetSiteEndpointConfig: %w", err)
+			}
+		}
+	}
+	return nil
 }
 
 func parseSiteComponentsNode(cfg *MachConfig, site string, node *yaml.Node) error {

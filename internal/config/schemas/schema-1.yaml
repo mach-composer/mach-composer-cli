@@ -111,8 +111,6 @@ definitions:
   SiteEndpointConfig:
     type: object
     additionalProperties: true
-    required:
-      - url
     properties:
       url:
         type: string

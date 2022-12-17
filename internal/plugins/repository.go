@@ -165,6 +165,14 @@ func (p *PluginRepository) SetSiteConfig(name string, site string, data map[stri
 	return p.handleErr(name, plugin.SetSiteConfig(site, data))
 }
 
+func (p *PluginRepository) SetSiteEndpointConfig(name string, site string, key string, data map[string]any) error {
+	plugin, err := p.Get(name)
+	if err != nil {
+		return err
+	}
+	return p.handleErr(name, plugin.SetSiteEndpointConfig(site, key, data))
+}
+
 func (p *PluginRepository) SetSiteComponentConfig(site, component, name string, data map[string]any) error {
 	plugin, err := p.Get(name)
 	if err != nil {

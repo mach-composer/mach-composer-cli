@@ -26,7 +26,7 @@ func parseComponentsNode(cfg *MachConfig, node *yaml.Node, source string) error 
 				For example instead of:
 					components: ${include(components.yml)}
 
-				 You should use:
+				You should use:
 					components:
 						$ref: "components.yml"
 			`,

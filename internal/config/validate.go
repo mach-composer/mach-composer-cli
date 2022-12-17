@@ -253,7 +253,8 @@ func setObjectProperties(values any, name string, p map[string]any) {
 
 	properties, ok := item["properties"].(map[string]any)
 	if !ok {
-		panic("error parsing schema") // Program error
+		properties = map[string]any{}
+		item["properties"] = properties
 	}
 	properties[name] = p
 }

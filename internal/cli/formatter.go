@@ -10,6 +10,8 @@ import (
 
 	"github.com/fatih/color"
 	"github.com/rs/zerolog"
+
+	"github.com/labd/mach-composer/internal/utils"
 )
 
 type ConsoleWriter struct {
@@ -81,10 +83,9 @@ func printDetails(dst io.Writer, detail string, c *color.Color) {
 	if detail == "" {
 		return
 	}
-
 	white := color.New(color.FgWhite, color.Bold).SprintFunc()
 
-	line := strings.TrimSpace(detail)
+	line := strings.TrimSpace(utils.TrimIndent(detail))
 	parts := strings.Split(line, "\n")
 	fmt.Fprintln(dst, c.Sprint("|"))
 	for _, line := range parts {
