@@ -11,6 +11,7 @@ import (
 	"github.com/rs/zerolog/log"
 	"gopkg.in/yaml.v3"
 
+	"github.com/labd/mach-composer/internal/cli"
 	"github.com/labd/mach-composer/internal/utils"
 )
 
@@ -19,6 +20,18 @@ import (
 // syntax.
 func parseComponentsNode(cfg *MachConfig, node *yaml.Node, source string) error {
 	if node.Tag == "!!str" {
+		cli.DeprecationWarning(&cli.DeprecationOptions{
+			Message: "the '${include()}' syntax is deprecated and will be removed in version 3.0",
+			Details: `
+				For example instead of:
+					components: ${include(components.yml)}
+
+				 You should use:
+					components:
+						$ref: "components.yml"
+			`,
+		})
+
 		path := filepath.Dir(source)
 		var err error
 		node, err = loadComponentsNode(node, path)

@@ -61,6 +61,7 @@ func (w ConsoleWriter) Write(p []byte) (n int, err error) {
 			if details, ok := event["details"].(string); ok {
 				printDetails(os.Stderr, details, c)
 			}
+			fmt.Fprintln(os.Stderr, c.Sprint("|"))
 
 		case zerolog.LevelErrorValue:
 			c := color.New(color.FgRed, color.Bold)
@@ -69,6 +70,7 @@ func (w ConsoleWriter) Write(p []byte) (n int, err error) {
 			if details, ok := event["details"].(string); ok {
 				printDetails(os.Stderr, details, c)
 			}
+			fmt.Fprintln(os.Stderr, c.Sprint("|"))
 		}
 	}
 
@@ -76,6 +78,10 @@ func (w ConsoleWriter) Write(p []byte) (n int, err error) {
 }
 
 func printDetails(dst io.Writer, detail string, c *color.Color) {
+	if detail == "" {
+		return
+	}
+
 	white := color.New(color.FgWhite, color.Bold).SprintFunc()
 
 	line := strings.TrimSpace(detail)
@@ -84,5 +90,4 @@ func printDetails(dst io.Writer, detail string, c *color.Color) {
 	for _, line := range parts {
 		fmt.Fprintln(dst, c.Sprint("|"), white(line))
 	}
-	fmt.Fprintln(dst, c.Sprint("|"))
 }

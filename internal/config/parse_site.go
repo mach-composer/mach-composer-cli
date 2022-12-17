@@ -7,6 +7,7 @@ import (
 	"github.com/rs/zerolog/log"
 	"gopkg.in/yaml.v3"
 
+	"github.com/labd/mach-composer/internal/cli"
 	"github.com/labd/mach-composer/internal/variables"
 )
 
@@ -145,7 +146,35 @@ func migrateCommercetools(site, name string, nodes map[string]*yaml.Node) {
 		return
 	}
 
-	log.Warn().Msgf("%s: %s store_variables and store_secrets should be children of the commercetools node", site, name)
+	cli.DeprecationWarning(&cli.DeprecationOptions{
+		Site:      site,
+		Component: name,
+		Message:   fmt.Sprintf("component %s in site %s is using deprecated syntax", name, site),
+		Details: `
+			The nodes 'store_variables' and 'store_secrets' are part of the
+			commercetools plugin and should therefore be specified as such.
+
+			For example instead of:
+			 	variables:
+			 		store_variables:
+			 			MY_STORE:
+			 				username: value
+			 		store_secrets:
+			 			MY_STORE:
+			 				password: secret-value
+
+			 You should use:
+				commercetools:
+					store_variables:
+						MY_STORE:
+							username: value
+					store_secrets:
+						MY_STORE:
+							password: secret-value
+		`,
+		Version: "2.6",
+	})
+
 	if _, ok := nodes["commercetools"]; !ok {
 		nodes["commercetools"] = &yaml.Node{
 			Kind:    yaml.MappingNode,
