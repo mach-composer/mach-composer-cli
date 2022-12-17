@@ -121,7 +121,7 @@ func getSchemaVersion(document *yaml.Node) (int, error) {
 	v := intermediate.MachComposer.Version
 	if _, ok := v.(int); !ok {
 		cli.DeprecationWarning(&cli.DeprecationOptions{
-			Message: fmt.Sprintf("schema_version should be an integer (not %v)", v),
+			Message: fmt.Sprintf("mach_composer.version should be an integer (not %v)", v),
 		})
 	}
 
