@@ -10,7 +10,7 @@ require (
 	github.com/lithammer/dedent v1.1.0
 	github.com/mach-composer/mach-composer-plugin-amplience v0.0.3
 	github.com/mach-composer/mach-composer-plugin-aws v0.0.3
-	github.com/mach-composer/mach-composer-plugin-azure v0.0.5
+	github.com/mach-composer/mach-composer-plugin-azure v0.0.6
 	github.com/mach-composer/mach-composer-plugin-commercetools v0.0.7
 	github.com/mach-composer/mach-composer-plugin-contentful v0.0.4
 	github.com/mach-composer/mach-composer-plugin-sdk v0.0.4
