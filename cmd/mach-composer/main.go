@@ -8,6 +8,7 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/labd/mach-composer/cmd/mach-composer/cloudcmd"
+	"github.com/labd/mach-composer/internal/cli"
 )
 
 var (
@@ -36,15 +37,7 @@ var (
 			} else {
 				logger = logger.Level(zerolog.InfoLevel)
 			}
-			logger = logger.Output(zerolog.NewConsoleWriter(
-				func(w *zerolog.ConsoleWriter) {
-					w.PartsOrder = []string{
-						zerolog.LevelFieldName,
-						zerolog.CallerFieldName,
-						zerolog.MessageFieldName,
-					}
-				},
-			))
+			logger = logger.Output(cli.NewConsoleWriter())
 			log.Logger = logger
 		},
 	}
