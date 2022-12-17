@@ -12,6 +12,7 @@ import (
 	"github.com/xeipuuv/gojsonschema"
 	"gopkg.in/yaml.v3"
 
+	"github.com/labd/mach-composer/internal/cli"
 	"github.com/labd/mach-composer/internal/plugins"
 )
 
@@ -118,11 +119,18 @@ func getSchemaVersion(document *yaml.Node) (int, error) {
 	}
 
 	v := intermediate.MachComposer.Version
-	if val, err := strconv.Atoi(v); err == nil {
+	if _, ok := v.(int); !ok {
+		cli.DeprecationWarning(&cli.DeprecationOptions{
+			Message: fmt.Sprintf("schema_version should be an integer (not %v)", v),
+		})
+	}
+
+	vs := fmt.Sprintf("%v", v)
+	if val, err := strconv.Atoi(vs); err == nil {
 		return val, err
 	}
 
-	parts := strings.SplitN(v, ".", 2)
+	parts := strings.SplitN(vs, ".", 2)
 	if val, err := strconv.Atoi(parts[0]); err == nil {
 		return val, err
 	}

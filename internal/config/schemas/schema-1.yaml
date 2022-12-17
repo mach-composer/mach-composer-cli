@@ -33,8 +33,9 @@ definitions:
     additionalProperties: false
     properties:
       version:
-        type: number
-        format: int
+        type:
+          - string
+          - number
       variables_file:
         type: string
       plugins:

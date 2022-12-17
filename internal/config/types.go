@@ -93,7 +93,7 @@ func (c *MachConfig) GetFiles() map[string][]byte {
 }
 
 type MachComposer struct {
-	Version       string                       `yaml:"version"`
+	Version       any                          `yaml:"version"`
 	VariablesFile string                       `yaml:"variables_file"`
 	Plugins       map[string]map[string]string `yaml:"plugins"`
 }
