@@ -33,7 +33,9 @@ func TestNewVariablesFromFile(t *testing.T) {
 	assert.NoError(t, err)
 
 	expected := map[string]Value{
-		"foo.bar.secrets.foo": {Value: "encrypted", Origin: "variables.yaml"},
+		"foo.bar.secrets.foo": {
+			val:        "encrypted",
+			fileSource: &FileSource{Filename: "variables.yaml"}},
 	}
 	assert.EqualValues(t, expected, vars.vars)
 }
@@ -51,11 +53,11 @@ func TestSerializeNestedVariables(t *testing.T) {
 		},
 	}
 	expected := map[string]Value{
-		"foo":                    {Value: "bar"},
-		"level-1.int":            {Value: "10"},
-		"level-1.string":         {Value: "my-string"},
-		"level-1.level-2.int":    {Value: "20"},
-		"level-1.level-2.string": {Value: "my-nestedstring"},
+		"foo":                    {val: "bar"},
+		"level-1.int":            {val: "10"},
+		"level-1.string":         {val: "my-string"},
+		"level-1.level-2.int":    {val: "20"},
+		"level-1.level-2.string": {val: "my-nestedstring"},
 	}
 	result := map[string]Value{}
 	serializeNestedVariables(input, result, "")
@@ -89,9 +91,9 @@ func TestVariablesResolve(t *testing.T) {
 	require.NoError(t, err)
 
 	vars := NewVariables()
-	vars.vars["my-foo"] = Value{Value: "my-very-special-foo"}
-	vars.vars["foo.bar"] = Value{Value: "my-other-bar"}
-	vars.vars["bar.foo"] = Value{Value: "my--bar"}
+	vars.vars["my-foo"] = Value{val: "my-very-special-foo"}
+	vars.vars["foo.bar"] = Value{val: "my-other-bar"}
+	vars.vars["bar.foo"] = Value{val: "my--bar"}
 
 	err = vars.InterpolateNode(&node)
 	require.NoError(t, err)

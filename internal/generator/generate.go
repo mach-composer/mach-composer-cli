@@ -9,6 +9,7 @@ import (
 	"github.com/elliotchance/pie/v2"
 
 	"github.com/labd/mach-composer/internal/config"
+	"github.com/labd/mach-composer/internal/variables"
 )
 
 // renderSite is responsible for generating the `site.tf` file. Therefore it is
@@ -97,7 +98,7 @@ func renderTerraformConfig(cfg *config.MachConfig, site *config.SiteConfig) (str
 	}{
 		Providers:     providers,
 		BackendConfig: backendConfig,
-		IncludeSOPS:   cfg.Variables.HasEncrypted(),
+		IncludeSOPS:   cfg.Variables.HasEncrypted(site.Identifier),
 	}
 	return renderGoTemplate(template, templateContext)
 }
@@ -113,9 +114,9 @@ func renderTerraformResources(cfg *config.MachConfig, site *config.SiteConfig) (
 	}
 
 	template := `
-		{{ range $filename := .EncryptedVariableFiles }}
+		{{ range $fs := .FileSources }}
 			data "local_file" "variables" {
-				filename = "{{ $filename }}"
+				filename = "{{ $fs.Filename }}"
 			}
 
 			data "sops_external" "variables" {
@@ -130,11 +131,11 @@ func renderTerraformResources(cfg *config.MachConfig, site *config.SiteConfig) (
 		{{ end }}
 	`
 	templateContext := struct {
-		Resources              []string
-		EncryptedVariableFiles []string
+		Resources   []string
+		FileSources []variables.FileSource
 	}{
-		Resources:              resources,
-		EncryptedVariableFiles: cfg.Variables.EncryptedFiles,
+		Resources:   resources,
+		FileSources: cfg.Variables.GetEncryptedSources(site.Identifier),
 	}
 	return renderGoTemplate(template, templateContext)
 }

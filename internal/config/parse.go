@@ -114,13 +114,6 @@ func resolveConfig(ctx context.Context, intermediate *rawConfig) (*MachConfig, e
 		Plugins:      intermediate.plugins,
 	}
 
-	for _, f := range cfg.Variables.EncryptedFiles {
-		err := cfg.addFileToConfig(f)
-		if err != nil {
-			return nil, err
-		}
-	}
-
 	if err := parseGlobalNode(cfg, &intermediate.Global); err != nil {
 		if _, ok := err.(*plugins.PluginNotFoundError); ok {
 			return nil, err
@@ -150,6 +143,17 @@ func resolveVariables(ctx context.Context, rawConfig *rawConfig) error {
 
 	if err := vars.InterpolateNode(&rawConfig.Global); err != nil {
 		return err
+	}
+
+	for _, node := range rawConfig.Sites.Content {
+		mapping := mapYamlNodes(node.Content)
+		if idNode, ok := mapping["identifier"]; ok {
+			siteId := idNode.Value
+			if err := vars.InterpolateSiteNode(siteId, node); err != nil {
+				return err
+			}
+		}
+
 	}
 
 	if err := vars.InterpolateNode(&rawConfig.Sites); err != nil {

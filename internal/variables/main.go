@@ -7,6 +7,7 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/elliotchance/pie/v2"
 	"github.com/rs/zerolog/log"
 	"gopkg.in/yaml.v3"
 
@@ -25,15 +26,29 @@ func (e *NotFoundError) Error() string {
 // Support both ${var.foobar} as well as ${env.foobar}
 var varRegex = regexp.MustCompile(`\${((?:var|env)(?:\.[^\}]+)+)}`)
 
-type Value struct {
-	Origin    string
-	Value     string
+const globalNodeContext = "__global__"
+
+type FileSource struct {
+	Filename  string
 	Encrypted bool
 }
 
+type Value struct {
+	val        string
+	fileSource *FileSource
+}
+
 type Variables struct {
-	vars           map[string]Value
-	EncryptedFiles []string
+	vars map[string]Value
+
+	// External files from which variables are used which need
+	// to be copied to the destination
+	fileSources []FileSource
+
+	// Mapping of used file sources. The key of the map is the site identifier
+	// when the variable is used in a specific site, or __global__ when used
+	// in non-site specific nodes
+	usedFileSources map[string][]*FileSource
 
 	// For now we only support loading one external file. To support multilpe
 	// we need to track variable sources to check if they are encrypted or not
@@ -42,27 +57,41 @@ type Variables struct {
 
 func NewVariables() *Variables {
 	v := &Variables{
-		vars:           make(map[string]Value),
-		EncryptedFiles: []string{},
+		vars:            make(map[string]Value),
+		fileSources:     []FileSource{},
+		usedFileSources: map[string][]*FileSource{},
 	}
 	return v
 }
 
-func (v *Variables) Get(key string) (string, error) {
+func (v *Variables) getValue(nc string, key string) (string, error) {
 	if strings.HasPrefix(key, "var.") {
 		trimmedKey := key[4:]
 
-		result, ok := v.vars[trimmedKey]
+		variable, ok := v.vars[trimmedKey]
 		if !ok {
 			return "", &NotFoundError{Name: key}
 		}
 
-		if result.Encrypted {
+		if variable.fileSource == nil {
+			return variable.val, nil
+		}
+
+		if variable.fileSource.Encrypted {
+			if _, ok := v.usedFileSources[nc]; !ok {
+				v.usedFileSources[nc] = []*FileSource{}
+			}
+
+			if !pie.Any(v.usedFileSources[nc], func(f *FileSource) bool {
+				return f == variable.fileSource
+			}) {
+				v.usedFileSources[nc] = append(v.usedFileSources[nc], variable.fileSource)
+			}
 			result := fmt.Sprintf(`${data.sops_external.variables.data["%s"]}`, trimmedKey)
 			return result, nil
 		}
 
-		return result.Value, nil
+		return variable.val, nil
 	}
 
 	if strings.HasPrefix(key, "env.") {
@@ -75,17 +104,41 @@ func (v *Variables) Get(key string) (string, error) {
 }
 
 func (v *Variables) Set(key string, value string) {
-	v.vars[key] = Value{Value: value}
+	v.vars[key] = Value{val: value}
 }
 
-func (v *Variables) HasEncrypted() bool {
-	return len(v.EncryptedFiles) > 0
+func (v *Variables) HasEncrypted(site string) bool {
+	return pie.Any(v.GetEncryptedSources(site), func(f FileSource) bool { return f.Encrypted })
 }
 
-// Recursive function to replace the
+func (v *Variables) GetEncryptedSources(site string) []FileSource {
+	items := []*FileSource{}
+	if fs, ok := v.usedFileSources[globalNodeContext]; ok {
+		items = append(items, fs...)
+	}
+	if fs, ok := v.usedFileSources[site]; ok {
+		items = append(items, fs...)
+	}
+
+	return pie.Map(pie.Unique(items), func(f *FileSource) FileSource {
+		return *f
+	})
+}
+
 func (v *Variables) InterpolateNode(node *yaml.Node) error {
+	return v.interpolateNodeContext(globalNodeContext, node)
+}
+
+func (v *Variables) InterpolateSiteNode(site string, node *yaml.Node) error {
+	if site == globalNodeContext {
+		return fmt.Errorf("invalid site identifier")
+	}
+	return v.interpolateNodeContext(site, node)
+}
+
+func (v *Variables) interpolateNodeContext(nc string, node *yaml.Node) error {
 	if node.Kind == yaml.ScalarNode {
-		val, err := v.interpolateValue(node.Value)
+		val, err := v.interpolateValue(nc, node.Value)
 		if err != nil {
 			if notFoundErr, ok := err.(*NotFoundError); ok {
 				notFoundErr.Node = node
@@ -103,7 +156,7 @@ func (v *Variables) InterpolateNode(node *yaml.Node) error {
 			continue
 		}
 
-		err := v.InterpolateNode(node.Content[i])
+		err := v.interpolateNodeContext(nc, node.Content[i])
 		if err != nil {
 			return err
 		}
@@ -111,14 +164,14 @@ func (v *Variables) InterpolateNode(node *yaml.Node) error {
 	return nil
 }
 
-func (v *Variables) interpolateValue(val string) (string, error) {
+func (v *Variables) interpolateValue(nc string, val string) (string, error) {
 	matches := varRegex.FindAllStringSubmatch(val, 20)
 	if len(matches) == 0 {
 		return val, nil
 	}
 
 	for _, match := range matches {
-		replacement, err := v.Get(match[1])
+		replacement, err := v.getValue(nc, match[1])
 		if err != nil {
 			return "", err
 		}
@@ -147,16 +200,19 @@ func (v *Variables) Load(ctx context.Context, filename string) error {
 	isEncrypted := false
 	if _, ok := values["sops"]; ok {
 		isEncrypted = true
-		v.EncryptedFiles = append(v.EncryptedFiles, filename)
 		delete(values, "sops")
 	}
 
+	fs := FileSource{
+		Filename:  filename,
+		Encrypted: isEncrypted,
+	}
+	v.fileSources = append(v.fileSources, fs)
+
 	dst := map[string]Value{}
 	serializeNestedVariables(values, dst, "")
-
 	for key, val := range dst {
-		val.Encrypted = isEncrypted
-		val.Origin = filename
+		val.fileSource = &fs
 		v.vars[key] = val
 	}
 
@@ -191,9 +247,9 @@ func serializeNestedVariables(in map[string]any, out map[string]Value, prefix st
 
 		switch v := v.(type) {
 		case string:
-			out[key] = Value{Value: v}
+			out[key] = Value{val: v}
 		case int:
-			out[key] = Value{Value: fmt.Sprint(v)}
+			out[key] = Value{val: fmt.Sprint(v)}
 		case map[string]any:
 			serializeNestedVariables(v, out, key)
 		}

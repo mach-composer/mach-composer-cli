@@ -3,6 +3,7 @@ package generator
 import (
 	"errors"
 	"fmt"
+	"io/ioutil"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -56,11 +57,10 @@ func WriteFiles(cfg *config.MachConfig, options *GenerateOptions) (map[string]st
 			return nil, fmt.Errorf("error writing file: %w", err)
 		}
 
-		// Write extra files
-		for extraFilename, content := range cfg.GetFiles() {
-			extraFilename = filepath.Join(path, extraFilename)
-			log.Info().Msgf("Copying %s\n", extraFilename)
-			if err := os.WriteFile(extraFilename, content, 0700); err != nil {
+		for _, fs := range cfg.Variables.GetEncryptedSources(site.Identifier) {
+			target := filepath.Join(path, fs.Filename)
+			log.Info().Msgf("Copying %s", target)
+			if err := copyFile(fs.Filename, target); err != nil {
 				return nil, fmt.Errorf("error writing extra file: %w", err)
 			}
 		}
@@ -119,5 +119,35 @@ func validateFile(src []byte) error {
 		}
 		return errors.New("generated HCL is invalid")
 	}
+	return nil
+}
+
+func copyFile(srcPath, dstPath string) error {
+	// Open the source file
+	src, err := os.Open(srcPath)
+	if err != nil {
+		return err
+	}
+	defer src.Close()
+
+	// Read the contents of the source file
+	srcContents, err := ioutil.ReadAll(src)
+	if err != nil {
+		return err
+	}
+
+	// Create the destination file
+	dst, err := os.Create(dstPath)
+	if err != nil {
+		return err
+	}
+	defer dst.Close()
+
+	// Write the contents of the source file to the destination file
+	_, err = dst.Write(srcContents)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }

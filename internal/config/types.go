@@ -3,8 +3,6 @@ package config
 import (
 	"fmt"
 	"log"
-	"os"
-	"path/filepath"
 	"strings"
 
 	"github.com/elliotchance/pie/v2"
@@ -76,20 +74,6 @@ func (c *MachConfig) HasSite(ident string) bool {
 		}
 	}
 	return false
-}
-
-func (c *MachConfig) addFileToConfig(filename string) error {
-	b, err := os.ReadFile(filename)
-	if err != nil {
-		return fmt.Errorf("error reading variables file %s: %w", filename, err)
-	}
-	filename = filepath.Base(filename)
-	c.extraFiles[filename] = b
-	return nil
-}
-
-func (c *MachConfig) GetFiles() map[string][]byte {
-	return c.extraFiles
 }
 
 type MachComposer struct {
