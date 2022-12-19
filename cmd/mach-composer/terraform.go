@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/spf13/cobra"
 
@@ -23,9 +22,6 @@ var terraformCmd = &cobra.Command{
 
 func init() {
 	registerGenerateFlags(terraformCmd)
-	if err := terraformCmd.MarkFlagRequired("site"); err != nil {
-		panic(fmt.Errorf("terraformCmd.MarkFlagRequired: %v", err))
-	}
 }
 
 func terraformFunc(ctx context.Context, args []string) error {
@@ -34,10 +30,16 @@ func terraformFunc(ctx context.Context, args []string) error {
 
 	generateFlags.ValidateSite(cfg)
 
-	fileLocations := generator.FileLocations(cfg, &generator.GenerateOptions{
+	paths, err := generator.WriteFiles(cfg, &generator.GenerateOptions{
 		OutputPath: generateFlags.outputPath,
 		Site:       generateFlags.siteName,
 	})
+	if err != nil {
+		return err
+	}
 
-	return runner.TerraformProxy(ctx, cfg, fileLocations, generateFlags.siteName, args)
+	return runner.TerraformProxy(ctx, cfg, paths, &runner.ProxyOptions{
+		Site:    generateFlags.siteName,
+		Command: args,
+	})
 }

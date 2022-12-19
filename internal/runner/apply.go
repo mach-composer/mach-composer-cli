@@ -32,15 +32,20 @@ func TerraformApply(ctx context.Context, cfg *config.MachConfig, locations map[s
 	return nil
 }
 
-func TerraformProxy(ctx context.Context, cfg *config.MachConfig, locations map[string]string, siteName string, cmd []string) error {
+type ProxyOptions struct {
+	Site    string
+	Command []string
+}
+
+func TerraformProxy(ctx context.Context, cfg *config.MachConfig, locations map[string]string, options *ProxyOptions) error {
 	for i := range cfg.Sites {
 		site := cfg.Sites[i]
 
-		if siteName != "" && site.Identifier != siteName {
+		if options.Site != "" && site.Identifier != options.Site {
 			continue
 		}
 
-		err := RunTerraform(ctx, locations[site.Identifier], cmd...)
+		err := RunTerraform(ctx, locations[site.Identifier], options.Command...)
 		if err != nil {
 			return err
 		}
