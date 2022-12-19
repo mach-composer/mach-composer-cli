@@ -66,7 +66,7 @@ chocolateys:
     owners: Lab
     authors: Lab Digital
 
-    project_url: https://machcomposer.com/
+    project_url: https://machcomposer.io/
     license_url: https://github.com/labd/mach-composer/blob/main/LICENSE
     project_source_url: https://github.com/labd/mach-composer
     docs_url: https://docs.machcomposer.io
