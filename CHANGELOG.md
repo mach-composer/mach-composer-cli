@@ -1,13 +1,23 @@
 # Changelog
 
-## 2.5.0-rc.1 (2022-12-13)
-This major releases introduces support for plugins in mach-composer. All previous
+## 2.5.0 (2022-12-19)
+This release introduces support for plugins in mach-composer. All previous
 supported plugins (also called integrations) are still bundled with the
 exectutable but will in the future be distributed separately.
 
 With this release it is also possible to use build custom plugins. A plugin
 should be created with the mach-composer-plugin-sdk and the resulting executable
 should be available on your $PATH as `mach-composer-plugin-<plugin>`
+
+Other changes include:
+  - New `schema` subcommand which outputs a json schema based on the given
+    config file (to know which plugins to use).
+  - Improved error and warning output (inspired by Terraform)
+  - Improved variable handling, only allow SOPS for encrypted variables when the
+    variables are used.
+  - Fix issue with parsing aws_account_id by required it to be a string, fixes
+    invalid yaml guessing when the account_id starts with a zero.
+
 
 ## 2.4.6 (2022-12-02)
 - Interpolate variable references in the global config block
