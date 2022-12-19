@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.5.1 (2022-12-19)
+Patch release to fix windows distribution via chocolatey
+
+
 ## 2.5.0 (2022-12-19)
 This release introduces support for plugins in mach-composer. All previous
 supported plugins (also called integrations) are still bundled with the

@@ -26,8 +26,8 @@ builds:
       - darwin
     goarch:
       - amd64
-      - arm
       - arm64
+      - arm
     mod_timestamp: '{{ .CommitTimestamp }}'
 
 checksum:
@@ -111,6 +111,10 @@ archives:
     format: tar.gz
     files:
       - LICENSE
+
+    format_overrides:
+      - goos: windows
+        format: zip
 
 milestones:
   -
