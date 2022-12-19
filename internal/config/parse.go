@@ -177,6 +177,12 @@ func resolveVariables(ctx context.Context, rawConfig *rawConfig) error {
 		return err
 	}
 
+	if err := vars.InterpolateNode(&rawConfig.Components); err != nil {
+		return err
+	}
+
+	// Interpolate the variables per-site to keep track of which site uses which
+	// variable.
 	for _, node := range rawConfig.Sites.Content {
 		mapping := mapYamlNodes(node.Content)
 		if idNode, ok := mapping["identifier"]; ok {
@@ -185,15 +191,6 @@ func resolveVariables(ctx context.Context, rawConfig *rawConfig) error {
 				return err
 			}
 		}
-
-	}
-
-	if err := vars.InterpolateNode(&rawConfig.Sites); err != nil {
-		return err
-	}
-
-	if err := vars.InterpolateNode(&rawConfig.Components); err != nil {
-		return err
 	}
 
 	return nil
