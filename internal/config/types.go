@@ -67,6 +67,12 @@ type MachConfig struct {
 	IsEncrypted bool                      `yaml:"-"`
 }
 
+func (c *MachConfig) Close() {
+	if c.Plugins != nil {
+		c.Plugins.Close()
+	}
+}
+
 func (c *MachConfig) HasSite(ident string) bool {
 	for i := range c.Sites {
 		if c.Sites[i].Identifier == ident {

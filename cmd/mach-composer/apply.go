@@ -38,6 +38,8 @@ func init() {
 
 func applyFunc(ctx context.Context, args []string) error {
 	cfg := loadConfig(ctx, true)
+	defer cfg.Close()
+
 	generateFlags.ValidateSite(cfg)
 
 	// Note that we do this in multiple passes to minimize ending up with

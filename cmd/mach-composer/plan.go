@@ -34,6 +34,8 @@ func init() {
 
 func planFunc(ctx context.Context, args []string) error {
 	cfg := loadConfig(ctx, true)
+	defer cfg.Close()
+
 	generateFlags.ValidateSite(cfg)
 
 	paths, err := generator.WriteFiles(cfg, &generator.GenerateOptions{

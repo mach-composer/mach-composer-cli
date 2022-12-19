@@ -14,6 +14,8 @@ var sitesCmd = &cobra.Command{
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
 		cfg := loadConfig(cmd.Context(), false)
+		defer cfg.Close()
+
 		generateFlags.ValidateSite(cfg)
 
 		fmt.Printf("%s:\n", generateFlags.configFile)

@@ -30,6 +30,8 @@ func init() {
 
 func terraformFunc(ctx context.Context, args []string) error {
 	cfg := loadConfig(ctx, true)
+	defer cfg.Close()
+
 	generateFlags.ValidateSite(cfg)
 
 	fileLocations := generator.FileLocations(cfg, &generator.GenerateOptions{
