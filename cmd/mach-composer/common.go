@@ -67,12 +67,10 @@ func preprocessGenerateFlags() {
 	}
 }
 
-func handleError(err error) error {
-	if err == nil {
-		return nil
+func handleError(err error) {
+	if err != nil {
+		cli.PrintExitError("An error occured:", err.Error())
 	}
-	cli.PrintExitError("An error occured:", err.Error())
-	return nil
 }
 
 // loadConfig parses and validates the given config file path.

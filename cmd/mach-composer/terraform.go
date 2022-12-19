@@ -16,8 +16,8 @@ var terraformCmd = &cobra.Command{
 	PreRun: func(cmd *cobra.Command, args []string) {
 		preprocessGenerateFlags()
 	},
-	RunE: func(cmd *cobra.Command, args []string) error {
-		return handleError(terraformFunc(cmd.Context(), args))
+	Run: func(cmd *cobra.Command, args []string) {
+		handleError(terraformFunc(cmd.Context(), args))
 	},
 }
 

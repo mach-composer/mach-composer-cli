@@ -35,8 +35,8 @@ var updateCmd = &cobra.Command{
 			os.Exit(1)
 		}
 	},
-	RunE: func(cmd *cobra.Command, args []string) error {
-		return handleError(updateFunc(cmd.Context(), args))
+	Run: func(cmd *cobra.Command, args []string) {
+		handleError(updateFunc(cmd.Context(), args))
 	},
 }
 

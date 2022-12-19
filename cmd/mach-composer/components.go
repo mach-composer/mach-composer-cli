@@ -12,8 +12,9 @@ var componentsCmd = &cobra.Command{
 	PreRun: func(cmd *cobra.Command, args []string) {
 		preprocessGenerateFlags()
 	},
-	RunE: func(cmd *cobra.Command, args []string) error {
+	Run: func(cmd *cobra.Command, args []string) {
 		cfg := loadConfig(cmd.Context(), false)
+		defer cfg.Close()
 		generateFlags.ValidateSite(cfg)
 
 		fmt.Printf("%s:\n", generateFlags.configFile)
@@ -23,7 +24,6 @@ var componentsCmd = &cobra.Command{
 		}
 
 		fmt.Println("")
-		return nil
 	},
 }
 

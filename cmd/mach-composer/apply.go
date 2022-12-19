@@ -23,8 +23,8 @@ var applyCmd = &cobra.Command{
 		preprocessGenerateFlags()
 	},
 
-	RunE: func(cmd *cobra.Command, args []string) error {
-		return handleError(applyFunc(cmd.Context(), args))
+	Run: func(cmd *cobra.Command, args []string) {
+		handleError(applyFunc(cmd.Context(), args))
 	},
 }
 

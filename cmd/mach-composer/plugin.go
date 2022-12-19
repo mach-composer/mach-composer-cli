@@ -14,16 +14,15 @@ var pluginCmd = &cobra.Command{
 	Use:   "plugin [name]",
 	Short: "Start a plugin for mach-composer",
 	Args:  cobra.ExactArgs(1),
-	RunE: func(cmd *cobra.Command, args []string) error {
 		all := plugins.GetLocalPlugins()
 		if serve, ok := all[args[0]]; ok {
+	Run: func(cmd *cobra.Command, args []string) {
 			serve()
 			os.Exit(0)
 		} else {
 			cmd.Println("invalid plugin specified")
 			os.Exit(1)
 		}
-		return nil
 	},
 }
 
