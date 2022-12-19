@@ -40,13 +40,17 @@ definitions:
         type: string
       plugins:
         type: object
+        additionalProperties: false
         patternProperties:
-          "^[a-zA-Z-]$":
+          "^[a-zA-Z-]+$":
             type: object
-            additionalProperties: true
+            additionalProperties: false
             properties:
+              source:
+                type: string
               version:
                 type: string
+
 
   GlobalConfig:
     type: object
@@ -63,9 +67,6 @@ definitions:
         $ref: "#/definitions/TerraformConfig"
       cloud:
         type: string
-        enum:
-          - aws
-          - azure
 
   TerraformConfig:
     type: object

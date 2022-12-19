@@ -10,12 +10,11 @@ import (
 )
 
 type PluginNotFoundError struct {
-	Plugin string
+	name string
 }
 
-type Plugin struct {
-	schema.MachComposerPlugin
-	Name string
+func (e *PluginNotFoundError) Error() string {
+	return fmt.Sprintf("plugin %s not found", e.name)
 }
 
 type PluginError struct {
@@ -27,93 +26,102 @@ func (e *PluginError) Error() string {
 	return e.msg
 }
 
-func (e *PluginNotFoundError) Error() string {
-	return fmt.Sprintf("plugin %s not found", e.Plugin)
-}
-
 type PluginRepository struct {
-	Plugins map[string]schema.MachComposerPlugin
-	Schemas map[string]schema.ValidationSchema
+	plugins map[string]*Plugin
+	schemas map[string]schema.ValidationSchema
 }
 
 func NewPluginRepository() *PluginRepository {
 	return &PluginRepository{
-		Plugins: make(map[string]schema.MachComposerPlugin),
-		Schemas: make(map[string]schema.ValidationSchema),
+		plugins: make(map[string]*Plugin),
+		schemas: make(map[string]schema.ValidationSchema),
 	}
 }
 
-// resolvePluginConfig loads the plugins
-func (p *PluginRepository) Load(data map[string]map[string]string) error {
-	if data == nil {
-		log.Debug().Msg("No plugins specified; loading default plugins")
-		return p.LoadDefault()
-	} else {
-		for name, properties := range data {
-			err := p.LoadPlugin(name, properties)
-			if err != nil {
-				return err
-			}
-		}
+// Close kills alls the running plugins
+func (p *PluginRepository) Close() {
+	for _, rp := range p.plugins {
+		rp.client.Kill()
+		rp.isRunning = false
+		rp.client = nil
+	}
+}
+
+// All returns all the plugin names in the repository, ordered by the plugin name
+func (p *PluginRepository) All() []Plugin {
+	result := make([]Plugin, len(p.plugins))
+	for i, key := range pie.Sort(pie.Keys(p.plugins)) {
+		result[i] = *p.plugins[key]
+	}
+	return result
+}
+
+// Add an existing plugin to the repository. Mostly used for testing purposes
+func (p *PluginRepository) Add(name string, plugin schema.MachComposerPlugin) error {
+	p.plugins[name] = &Plugin{
+		MachComposerPlugin: plugin,
+		Name:               name,
+		isRunning:          true,
 	}
 	return nil
 }
 
-// LoadDefault loads the default plugins, for backwards compatibility
-func (p *PluginRepository) LoadDefault() error {
-	// Don't load default plugins if we already have
-	if len(p.Plugins) > 0 {
-		return nil
+// Get returns the plugin from the repository
+func (p *PluginRepository) Get(name string) (*Plugin, error) {
+	if name == "" {
+		panic("plugin name is empty") // this should never happen
+	}
+	plugin, ok := p.plugins[name]
+	if !ok {
+		return nil, &PluginNotFoundError{name: name}
+	}
+	return plugin, nil
+}
+
+// LoadPlugin will load the plugin with the given name and start it
+func (p *PluginRepository) LoadPlugin(name string, config PluginConfig) error {
+	if _, ok := p.plugins[name]; ok {
+		return fmt.Errorf("plugin %s is already loaded", name)
 	}
 
-	for _, name := range LocalPluginNames {
-		if err := p.LoadPlugin(name, map[string]string{}); err != nil {
+	plug := &Plugin{
+		Name:   name,
+		config: config,
+	}
+	p.plugins[name] = plug
+
+	if err := plug.start(); err != nil {
+		return err
+	}
+	return nil
+}
+
+// LoadDefault will load all the default plugins. Needed until we move to full
+// remote plugins only
+func (p *PluginRepository) LoadDefault() error {
+	for _, name := range localPluginNames {
+		if err := p.LoadPlugin(name, PluginConfig{}); err != nil {
 			return err
 		}
 	}
 	return nil
 }
 
-func (p *PluginRepository) LoadPlugin(name string, properties map[string]string) error {
-	if _, ok := p.Plugins[name]; ok {
-		return fmt.Errorf("plugin %s is already loaded", name)
-	}
-
-	plugin, err := startPlugin(name)
-	if err != nil {
-		return fmt.Errorf("failed to start plugin %s: %w", name, err)
-	}
-	p.Plugins[name] = plugin
-	p.LoadSchema(name)
-	return nil
-}
-
-func (p *PluginRepository) LoadSchema(name string) error {
+func (p *PluginRepository) loadSchema(name string) (*schema.ValidationSchema, error) {
 	plugin, err := p.Get(name)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	// Load validation schema
 	schema, err := plugin.GetValidationSchema()
 	if err != nil {
-		return fmt.Errorf("failed to load plugin schema %s: %w", name, err)
+		return nil, fmt.Errorf("failed to load plugin schema %s: %w", name, err)
 	}
 	if schema != nil {
-		p.Schemas[name] = *schema
+		p.schemas[name] = *schema
 	}
-	return nil
-}
-
-func (p *PluginRepository) Get(name string) (schema.MachComposerPlugin, error) {
-	if name == "" {
-		panic("plugin name is empty") // this should never happen
-	}
-	plugin, ok := p.Plugins[name]
-	if !ok {
-		return nil, &PluginNotFoundError{Plugin: name}
-	}
-	return plugin, nil
+	return schema, nil
 }
 
 func (p *PluginRepository) GetSchema(name string) (*schema.ValidationSchema, error) {
@@ -122,23 +130,11 @@ func (p *PluginRepository) GetSchema(name string) (*schema.ValidationSchema, err
 	}
 
 	// this should not happen in a regular use-case
-	schema, ok := p.Schemas[name]
-	if !ok {
-		return nil, fmt.Errorf("No schema found for %s (internal error)", name)
+	if schema, ok := p.schemas[name]; ok {
+		return &schema, nil
 	}
-	return &schema, nil
-}
 
-func (p *PluginRepository) All() map[string]schema.MachComposerPlugin {
-	return p.Plugins
-}
-
-func (p *PluginRepository) Enabled() []Plugin {
-	plugins := []Plugin{}
-	for _, name := range pie.Sort(pie.Keys(p.Plugins)) {
-		plugins = append(plugins, Plugin{Name: name, MachComposerPlugin: p.Plugins[name]})
-	}
-	return pie.Filter(plugins, func(p Plugin) bool { return p.IsEnabled() })
+	return p.loadSchema(name)
 }
 
 func (p *PluginRepository) SetRemoteState(name string, data map[string]any) error {
@@ -146,7 +142,7 @@ func (p *PluginRepository) SetRemoteState(name string, data map[string]any) erro
 	if err != nil {
 		return err
 	}
-	return p.handleErr(name, plugin.SetRemoteStateBackend(data))
+	return p.handleError(name, plugin.SetRemoteStateBackend(data))
 }
 
 func (p *PluginRepository) SetGlobalConfig(name string, data map[string]any) error {
@@ -154,15 +150,7 @@ func (p *PluginRepository) SetGlobalConfig(name string, data map[string]any) err
 	if err != nil {
 		return err
 	}
-	return p.handleErr(name, plugin.SetGlobalConfig(data))
-}
-
-func (p *PluginRepository) SetSiteConfig(name string, site string, data map[string]any) error {
-	plugin, err := p.Get(name)
-	if err != nil {
-		return err
-	}
-	return p.handleErr(name, plugin.SetSiteConfig(site, data))
+	return p.handleError(name, plugin.SetGlobalConfig(data))
 }
 
 func (p *PluginRepository) SetSiteEndpointConfig(name string, site string, key string, data map[string]any) error {
@@ -170,15 +158,7 @@ func (p *PluginRepository) SetSiteEndpointConfig(name string, site string, key s
 	if err != nil {
 		return err
 	}
-	return p.handleErr(name, plugin.SetSiteEndpointConfig(site, key, data))
-}
-
-func (p *PluginRepository) SetSiteComponentConfig(site, component, name string, data map[string]any) error {
-	plugin, err := p.Get(name)
-	if err != nil {
-		return err
-	}
-	return p.handleErr(name, plugin.SetSiteComponentConfig(site, component, data))
+	return p.handleError(name, plugin.SetSiteEndpointConfig(site, key, data))
 }
 
 func (p *PluginRepository) SetComponentConfig(name, component string, data map[string]any) error {
@@ -186,10 +166,10 @@ func (p *PluginRepository) SetComponentConfig(name, component string, data map[s
 	if err != nil {
 		return err
 	}
-	return p.handleErr(name, plugin.SetComponentConfig(component, data))
+	return p.handleError(name, plugin.SetComponentConfig(component, data))
 }
 
-func (p *PluginRepository) handleErr(plugin string, err error) error {
+func (p *PluginRepository) handleError(plugin string, err error) error {
 	if err == nil {
 		return nil
 	}

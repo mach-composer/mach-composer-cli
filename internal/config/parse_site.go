@@ -20,10 +20,10 @@ func parseSitesNode(cfg *MachConfig, sitesNode *yaml.Node) error {
 		nodes := mapYamlNodes(site.Content)
 		siteId := nodes["identifier"].Value
 
-		for name := range cfg.Plugins.All() {
+		for _, plugin := range cfg.Plugins.All() {
 			data := map[string]any{}
 
-			pluginNode, ok := nodes[name]
+			pluginNode, ok := nodes[plugin.Name]
 			if ok {
 				var err error
 				data, err = nodeAsMap(pluginNode)
@@ -32,7 +32,7 @@ func parseSitesNode(cfg *MachConfig, sitesNode *yaml.Node) error {
 				}
 			}
 
-			if err := cfg.Plugins.SetSiteConfig(name, siteId, data); err != nil {
+			if err := plugin.SetSiteConfig(siteId, data); err != nil {
 				return fmt.Errorf("plugin.SetSiteConfig failed: %w", err)
 			}
 		}
@@ -151,10 +151,10 @@ func parseSiteComponentsNode(cfg *MachConfig, site string, node *yaml.Node) erro
 
 		migrateCommercetools(site, identifier, nodes)
 
-		for name := range cfg.Plugins.All() {
+		for _, plugin := range cfg.Plugins.All() {
 			data := map[string]any{}
 
-			pluginNode, ok := nodes[name]
+			pluginNode, ok := nodes[plugin.Name]
 			if ok {
 				var err error
 				data, err = nodeAsMap(pluginNode)
@@ -163,7 +163,7 @@ func parseSiteComponentsNode(cfg *MachConfig, site string, node *yaml.Node) erro
 				}
 			}
 
-			if err := cfg.Plugins.SetSiteComponentConfig(site, identifier, name, data); err != nil {
+			if err := plugin.SetSiteComponentConfig(site, identifier, data); err != nil {
 				return err
 			}
 		}

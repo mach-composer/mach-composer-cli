@@ -43,8 +43,7 @@ func TestRenderSite(t *testing.T) {
 	require.NoError(t, err)
 
 	pr := plugins.NewPluginRepository()
-	pr.Plugins["aws"] = plugins.NewMockPlugin()
-	err = pr.LoadSchema("aws")
+	err = pr.Add("aws", plugins.NewMockPlugin())
 	require.NoError(t, err)
 
 	cfg, err := config.Open(

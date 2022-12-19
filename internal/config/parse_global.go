@@ -14,8 +14,8 @@ func parseGlobalNode(cfg *MachConfig, globalNode *yaml.Node) error {
 		return fmt.Errorf("decoding error: %w", err)
 	}
 
-	for identifier, plugin := range cfg.Plugins.All() {
-		provider := cfg.Global.TerraformConfig.Providers[identifier]
+	for _, plugin := range cfg.Plugins.All() {
+		provider := cfg.Global.TerraformConfig.Providers[plugin.Name]
 		if err := plugin.Configure(cfg.Global.Environment, provider); err != nil {
 			return err
 		}

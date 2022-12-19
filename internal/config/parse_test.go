@@ -159,10 +159,11 @@ func TestParse(t *testing.T) {
 	vars.Set("bar.foo", "2")
 
 	pluginRepo := plugins.NewPluginRepository()
-	pluginRepo.Plugins["my-plugin"] = plugins.NewMockPlugin()
+	err := pluginRepo.Add("my-plugin", plugins.NewMockPlugin())
+	require.NoError(t, err)
 
 	document := &yaml.Node{}
-	err := yaml.Unmarshal(data, document)
+	err = yaml.Unmarshal(data, document)
 	require.NoError(t, err)
 
 	intermediate, err := newRawConfig("main.yml", document)
@@ -317,7 +318,8 @@ func TestParseComponentsNodeInline(t *testing.T) {
 			Cloud: "my-cloud",
 		},
 	}
-	cfg.Plugins.Plugins["my-cloud"] = plugins.NewMockPlugin()
+	err = cfg.Plugins.Add("my-cloud", plugins.NewMockPlugin())
+	require.NoError(t, err)
 
 	err = parseComponentsNode(cfg, &intermediate.Components, "main.yml")
 	require.NoError(t, err)
@@ -360,7 +362,8 @@ func TestParseComponentsNodeRef(t *testing.T) {
 			Cloud: "my-cloud",
 		},
 	}
-	cfg.Plugins.Plugins["my-cloud"] = plugins.NewMockPlugin()
+	err = cfg.Plugins.Add("my-cloud", plugins.NewMockPlugin())
+	require.NoError(t, err)
 
 	err = parseComponentsNode(cfg, &intermediate.Components, "main.yml")
 	require.NoError(t, err)
@@ -398,7 +401,8 @@ func TestParseComponentsNodeInclude(t *testing.T) {
 			Cloud: "my-cloud",
 		},
 	}
-	cfg.Plugins.Plugins["my-cloud"] = plugins.NewMockPlugin()
+	err = cfg.Plugins.Add("my-cloud", plugins.NewMockPlugin())
+	require.NoError(t, err)
 
 	err = parseComponentsNode(cfg, &intermediate.Components, "main.yml")
 	require.NoError(t, err)

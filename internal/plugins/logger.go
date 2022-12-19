@@ -35,7 +35,9 @@ func (l *LogAdapter) Debug(msg string, args ...interface{}) {
 
 // Emit a message and key/value pairs at the INFO level
 func (l *LogAdapter) Info(msg string, args ...interface{}) {
-	l.logger.Info().Fields(args).Msgf(msg)
+	// Intentional hack; we want to log go-plugin info() messages
+	// to debug
+	l.logger.Debug().Fields(args).Msgf(msg)
 }
 
 // Emit a message and key/value pairs at the WARN level

@@ -15,24 +15,42 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-func startPlugin(name string) (schema.MachComposerPlugin, error) {
+type Plugin struct {
+	schema.MachComposerPlugin
+	Name string
+
+	client    *plugin.Client
+	isRunning bool
+	config    PluginConfig
+}
+
+type PluginConfig struct {
+	Source  string
+	Version string
+}
+
+func (p *Plugin) start() error {
+	if p.isRunning {
+		return nil
+	}
+
 	var pluginMap = map[string]plugin.Plugin{
 		"MachComposerPlugin": &protocol.Plugin{
-			Identifier: name,
+			Identifier: p.Name,
 		},
 	}
 
 	// Safety check to not run external plugins during test for now
 	if strings.HasSuffix(os.Args[0], ".test") {
-		panic(fmt.Sprintf("Not loading %s: invalid command: %s", name, os.Args[0]))
+		panic(fmt.Sprintf("Not loading %s: invalid command: %s", p.Name, os.Args[0]))
 	}
 
 	logger := NewHCLogAdapter(log.Logger)
 
-	command := fmt.Sprintf("mach-composer-plugin-%s", name)
+	command := fmt.Sprintf("mach-composer-plugin-%s", p.Name)
 	args := []string{}
 
-	if pie.Contains(LocalPluginNames, name) {
+	if pie.Contains(localPluginNames, p.Name) {
 		command = os.Args[0]
 
 		// If mach-composer is started from the $PATH the we need to resolve
@@ -40,15 +58,15 @@ func startPlugin(name string) (schema.MachComposerPlugin, error) {
 		if !strings.Contains(command, "/") {
 			path, err := exec.LookPath(command)
 			if err != nil {
-				return nil, err
+				return err
 			}
 			command = path
 		}
-		args = []string{"plugin", name}
+		args = []string{"plugin", p.Name}
 	} else {
 		path, err := exec.LookPath(command)
 		if err != nil {
-			return nil, err
+			return err
 		}
 
 		command = path
@@ -56,10 +74,10 @@ func startPlugin(name string) (schema.MachComposerPlugin, error) {
 
 	pluginChecksum, err := getPluginChecksum(command)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	client := plugin.NewClient(&plugin.ClientConfig{
+	p.client = plugin.NewClient(&plugin.ClientConfig{
 		HandshakeConfig: protocol.HandShakeConfig(),
 		Plugins:         pluginMap,
 		Cmd:             exec.Command(command, args...),
@@ -71,7 +89,7 @@ func startPlugin(name string) (schema.MachComposerPlugin, error) {
 	})
 
 	// Connect via RPC
-	rpcClient, err := client.Client()
+	rpcClient, err := p.client.Client()
 	if err != nil {
 		log.Fatal().Err(err).Msg("failed to connect to plugin")
 	}
@@ -81,11 +99,15 @@ func startPlugin(name string) (schema.MachComposerPlugin, error) {
 	if err != nil {
 		log.Fatal().Err(err).Msg("failed to init the plugin")
 	}
+
 	plugin, ok := raw.(schema.MachComposerPlugin)
 	if !ok {
-		return nil, fmt.Errorf("incompatible plugin resolved")
+		return fmt.Errorf("incompatible plugin resolved")
 	}
-	return plugin, nil
+	p.MachComposerPlugin = plugin
+	p.isRunning = true
+
+	return nil
 }
 
 func getPluginChecksum(filePath string) ([]byte, error) {

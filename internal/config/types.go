@@ -13,15 +13,15 @@ import (
 )
 
 type rawConfig struct {
-	document  *yaml.Node                `yaml:"-"`
-	filename  string                    `yaml:"-"`
-	plugins   *plugins.PluginRepository `yaml:"-"`
-	variables *variables.Variables      `yaml:"-"`
-
 	MachComposer MachComposer `yaml:"mach_composer"`
 	Global       yaml.Node    `yaml:"global"`
 	Sites        yaml.Node    `yaml:"sites"`
 	Components   yaml.Node    `yaml:"components"`
+
+	document  *yaml.Node                `yaml:"-"`
+	filename  string                    `yaml:"-"`
+	plugins   *plugins.PluginRepository `yaml:"-"`
+	variables *variables.Variables      `yaml:"-"`
 }
 
 func (r *rawConfig) validate() error {
@@ -77,9 +77,14 @@ func (c *MachConfig) HasSite(ident string) bool {
 }
 
 type MachComposer struct {
-	Version       any                          `yaml:"version"`
-	VariablesFile string                       `yaml:"variables_file"`
-	Plugins       map[string]map[string]string `yaml:"plugins"`
+	Version       any                         `yaml:"version"`
+	VariablesFile string                      `yaml:"variables_file"`
+	Plugins       map[string]MachPluginConfig `yaml:"plugins"`
+}
+
+type MachPluginConfig struct {
+	Source  string `yaml:"source"`
+	Version string `yaml:"version"`
 }
 
 type GlobalConfig struct {

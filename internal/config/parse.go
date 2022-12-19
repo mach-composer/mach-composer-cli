@@ -6,6 +6,7 @@ import (
 	"path"
 	"path/filepath"
 
+	"github.com/rs/zerolog/log"
 	"gopkg.in/yaml.v3"
 
 	"github.com/labd/mach-composer/internal/plugins"
@@ -20,8 +21,17 @@ type ConfigOptions struct {
 	NoResolveVars bool
 }
 
+// Open is the main entrypoint for this module. It opens the given yaml filename
+// and reads it to construct the MachConfig.
+// Note that you need to close the MachConfig via the Close() method in order
+// to clean up.
 func Open(ctx context.Context, filename string, opts *ConfigOptions) (*MachConfig, error) {
-	raw, err := loadConfig(ctx, filename, opts.Plugins)
+	var pluginRepo *plugins.PluginRepository
+	if opts != nil {
+		pluginRepo = opts.Plugins
+	}
+
+	raw, err := loadConfig(ctx, filename, pluginRepo)
 	if err != nil {
 		return nil, err
 	}
@@ -90,13 +100,35 @@ func loadConfig(ctx context.Context, filename string, pr *plugins.PluginReposito
 
 	// Load the plugins
 	raw.plugins = pr
-	if raw.plugins == nil {
-		raw.plugins = plugins.NewPluginRepository()
-		if err := raw.plugins.Load(raw.MachComposer.Plugins); err != nil {
-			return nil, err
-		}
+	if err := loadPlugins(raw); err != nil {
+		return nil, err
 	}
 	return raw, nil
+}
+
+func loadPlugins(raw *rawConfig) error {
+	if raw.plugins != nil {
+		return nil
+	}
+	raw.plugins = plugins.NewPluginRepository()
+
+	if len(raw.MachComposer.Plugins) == 0 {
+		log.Debug().Msg("No plugins specified; loading default plugins")
+		if err := raw.plugins.LoadDefault(); err != nil {
+			return err
+		}
+	}
+
+	for pluginName, pluginData := range raw.MachComposer.Plugins {
+		pluginConfig := plugins.PluginConfig{
+			Source:  pluginData.Source,
+			Version: pluginData.Version,
+		}
+		if err := raw.plugins.LoadPlugin(pluginName, pluginConfig); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 // parseConfig is responsible for parsing a mach composer yaml config file and

@@ -3,9 +3,13 @@ package main
 import (
 	"os"
 
+	amplience "github.com/mach-composer/mach-composer-plugin-amplience/plugin"
+	aws "github.com/mach-composer/mach-composer-plugin-aws/plugin"
+	azure "github.com/mach-composer/mach-composer-plugin-azure/plugin"
+	commercetools "github.com/mach-composer/mach-composer-plugin-commercetools/plugin"
+	contentful "github.com/mach-composer/mach-composer-plugin-contentful/plugin"
+	sentry "github.com/mach-composer/mach-composer-plugin-sentry/plugin"
 	"github.com/spf13/cobra"
-
-	"github.com/labd/mach-composer/internal/plugins"
 )
 
 // This is a temporary commando. Will be removed once all plugins are released
@@ -14,9 +18,18 @@ var pluginCmd = &cobra.Command{
 	Use:   "plugin [name]",
 	Short: "Start a plugin for mach-composer",
 	Args:  cobra.ExactArgs(1),
-		all := plugins.GetLocalPlugins()
-		if serve, ok := all[args[0]]; ok {
 	Run: func(cmd *cobra.Command, args []string) {
+
+		plugins := map[string]func(){
+			"amplience":     amplience.Serve,
+			"aws":           aws.Serve,
+			"azure":         azure.Serve,
+			"contentful":    contentful.Serve,
+			"commercetools": commercetools.Serve,
+			"sentry":        sentry.Serve,
+		}
+
+		if serve, ok := plugins[args[0]]; ok {
 			serve()
 			os.Exit(0)
 		} else {
@@ -27,5 +40,6 @@ var pluginCmd = &cobra.Command{
 }
 
 func init() {
+	pluginCmd.Hidden = true
 	rootCmd.AddCommand(pluginCmd)
 }

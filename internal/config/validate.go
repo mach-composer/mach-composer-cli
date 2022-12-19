@@ -24,6 +24,7 @@ func GenerateSchema(ctx context.Context, filename string, pr *plugins.PluginRepo
 	if err != nil {
 		return "", err
 	}
+	defer raw.plugins.Close()
 
 	data, err := createFullSchema(raw.plugins, &raw.Global)
 	if err != nil {
@@ -216,18 +217,18 @@ func createFullSchema(pr *plugins.PluginRepository, globalNode *yaml.Node) (map[
 	setAdditionalProperties(definitions["ComponentEndpointConfig"], false)
 
 	// Site config
-	for name := range pr.All() {
-		schema, err := pr.GetSchema(name)
+	for _, plugin := range pr.All() {
+		schema, err := pr.GetSchema(plugin.Name)
 		if err != nil {
 			return nil, err
 		}
 
-		setObjectProperties(definitions["GlobalConfig"], name, schema.GlobalConfigSchema)
-		setObjectProperties(definitions["SiteConfig"], name, schema.SiteConfigSchema)
-		setObjectProperties(definitions["SiteComponentConfig"], name, schema.SiteComponentConfigSchema)
-		setObjectProperties(definitions["SiteEndpointConfig"], name, schema.SiteEndpointsConfig)
-		setObjectProperties(definitions["ComponentConfig"], name, schema.ComponentConfigSchema)
-		setObjectProperties(definitions["ComponentEndpointConfig"], name, schema.ComponentEndpointsConfigSchema)
+		setObjectProperties(definitions["GlobalConfig"], plugin.Name, schema.GlobalConfigSchema)
+		setObjectProperties(definitions["SiteConfig"], plugin.Name, schema.SiteConfigSchema)
+		setObjectProperties(definitions["SiteComponentConfig"], plugin.Name, schema.SiteComponentConfigSchema)
+		setObjectProperties(definitions["SiteEndpointConfig"], plugin.Name, schema.SiteEndpointConfig)
+		setObjectProperties(definitions["ComponentConfig"], plugin.Name, schema.ComponentConfigSchema)
+		setObjectProperties(definitions["ComponentEndpointConfig"], plugin.Name, schema.ComponentEndpointsConfigSchema)
 	}
 
 	return data, nil

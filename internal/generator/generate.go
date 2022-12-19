@@ -52,12 +52,14 @@ func renderSite(cfg *config.MachConfig, site *config.SiteConfig) (string, error)
 // remote state to be used and the providers to be loaded.
 func renderTerraformConfig(cfg *config.MachConfig, site *config.SiteConfig) (string, error) {
 	providers := []string{}
-	for _, plugin := range cfg.Plugins.Enabled() {
+	for _, plugin := range cfg.Plugins.All() {
 		content, err := plugin.RenderTerraformProviders(site.Identifier)
 		if err != nil {
 			return "", fmt.Errorf("plugin %s failed to render providers: %w", plugin.Name, err)
 		}
-		providers = append(providers, content)
+		if content != "" {
+			providers = append(providers, content)
+		}
 	}
 
 	backendConfig := ""
@@ -105,12 +107,15 @@ func renderTerraformConfig(cfg *config.MachConfig, site *config.SiteConfig) (str
 
 func renderTerraformResources(cfg *config.MachConfig, site *config.SiteConfig) (string, error) {
 	resources := []string{}
-	for _, plugin := range cfg.Plugins.Enabled() {
+	for _, plugin := range cfg.Plugins.All() {
 		content, err := plugin.RenderTerraformResources(site.Identifier)
 		if err != nil {
 			return "", fmt.Errorf("plugin %s failed to render resources: %w", plugin.Name, err)
 		}
-		resources = append(resources, content)
+
+		if content != "" {
+			resources = append(resources, content)
+		}
 	}
 
 	template := `
@@ -168,10 +173,15 @@ func renderComponent(cfg *config.MachConfig, site *config.SiteConfig, component 
 		PluginProviders:  []string{},
 	}
 
-	for _, plugin := range cfg.Plugins.Enabled() {
-		if !pie.Contains(component.Definition.Integrations, plugin.Identifier()) {
+	for _, plugin := range cfg.Plugins.All() {
+		if !pie.Contains(component.Definition.Integrations, plugin.Name) {
 			continue
 		}
+		plugin, err := cfg.Plugins.Get(plugin.Name)
+		if err != nil {
+			return "", err
+		}
+
 		cr, err := plugin.RenderTerraformComponent(site.Identifier, component.Name)
 		if err != nil {
 			return "", fmt.Errorf("plugin %s failed to render component: %w", plugin.Name, err)

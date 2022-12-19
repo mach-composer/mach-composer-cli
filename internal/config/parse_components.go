@@ -52,9 +52,9 @@ func parseComponentsNode(cfg *MachConfig, node *yaml.Node, source string) error 
 	}
 	for _, component := range node.Content {
 		nodes := mapYamlNodes(component.Content)
-		identifier := nodes["name"].Value
+		componentName := nodes["name"].Value
 		err := iterateYamlNodes(nodes, knownKeys, func(key string, data map[string]any) error {
-			return cfg.Plugins.SetComponentConfig(key, identifier, data)
+			return cfg.Plugins.SetComponentConfig(key, componentName, data)
 		})
 		if err != nil {
 			return err
