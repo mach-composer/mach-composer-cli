@@ -8,12 +8,12 @@ require (
 	github.com/hashicorp/go-hclog v1.4.0
 	github.com/hashicorp/hcl/v2 v2.15.0
 	github.com/lithammer/dedent v1.1.0
-	github.com/mach-composer/mach-composer-plugin-amplience v0.0.3
-	github.com/mach-composer/mach-composer-plugin-aws v0.0.3
-	github.com/mach-composer/mach-composer-plugin-azure v0.0.6
-	github.com/mach-composer/mach-composer-plugin-commercetools v0.0.7
-	github.com/mach-composer/mach-composer-plugin-contentful v0.0.4
-	github.com/mach-composer/mach-composer-plugin-sdk v0.0.4
+	github.com/mach-composer/mach-composer-plugin-amplience v0.0.4
+	github.com/mach-composer/mach-composer-plugin-aws v0.0.4
+	github.com/mach-composer/mach-composer-plugin-azure v0.0.7
+	github.com/mach-composer/mach-composer-plugin-commercetools v0.0.8
+	github.com/mach-composer/mach-composer-plugin-contentful v0.0.6
+	github.com/mach-composer/mach-composer-plugin-sdk v0.0.5
 	github.com/mach-composer/mach-composer-plugin-sentry v0.0.4
 	github.com/mach-composer/mcc-sdk-go v0.0.3-0.20221122074702-8df13e53ecaa
 	github.com/mattn/go-isatty v0.0.16
@@ -81,7 +81,7 @@ require (
 	github.com/adrg/xdg v0.4.0
 	github.com/agext/levenshtein v1.2.3 // indirect
 	github.com/apparentlymart/go-textseg/v13 v13.0.0 // indirect
-	github.com/elliotchance/pie/v2 v2.1.0
+	github.com/elliotchance/pie/v2 v2.2.0
 	github.com/google/go-cmp v0.5.9 // indirect
 	github.com/grokify/go-pkce v0.2.0
 	github.com/hashicorp/go-plugin v1.4.8
