@@ -2,6 +2,7 @@ package variables
 
 import (
 	"context"
+	"io/ioutil"
 	"testing"
 
 	"github.com/spf13/afero"
@@ -38,6 +39,60 @@ func TestNewVariablesFromFile(t *testing.T) {
 			fileSource: &FileSource{Filename: "variables.yaml"}},
 	}
 	assert.EqualValues(t, expected, vars.vars)
+}
+
+func TestEncryptedVariables(t *testing.T) {
+	content, err := ioutil.ReadFile("testdata/secrets.enc.yaml")
+	require.NoError(t, err)
+
+	utils.FS = afero.NewMemMapFs()
+	utils.AFS = &afero.Afero{Fs: utils.FS}
+
+	vars := NewVariables()
+
+	err = utils.AFS.WriteFile("testdata/secrets.enc.yaml", content, 0600)
+	require.NoError(t, err)
+
+	err = vars.Load(context.Background(), "testdata/secrets.enc.yaml")
+	require.NoError(t, err)
+
+	expected := map[string]Value{
+		"secrets.my-service.username": {
+			val: "ENC[AES256_GCM,data:OUOm677N57JDXuEfIrk1Fhew,iv:AGMwhoqB0KwNMiDhFBZmYaIW4hoDw+75Y36+MRPaTx4=,tag:8fX4amlPMqu0kZ8uLTa6Kw==,type:str]",
+			fileSource: &FileSource{
+				Filename:  "testdata/secrets.enc.yaml",
+				Encrypted: true,
+			}},
+		"secrets.my-service.password": {
+			val: "ENC[AES256_GCM,data:8koAST5MJlIfao1GM4G1KTcj,iv:2XA2AqcFguEwtHTygq1KpoefkTZ2rUvlLblSjh7ZO5Y=,tag:69O8A7UIqG7QU9zxQ+0whw==,type:str]",
+			fileSource: &FileSource{
+				Filename:  "testdata/secrets.enc.yaml",
+				Encrypted: true,
+			}},
+	}
+	assert.EqualValues(t, expected, vars.vars)
+
+	val, err := vars.getValue("my-site", "var.secrets.my-service.username")
+	require.NoError(t, err)
+	assert.Equal(t, `${data.sops_external.variables.data["secrets.my-service.username"]}`, val)
+
+	val, err = vars.getValue("my-site", "var.secrets.my-service.password")
+	require.NoError(t, err)
+	assert.Equal(t, `${data.sops_external.variables.data["secrets.my-service.password"]}`, val)
+
+	hasEncrypted := vars.HasEncrypted("my-site")
+	assert.True(t, hasEncrypted)
+
+	fs := vars.GetEncryptedSources("my-site")
+	assert.Len(t, fs, 1)
+}
+
+func TestEnvVar(t *testing.T) {
+	vars := NewVariables()
+	t.Setenv("MY_ENV", "hello world")
+	val, err := vars.getValue("my-site", "env.MY_ENV")
+	require.NoError(t, err)
+	assert.Equal(t, "hello world", val)
 }
 
 func TestSerializeNestedVariables(t *testing.T) {
