@@ -39,6 +39,13 @@ brew tap labd/mach-composer
 brew install mach-composer
 ```
 
+### Windows
+
+```ps
+choco install mach-composer --version=2.5.0
+```
+
+
 ## Getting started
 
 Read our [getting started guide](https://docs.machcomposer.io/gettingstarted.html)
