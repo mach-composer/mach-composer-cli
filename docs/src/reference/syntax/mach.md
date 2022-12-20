@@ -1,6 +1,6 @@
 # mach_composer
 
-All MACH Composer specific configurations options.
+All MACH composer specific configurations options.
 
 Example:
 

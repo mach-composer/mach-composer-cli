@@ -5,7 +5,7 @@ including some examples.
 
 ## MACH stack deployment
 
-How to set up the deployment process for your MACH Composer configuration.
+How to set up the deployment process for your MACH composer configuration.
 
 ### Providing credentials
 
@@ -18,7 +18,7 @@ CI/CD settings;
 #### Create access token
 1. Create a [personal access token](https://docs.github.com/en/free-pro-team@latest/github/authenticating-to-github/creating-a-personal-access-token)<br>
    Make sure this has the `repo` permission
-2. Set the personal access token credentials as secrets in your MACH Composer
+2. Set the personal access token credentials as secrets in your MACH composer
    configuration repo settings.
 
 !!! note "Permissions needed"
@@ -61,7 +61,7 @@ CI/CD settings;
 === "Azure"
 
     ```yaml
-    name: MACH Composer rollout
+    name: MACH composer rollout
 
     on:
       push:

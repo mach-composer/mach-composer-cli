@@ -2,7 +2,7 @@
 
 ## Stage 1: Pushing a component to the component registry
 
-MACH Composer is primarily used to deploy components in an individual site, and
+MACH composer is primarily used to deploy components in an individual site, and
 provide it with the right context (settings, endpoints, etc).
 
 Components themselves are responsible for publishing their own artifacts into
@@ -13,7 +13,7 @@ An artifact is usually a zip file containing a serverless function, i.e.
 `my-component-vXYZ.zip`. These can be conveniently generated using the
 serverless framework, using `sls package`, but can also be built using a
 different process. Next to serverless functions, it is increasingly common to
-deploy Docker containers through MACH Composer, using the serverless container
+deploy Docker containers through MACH composer, using the serverless container
 hosting options in cloud providers (i.e. AWS Fargate).
 
 !!! tip "A component always contains a Terraform module"
@@ -21,7 +21,7 @@ hosting options in cloud providers (i.e. AWS Fargate).
     should also provide the necessary terraform resources for the component.
     Usually, components have a `/terraform` directory in the root of the
     component, containing the Terraform module, which is the entrypoint for MACH
-    Composer. And MACH Composer in turn leverages
+    Composer. And MACH composer in turn leverages
     [Terraforms 'modules sources'](https://www.terraform.io/docs/language/modules/sources.html)
     functionality to 'pull together' different modules from different Git
     repositories.
@@ -41,16 +41,16 @@ sequenceDiagram
 </div>
 
 
-## Stage 2: MACH Composer deployment
+## Stage 2: MACH composer deployment
 
-MACH Composer itself is primarily a code generator that generates the required
+MACH composer itself is primarily a code generator that generates the required
 Terraform code per site in the YAML configuration. Optionally (though
-recommended) MACH Composer decrypts the YAML file through SOPS.
+recommended) MACH composer decrypts the YAML file through SOPS.
 
 <div class="mermaid">
 sequenceDiagram
     participant D as Developer
-    participant M as MACH Composer
+    participant M as MACH composer
     participant S as SOPS
     participant T as Terraform
     participant SC as component SCM
@@ -77,8 +77,8 @@ sequenceDiagram
 </div>
 
 
-!!! tip "Running MACH Composer in CI/CD is a best practice"
-    For production deployments we recommend running MACH Composer in a CI/CD
+!!! tip "Running MACH composer in CI/CD is a best practice"
+    For production deployments we recommend running MACH composer in a CI/CD
     pipeline. This because running it requires access to sensitive resources and
     should be secured properly, as well as providing a good audit-trail about
     who deployed what at which time.

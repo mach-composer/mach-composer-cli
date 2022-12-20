@@ -65,7 +65,7 @@ components:
           workdir: ../mach-component-my-component/
     ```
 
-    More info on [using MACH Composer during development](../../topics/development/workflow.md)
+    More info on [using MACH composer during development](../../topics/development/workflow.md)
 
 ## azure
 Example:

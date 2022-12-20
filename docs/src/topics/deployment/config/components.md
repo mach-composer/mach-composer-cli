@@ -13,7 +13,7 @@ This artifact will need to be built, packaged and uploaded in the
 
 ## Creating resources
 
-On top of the resources that are [created by MACH Composer](./index.md) by
+On top of the resources that are [created by MACH composer](./index.md) by
 providing the correct Terraform configuration in the component any resource can
 be created.
 

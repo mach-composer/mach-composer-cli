@@ -1,14 +1,14 @@
 # Step 6. Create your MACH stack
 
-## 1. Create MACH Composer configuration file
+## 1. Create MACH composer configuration file
 
-To create a new MACH Composer configuration file, run
+To create a new MACH composer configuration file, run
 
 ```bash
 mach bootstrap config
 ```
 
-A configuration will be created and can be used as input for MACH Composer.
+A configuration will be created and can be used as input for MACH composer.
 
 Edit your configuration so that it looks like the following example
 
@@ -55,7 +55,7 @@ components:
 
 !!! note "Component source"
     We defined our component source as `source: ../components/api-component/terraform`.<br>
-    This is a path relative to the MACH Composer configuration file itself. Edit
+    This is a path relative to the MACH composer configuration file itself. Edit
     your path so that it fits your current setup.
 
     During actual development and deployment this will usually point to a Git repository.
@@ -69,7 +69,7 @@ In [step 4](./step-4-setup-aws-site.md) we've used the
 to setup the AWS account for us.
 
 This also created an IAM **user** called `mach` and a **role** `mach` that we
-can use to perform MACH Composer deployments with.
+can use to perform MACH composer deployments with.
 
 In this tutorial, we'll be using the `mach` role so we can configure the
 credentials in the same fashion we did for the

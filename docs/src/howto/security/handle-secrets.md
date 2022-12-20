@@ -1,6 +1,6 @@
 # Handle secrets in components
 
-Secrets values are passed on to the component by MACH Composer using the
+Secrets values are passed on to the component by MACH composer using the
 [`secrets` attribute](../../reference/syntax/sites.md#components).
 
 It is up to the component to use those secret values in a secure manner.

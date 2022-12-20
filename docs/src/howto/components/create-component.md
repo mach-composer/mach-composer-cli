@@ -18,7 +18,7 @@ It should be present in your:
 1. [Component definitions](../../reference/syntax/components.md) so that MACH
    Composer knows where to find your component
 2. [Site component configuration](../../reference/syntax/sites.md#components) to
-    include it in your MACH Composer stack add site-specific configuration
+    include it in your MACH composer stack add site-specific configuration
 
 The [tutorial](../../tutorial/aws/step-6-create-mach-stack.md) includes an
 example of a configuration file with a component implemented.
@@ -38,7 +38,7 @@ This gives you a couple of features:
 !!! info "Serverless framework in your MACH deployment"
     Although we do encourage the usage of the serverless framework for
     development and packaging, we don't recommend using it for the actual
-    MACH Composer deployment itself.<br>
+    MACH composer deployment itself.<br>
     More info about this in the [MACH configuration deployment notes](../../topics/deployment/config/components.md#serverless-framework).
 
 ## Further reading

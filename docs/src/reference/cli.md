@@ -1,7 +1,7 @@
 # CLI Reference
 
 
-MACH Composer's command line interface allows you to peform the following actions:
+MACH composer's command line interface allows you to peform the following actions:
 
 ```bash
 $ mach-composer
@@ -45,7 +45,7 @@ mach-composer apply --auto-approve -f main.yml
 - `--component` or `-c TEXT` Specific component to target.
 - `--output-path TEXT` Output path, defaults to `cwd`/deployments`.
 - `--reuse` Supress a terraform init for improved speed (not recommended for production usage)
-- `--ignore-version` Skip MACH Composer version check
+- `--ignore-version` Skip MACH composer version check
 - `--destroy` Destroy option is a convenient way to destroy all remote objects managed by this mach config
 
 
@@ -63,7 +63,7 @@ mach-composer init -f main.yml
 - `--var-file` YAML file with variables to be used in the configuration file.
 - `--site` or `-s TEXT` Site to parse. If not set parse all sites.
 - `--output-path TEXT` Output path, defaults to `cwd`/deployments.
-- `--ignore-version` Skip MACH Composer version check
+- `--ignore-version` Skip MACH composer version check
 
 
 ## `plan`
@@ -81,7 +81,7 @@ mach-composer plan -f main.yml
 - `--component` or `-c TEXT` Specific component to target.
 - `--output-path TEXT` Output path, defaults to `cwd`/deployments.
 - `--reuse` Supress a terraform init for improved speed (not recommended for production usage)
-- `--ignore-version` Skip MACH Composer version check
+- `--ignore-version` Skip MACH composer version check
 - `--destroy` Destroy option is a convenient way to destroy all remote objects managed by this mach config
 
 

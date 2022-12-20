@@ -1,6 +1,6 @@
 # Variables
 
-MACH Composer support the usage of variables in a configuration file.
+MACH composer support the usage of variables in a configuration file.
 
 The following types are supported;
 
@@ -99,7 +99,7 @@ will use the `stripe_secret` value from the given variables file.
 !!! tip "Note on encryption"
     You can [encrypt your `variables.yml` using SOPS](../howto/security/encrypt.md#encrypted-variables).
 
-    When doing so, MACH Composer won't render the variable files directly into
+    When doing so, MACH composer won't render the variable files directly into
     your Terraform configuration but uses
     [terraform-sops](https://github.com/carlpett/terraform-provider-sops) to
     refer you the SOPS encrypted variables within the Terraform file.
@@ -126,7 +126,7 @@ Any valid YAML file can be included here for the `components` block.
 
     However, when using [SOPS](../topics/../howto/security/encrypt.md) to
     encrypt your configuration file, this tag will get stripped.  Therefor, MACH
-    Composer also supports the MACH Composer-specific syntax.
+    Composer also supports the MACH composer-specific syntax.
 
     Note that this only is supported for the `components` block.
 

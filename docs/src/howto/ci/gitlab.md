@@ -5,7 +5,7 @@ including some examples.
 
 ## MACH stack deployment
 
-How to set up the deployment process for your MACH Composer configuration.
+How to set up the deployment process for your MACH composer configuration.
 
 ### Providing cloud credentials
 
@@ -16,11 +16,11 @@ GitLab CI/CD settings;
 
 ### Access to component repositories
 
-When MACH Composer is applied it will have to download the various components
+When MACH composer is applied it will have to download the various components
 from their Git repositories.<br>
 We have to make sure the current runner has access to those.
 
-Most probably you'll have the CI for the MACH Composer configuration running
+Most probably you'll have the CI for the MACH composer configuration running
 under the same GitLab account as the components itself.<br>
 In that case you can use the [`CI_JOB_TOKEN`](https://docs.gitlab.com/ee/ci/variables/predefined_variables.html)
 variable and place it in a [`.netrc`](https://docs.gitlab.com/ee/user/project/new_ci_build_permissions_model.html#dependent-repositories)

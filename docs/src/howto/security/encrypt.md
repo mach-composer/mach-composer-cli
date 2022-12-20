@@ -1,10 +1,10 @@
-# Encrypt MACH Composer configuration
+# Encrypt MACH composer configuration
 
-A MACH Composer configuration typically contains secrets that are configured on the
+A MACH composer configuration typically contains secrets that are configured on the
 components as well as secrets used to configure the integrations.
 
 We recommend using [SOPS](https://github.com/mozilla/sops) to encrypt your
-MACH Composer configuration files or a part of it.
+MACH composer configuration files or a part of it.
 
 ## Using SOPS
 #### Encrypting
@@ -26,9 +26,9 @@ Encrypting your file can be done with the `sops --encrypt` command:
 
 #### Decrypt during deployment
 
-MACH Composer offers built-in support for decrypting sops-encrypted files automatically.
+MACH composer offers built-in support for decrypting sops-encrypted files automatically.
 
-When MACH Composer encounters an encrypted YAML file, it will attempt to decrypt
+When MACH composer encounters an encrypted YAML file, it will attempt to decrypt
 the file prior to the execution of `generate`, `plan` or `apply`.
 Make sure that your CI/CD environment has access to the appropriate encryption
 keys in AWS KMS or Azure KeyVault.
@@ -40,25 +40,25 @@ Manual decrypting of the configuration can be done as follows:
 $ sops -d main.yml --output-type=yaml > main.yml.dec
 ```
 
-And you can then execute MACH Composer with this decrypted file:
+And you can then execute MACH composer with this decrypted file:
 ```bash
 $ mach-composer apply -f main.yml.dec
 ```
 
 ## Encrypted variables
 
-Just as you would encrypt your MACH Composer configuration, it is also possible
+Just as you would encrypt your MACH composer configuration, it is also possible
 to use an encrypted variable file to be used in your configuration.
 
-For example, if you would run MACH Composer with
+For example, if you would run MACH composer with
 
 ```bash
 mach-composer apply -f main.yml --var-file variables.yml
 ```
 
-and `variables.yml` is encrpyted with SOPS, MACH Composer will use
+and `variables.yml` is encrpyted with SOPS, MACH composer will use
 [terraform-sops](https://github.com/carlpett/terraform-provider-sops) to make
 sure the encrypted variables are used in a secure manner.
 
 !!! info "Using variables"
-    More info on using variables and variable files in MACH Composer.
+    More info on using variables and variable files in MACH composer.

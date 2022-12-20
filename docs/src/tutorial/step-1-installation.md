@@ -13,9 +13,9 @@ between Terraform versions when needed.
    $ tfenv install latest
    ```
 
-## Install MACH Composer
-The easiest way to get started is by installing MACH Composer locally to be able
-to perform a MACH Composer deploy and make use of the
+## Install MACH composer
+The easiest way to get started is by installing MACH composer locally to be able
+to perform a MACH composer deploy and make use of the
 [developer tools](../topics/development/workflow.md).
 
 ```bash

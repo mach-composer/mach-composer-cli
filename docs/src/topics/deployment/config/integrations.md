@@ -1,7 +1,7 @@
 # Integrations
 
 Each integration brings it's own set of managed resources that gets created by
-MACH Composer when configured for a specific MACH Composer stack.
+MACH composer when configured for a specific MACH composer stack.
 
 ### commercetools
 

@@ -12,7 +12,7 @@ Run `make preview`, then check http://localhost:8000/.
 
 ## Editing
 
-Make the required changes in Markdown format. Do not forget to add new files to `mkdocs.yml`. 
+Make the required changes in Markdown format. Do not forget to add new files to `mkdocs.yml`.
 
 The following Markdown extensions have been enabled:
 

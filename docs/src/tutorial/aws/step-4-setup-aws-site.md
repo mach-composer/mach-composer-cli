@@ -7,7 +7,7 @@ Now that we've created our [service account](./step-3-setup-aws-services.md), we
 For this account we will create:
 
 1. Terraform state backend
-2. `deploy` IAM role for MACH Composer to manage your resources
+2. `deploy` IAM role for MACH composer to manage your resources
 
 ### 1. Create AWS account
 
@@ -87,7 +87,7 @@ module "mach_account" {
 The `terraform-aws-mach-account` module will create the necessary IAM policies
 that allows the mach deploy user to deploy the necessary resources.
 
-The Terraform state backend must also be used by MACH Composer, so we need to
+The Terraform state backend must also be used by MACH composer, so we need to
 create the necessary policies that allows the mach user to read/write to that
 state backend:
 

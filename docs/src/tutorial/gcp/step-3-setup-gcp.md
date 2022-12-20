@@ -1,7 +1,7 @@
 # Step 3. Prepare your GCP environment
 
 !!! todo
-    GCP is not yet supported by MACH Composer.<br>
+    GCP is not yet supported by MACH composer.<br>
     We are happy to accept contributions to add this! And think with you if you
     plan to work on it. Feel free to reach out to us via
     [opensource@labdigital.nl](mailto:opensource@labdigital.nl).
@@ -9,14 +9,14 @@
 ## What needs to happen to support GCP?
 
 Luckily, adding GCP should not be a lot of work. Most of the implementation
-boils down to adding the right terraform code in MACH Composer, to generate the
+boils down to adding the right terraform code in MACH composer, to generate the
 nessesary resources. This is primarily about setting up an API gateway that ties
 together many services, through [GCP's Terraform
 support](https://registry.terraform.io/providers/hashicorp/google/latest/docs).
 
 - [ ] Decide on what [services](#infra-decisions) to use
 - [ ] Add support in MACH yaml to support GCP cloud
-- [ ] Add terraform templates to MACH Composer, to support GCP resources
+- [ ] Add terraform templates to MACH composer, to support GCP resources
 - [ ] Add support for storing terraform state remotely in GCP
 - [ ] Ideally: extend component bootstrapper and component cookiecutter to include Google Cloud setup
 - [ ] Expand documentation with GCP

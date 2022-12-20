@@ -1,6 +1,6 @@
 # Everything-as-configuration-as-code
 
-As a principle, MACH Composer encourages declaratively defining your
+As a principle, MACH composer encourages declaratively defining your
 configuration as code, as much as possible. This will enable you to manage much
 of your infrastructure in an automated fashion, which in turn will enable you to
 scale your MACH ecosystem to many instances and use-cases.
@@ -9,9 +9,9 @@ scale your MACH ecosystem to many instances and use-cases.
 ## Terraform & infrastructure-as-code
 
 In most cases, this boils down to managing your SaaS and Cloud resources using
-Terraform, which MACH Composer uses underneath as the infrastructure-as-code
+Terraform, which MACH composer uses underneath as the infrastructure-as-code
 engine. As a rule-of-thumb we can say: *if it can be managed by Terraform, it
-can be managed by MACH Composer*.
+can be managed by MACH composer*.
 
 Find supported services on these pages:
 

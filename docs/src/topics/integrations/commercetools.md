@@ -2,7 +2,7 @@
 
 ## Configuration
 
-From a MACH Composer configuration file, you can configure the following items
+From a MACH composer configuration file, you can configure the following items
 in commercetools:
 
 - currencies
@@ -16,7 +16,7 @@ in commercetools:
 For more information about these configuration options, see the [syntax](../../reference/syntax/sites.md#commercetools).
 
 !!! tip "More fine-grained control"
-    MACH Composer provides a couple of basic configuration options which in most
+    MACH composer provides a couple of basic configuration options which in most
     cases are sufficient and is setup very quickly.<br>
     If you need more control over the configuration in your project, you can
     load custom configuration through a new component which would include the
@@ -25,7 +25,7 @@ For more information about these configuration options, see the [syntax](../../r
 
 ## API client management
 
-MACH Composer is provided by admin credentials which allows MACH Composer to
+MACH composer is provided by admin credentials which allows MACH composer to
 fully manage your commercetools project.
 
 Each component that implements functionality that needs to communicate with
@@ -55,7 +55,7 @@ MACH provides built-in [commercetools Stores](https://docs.commercetools.com/api
 
 It's possible to
 
-- Configure your stores within a MACH Composer configuration
+- Configure your stores within a MACH composer configuration
   (see [example](#example-configuration-block) below)
 - Define store-specific variables and secrets per component
 
@@ -83,7 +83,7 @@ The component can use the correct variables based on the context that is decided
 based on incoming requests or other information available.
 
 !!! warning "Using store-aware context in components"
-    Although MACH Composer provides a data structure for managing your
+    Although MACH composer provides a data structure for managing your
     configuration in different contexts, it is the responsibility of the
     component itself to parse this data structure correctly, and apply the right
     configuration in the right context.
@@ -91,9 +91,9 @@ based on incoming requests or other information available.
     Read the [parse store variables and secrets](../../howto/commercetools/store-vars.md)
     how-to for more information.
 
-### Outside MACH Composer configuration
+### Outside MACH composer configuration
 
-If you don't want to manage the stores from the MACH Composer configuration
+If you don't want to manage the stores from the MACH composer configuration
 itself, you still have the possibility to define them in the configuration so
 that components can use store variables and receive a full list of the stores
 available.

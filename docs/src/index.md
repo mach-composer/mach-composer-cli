@@ -1,12 +1,12 @@
-# ![MACH Composer](./_img/logo.png)
+# ![MACH composer](./_img/logo.png)
 
-This documentation describes the workings of MACH Composer. Intended to setup
+This documentation describes the workings of MACH composer. Intended to setup
 and manage a **M**icroservices based, **A**PI-first, **C**loud-native SaaS and
 **H**eadless platform.
 
 ## What is it?
 
-MACH Composer is a framework that you use to orchestrate and extend modern
+MACH composer is a framework that you use to orchestrate and extend modern
 digital commerce & experience platforms, based on MACH technologies and cloud
 native services. It provides a standards-based, future-proof tool-set and
 methodology to hand to your teams when building these types of platforms.
@@ -36,7 +36,7 @@ organisation.
 
 ## Documentation structure
 
-- [Tutorials](./tutorial/intro.md) introduces you to MACH Composer and lets you
+- [Tutorials](./tutorial/intro.md) introduces you to MACH composer and lets you
   setup your MACH stack in a couple of steps
 - [Explanations](./topics/concepts.md) explanations of concepts, best practises
   and techniques
@@ -49,6 +49,6 @@ organisation.
 ## Where from here?
 
 - Start by setting up your [first MACH stack](./tutorial/intro.md)
-- Read more about the [MACH Composer concepts](./topics/concepts.md)
+- Read more about the [MACH composer concepts](./topics/concepts.md)
 - Wonder how to reason about your MACH stack? Read our
   [Architectural Guidance](./topics/architecture/index.md)
