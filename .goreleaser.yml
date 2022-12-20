@@ -104,6 +104,7 @@ chocolateys:
     release_notes: "https://github.com/labd/mach-composer/releases/tag/v{{ .Version }}"
 
     api_key: '{{ .Env.CHOCOLATEY_API_KEY }}'
+    skip_publish: true
 
 archives:
   - id: mach-composer

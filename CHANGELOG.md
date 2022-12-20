@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.5.2 (2022-12-20)
+Disable automatic distribution to chocolatey, it seems to not work together
+properly with automated releases.
+
+
 ## 2.5.1 (2022-12-19)
 Patch release to fix windows distribution via chocolatey
 
