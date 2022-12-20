@@ -112,12 +112,6 @@ mach-composer generate # generates config for main.yml
 mach-composer generate -f other-file.yml
 ```
 
-To init Terraform (optional):
-
-```console
-mach-composer init
-```
-
 To plan Terraform:
 
 ```console
@@ -129,6 +123,13 @@ To apply Terraform config:
 ```console
 mach-composer apply
 ```
+
+Optionally you can run a terraform init without taking any action:
+
+```console
+mach-composer terraform init
+```
+
 
 ### Checking for updates
 

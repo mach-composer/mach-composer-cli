@@ -11,11 +11,16 @@ Usage:
 
 Available Commands:
   apply       Apply the configuration.
+  cloud       Manage your Mach Composer Cloud
   completion  Generate the autocompletion script for the specified shell
+  components  List all components.
   generate    Generate the Terraform files.
   help        Help about any command
   init        Initialize site directories Terraform files.
   plan        Plan the configuration.
+  schema      Generate a JSON schema for your config based on the plugins.
+  sites       List all sites.
+  terraform   Execute terraform commands directly
   update      Update all (or a given) component.
   version     Return version information of the mach-composer cli
 
@@ -54,7 +59,7 @@ mach-composer apply --auto-approve -f main.yml
 Initiliaze the Terraform directory.
 
 ```bash
-mach-composer init -f main.yml
+mach-composer terraform init -f main.yml
 ```
 
 **Options**
