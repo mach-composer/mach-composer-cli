@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.5.3 (unreleased)
+Print a deprecation warning when using `mach-composer init`. This command is
+replaced by `mach-composer terraform init`.
+
+
 ## 2.5.2 (2022-12-20)
 Disable automatic distribution to chocolatey, it seems to not work together
 properly with automated releases.

@@ -5,6 +5,7 @@ import (
 
 	"github.com/spf13/cobra"
 
+	"github.com/labd/mach-composer/internal/cli"
 	"github.com/labd/mach-composer/internal/generator"
 	"github.com/labd/mach-composer/internal/runner"
 )
@@ -17,6 +18,9 @@ var initCmd = &cobra.Command{
 	},
 
 	Run: func(cmd *cobra.Command, args []string) {
+		cli.DeprecationWarning(&cli.DeprecationOptions{
+			Message: "the init command will change in the next version. For initializing terraform please use 'mach-composer terraform init'.",
+		})
 		handleError(initFunc(cmd.Context(), args))
 	},
 }
