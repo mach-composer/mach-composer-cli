@@ -232,8 +232,8 @@ github.com/mach-composer/mach-composer-plugin-contentful v0.0.6 h1:7Cb8SqlvfXFqn
 github.com/mach-composer/mach-composer-plugin-contentful v0.0.6/go.mod h1:PSo6Zr8tBSlE13jJy+qQjHVtmFbWy359qCdQR2rte70=
 github.com/mach-composer/mach-composer-plugin-helpers v0.0.2 h1:v++kAqqGnJRqbjR6Rd4L3arfmI7phFFzJ4u9znajMy8=
 github.com/mach-composer/mach-composer-plugin-helpers v0.0.2/go.mod h1:Ir2OV7RNUZgss0iVPPH0P4j7t2NaNzjtvFOd4bhKvLI=
-github.com/mach-composer/mach-composer-plugin-sdk v0.0.5 h1:FOG8+L9fYxnDoycGKO1J8fNrmXRBpsAaRlTi9rPKhdI=
-github.com/mach-composer/mach-composer-plugin-sdk v0.0.5/go.mod h1:eXMCttfI3lOU6t2qWyLIuxl0SpV31O6ZlpfqkheYfkI=
+github.com/mach-composer/mach-composer-plugin-sdk v0.0.6 h1:yFsnzDZdJZ+5mzynKLmHhVBPPgVeO4xFP4HbsPJsI6w=
+github.com/mach-composer/mach-composer-plugin-sdk v0.0.6/go.mod h1:qfmnfIOp8k4RYlOEbV0UVOQZ8g3mJPKsUopZCOW2qDU=
 github.com/mach-composer/mach-composer-plugin-sentry v0.0.4 h1:VR9dEN+IZTriWhYYYDef3/uHIM9O7r+7XxcW+hkW8Ew=
 github.com/mach-composer/mach-composer-plugin-sentry v0.0.4/go.mod h1:8gnCuhUrBmsFLXnG94Uujy22i+wY1aJezJVIXOVsuBQ=
 github.com/mach-composer/mcc-sdk-go v0.0.3-0.20221122074702-8df13e53ecaa h1:eElUAUj+gyo82BxndaQLjRT7OuxjcYuxf7Kd/NyUwLw=

@@ -13,7 +13,7 @@ require (
 	github.com/mach-composer/mach-composer-plugin-azure v0.0.7
 	github.com/mach-composer/mach-composer-plugin-commercetools v0.0.8
 	github.com/mach-composer/mach-composer-plugin-contentful v0.0.6
-	github.com/mach-composer/mach-composer-plugin-sdk v0.0.5
+	github.com/mach-composer/mach-composer-plugin-sdk v0.0.6
 	github.com/mach-composer/mach-composer-plugin-sentry v0.0.4
 	github.com/mach-composer/mcc-sdk-go v0.0.3-0.20221122074702-8df13e53ecaa
 	github.com/mattn/go-isatty v0.0.16
