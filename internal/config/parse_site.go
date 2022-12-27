@@ -145,6 +145,12 @@ func parseSiteEndpointNode(cfg *MachConfig, siteId string, node *yaml.Node) erro
 }
 
 func parseSiteComponentsNode(cfg *MachConfig, site string, node *yaml.Node) error {
+	// Exit early when no components are defined for this site. Not a common
+	// scenario, but still
+	if node == nil {
+		return nil
+	}
+
 	for _, component := range node.Content {
 		nodes := mapYamlNodes(component.Content)
 		identifier := nodes["name"].Value
