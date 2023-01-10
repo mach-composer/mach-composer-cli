@@ -9,22 +9,23 @@ import (
 	"github.com/labd/mach-composer/internal/runner"
 )
 
-var terraformCmd = &cobra.Command{
-	Use:   "terraform",
-	Short: "Execute terraform commands directly",
+var showPlanCmd = &cobra.Command{
+	Use:   "show-plan",
+	Short: "Show the planned configuration.",
 	PreRun: func(cmd *cobra.Command, args []string) {
 		preprocessGenerateFlags()
 	},
+
 	Run: func(cmd *cobra.Command, args []string) {
-		handleError(terraformFunc(cmd.Context(), args))
+		handleError(showPlanFunc(cmd.Context(), args))
 	},
 }
 
 func init() {
-	registerGenerateFlags(terraformCmd)
+	registerGenerateFlags(showPlanCmd)
 }
 
-func terraformFunc(ctx context.Context, args []string) error {
+func showPlanFunc(ctx context.Context, args []string) error {
 	cfg := loadConfig(ctx, true)
 	defer cfg.Close()
 
@@ -35,8 +36,8 @@ func terraformFunc(ctx context.Context, args []string) error {
 		Site:       generateFlags.siteName,
 	})
 
-	return runner.TerraformProxy(ctx, cfg, paths, &runner.ProxyOptions{
-		Site:    generateFlags.siteName,
-		Command: args,
+	return runner.TerraformShow(ctx, cfg, paths, &runner.PlanOptions{
+		Reuse: planFlags.reuse,
+		Site:  generateFlags.siteName,
 	})
 }

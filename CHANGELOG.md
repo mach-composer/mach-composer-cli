@@ -1,8 +1,10 @@
 # Changelog
 
 ## 2.5.3 (unreleased)
-Print a deprecation warning when using `mach-composer init`. This command is
-replaced by `mach-composer terraform init`.
+ - Print a deprecation warning when using `mach-composer init`. This command is
+   replaced by `mach-composer terraform init`.
+ - Add a new command `mach-composer show-plan` which shows the generated plans
+   by terraform.
 
 
 ## 2.5.2 (2022-12-20)

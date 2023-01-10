@@ -76,6 +76,9 @@ func FileLocations(cfg *config.MachConfig, options *GenerateOptions) map[string]
 
 	for i := range cfg.Sites {
 		site := cfg.Sites[i]
+		if options.Site != "" && site.Identifier != options.Site {
+			continue
+		}
 		locations[site.Identifier] = filepath.Join(sitesPath, site.Identifier)
 	}
 	return locations

@@ -3,6 +3,8 @@ package runner
 import (
 	"context"
 	"fmt"
+	"os"
+	"path/filepath"
 
 	"github.com/rs/zerolog/log"
 
@@ -45,7 +47,7 @@ func TerraformPlanSite(ctx context.Context, cfg *config.MachConfig, site *config
 		cmd = append(cmd, fmt.Sprintf("-target=module.%s", component))
 	}
 
-	filename, err := GeneratePlanName(path)
+	filename, err := generatePlanName(path)
 	if err != nil {
 		return err
 	}
@@ -54,11 +56,26 @@ func TerraformPlanSite(ctx context.Context, cfg *config.MachConfig, site *config
 	return RunTerraform(ctx, path, cmd...)
 }
 
-func GeneratePlanName(path string) (string, error) {
-	siteHash, err := GetHash(path)
+func generatePlanName(path string) (string, error) {
+	siteHash, err := getFileHash(path)
 	if err != nil {
 		return "", err
 	}
 	result := fmt.Sprintf("%s.tfplan", siteHash[:7])
 	return result, nil
+}
+
+func findExistingPlan(path string) (string, error) {
+	filename, err := generatePlanName(path)
+	if err != nil {
+		if os.IsNotExist(err) {
+			return "", fmt.Errorf("No terraform files found. Did you run `mach-composer generate`?")
+		}
+		return "", err
+	}
+	filePath := filepath.Join(path, filename)
+	if _, err := os.Stat(filePath); err == nil {
+		return filename, nil
+	}
+	return "", nil
 }

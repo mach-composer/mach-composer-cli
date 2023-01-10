@@ -9,7 +9,7 @@ import (
 	"strings"
 )
 
-func GetHash(path string) (string, error) {
+func getFileHash(path string) (string, error) {
 	// Loop through all *.tf files
 	files, err := os.ReadDir(path)
 	if err != nil {
