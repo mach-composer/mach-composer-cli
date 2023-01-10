@@ -18,7 +18,11 @@ builds:
     gcflags:
       - all=-trimpath={{.Env.GOPATH}}
     ldflags: |
-      -s -w -X main.version={{.Version}} -X main.commit={{.Commit}} -X main.date={{.CommitDate}} -extldflags '-static'
+      -s -w
+        -X github.com/labd/mach-composer/internal/cli.version={{.Version}}
+        -X github.com/labd/mach-composer/internal/cli.commit={{.Commit}}
+        -X github.com/labd/mach-composer/internal/cli.date={{.CommitDate}}
+        -extldflags '-static'
     goos:
       - freebsd
       - windows

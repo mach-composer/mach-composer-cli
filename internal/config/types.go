@@ -1,6 +1,9 @@
 package config
 
 import (
+	"crypto/sha256"
+	"encoding/hex"
+	"encoding/json"
 	"fmt"
 	"log"
 	"strings"
@@ -42,6 +45,32 @@ func (r *rawConfig) validate() error {
 	return nil
 }
 
+func (r *rawConfig) computeHash() (string, error) {
+	hashConfig := struct {
+		MachComposer MachComposer         `json:"mach_composer"`
+		Global       yaml.Node            `json:"global"`
+		Sites        yaml.Node            `json:"sites"`
+		Components   yaml.Node            `json:"components"`
+		Filename     string               `json:"filename"`
+		Variables    *variables.Variables `json:"variables"`
+	}{
+		MachComposer: r.MachComposer,
+		Global:       r.Global,
+		Sites:        r.Sites,
+		Components:   r.Components,
+		Filename:     r.filename,
+		Variables:    r.variables,
+	}
+	data, err := json.Marshal(hashConfig)
+	if err != nil {
+		return "", err
+	}
+
+	h := sha256.New()
+	h.Write(data)
+	return hex.EncodeToString(h.Sum(nil)), nil
+}
+
 func newRawConfig(filename string, document *yaml.Node) (*rawConfig, error) {
 	r := &rawConfig{
 		filename:  filename,
@@ -62,6 +91,7 @@ type MachConfig struct {
 	Components   []Component  `yaml:"components"`
 
 	extraFiles  map[string][]byte         `yaml:"-"`
+	ConfigHash  string                    `yaml:"-"`
 	Plugins     *plugins.PluginRepository `yaml:"-"`
 	Variables   *variables.Variables      `yaml:"-"`
 	IsEncrypted bool                      `yaml:"-"`

@@ -138,7 +138,13 @@ func resolveConfig(ctx context.Context, intermediate *rawConfig) (*MachConfig, e
 		return nil, err
 	}
 
+	cfgHash, err := intermediate.computeHash()
+	if err != nil {
+		return nil, err
+	}
+
 	cfg := &MachConfig{
+		ConfigHash:   cfgHash,
 		extraFiles:   make(map[string][]byte, 0),
 		Filename:     filepath.Base(intermediate.filename),
 		MachComposer: intermediate.MachComposer,

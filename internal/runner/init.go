@@ -2,10 +2,13 @@ package runner
 
 import (
 	"context"
+	"os"
+	"path/filepath"
 
 	"github.com/rs/zerolog/log"
 
 	"github.com/labd/mach-composer/internal/config"
+	"github.com/labd/mach-composer/internal/lockfile"
 )
 
 type InitOptions struct {
@@ -20,7 +23,7 @@ func TerraformInit(ctx context.Context, cfg *config.MachConfig, locations map[st
 			continue
 		}
 
-		err := TerraformInitSite(ctx, cfg, &site, locations[site.Identifier], options)
+		err := terraformInitSite(ctx, cfg, &site, locations[site.Identifier])
 		if err != nil {
 			return err
 		}
@@ -28,8 +31,28 @@ func TerraformInit(ctx context.Context, cfg *config.MachConfig, locations map[st
 	return nil
 }
 
-func TerraformInitSite(ctx context.Context, cfg *config.MachConfig, site *config.SiteConfig, path string, options *InitOptions) error {
-	log.Debug().Msgf("Running terraform init for site %s", site.Identifier)
+func terraformInitSite(ctx context.Context, cfg *config.MachConfig, site *config.SiteConfig, path string) error {
+	lockfile, err := lockfile.GetLockFile(cfg, path)
+	if err != nil {
+		return err
+	}
 
-	return RunTerraform(ctx, path, "init")
+	if !terraformIsInitialized(path) || lockfile.HasChanges(cfg) {
+		log.Debug().Msgf("Running terraform init for site %s", site.Identifier)
+		if err := RunTerraform(ctx, path, "init"); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func terraformIsInitialized(path string) bool {
+	tfLockFile := filepath.Join(path, ".terraform.lock.hcl")
+	if _, err := os.Stat(tfLockFile); err != nil {
+		if os.IsNotExist(err) {
+			return false
+		}
+		log.Fatal().Err(err)
+	}
+	return true
 }

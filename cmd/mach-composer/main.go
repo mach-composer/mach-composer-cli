@@ -12,15 +12,8 @@ import (
 )
 
 var (
-	name    = "mach-composer"
-	version = "dev"
-	commit  = "none"
-	date    = "unknown"
-)
-
-var (
 	rootCmd = &cobra.Command{
-		Use:   name,
+		Use:   "mach-composer",
 		Short: "MACH composer is an orchestration tool for modern MACH ecosystems",
 		Long: `MACH composer is a framework that you use to orchestrate and ` +
 			`extend modern digital commerce & experience platforms, based on MACH ` +

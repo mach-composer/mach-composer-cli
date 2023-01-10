@@ -52,10 +52,8 @@ func TerraformProxy(ctx context.Context, cfg *config.MachConfig, locations map[s
 }
 
 func TerraformApplySite(ctx context.Context, cfg *config.MachConfig, site *config.SiteConfig, path string, options *ApplyOptions) error {
-	if !options.Reuse {
-		if err := RunTerraform(ctx, path, "init"); err != nil {
-			return err
-		}
+	if err := terraformInitSite(ctx, cfg, site, path); err != nil {
+		return err
 	}
 
 	cmd := []string{"apply"}
@@ -73,7 +71,7 @@ func TerraformApplySite(ctx context.Context, cfg *config.MachConfig, site *confi
 	}
 
 	// If there is a plan then we should use it.
-	planFilename, err := findExistingPlan(path)
+	planFilename, err := hasTerraformPlan(path)
 	if err != nil {
 		return err
 	}

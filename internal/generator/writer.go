@@ -14,6 +14,7 @@ import (
 	"github.com/rs/zerolog/log"
 
 	"github.com/labd/mach-composer/internal/config"
+	"github.com/labd/mach-composer/internal/lockfile"
 )
 
 type GenerateOptions struct {
@@ -31,10 +32,19 @@ func WriteFiles(cfg *config.MachConfig, options *GenerateOptions) (map[string]st
 		}
 
 		path := locations[site.Identifier]
+		lockfile, err := lockfile.GetLockFile(cfg, path)
+		if err != nil {
+			return nil, err
+		}
+
+		if !lockfile.HasChanges(cfg) {
+			log.Info().Msgf("Files for site %s are up-to-date", site.Identifier)
+			continue
+		}
+
 		filename := filepath.Join(path, "site.tf")
 
 		log.Info().Msgf("Writing %s", filename)
-
 		body, err := renderSite(cfg, &site)
 		if err != nil {
 			return nil, err
@@ -63,6 +73,14 @@ func WriteFiles(cfg *config.MachConfig, options *GenerateOptions) (map[string]st
 			if err := copyFile(fs.Filename, target); err != nil {
 				return nil, fmt.Errorf("error writing extra file: %w", err)
 			}
+		}
+
+		// Write the lock file
+		if err := lockfile.SetTerraformFiles(); err != nil {
+			return nil, err
+		}
+		if err := lockfile.Write(); err != nil {
+			return nil, err
 		}
 	}
 	return locations, nil

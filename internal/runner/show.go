@@ -32,7 +32,7 @@ func TerraformShow(ctx context.Context, cfg *config.MachConfig, locations map[st
 }
 
 func TerraformShowSite(ctx context.Context, cfg *config.MachConfig, site *config.SiteConfig, path string, options *PlanOptions) error {
-	filename, err := findExistingPlan(path)
+	filename, err := hasTerraformPlan(path)
 	if err != nil {
 		return err
 	}
