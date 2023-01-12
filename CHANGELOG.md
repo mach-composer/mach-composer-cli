@@ -1,8 +1,10 @@
 # Changelog
 
-## 2.5.3 (unreleased)
+## 2.5.3 (2023-01-12)
  - Print a deprecation warning when using `mach-composer init`. This command is
    replaced by `mach-composer terraform init`.
+ - Generate a mach-composer lock file in the output directory to optimize
+   rebuilds and prevent unnecessary terraform actions.
  - Add a new command `mach-composer show-plan` which shows the generated plans
    by terraform.
 
