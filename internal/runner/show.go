@@ -9,13 +9,12 @@ import (
 	"github.com/labd/mach-composer/internal/config"
 )
 
-type ShowOptions struct {
-	Reuse      bool
-	Components []string
-	Site       string
+type ShowPlanOptions struct {
+	NoColor bool
+	Site    string
 }
 
-func TerraformShow(ctx context.Context, cfg *config.MachConfig, locations map[string]string, options *PlanOptions) error {
+func TerraformShow(ctx context.Context, cfg *config.MachConfig, locations map[string]string, options *ShowPlanOptions) error {
 	for i := range cfg.Sites {
 		site := cfg.Sites[i]
 
@@ -23,7 +22,7 @@ func TerraformShow(ctx context.Context, cfg *config.MachConfig, locations map[st
 			continue
 		}
 
-		err := TerraformShowSite(ctx, cfg, &site, locations[site.Identifier], options)
+		err := terraformShowSite(ctx, cfg, &site, locations[site.Identifier], options)
 		if err != nil {
 			return err
 		}
@@ -31,7 +30,7 @@ func TerraformShow(ctx context.Context, cfg *config.MachConfig, locations map[st
 	return nil
 }
 
-func TerraformShowSite(ctx context.Context, cfg *config.MachConfig, site *config.SiteConfig, path string, options *PlanOptions) error {
+func terraformShowSite(ctx context.Context, cfg *config.MachConfig, site *config.SiteConfig, path string, options *ShowPlanOptions) error {
 	filename, err := hasTerraformPlan(path)
 	if err != nil {
 		return err
@@ -41,6 +40,9 @@ func TerraformShowSite(ctx context.Context, cfg *config.MachConfig, site *config
 	}
 
 	cmd := []string{"show", filename}
+	if options.NoColor {
+		cmd = append(cmd, "-no-color")
+	}
 	log.Info().Msgf("Showing terraform plan for site %s", site.Identifier)
 	return RunTerraform(ctx, path, cmd...)
 }

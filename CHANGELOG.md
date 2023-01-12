@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.5.4 (2023-01-12)
+ - Add `--no-color` flag to `mach-composer show-plan` to use in GitHub actions
+
 ## 2.5.3 (2023-01-12)
  - Print a deprecation warning when using `mach-composer init`. This command is
    replaced by `mach-composer terraform init`.

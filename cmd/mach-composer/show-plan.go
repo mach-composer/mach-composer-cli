@@ -9,6 +9,10 @@ import (
 	"github.com/labd/mach-composer/internal/runner"
 )
 
+var showPlanFlags struct {
+	noColor bool
+}
+
 var showPlanCmd = &cobra.Command{
 	Use:   "show-plan",
 	Short: "Show the planned configuration.",
@@ -23,6 +27,7 @@ var showPlanCmd = &cobra.Command{
 
 func init() {
 	registerGenerateFlags(showPlanCmd)
+	showPlanCmd.Flags().BoolVarP(&showPlanFlags.noColor, "no-color", "", false, "Disable color output")
 }
 
 func showPlanFunc(ctx context.Context, args []string) error {
@@ -36,8 +41,8 @@ func showPlanFunc(ctx context.Context, args []string) error {
 		Site:       generateFlags.siteName,
 	})
 
-	return runner.TerraformShow(ctx, cfg, paths, &runner.PlanOptions{
-		Reuse: planFlags.reuse,
-		Site:  generateFlags.siteName,
+	return runner.TerraformShow(ctx, cfg, paths, &runner.ShowPlanOptions{
+		NoColor: showPlanFlags.noColor,
+		Site:    generateFlags.siteName,
 	})
 }
