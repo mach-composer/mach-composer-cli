@@ -39,7 +39,7 @@ use OpenID Connect. See how this works with GitHub at
     jobs:
       plan:
         runs-on: ubuntu-latest
-        if: github.event.pull_request.merged != true
+        if: github.event.pull_request.merged != true && github.base_ref == 'main'
         permissions:
           id-token: write # This is required for requesting the JWT
           contents: read  # This is required for actions/checkout
@@ -92,7 +92,7 @@ use OpenID Connect. See how this works with GitHub at
 
       deploy:
         runs-on: ubuntu-latest
-        if: github.event.pull_request.merged == true
+        if: github.event.pull_request.merged == true && github.base_ref == 'main'
         environment:
           name: test
           url: "<your env url>"
