@@ -1,61 +1,148 @@
 # Deploy using GitHub Actions
-
 This section will describe how to setup your CI/CD pipeline using GitHub Actions
 including some examples.
 
 ## MACH stack deployment
+This page describes how to deploy your MACH composer configuration to your
+cloud provider. We recommend to use a PR workflow whereby changes are done via
+a PR which allows additional rules (e.g. approval flows).
 
-How to set up the deployment process for your MACH composer configuration.
 
-### Providing credentials
+### Authenticating with your cloud provider
+For deploying to a cloud provider (e.g. AWS, Azure or GCP) as we recommend to
+use OpenID Connect. See how this works with GitHub at
+[security hardening your deployments](https://docs.github.com/en/actions/deployment/security-hardening-your-deployments)
 
-For an deployment we have to make sure the following variables set in the GitLab
-CI/CD settings;
-
-- [Personal access token](#create-access-token)
-- AWS or Azure credentials
-
-#### Create access token
-1. Create a [personal access token](https://docs.github.com/en/free-pro-team@latest/github/authenticating-to-github/creating-a-personal-access-token)<br>
-   Make sure this has the `repo` permission
-2. Set the personal access token credentials as secrets in your MACH composer
-   configuration repo settings.
-
-!!! note "Permissions needed"
-      We need `repo` to have access to any private repositories so that MACH
-      Composer can pull in the components during deployment.
 
 ### Example
+
 === "AWS"
 
     ```yaml
-    name: MACH rollout
-
+    name: Deploy Test
     on:
-      push:
-        branches:
-          - master
+      pull_request:
+        types: [opened, synchronize, closed]
+        paths:
+          - 'main.yml'
+
+    concurrency: test
+
+    env:
+      TF_PLUGIN_CACHE_DIR: ${{ github.workspace }}/.terraform.d/plugin-cache
+      MACH_COMPOSER_VERSION: 2.5.4
+      AWS_DEPLOY_ROLE: arn:aws:iam::<AWS_ACCOUNT_ID>:role/mach-deploy-role
+      AWS_DEPLOY_REGION: "eu-west-1"
+      TF_PLAN_STORE_NAME: "bucket name to store terraform plans"
+      CONFIG_FILE: "main.yml"
 
     jobs:
-      mach:
+      plan:
         runs-on: ubuntu-latest
-        container:
-          image: docker.pkg.github.com/labd/mach-composer/mach:2.0.0
-          options: --user 1001
-          credentials:
-            username: ${{ secrets.GITHUB_USER }}
-            password: ${{ secrets.GITHUB_TOKEN }}
+        if: github.event.pull_request.merged != true
+        permissions:
+          id-token: write # This is required for requesting the JWT
+          contents: read  # This is required for actions/checkout
+          pull-requests: write
         steps:
-        - uses: actions/checkout@v2
-        - run: |
-            echo -e "machine github.com\nlogin ${{ secrets.GITHUB_USER }}\npassword ${{ secrets.GITHUB_TOKEN }}" > ~/.netrc
-          name: Prepare credentials
-        - run: mach-composer apply --auto-approve
-          name: Apply
-          env:
-            AWS_DEFAULT_REGION: eu-central-1
-            AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-            AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          - uses: actions/checkout@v3
+
+          - name: Prepare credentials
+            run: |
+              echo ${{ secrets.ORG_REPO_TOKEN }}
+              git config --global url."https://oauth2:${{ secrets.ORG_REPO_TOKEN }}@github.com".insteadOf https://github.com
+
+          - name: Install terraform
+            uses: hashicorp/setup-terraform@v2
+            with:
+              terraform_version: 1.1.7
+
+          - name: Create Terraform Plugins Cache Dir
+            run: mkdir --parents $TF_PLUGIN_CACHE_DIR
+
+          - name: Cache Terraform Plugins
+            uses: actions/cache@v2
+            with:
+              path: ${{ env.TF_PLUGIN_CACHE_DIR }}
+              key: ${{ runner.os }}-terraform-${{ hashFiles('**/.terraform.lock.hcl') }}
+
+          - name: Install MACH composer
+            uses: mach-composer/setup-mach-composer@main
+            with:
+              version: ${{ env.MACH_COMPOSER_VERSION }}
+
+          - name: Install sops
+            uses: mdgreenwald/mozilla-sops-action@v1.4.1
+
+          - name: Configure AWS Credentials
+            uses: aws-actions/configure-aws-credentials@v1
+            with:
+              role-to-assume: ${{ env.AWS_DEPLOY_ROLE }}
+              aws-region: ${{ env.AWS_DEPLOY_REGION }}
+
+          - name: MACH composer plan
+            uses: mach-composer/plan-action@main
+            with:
+              filename: ${{ env.CONFIG_FILE }}
+              github-token: ${{ secrets.GITHUB_TOKEN }}
+
+          - name: Store terraform plan
+            run: aws s3 cp --sse AES256 --recursive --exclude '*' --include "deployments/*/terraform.plan" . s3://${{ env.TF_PLAN_STORE_NAME }}/${{ github.event.pull_request.number }}/
+
+
+      deploy:
+        runs-on: ubuntu-latest
+        if: github.event.pull_request.merged == true
+        environment:
+          name: test
+          url: "<your env url>"
+        permissions:
+          id-token: write # This is required for requesting the JWT
+          contents: read  # This is required for actions/checkout
+        steps:
+          - uses: actions/checkout@v3
+
+          - name: Prepare credentials
+            run: |
+              echo ${{ secrets.ORG_REPO_TOKEN }}
+              git config --global url."https://oauth2:${{ secrets.ORG_REPO_TOKEN }}@github.com".insteadOf https://github.com
+
+          - name: Install terraform
+            uses: hashicorp/setup-terraform@v2
+            with:
+              terraform_version: 1.1.7
+
+          - name: Create Terraform Plugins Cache Dir
+            run: mkdir --parents $TF_PLUGIN_CACHE_DIR
+
+          - name: Cache Terraform Plugins
+            uses: actions/cache@v2
+            with:
+              path: ${{ env.TF_PLUGIN_CACHE_DIR }}
+              key: ${{ runner.os }}-terraform-${{ hashFiles('**/.terraform.lock.hcl') }}
+
+          - name: Install MACH Composer
+            uses: mach-composer/setup-mach-composer@main
+            with:
+              version: ${{ env.MACH_COMPOSER_VERSION }}
+
+          - name: Install sops
+            uses: mdgreenwald/mozilla-sops-action@v1.4.1
+
+          - name: Configure AWS Credentials
+            uses: aws-actions/configure-aws-credentials@v1
+            with:
+              role-to-assume: ${{ env.AWS_DEPLOY_ROLE }}
+              aws-region: ${{ env.AWS_DEPLOY_REGION }}
+
+          - name: Retrieve terraform plan
+            run: aws s3 cp --sse AES256 --recursive s3://${{ env.TF_PLAN_STORE_NAME }}/${{ github.event.pull_request.number }}/ .
+
+          - name: Run MACH Composer apply
+            run: mach-composer apply --auto-approve -f ${{ env.CONFIG_FILE }}
+
+          - name: Cleanup terraform plan
+            run: aws s3 rm --recursive s3://${{ env.TF_PLAN_STORE_NAME }}/${{ github.event.pull_request.number }}/
     ```
 
 === "Azure"
