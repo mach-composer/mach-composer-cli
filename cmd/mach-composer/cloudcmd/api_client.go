@@ -10,7 +10,7 @@ import (
 
 var listApiClientCmd = &cobra.Command{
 	Use:   "list-api-clients",
-	Short: "Manage your components",
+	Short: "List existing API clients (without secret)",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		organization := MustGetString(cmd, "organization")
 		project := MustGetString(cmd, "project")
