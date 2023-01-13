@@ -33,7 +33,7 @@ use OpenID Connect. See how this works with GitHub at
       MACH_COMPOSER_VERSION: 2.5.4
       AWS_DEPLOY_ROLE: arn:aws:iam::<AWS_ACCOUNT_ID>:role/mach-deploy-role
       AWS_DEPLOY_REGION: "eu-west-1"
-      TF_PLAN_STORE_NAME: "bucket name to store terraform plans"
+      AWS_PLAN_BUCKET: "bucket name to store terraform plans"
       CONFIG_FILE: "main.yml"
 
     jobs:
@@ -87,7 +87,7 @@ use OpenID Connect. See how this works with GitHub at
               github-token: ${{ secrets.GITHUB_TOKEN }}
 
           - name: Store terraform plan
-            run: aws s3 cp --sse AES256 --recursive --exclude '*' --include "deployments/*/terraform.plan" . s3://${{ env.TF_PLAN_STORE_NAME }}/${{ github.event.pull_request.number }}/
+            run: aws s3 cp --sse AES256 --recursive --exclude '*' --include "deployments/*/terraform.plan" . s3://${{ env.AWS_PLAN_BUCKET }}/${{ github.event.pull_request.number }}/
 
 
       deploy:
@@ -136,13 +136,13 @@ use OpenID Connect. See how this works with GitHub at
               aws-region: ${{ env.AWS_DEPLOY_REGION }}
 
           - name: Retrieve terraform plan
-            run: aws s3 cp --sse AES256 --recursive s3://${{ env.TF_PLAN_STORE_NAME }}/${{ github.event.pull_request.number }}/ .
+            run: aws s3 cp --sse AES256 --recursive s3://${{ env.AWS_PLAN_BUCKET }}/${{ github.event.pull_request.number }}/ .
 
           - name: Run MACH Composer apply
             run: mach-composer apply --auto-approve -f ${{ env.CONFIG_FILE }}
 
           - name: Cleanup terraform plan
-            run: aws s3 rm --recursive s3://${{ env.TF_PLAN_STORE_NAME }}/${{ github.event.pull_request.number }}/
+            run: aws s3 rm --recursive s3://${{ env.AWS_PLAN_BUCKET }}/${{ github.event.pull_request.number }}/
     ```
 
 === "Azure"
