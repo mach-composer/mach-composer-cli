@@ -239,4 +239,4 @@ Example GitHub action to package and deploy a component on AWS.
 
           - name: Upload
             run: aws s3 cp .serverless/${{ env.PACKAGE_NAME }}.zip s3://${{ env.AWS_BUCKET_NAME }}/${{ steps.artifact-name.outputs.artifact }}
-      ```
+    ```
