@@ -16,7 +16,7 @@ This component can now be pushed to a Git repository.
 
 It depends on what component you have, but if you've created a component
 containing a serverless function, that function needs to be built, packaged and
-uploaded to a **component registry**.
+uploaded to a **artifact repository**.
 
 For a component created with the `mach-composer bootstrap` command or one of the
 provided example components, these commands will be enough:

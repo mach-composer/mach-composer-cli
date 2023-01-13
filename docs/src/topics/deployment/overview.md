@@ -1,12 +1,12 @@
 # Overview of deployment flows
 
-## Stage 1: Pushing a component to the component registry
+## Stage 1: Pushing a component to the component artifact repository
 
 MACH composer is primarily used to deploy components in an individual site, and
 provide it with the right context (settings, endpoints, etc).
 
 Components themselves are responsible for publishing their own artifacts into
-the component registry (which can be a simple S3 bucket). And usually that is
+an artifact repository (which can be a simple S3 bucket). And usually that is
 implemented by configuring a CI/CD pipeline that manages that automatically.
 
 An artifact is usually a zip file containing a serverless function, i.e.
@@ -17,7 +17,7 @@ deploy Docker containers through MACH composer, using the serverless container
 hosting options in cloud providers (i.e. AWS Fargate).
 
 !!! tip "A component always contains a Terraform module"
-    Next to the component publishing its artifact into a component registry, it
+    Next to the component publishing its artifact into an artifact repository, it
     should also provide the necessary terraform resources for the component.
     Usually, components have a `/terraform` directory in the root of the
     component, containing the Terraform module, which is the entrypoint for MACH
@@ -31,14 +31,20 @@ sequenceDiagram
     participant D as Developer
     participant S as SCM
     participant CI as CI/CD
-    participant C as Component Registry
+    participant C as Artifact Repository
 
     D->>S: Merges new code
     S->>CI: run build and tests
     opt if master branch
-        CI->>C: Push artifact to component registry
+        CI->>C: Push artifact to component artifact repository (S3, for example)
     end
 </div>
+
+!!! tip "MACH composer ☁️ provides a component registry API" 
+    To improve the stability of your MACH composer pipelines, it is often not
+    reliable to rely on updating component versions based on Github commits. In
+    order to improve this, we are introducing a [Component Registry as part of
+    MACH composer ☁️](../../cloud/component-registry.md).
 
 
 ## Stage 2: MACH composer deployment
@@ -54,7 +60,7 @@ sequenceDiagram
     participant S as SOPS
     participant T as Terraform
     participant SC as component SCM
-    participant C as Component Registry
+    participant C as Artifact Repository
     participant MACH as MACH services
     participant Cloud as Cloud (AWS/Azure/GCP)
 

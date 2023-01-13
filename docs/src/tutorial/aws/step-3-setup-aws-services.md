@@ -18,7 +18,7 @@ In this step we'll create the first one, the service account.
 For this account we will create a;
 
 1. **Terraform state backend** to store the infrastructure state
-2. **Component registry** to deploy all MACH components to
+2. **Artifact repository** to deploy all MACH components to
 
 ### 1. Create AWS account
 

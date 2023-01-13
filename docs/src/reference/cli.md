@@ -115,3 +115,50 @@ mach-composer update pim-importer v1.2.0 -c
 - `--check` Only checks for updates, doesnt change files.
 - `--commit` or `-c` Automatically commits the change.
 
+## `cloud`
+
+The `cloud` subcommand contains all of the actions you can perform against [MACH composer ☁️](../cloud/index.md).
+
+```bash
+% mach-composer cloud     
+Manage your Mach Composer Cloud
+
+Usage:
+  mach-composer cloud [flags]
+  mach-composer cloud [command]
+
+Available Commands:
+  add-organization-user       Invite a user to a specific organization
+  config                      Configure mach composer cloud
+  create-api-client           Manage your components
+  create-component            Register a new component
+  create-organization         Create a new organization
+  create-project              Create a new Project
+  describe-component-versions List all version for an existing component
+  list-api-clients            Manage your components
+  list-component-versions     List all version for an existing component
+  list-components             List your components
+  list-organization-users     List all users in an organization
+  list-organizations          List all organizations
+  list-projects               List all Projects
+  login                       Login to mach composer cloud
+  register-component-version  Register a new version for an existing component
+
+Flags:
+  -h, --help   help for cloud
+
+Global Flags:
+      --verbose   Verbose output.
+
+Use "mach-composer cloud [command] --help" for more information about a command.
+```
+
+!!! tip "Set default organization and project values"
+  
+    Most of the `cloud` commands require you to provide a `organization` and `project` parameter, so that it knows which entities to interact with. You set default settings for this as shown below.
+
+    ```bash
+    mach-composer cloud config set-organization my-org
+    mach-composer cloud config set-project my-project
+    ```
+
