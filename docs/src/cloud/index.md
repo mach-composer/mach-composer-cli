@@ -23,6 +23,8 @@ MACH composer cloud.
     *While in private Beta, we will need to manually enable your account and create 
     or add you to an organisation.*
 
+    [Get started](getting-started.md){ .md-button .md-button--primary }
+
 !!! tip "MACH composer cloud is in private beta"  
     MACH composer ☁️ is very early stage. We try to release new features as often as
     possible and work with these in our MACH projects. So take in to account a
