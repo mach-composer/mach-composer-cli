@@ -27,8 +27,7 @@ MACH composer ☁️.
     Successfully authenticated to mach composer cloud
     ```
 
-    !!! warning "We need to manually approve new accounts, as we're in private
-    beta"
+    !!! warning "Currently we're in private beta and need to manually approve new accounts."
 
 
 2. **Create an organization**
@@ -37,9 +36,7 @@ MACH composer ☁️.
     Created new organization: my-org
     ```
 
-    !!! info "You can be part of multiple organizations and also invite other
-    users to your organization by using the `mach-composer cloud
-    add-organization-user` command"
+    !!! info "You can be part of multiple organizations and also invite other users to your organization by using the `mach-composer cloud add-organization-user` command."
 
 3. **Create a project**
     ```bash
