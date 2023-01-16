@@ -86,6 +86,11 @@ nav:
   - commercetools:
     - howto/commercetools/store-vars.md
   - howto/apollo-federation.md
+- Cloud ☁️:
+  - cloud/index.md
+  - Getting started: cloud/getting-started.md
+  - Component registry: cloud/component-registry.md
+  - Autonomous deployments: cloud/autonomous-deployments.md
 
 
 extra_javascript:
