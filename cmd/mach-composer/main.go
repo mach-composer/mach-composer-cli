@@ -1,7 +1,9 @@
 package main
 
 import (
+	"context"
 	"os"
+	"os/signal"
 
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
@@ -32,6 +34,23 @@ var (
 			}
 			logger = logger.Output(cli.NewConsoleWriter())
 			log.Logger = logger
+
+			ctx, cancel := context.WithCancel(cmd.Context())
+
+			// Register a signal handler to cancel the current context
+			c := make(chan os.Signal, 1)
+			signal.Notify(c, os.Interrupt)
+
+			go func() {
+				select {
+				case <-c:
+					log.Info().Msg("Exiting...")
+					cancel()
+				case <-ctx.Done():
+				}
+			}()
+
+			cmd.SetContext(ctx)
 		},
 	}
 )

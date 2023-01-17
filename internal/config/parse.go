@@ -100,13 +100,13 @@ func loadConfig(ctx context.Context, filename string, pr *plugins.PluginReposito
 
 	// Load the plugins
 	raw.plugins = pr
-	if err := loadPlugins(raw); err != nil {
+	if err := loadPlugins(ctx, raw); err != nil {
 		return nil, err
 	}
 	return raw, nil
 }
 
-func loadPlugins(raw *rawConfig) error {
+func loadPlugins(ctx context.Context, raw *rawConfig) error {
 	if raw.plugins != nil {
 		return nil
 	}
@@ -114,7 +114,7 @@ func loadPlugins(raw *rawConfig) error {
 
 	if len(raw.MachComposer.Plugins) == 0 {
 		log.Debug().Msg("No plugins specified; loading default plugins")
-		if err := raw.plugins.LoadDefault(); err != nil {
+		if err := raw.plugins.LoadDefault(ctx); err != nil {
 			return err
 		}
 	}
@@ -124,7 +124,7 @@ func loadPlugins(raw *rawConfig) error {
 			Source:  pluginData.Source,
 			Version: pluginData.Version,
 		}
-		if err := raw.plugins.LoadPlugin(pluginName, pluginConfig); err != nil {
+		if err := raw.plugins.LoadPlugin(ctx, pluginName, pluginConfig); err != nil {
 			return err
 		}
 	}

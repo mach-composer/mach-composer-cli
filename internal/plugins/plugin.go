@@ -1,6 +1,7 @@
 package plugins
 
 import (
+	"context"
 	"fmt"
 	"hash/crc32"
 	"io"
@@ -29,7 +30,7 @@ type PluginConfig struct {
 	Version string
 }
 
-func (p *Plugin) start() error {
+func (p *Plugin) start(ctx context.Context) error {
 	if p.isRunning {
 		return nil
 	}
@@ -87,6 +88,12 @@ func (p *Plugin) start() error {
 			Checksum: pluginChecksum,
 		},
 	})
+
+	go func() {
+		<-ctx.Done()
+		log.Debug().Msg("Received cancellation")
+		p.client.Kill()
+	}()
 
 	// Connect via RPC
 	rpcClient, err := p.client.Client()

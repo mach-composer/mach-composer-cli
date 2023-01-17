@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.5.5 (2023-01-17)
+ - Properly close plugins when mach-composer is terminated (e.g. via ctrl-c)
+
 ## 2.5.4 (2023-01-12)
  - Add `--no-color` flag to `mach-composer show-plan` to use in GitHub actions
 

@@ -1,6 +1,7 @@
 package plugins
 
 import (
+	"context"
 	"fmt"
 	"strings"
 
@@ -79,7 +80,7 @@ func (p *PluginRepository) Get(name string) (*Plugin, error) {
 }
 
 // LoadPlugin will load the plugin with the given name and start it
-func (p *PluginRepository) LoadPlugin(name string, config PluginConfig) error {
+func (p *PluginRepository) LoadPlugin(ctx context.Context, name string, config PluginConfig) error {
 	if _, ok := p.plugins[name]; ok {
 		return fmt.Errorf("plugin %s is already loaded", name)
 	}
@@ -90,7 +91,7 @@ func (p *PluginRepository) LoadPlugin(name string, config PluginConfig) error {
 	}
 	p.plugins[name] = plug
 
-	if err := plug.start(); err != nil {
+	if err := plug.start(ctx); err != nil {
 		return err
 	}
 	return nil
@@ -98,9 +99,9 @@ func (p *PluginRepository) LoadPlugin(name string, config PluginConfig) error {
 
 // LoadDefault will load all the default plugins. Needed until we move to full
 // remote plugins only
-func (p *PluginRepository) LoadDefault() error {
+func (p *PluginRepository) LoadDefault(ctx context.Context) error {
 	for _, name := range localPluginNames {
-		if err := p.LoadPlugin(name, PluginConfig{}); err != nil {
+		if err := p.LoadPlugin(ctx, name, PluginConfig{}); err != nil {
 			return err
 		}
 	}
