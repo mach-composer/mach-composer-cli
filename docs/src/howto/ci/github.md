@@ -49,7 +49,6 @@ use OpenID Connect. See how this works with GitHub at
 
           - name: Prepare credentials
             run: |
-              echo ${{ secrets.ORG_REPO_TOKEN }}
               git config --global url."https://oauth2:${{ secrets.ORG_REPO_TOKEN }}@github.com".insteadOf https://github.com
 
           - name: Install terraform
@@ -104,7 +103,6 @@ use OpenID Connect. See how this works with GitHub at
 
           - name: Prepare credentials
             run: |
-              echo ${{ secrets.ORG_REPO_TOKEN }}
               git config --global url."https://oauth2:${{ secrets.ORG_REPO_TOKEN }}@github.com".insteadOf https://github.com
 
           - name: Install terraform
