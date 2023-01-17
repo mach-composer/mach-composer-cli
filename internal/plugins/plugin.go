@@ -2,6 +2,7 @@ package plugins
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"hash/crc32"
 	"io"
@@ -51,25 +52,26 @@ func (p *Plugin) start(ctx context.Context) error {
 	command := fmt.Sprintf("mach-composer-plugin-%s", p.Name)
 	args := []string{}
 
-	if pie.Contains(localPluginNames, p.Name) {
-		command = os.Args[0]
+	path, err := exec.LookPath(command)
+	if err != nil {
+		log.Debug().Msgf("Failed to find plugin %s on $PATH", command)
+		if errors.Is(err, exec.ErrNotFound) && pie.Contains(localPluginNames, p.Name) {
+			command = os.Args[0]
 
-		// If mach-composer is started from the $PATH the we need to resolve
-		// the command
-		if !strings.Contains(command, "/") {
-			path, err := exec.LookPath(command)
-			if err != nil {
-				return err
+			// If mach-composer is started from the $PATH the we need to resolve
+			// the command
+			if !strings.Contains(command, "/") {
+				path, err := exec.LookPath(command)
+				if err != nil {
+					return err
+				}
+				command = path
 			}
-			command = path
-		}
-		args = []string{"plugin", p.Name}
-	} else {
-		path, err := exec.LookPath(command)
-		if err != nil {
+			args = []string{"plugin", p.Name}
+		} else {
 			return err
 		}
-
+	} else {
 		command = path
 	}
 
