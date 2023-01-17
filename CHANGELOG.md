@@ -1,6 +1,7 @@
 # Changelog
 
 ## 2.5.5 (2023-01-17)
+ - Update the Sentry plugin to version 0.1.0
  - Properly close plugins when mach-composer is terminated (e.g. via ctrl-c)
  - Only load built-in plugins when they are not found on the $PATH
 
