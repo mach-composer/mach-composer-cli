@@ -18,7 +18,7 @@ require (
 	github.com/mach-composer/mach-composer-plugin-commercetools v0.0.8
 	github.com/mach-composer/mach-composer-plugin-contentful v0.0.6
 	github.com/mach-composer/mach-composer-plugin-sdk v0.0.6
-	github.com/mach-composer/mach-composer-plugin-sentry v0.1.0
+	github.com/mach-composer/mach-composer-plugin-sentry v0.1.1
 	github.com/mach-composer/mcc-sdk-go v0.0.3-0.20221122074702-8df13e53ecaa
 	github.com/mattn/go-isatty v0.0.17
 	github.com/olekukonko/tablewriter v0.0.5
