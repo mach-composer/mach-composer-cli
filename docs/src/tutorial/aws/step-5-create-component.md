@@ -1,5 +1,9 @@
 # Step 5. Create and deploy component
 
+{%
+   include-markdown "../../overhaul_warning.md"
+%}
+
 ## 1. Create a MACH component
 
 Create a MACH component which we can use in our MACH stack later on.

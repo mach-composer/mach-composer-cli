@@ -125,6 +125,9 @@ extra:
       icon: fontawesome/brands/github-alt
       link: 'https://labdigital.nl/'
 
+plugins:
+  - include-markdown
+
 markdown_extensions:
   - attr_list
   - admonition

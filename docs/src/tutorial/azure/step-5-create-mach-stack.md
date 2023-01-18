@@ -1,5 +1,9 @@
 # Step 5. Create your MACH composer stack
 
+{%
+   include-markdown "../../overhaul_warning.md"
+%}
+
 To create a new MACH composer configuration file, run
 
 ```bash

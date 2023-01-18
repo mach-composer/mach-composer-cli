@@ -1,11 +1,15 @@
 # Step 6. Create your MACH stack
 
+{%
+   include-markdown "../../overhaul_warning.md"
+%}
+
 ## 1. Create MACH composer configuration file
 
 To create a new MACH composer configuration file, run
 
 ```bash
-mach bootstrap config
+mach-composer bootstrap config
 ```
 
 A configuration will be created and can be used as input for MACH composer.

@@ -4,6 +4,10 @@ This documentation describes the workings of MACH composer. Intended to setup
 and manage a **M**icroservices based, **A**PI-first, **C**loud-native SaaS and
 **H**eadless platform.
 
+{%
+   include-markdown "overhaul_warning.md"
+%}
+
 ## What is it?
 
 MACH composer is a framework that you use to orchestrate and extend modern
