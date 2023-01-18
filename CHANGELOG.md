@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.5.7 (2023-01-18)
+ - Update the Commercetools plugin to version 0.1.0. This version is compatible
+   with more recent commercetools terraform providers.
+
 ## 2.5.6 (2023-01-17)
  - Update the Sentry plugin to version 0.1.1. This allows using encrypted
    secrets for the auth token
