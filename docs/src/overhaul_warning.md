@@ -9,9 +9,9 @@
     harder to start up. However, based on the [examples in the Github repository](https://github.com/labd/mach-composer/tree/main/examples),
     you should be able to get started without the `bootstrap` command.
 
-    For creating componens, please instead of `mach-composer bootstrap`, use [mach-composer-cookiecutter](https://github.com/labd/mach-component-cookiecutter).
+    For creating components, please instead of `mach-composer bootstrap component`, use [mach-composer-cookiecutter](https://github.com/labd/mach-component-cookiecutter).
 
     **We do currently recommend to use the latest version (2.5.x).**
 
-    If you are still on the Python version, the below tutorial should still work.
+    If you are still on the Python version, the `bootstrap` command will still work.
 
