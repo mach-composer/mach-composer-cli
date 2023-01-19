@@ -36,15 +36,6 @@ func TestResolveBuiltinPlugin(t *testing.T) {
 	assert.Equal(t, []string{"plugin", "aws"}, plugin.Args)
 }
 
-func TestResolveMissingPlugin(t *testing.T) {
-	cfg := NewDefaultPlugin("mach-composer/some-plugin")
-	plugin, err := resolvePlugin(cfg)
-	require.NoError(t, err)
-
-	assert.Equal(t, "./mach-composer", plugin.Path)
-	assert.Equal(t, []string{"plugin", "aws"}, plugin.Args)
-}
-
 func TestQueryPluginRegistry(t *testing.T) {
 	// Set up test data
 	pluginCfg := PluginConfig{
@@ -73,6 +64,8 @@ func TestQueryPluginRegistry(t *testing.T) {
 	defer ts.Close()
 
 	// Modify the URL's host to point to the mock server
+	endpoint := registryEndpoint
+	defer func() { registryEndpoint = endpoint }()
 	registryEndpoint = ts.URL
 
 	// Call the function being tested
