@@ -134,7 +134,6 @@ func createAuthHandler(ctx context.Context, options *Options) (authhandler.Autho
 // the global LocalPortStart and LocalPortEnd range.
 func getAvailableListener() (net.Listener, error) {
 	for port := LocalPortStart; port <= LocalPortEnd; port++ {
-
 		// Listen on 127.0.0.1, using `localhost` here can result into issues
 		// on windows.
 		addr := fmt.Sprintf("127.0.0.1:%d", port)

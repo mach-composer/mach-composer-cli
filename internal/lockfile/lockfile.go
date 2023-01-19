@@ -51,10 +51,7 @@ func (lf *LockFile) HasChanges(cfg *config.MachConfig) bool {
 	}
 
 	md := cli.GetVersionMetadata()
-	if md.Version != lf.Version {
-		return true
-	}
-	return false
+	return md.Version != lf.Version
 }
 
 func (lf *LockFile) Write() error {

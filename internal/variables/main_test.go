@@ -2,7 +2,7 @@ package variables
 
 import (
 	"context"
-	"io/ioutil"
+	"os"
 	"testing"
 
 	"github.com/spf13/afero"
@@ -42,7 +42,7 @@ func TestNewVariablesFromFile(t *testing.T) {
 }
 
 func TestEncryptedVariables(t *testing.T) {
-	content, err := ioutil.ReadFile("testdata/secrets.enc.yaml")
+	content, err := os.ReadFile("testdata/secrets.enc.yaml")
 	require.NoError(t, err)
 
 	utils.FS = afero.NewMemMapFs()
