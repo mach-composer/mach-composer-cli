@@ -12,6 +12,8 @@ import (
 	"github.com/mach-composer/mach-composer-plugin-sdk/protocol"
 	"github.com/mach-composer/mach-composer-plugin-sdk/schema"
 	"github.com/rs/zerolog/log"
+
+	"github.com/labd/mach-composer/internal/utils"
 )
 
 type Plugin struct {
@@ -87,9 +89,9 @@ func (p *Plugin) start(ctx context.Context) error {
 
 func getPluginChecksum(filePath string) ([]byte, error) {
 	h := crc32.NewIEEE()
-	file, err := os.Open(filePath)
+	file, err := utils.AFS.Open(filePath)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to get checksum of file: %w", err)
 	}
 	defer file.Close()
 

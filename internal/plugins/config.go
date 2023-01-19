@@ -28,3 +28,7 @@ func (pc PluginConfig) path() string {
 		fmt.Sprintf("%s_%s", runtime.GOOS, runtime.GOARCH),
 		pc.name())
 }
+
+func NewDefaultPlugin(name string) PluginConfig {
+	return PluginConfig{Source: name, Version: "builtin"}
+}

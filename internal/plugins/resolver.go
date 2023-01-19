@@ -18,6 +18,8 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
+var registryEndpoint = "http://registry.mcc.labd.io"
+
 var rePluginName = regexp.MustCompile("(?i)^([a-z0-9_-]+)/([a-z0-9_-]+)$")
 
 type pluginExecutable struct {
@@ -26,7 +28,7 @@ type pluginExecutable struct {
 	Args     []string // Backwards compatible
 }
 
-type registyrResponse struct {
+type registryResponse struct {
 	URL string `json:"url"`
 }
 
@@ -48,7 +50,7 @@ func resolvePlugin(pluginCfg PluginConfig) (*pluginExecutable, error) {
 	if _, err := os.Stat(pluginCfg.path()); err != nil {
 		log.Debug().Msgf("Plugin %s %s not found, trying to download", pluginCfg.name(), pluginCfg.Version)
 		if err := downloadPlugin(pluginCfg); err != nil {
-			return nil, err
+			return nil, fmt.Errorf("failed to download plugin %s: %w", pluginCfg.name(), err)
 		}
 	}
 
@@ -78,7 +80,7 @@ func downloadPlugin(pluginCfg PluginConfig) error {
 	if err != nil {
 		return fmt.Errorf("failed to create temporary dir: %w", err)
 	}
-	// defer os.RemoveAll(tempDir)
+	defer os.RemoveAll(tempDir)
 
 	client := getter.Client{
 		DisableSymlinks: true,
@@ -108,19 +110,20 @@ func downloadPlugin(pluginCfg PluginConfig) error {
 	return nil
 }
 
-func queryPluginRegistry(pluginCfg PluginConfig) (*registyrResponse, error) {
+func queryPluginRegistry(pluginCfg PluginConfig) (*registryResponse, error) {
 	params := url.Values{
 		"version": {pluginCfg.Version},
 		"os":      {runtime.GOOS},
 		"arch":    {runtime.GOARCH},
 	}
 
-	u := url.URL{
-		Scheme:   "https",
-		Host:     "registry.mcc.labd.io",
-		Path:     fmt.Sprintf("/v1/plugins/%s", strings.ToLower(pluginCfg.Source)),
-		RawQuery: params.Encode(),
+	u, err := url.Parse(registryEndpoint)
+	if err != nil {
+		return nil, fmt.Errorf("internal error: %w", err)
 	}
+
+	u.Path = fmt.Sprintf("/v1/plugins/%s", strings.ToLower(pluginCfg.Source))
+	u.RawQuery = params.Encode()
 
 	client := retryablehttp.NewClient()
 	client.Logger = NewHCLogAdapter(log.Logger)
@@ -136,7 +139,7 @@ func queryPluginRegistry(pluginCfg PluginConfig) (*registyrResponse, error) {
 		return nil, fmt.Errorf("Plugin does not exist")
 	}
 
-	info := &registyrResponse{}
+	info := &registryResponse{}
 	if err := json.NewDecoder(r.Body).Decode(info); err != nil {
 		return nil, err
 	}
