@@ -18,7 +18,7 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-var registryEndpoint = "http://registry.mcc.labd.io"
+var registryEndpoint = "https://registry.mach.cloud"
 
 var rePluginName = regexp.MustCompile("(?i)^([a-z0-9_-]+)/([a-z0-9_-]+)$")
 
