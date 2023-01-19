@@ -13,6 +13,6 @@ var versionCmd = &cobra.Command{
 	Short: "Return version information of the mach-composer cli",
 	Run: func(cmd *cobra.Command, args []string) {
 		md := cli.GetVersionMetadata()
-		fmt.Printf(md.String())
+		fmt.Println(md.String())
 	},
 }
