@@ -101,7 +101,7 @@ func (p *PluginRepository) LoadPlugin(ctx context.Context, name string, config P
 // remote plugins only
 func (p *PluginRepository) LoadDefault(ctx context.Context) error {
 	for _, name := range localPluginNames {
-		pluginConfig := PluginConfig{Source: name, Version: "builtin"}
+		pluginConfig := NewDefaultPlugin(name)
 		if err := p.LoadPlugin(ctx, name, pluginConfig); err != nil {
 			return err
 		}
