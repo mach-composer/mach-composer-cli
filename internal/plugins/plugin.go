@@ -2,15 +2,12 @@ package plugins
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"hash/crc32"
 	"io"
 	"os"
-	"os/exec"
 	"strings"
 
-	"github.com/elliotchance/pie/v2"
 	"github.com/hashicorp/go-plugin"
 	"github.com/mach-composer/mach-composer-plugin-sdk/protocol"
 	"github.com/mach-composer/mach-composer-plugin-sdk/schema"
@@ -24,11 +21,6 @@ type Plugin struct {
 	client    *plugin.Client
 	isRunning bool
 	config    PluginConfig
-}
-
-type PluginConfig struct {
-	Source  string
-	Version string
 }
 
 func (p *Plugin) start(ctx context.Context) error {
@@ -49,33 +41,7 @@ func (p *Plugin) start(ctx context.Context) error {
 
 	logger := NewHCLogAdapter(log.Logger)
 
-	command := fmt.Sprintf("mach-composer-plugin-%s", p.Name)
-	args := []string{}
-
-	path, err := exec.LookPath(command)
-	if err != nil {
-		log.Debug().Msgf("Failed to find plugin %s on $PATH", command)
-		if errors.Is(err, exec.ErrNotFound) && pie.Contains(localPluginNames, p.Name) {
-			command = os.Args[0]
-
-			// If mach-composer is started from the $PATH the we need to resolve
-			// the command
-			if !strings.Contains(command, "/") {
-				path, err := exec.LookPath(command)
-				if err != nil {
-					return err
-				}
-				command = path
-			}
-			args = []string{"plugin", p.Name}
-		} else {
-			return err
-		}
-	} else {
-		command = path
-	}
-
-	pluginChecksum, err := getPluginChecksum(command)
+	executable, err := resolvePlugin(p.config)
 	if err != nil {
 		return err
 	}
@@ -83,11 +49,11 @@ func (p *Plugin) start(ctx context.Context) error {
 	p.client = plugin.NewClient(&plugin.ClientConfig{
 		HandshakeConfig: protocol.HandShakeConfig(),
 		Plugins:         pluginMap,
-		Cmd:             exec.Command(command, args...),
+		Cmd:             executable.command(),
 		Logger:          logger,
 		SecureConfig: &plugin.SecureConfig{
 			Hash:     crc32.NewIEEE(),
-			Checksum: pluginChecksum,
+			Checksum: executable.Checksum,
 		},
 	})
 
