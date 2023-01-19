@@ -57,7 +57,7 @@ func (p *PluginRepository) All() []Plugin {
 	return result
 }
 
-// Add an existing plugin to the repository. Mostly used for testing purposes
+// Add an existing plugin to the repository. Only used for testing purposes
 func (p *PluginRepository) Add(name string, plugin schema.MachComposerPlugin) error {
 	p.plugins[name] = &Plugin{
 		MachComposerPlugin: plugin,
@@ -101,7 +101,8 @@ func (p *PluginRepository) LoadPlugin(ctx context.Context, name string, config P
 // remote plugins only
 func (p *PluginRepository) LoadDefault(ctx context.Context) error {
 	for _, name := range localPluginNames {
-		if err := p.LoadPlugin(ctx, name, PluginConfig{}); err != nil {
+		pluginConfig := PluginConfig{Source: name, Version: "builtin"}
+		if err := p.LoadPlugin(ctx, name, pluginConfig); err != nil {
 			return err
 		}
 	}
