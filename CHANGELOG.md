@@ -1,5 +1,22 @@
 # Changelog
 
+## 2.6.0 (2023-01-20)
+ - Add optional support to automatically download MACH composer plugins when
+   defined in the config file. For example::
+
+    mach_composer:
+      version: 1
+      plugins:
+        aws:
+          source: mach-composer/aws
+          version: 0.1.0
+        sentry:
+          source: mach-composer/sentry
+          version: 0.1.2
+
+   Will download the plugins to your local plugin directory if these are not
+   found.
+
 ## 2.5.7 (2023-01-18)
  - Update the Commercetools plugin to version 0.1.0. This version is compatible
    with more recent commercetools terraform providers.
