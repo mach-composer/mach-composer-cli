@@ -1,9 +1,7 @@
 package cloudcmd
 
 import (
-	"errors"
 	"fmt"
-	"net/url"
 	"os"
 	"path"
 
@@ -11,7 +9,6 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
-	"golang.org/x/oauth2"
 
 	"github.com/labd/mach-composer/internal/cloud"
 )
@@ -29,43 +26,10 @@ var cloudLoginCmd = &cobra.Command{
 	Short: "Login to mach composer cloud",
 	RunE: func(cmd *cobra.Command, args []string) error {
 
-		authConfig := oauth2.Config{
-			Scopes:   []string{"openid"},
-			ClientID: cliClientID,
-			Endpoint: getAuthEndpoint(),
+		if err := cloud.Login(cmd.Context()); err != nil {
+			return err
 		}
-
-		successURL, err := url.JoinPath(viper.GetString("auth-url"), "/success")
-		if err != nil {
-			cmd.Println("Invalid authentication url set")
-			os.Exit(1)
-		}
-
-		token, err := cloud.StartAuthentication(cmd.Context(), authConfig, &cloud.Options{
-			CompletedRedirect: successURL,
-		})
-		if err != nil {
-			if errors.Is(err, cloud.ErrAuthNotCompleted) {
-				cmd.Println("Authentication not completed")
-				os.Exit(1)
-			}
-			if errors.Is(err, cloud.ErrAuthTimeout) {
-				fmt.Println(err.Error())
-				os.Exit(1)
-			}
-			cmd.Println("Error occured during authentication:", err)
-			os.Exit(1)
-		}
-
-		if token.AccessToken != "" {
-			viper.Set("token.access", token.AccessToken)
-			viper.Set("token.refresh", token.RefreshToken)
-			viper.Set("token.expiry", token.Expiry)
-			if err := viper.WriteConfig(); err != nil {
-				cmd.PrintErrln(err)
-			}
-			cmd.Println("Successfully authenticated to mach composer cloud")
-		}
+		cmd.Println("Successfully authenticated to mach composer cloud")
 		return nil
 	},
 }

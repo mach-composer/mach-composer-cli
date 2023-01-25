@@ -1,79 +1,18 @@
 package cloudcmd
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
 	"io"
-	"net/http"
-	"net/url"
 	"os"
 
 	"github.com/mach-composer/mcc-sdk-go/mccsdk"
 	"github.com/olekukonko/tablewriter"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
-	"golang.org/x/oauth2"
-	"golang.org/x/oauth2/clientcredentials"
 
 	"github.com/labd/mach-composer/internal/cli"
-	"github.com/labd/mach-composer/internal/cloud"
-	"github.com/labd/mach-composer/internal/utils"
 )
 
-func getClient(cmd *cobra.Command) (*mccsdk.APIClient, context.Context) {
-	ctx := cmd.Context()
-	cfg := &cloud.ClientConfig{
-		URL: viper.GetString("api-url"),
-		HTTPClient: &http.Client{
-			Transport: utils.DebugTransport,
-		},
-	}
-
-	clientID := os.Getenv("MCC_CLIENT_ID")
-	clientSecret := os.Getenv("MCC_CLIENT_SECRET")
-	endpoints := getAuthEndpoint()
-
-	if clientID != "" && clientSecret != "" {
-		oauth2Config := &clientcredentials.Config{
-			ClientID:     clientID,
-			ClientSecret: clientSecret,
-			Scopes:       []string{},
-			TokenURL:     endpoints.TokenURL,
-		}
-		cfg.HTTPClient = oauth2Config.Client(
-			context.WithValue(ctx, oauth2.HTTPClient, cfg.HTTPClient))
-	} else {
-		oauth2Config := &oauth2.Config{
-			ClientID: cliClientID,
-			Endpoint: endpoints,
-		}
-
-		token := &oauth2.Token{
-			AccessToken:  viper.GetString("token.access"),
-			RefreshToken: viper.GetString("token.refresh"),
-			Expiry:       viper.GetTime("token.expiry"),
-		}
-		ctx := context.WithValue(ctx, oauth2.HTTPClient, cfg.HTTPClient)
-		cfg.HTTPClient = oauth2Config.Client(ctx, token)
-	}
-
-	client := cloud.NewClient(cfg)
-	return client, ctx
-}
-
-func getAuthEndpoint() oauth2.Endpoint {
-	result := oauth2.Endpoint{}
-	baseURL := viper.GetString("auth-url")
-
-	if url, err := url.JoinPath(baseURL, "/authorize"); err == nil {
-		result.AuthURL = url
-	}
-	if url, err := url.JoinPath(baseURL, "/oauth/token"); err == nil {
-		result.TokenURL = url
-	}
-	return result
-}
 
 func handleError(err error) error {
 	if openApiErr, ok := err.(*mccsdk.GenericOpenAPIError); ok {

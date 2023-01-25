@@ -9,17 +9,19 @@ import (
 	"github.com/labd/mach-composer/internal/cloud"
 )
 
-const cliClientID = "b0b9ccbd-0613-4ccf-86a1-dab07b8b5619"
-
 var componentCreateCmd = &cobra.Command{
 	Use:   "create-component [name]",
 	Short: "Register a new component",
 	Args:  cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
+		ctx := cmd.Context()
 		organization := MustGetString(cmd, "organization")
 		project := MustGetString(cmd, "project")
 
-		client, ctx := getClient(cmd)
+		client, err := cloud.NewClient(ctx)
+		if err != nil {
+			return err
+		}
 		resource, _, err := client.
 			ComponentsApi.
 			ComponentCreate(ctx, organization, project).
@@ -39,10 +41,14 @@ var componentListCmd = &cobra.Command{
 	Use:   "list-components",
 	Short: "List your components",
 	RunE: func(cmd *cobra.Command, args []string) error {
+		ctx := cmd.Context()
 		organization := MustGetString(cmd, "organization")
 		project := MustGetString(cmd, "project")
 
-		client, ctx := getClient(cmd)
+		client, err := cloud.NewClient(ctx)
+		if err != nil {
+			return err
+		}
 		paginator, _, err := (client.
 			ComponentsApi.
 			ComponentQuery(ctx, organization, project).
@@ -84,7 +90,10 @@ var componentRegisterVersionCmd = &cobra.Command{
 			return err
 		}
 
-		client, ctx := getClient(cmd)
+		client, err := cloud.NewClient(ctx)
+		if err != nil {
+			return err
+		}
 
 		if !auto {
 			if len(args) < 2 {
@@ -121,12 +130,17 @@ var componentListVersionCmd = &cobra.Command{
 	Short: "List all version for an existing component",
 	Args:  cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
+		ctx := cmd.Context()
 		componentKey := args[0]
 
 		organization := MustGetString(cmd, "organization")
 		project := MustGetString(cmd, "project")
 
-		client, ctx := getClient(cmd)
+		client, err := cloud.NewClient(ctx)
+		if err != nil {
+			return err
+		}
+
 		paginator, _, err := client.
 			ComponentsApi.
 			ComponentVersionQuery(ctx, organization, project, componentKey).
@@ -157,13 +171,17 @@ var componentDescribeVersionCmd = &cobra.Command{
 	Short: "List all version for an existing component",
 	Args:  cobra.ExactArgs(2),
 	RunE: func(cmd *cobra.Command, args []string) error {
+		ctx := cmd.Context()
 		key := args[0]
 		version := args[1]
 
 		organization := MustGetString(cmd, "organization")
 		project := MustGetString(cmd, "project")
 
-		client, ctx := getClient(cmd)
+		client, err := cloud.NewClient(ctx)
+		if err != nil {
+			return err
+		}
 		paginator, _, err := client.
 			ComponentsApi.
 			ComponentVersionQueryCommits(ctx, organization, project, key, version).
