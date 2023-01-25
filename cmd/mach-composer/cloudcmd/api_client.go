@@ -28,7 +28,7 @@ var listApiClientCmd = &cobra.Command{
 			Execute())
 
 		if err != nil {
-			return handleError(err)
+			return err
 		}
 
 		data := make([][]string, len(paginator.Results))
@@ -52,7 +52,6 @@ var listApiClientCmd = &cobra.Command{
 			[]string{"Created At", "Client ID", "Client Secret", "Last Used", "Description", "Scopes"},
 			data,
 		)
-
 		return nil
 	},
 }
@@ -78,13 +77,12 @@ var createApiClientCmd = &cobra.Command{
 			Execute())
 
 		if err != nil {
-			return handleError(err)
+			return err
 		}
 
 		cmd.Printf("Client ID: %s\n", resource.ClientId)
 		cmd.Printf("Client Secret: %s\n", resource.ClientSecret)
 		cmd.Printf("Scopes: %s\n", strings.Join(resource.Scope, " "))
-
 		return nil
 	},
 }

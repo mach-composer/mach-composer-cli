@@ -1,44 +1,13 @@
 package cloudcmd
 
 import (
-	"encoding/json"
 	"fmt"
 	"io"
 	"os"
 
-	"github.com/mach-composer/mcc-sdk-go/mccsdk"
 	"github.com/olekukonko/tablewriter"
 	"github.com/spf13/cobra"
-
-	"github.com/labd/mach-composer/internal/cli"
 )
-
-
-func handleError(err error) error {
-	if openApiErr, ok := err.(*mccsdk.GenericOpenAPIError); ok {
-		remoteErr := openApiErr.Model()
-		if svcErr, ok := remoteErr.(mccsdk.Error); ok {
-			cli.PrintExitError("Error during API", svcErr.GetError())
-		} else {
-			var errorMsg string
-
-			errorData := struct {
-				Message string `json:"message"`
-			}{}
-			if err := json.Unmarshal(openApiErr.Body(), &errorData); err == nil {
-				errorMsg = errorData.Message
-			} else {
-				errorMsg = openApiErr.Error()
-			}
-			fmt.Println("Server returned an error:", errorMsg)
-		}
-	} else {
-		cli.PrintExitError("Server error", err.Error())
-	}
-
-	os.Exit(1)
-	return nil
-}
 
 func Must(err error) {
 	if err != nil {

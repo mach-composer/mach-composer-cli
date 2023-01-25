@@ -25,7 +25,7 @@ var listProjectCmd = &cobra.Command{
 			ProjectQuery(ctx, organization).
 			Execute())
 		if err != nil {
-			return handleError(err)
+			return err
 		}
 
 		data := make([][]string, len(paginator.Results))
@@ -65,7 +65,7 @@ var createProjectCmd = &cobra.Command{
 			}).
 			Execute())
 		if err != nil {
-			return handleError(err)
+			return err
 		}
 
 		cmd.Printf("Created new project: %s\n", resource.GetKey())
