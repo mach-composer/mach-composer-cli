@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.6.1 (2023-01-25)
+ - Fix authentication flow with Mach Composer Cloud and store the refreshed
+   tokens correctly.
+
 ## 2.6.0 (2023-01-20)
  - Add optional support to automatically download MACH composer plugins when
    defined in the config file. For example::
