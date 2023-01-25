@@ -6,16 +6,22 @@ import (
 
 	"github.com/mach-composer/mcc-sdk-go/mccsdk"
 	"github.com/spf13/cobra"
+
+	"github.com/labd/mach-composer/internal/cloud"
 )
 
 var listApiClientCmd = &cobra.Command{
 	Use:   "list-api-clients",
 	Short: "List existing API clients (without secret)",
 	RunE: func(cmd *cobra.Command, args []string) error {
+		ctx := cmd.Context()
 		organization := MustGetString(cmd, "organization")
 		project := MustGetString(cmd, "project")
 
-		client, ctx := getClient(cmd)
+		client, err := cloud.NewClient(ctx)
+		if err != nil {
+			return err
+		}
 		paginator, _, err := (client.
 			APIClientsApi.
 			ApiClientQuery(ctx, organization, project).
@@ -55,10 +61,14 @@ var createApiClientCmd = &cobra.Command{
 	Use:   "create-api-client",
 	Short: "Manage your components",
 	RunE: func(cmd *cobra.Command, args []string) error {
+		ctx := cmd.Context()
 		organization := MustGetString(cmd, "organization")
 		project := MustGetString(cmd, "project")
 
-		client, ctx := getClient(cmd)
+		client, err := cloud.NewClient(ctx)
+		if err != nil {
+			return err
+		}
 		resource, _, err := (client.
 			APIClientsApi.
 			ApiClientCreate(ctx, organization, project).

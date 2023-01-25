@@ -5,15 +5,21 @@ import (
 
 	"github.com/mach-composer/mcc-sdk-go/mccsdk"
 	"github.com/spf13/cobra"
+
+	"github.com/labd/mach-composer/internal/cloud"
 )
 
 var listProjectCmd = &cobra.Command{
 	Use:   "list-projects",
 	Short: "List all Projects",
 	RunE: func(cmd *cobra.Command, args []string) error {
+		ctx := cmd.Context()
 		organization := MustGetString(cmd, "organization")
 
-		client, ctx := getClient(cmd)
+		client, err := cloud.NewClient(ctx)
+		if err != nil {
+			return err
+		}
 		paginator, _, err := (client.
 			AccountManagementApi.
 			ProjectQuery(ctx, organization).
@@ -40,11 +46,16 @@ var createProjectCmd = &cobra.Command{
 	Short: "Create a new Project",
 	Args:  cobra.ExactArgs(2),
 	RunE: func(cmd *cobra.Command, args []string) error {
+		ctx := cmd.Context()
 		organization := MustGetString(cmd, "organization")
 		key := args[0]
 		name := args[1]
 
-		client, ctx := getClient(cmd)
+		client, err := cloud.NewClient(ctx)
+		if err != nil {
+			return err
+		}
+
 		resource, _, err := (client.
 			AccountManagementApi.
 			ProjectCreate(ctx, organization).

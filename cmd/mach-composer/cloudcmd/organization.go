@@ -6,13 +6,20 @@ import (
 
 	"github.com/mach-composer/mcc-sdk-go/mccsdk"
 	"github.com/spf13/cobra"
+
+	"github.com/labd/mach-composer/internal/cloud"
 )
 
 var listOrganizationCmd = &cobra.Command{
 	Use:   "list-organizations",
 	Short: "List all organizations",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		client, ctx := getClient(cmd)
+		ctx := cmd.Context()
+
+		client, err := cloud.NewClient(ctx)
+		if err != nil {
+			return err
+		}
 
 		paginator, _, err := (client.
 			AccountManagementApi.
@@ -39,12 +46,16 @@ var createOrganizationCmd = &cobra.Command{
 	Use:   "create-organization",
 	Short: "Create a new organization",
 	RunE: func(cmd *cobra.Command, args []string) error {
+		ctx := cmd.Context()
 		organizationDraft := mccsdk.OrganizationDraft{
 			Name: MustGetString(cmd, "name"),
 			Key:  MustGetString(cmd, "key"),
 		}
 
-		client, ctx := getClient(cmd)
+		client, err := cloud.NewClient(ctx)
+		if err != nil {
+			return err
+		}
 
 		resource, _, err := (client.
 			AccountManagementApi.
@@ -64,8 +75,13 @@ var listOrganizationUsersCmd = &cobra.Command{
 	Use:   "list-organization-users",
 	Short: "List all users in an organization",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		client, ctx := getClient(cmd)
+		ctx := cmd.Context()
 		organization := MustGetString(cmd, "organization")
+
+		client, err := cloud.NewClient(ctx)
+		if err != nil {
+			return err
+		}
 
 		paginator, _, err := (client.
 			AccountManagementApi.
@@ -101,11 +117,16 @@ var addOrganizationUsersCmd = &cobra.Command{
 	Short: "Invite a user to a specific organization",
 	Args:  cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
+		ctx := cmd.Context()
 		email := args[0]
 		organization := MustGetString(cmd, "organization")
 
-		client, ctx := getClient(cmd)
-		_, _, err := (client.
+		client, err := cloud.NewClient(ctx)
+		if err != nil {
+			return err
+		}
+
+		_, _, err = (client.
 			AccountManagementApi.
 			OrganizationUserInvite(ctx, organization).
 			OrganizationUserInviteDraft(mccsdk.OrganizationUserInviteDraft{
