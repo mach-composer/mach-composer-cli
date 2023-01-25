@@ -21,6 +21,9 @@ var (
 			`extend modern digital commerce & experience platforms, based on MACH ` +
 			`technologies and cloud native services.`,
 		PersistentPreRun: func(cmd *cobra.Command, args []string) {
+			cmd.Root().SilenceUsage = true
+			cmd.Root().SilenceErrors = true
+
 			verbose, err := cmd.Flags().GetBool("verbose")
 			if err != nil {
 				panic(err)
@@ -57,6 +60,9 @@ var (
 
 func main() {
 	if err := rootCmd.Execute(); err != nil {
+		if rootCmd.SilenceErrors {
+			cli.HandleErr(err)
+		}
 		os.Exit(1)
 	}
 }

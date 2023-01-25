@@ -26,7 +26,7 @@ var listOrganizationCmd = &cobra.Command{
 			OrganizationQuery(ctx).
 			Execute())
 		if err != nil {
-			return handleError(err)
+			return err
 		}
 
 		data := make([][]string, len(paginator.Results))
@@ -63,7 +63,7 @@ var createOrganizationCmd = &cobra.Command{
 			OrganizationDraft(organizationDraft).
 			Execute())
 		if err != nil {
-			return handleError(err)
+			return err
 		}
 
 		cmd.Printf("Created new organization: %s\n", resource.GetKey())
@@ -88,7 +88,7 @@ var listOrganizationUsersCmd = &cobra.Command{
 			OrganizationUserQuery(ctx, organization).
 			Execute())
 		if err != nil {
-			return handleError(err)
+			return err
 		}
 
 		for i, record := range paginator.Results {
@@ -134,7 +134,7 @@ var addOrganizationUsersCmd = &cobra.Command{
 			}).
 			Execute())
 		if err != nil {
-			return handleError(err)
+			return err
 		}
 
 		cmd.Println("User added to organization")

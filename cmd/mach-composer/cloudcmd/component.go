@@ -30,7 +30,7 @@ var componentCreateCmd = &cobra.Command{
 			}).
 			Execute()
 		if err != nil {
-			return handleError(err)
+			return err
 		}
 		cmd.Printf("Created new component: %s\n", resource.GetKey())
 		return nil
@@ -55,7 +55,7 @@ var componentListCmd = &cobra.Command{
 			Execute())
 
 		if err != nil {
-			return handleError(err)
+			return err
 		}
 
 		data := make([][]string, len(paginator.Results))
@@ -70,7 +70,6 @@ var componentListCmd = &cobra.Command{
 			[]string{"Created At", "Key"},
 			data,
 		)
-
 		return nil
 	},
 }
@@ -80,6 +79,7 @@ var componentRegisterVersionCmd = &cobra.Command{
 	Short: "Register a new version for an existing component",
 	Args:  cobra.MinimumNArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
+		ctx := cmd.Context()
 		componentKey := args[0]
 
 		organization := MustGetString(cmd, "organization")
@@ -109,7 +109,7 @@ var componentRegisterVersionCmd = &cobra.Command{
 				}).
 				Execute()
 			if err != nil {
-				return handleError(err)
+				return err
 			}
 			cmd.Printf("Created new version for component %s: %s\n",
 				resource.GetComponent(), resource.GetVersion())
@@ -117,10 +117,9 @@ var componentRegisterVersionCmd = &cobra.Command{
 		} else {
 			_, err := cloud.AutoRegisterVersion(ctx, client, organization, project, componentKey)
 			if err != nil {
-				return handleError(err)
+				return err
 			}
 		}
-
 		return nil
 	},
 }
@@ -146,7 +145,7 @@ var componentListVersionCmd = &cobra.Command{
 			ComponentVersionQuery(ctx, organization, project, componentKey).
 			Execute()
 		if err != nil {
-			return handleError(err)
+			return err
 		}
 
 		data := make([][]string, len(paginator.Results))
@@ -187,7 +186,7 @@ var componentDescribeVersionCmd = &cobra.Command{
 			ComponentVersionQueryCommits(ctx, organization, project, key, version).
 			Execute()
 		if err != nil {
-			return handleError(err)
+			return err
 		}
 
 		data := make([][]string, len(paginator.Results))
