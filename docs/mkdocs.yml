@@ -127,6 +127,9 @@ extra:
 
 plugins:
   - include-markdown
+  - search:
+      lang: en
+
 
 markdown_extensions:
   - attr_list
