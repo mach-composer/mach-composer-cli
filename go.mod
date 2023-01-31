@@ -16,7 +16,7 @@ require (
 	github.com/mach-composer/mach-composer-plugin-amplience v0.0.4
 	github.com/mach-composer/mach-composer-plugin-aws v0.0.4
 	github.com/mach-composer/mach-composer-plugin-azure v0.0.7
-	github.com/mach-composer/mach-composer-plugin-commercetools v0.1.0
+	github.com/mach-composer/mach-composer-plugin-commercetools v0.1.1
 	github.com/mach-composer/mach-composer-plugin-contentful v0.0.6
 	github.com/mach-composer/mach-composer-plugin-sdk v0.0.6
 	github.com/mach-composer/mach-composer-plugin-sentry v0.1.1
@@ -76,7 +76,7 @@ require (
 	github.com/jmespath/go-jmespath v0.0.0-20160202185014-0b12d6b521d8 // indirect
 	github.com/kevinburke/ssh_config v1.2.0 // indirect
 	github.com/klauspost/compress v1.11.2 // indirect
-	github.com/mach-composer/mach-composer-plugin-helpers v0.0.2 // indirect
+	github.com/mach-composer/mach-composer-plugin-helpers v0.0.3 // indirect
 	github.com/magiconair/properties v1.8.6 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-runewidth v0.0.14 // indirect
