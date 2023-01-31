@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.6.2 (2023-01-31)
+ - Update the commercetools built-in plugin to v0.1.1.
+   - Fix invalid rendering of store variables in the generated terraform files.
+   - Fix explicitly disabling the creation of frontend credentials.
+   - Fix setting store_secrets and store_variablds in the commercetools block
+
 ## 2.6.1 (2023-01-25)
  - Fix authentication flow with Mach Composer Cloud and store the refreshed
    tokens correctly.
