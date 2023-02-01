@@ -55,4 +55,52 @@ func TestRenderSite(t *testing.T) {
 	body, err := renderSite(cfg, &cfg.Sites[0])
 	assert.NoError(t, err)
 	assert.NotEmpty(t, body)
+	assert.NotContains(t, body, "source = \"carlpett/sops\"")
+}
+
+
+func TestIncludeSopsFlag(t *testing.T) {
+	content := []byte(utils.TrimIndent(`
+	---
+	mach_composer:
+	  version: 1.0.0
+	  plugins: {}
+	global:
+	  environment: test
+	  terraform_config: 
+	  	include_sops: True
+	  cloud: "aws"
+	sites:
+	- identifier: my-site
+	  components:
+	  - name: your-component
+		variables:
+		  FOO_VAR: my-value
+		secrets:
+		  MY_SECRET: secretvalue
+	components:
+	- name: your-component
+	  source: "git::https://github.com/<username>/<your-component>.git//terraform"
+	  version: 0.1.0
+`))
+	utils.FS = afero.NewMemMapFs()
+	utils.AFS = &afero.Afero{Fs: utils.FS}
+
+	err := utils.AFS.WriteFile("main.yml", []byte(content), 0644)
+	require.NoError(t, err)
+
+	pr := plugins.NewPluginRepository()
+	err = pr.Add("aws", plugins.NewMockPlugin())
+	require.NoError(t, err)
+
+	cfg, err := config.Open(
+		context.Background(), "main.yml", &config.ConfigOptions{
+			Plugins: pr,
+		})
+	require.NoError(t, err)
+
+	body, err := renderSite(cfg, &cfg.Sites[0])
+	assert.NoError(t, err)
+	assert.NotEmpty(t, body)
+	assert.Contains(t, body, "source = \"carlpett/sops\"")
 }

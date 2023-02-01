@@ -158,6 +158,7 @@ type Component struct {
 
 type TerraformConfig struct {
 	Providers   map[string]string `yaml:"providers"`
+	IncludeSops bool `yaml:"include_sops"`
 	RemoteState map[string]string `yaml:"remote_state"`
 }
 

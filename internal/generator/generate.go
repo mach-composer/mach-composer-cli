@@ -75,6 +75,11 @@ func renderTerraformConfig(cfg *config.MachConfig, site *config.SiteConfig) (str
 		}
 	}
 
+	includeSops := false
+	if cfg.Global.TerraformConfig.IncludeSops{
+		includeSops = cfg.Global.TerraformConfig.IncludeSops
+	}
+
 	template := `
 		terraform {
 			{{ .BackendConfig }}
@@ -100,7 +105,7 @@ func renderTerraformConfig(cfg *config.MachConfig, site *config.SiteConfig) (str
 	}{
 		Providers:     providers,
 		BackendConfig: backendConfig,
-		IncludeSOPS:   cfg.Variables.HasEncrypted(site.Identifier),
+		IncludeSOPS:   cfg.Variables.HasEncrypted(site.Identifier) || includeSops,
 	}
 	return renderGoTemplate(template, templateContext)
 }
