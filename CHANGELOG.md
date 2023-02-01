@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.6.2 (2023-02-01)
+ - Update both the amplience and commercetools built-in plugins to v0.1.3
+
 ## 2.6.2 (2023-01-31)
  - Update the commercetools built-in plugin to v0.1.1.
    - Fix invalid rendering of store variables in the generated terraform files.
