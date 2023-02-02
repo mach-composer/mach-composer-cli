@@ -47,7 +47,11 @@ func HandleErr(err error) {
 		case mccsdk.ErrorUnauthorized:
 			PrintExitError("Not authorized", svcErr.GetMessage())
 		case mccsdk.ErrorForbidden:
-			PrintExitError(svcErr.GetSummary(), svcErr.GetDescription())
+			if svcErr.HasStatus() {
+				PrintExitError(svcErr.GetSummary(), svcErr.GetDescription())
+			}
+			PrintExitError(svcErr.GetMessage(), "Invalid token. Did you run `mach-composer cloud login`?")
+
 		case mccsdk.Error:
 			PrintExitError(svcErr.GetSummary(), pie.Map(svcErr.Errors, func(e mccsdk.ErrorObject) string {
 				return e.Message

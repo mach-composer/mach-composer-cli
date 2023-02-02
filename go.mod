@@ -20,7 +20,7 @@ require (
 	github.com/mach-composer/mach-composer-plugin-contentful v0.0.6
 	github.com/mach-composer/mach-composer-plugin-sdk v0.0.6
 	github.com/mach-composer/mach-composer-plugin-sentry v0.1.1
-	github.com/mach-composer/mcc-sdk-go v0.0.3-0.20230125085419-1d785d79bbe7
+	github.com/mach-composer/mcc-sdk-go v0.0.3-0.20230202151625-0e49f562e6c4
 	github.com/mattn/go-isatty v0.0.17
 	github.com/olekukonko/tablewriter v0.0.5
 	github.com/rs/zerolog v1.28.0
