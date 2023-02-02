@@ -12,7 +12,6 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/elliotchance/pie/v2"
 	"github.com/hashicorp/go-getter"
 	"github.com/hashicorp/go-retryablehttp"
 	"github.com/rs/zerolog/log"
@@ -37,10 +36,6 @@ func (p pluginExecutable) command() *exec.Cmd {
 }
 
 func resolvePlugin(pluginCfg PluginConfig) (*pluginExecutable, error) {
-	// Check if this plugin is built-in
-	if pie.Contains(localPluginNames, pluginCfg.Source) {
-		return resolveBuiltinPlugin(pluginCfg)
-	}
 
 	if err := validateSource(pluginCfg.Source); err != nil {
 		return nil, err
@@ -144,50 +139,6 @@ func queryPluginRegistry(pluginCfg PluginConfig) (*registryResponse, error) {
 		return nil, err
 	}
 	return info, nil
-}
-
-// This is only for backwards compatibility
-func resolveBuiltinPlugin(pluginCfg PluginConfig) (*pluginExecutable, error) {
-	// Check if we have a version on the path. That takes precendence on the
-	// built-in version
-	name := pluginCfg.executableName()
-	if path, err := exec.LookPath(name); err == nil {
-		pluginChecksum, err := getPluginChecksum(path)
-		if err != nil {
-			return nil, err
-		}
-
-		result := &pluginExecutable{
-			Path:     path,
-			Checksum: pluginChecksum,
-		}
-		return result, nil
-	}
-
-	// Otherwise we start mach-composer with the arguments `plugin <name>`. If
-	// mach-composer is started from the $PATH the we need to resolve the
-	// command
-	name = os.Args[0]
-	if !strings.Contains(name, "/") {
-		if val, err := exec.LookPath(name); err != nil {
-			return nil, err
-		} else {
-			name = val
-		}
-	}
-
-	pluginChecksum, err := getPluginChecksum(name)
-	if err != nil {
-		return nil, err
-	}
-
-	result := &pluginExecutable{
-		Path:     name,
-		Checksum: pluginChecksum,
-		Args:     []string{"plugin", pluginCfg.Source},
-	}
-
-	return result, nil
 }
 
 func validateSource(name string) error {
