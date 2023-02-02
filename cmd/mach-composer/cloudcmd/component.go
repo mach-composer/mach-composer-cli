@@ -52,6 +52,7 @@ var componentListCmd = &cobra.Command{
 		paginator, _, err := (client.
 			ComponentsApi.
 			ComponentQuery(ctx, organization, project).
+			Limit(250).
 			Execute())
 
 		if err != nil {
