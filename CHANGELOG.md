@@ -1,5 +1,14 @@
 # Changelog
 
+## 2.6.4 (2023-02-01)
+ - Update both built-in plugins to the following versions:
+    mach-composer-plugin-aws v0.1.0
+    mach-composer-plugin-azure v0.1.0
+    mach-composer-plugin-commercetools v0.1.5
+    mach-composer-plugin-contentful v0.1.0
+    mach-composer-plugin-sdk v0.0.6
+    mach-composer-plugin-sentry v0.1.2
+
 ## 2.6.2 (2023-02-01)
  - Update both the amplience and commercetools built-in plugins to v0.1.3
 
