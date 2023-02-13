@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.6.6 (unreleased)
+ - Set `depends_on` on components (modules) when output variables are used. This
+   turned out to be neccessary when the variables were used in data sources.
+
 ## 2.6.4 (2023-02-01)
  - Update both built-in plugins to the following versions:
     mach-composer-plugin-aws v0.1.0

@@ -169,7 +169,7 @@ func renderComponent(cfg *config.MachConfig, site *config.SiteConfig, component 
 		Source:           component.Definition.Source,
 		PluginResources:  []string{},
 		PluginVariables:  []string{},
-		PluginDependsOn:  []string{},
+		PluginDependsOn:  findDependsOn(component.Variables),
 		PluginProviders:  []string{},
 	}
 
