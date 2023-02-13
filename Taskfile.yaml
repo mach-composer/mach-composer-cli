@@ -1,0 +1,19 @@
+version: '3'
+
+tasks:
+  build:
+    cmds:
+      - |
+        go build \
+        -ldflags " \
+          -X github.com/labd/mach-composer/internal/cli.version={{ .version }}-dev \
+          -X github.com/labd/mach-composer/internal/cli.date={{ .date }} \
+        " \
+        -o bin/ ./cmd/...
+      - cmd: codesign --deep --force -s - bin/mach-composer
+        platform: darwin
+    vars:
+      version:
+        sh: git describe --tags --always
+      date:
+        sh: date -Iseconds

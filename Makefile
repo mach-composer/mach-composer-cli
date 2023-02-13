@@ -1,16 +1,7 @@
-VERSION ?= $(shell git describe --tags --first-parent --abbrev=0 | cut -c 2-)
-GOFLAGS ?= -mod=readonly -ldflags "-s -w -X
-
-
 check: lint test
 
 build:
-	go build \
-		-ldflags "\
-			-X github.com/labd/mach-composer/internal/cli.version=$(VERSION)-dev \
-			-X github.com/labd/mach-composer/internal/cli.date=$(shell date -Iseconds) \
-		"\
-		-o bin/ ./cmd/...
+	task build
 
 tidy:
 	@go mod tidy -v
