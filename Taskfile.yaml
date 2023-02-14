@@ -11,7 +11,7 @@ tasks:
         " \
         -o bin/ ./cmd/...
       - cmd: codesign --deep --force -s - bin/mach-composer
-        platform: darwin
+        platforms: [darwin]
     vars:
       version:
         sh: git describe --tags --always
