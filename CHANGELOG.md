@@ -1,6 +1,6 @@
 # Changelog
 
-## 2.6.6 (unreleased)
+## 2.6.6 (2023-02-14)
  - Set `depends_on` on components (modules) when output variables are used. This
    turned out to be neccessary when the variables were used in data sources.
 

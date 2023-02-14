@@ -19,6 +19,11 @@ jobs:
         go-version: ${{ matrix.go-version }}
       id: go
 
+    - name: Install Task
+      uses: arduino/setup-task@v1
+      with:
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
+
     - name: Set up Go modules cache
       uses: actions/cache@v3
       env:
