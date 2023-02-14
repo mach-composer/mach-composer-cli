@@ -3,11 +3,16 @@ package generator
 import (
 	"reflect"
 	"strings"
+
+	"github.com/elliotchance/pie/v2"
 )
 
 func findDependsOn(s map[string]any) []string {
 	result := []string{}
 	for _, v := range s {
+		if v == nil {
+			continue
+		}
 
 		if value, ok := v.(string); ok {
 			vars := findVariables(value)
@@ -21,9 +26,11 @@ func findDependsOn(s map[string]any) []string {
 		}
 
 		if reflect.TypeOf(v).Kind() == reflect.Map {
-			items := findDependsOn(v.(map[string]any))
-			result = append(result, items...)
+			if data, ok := v.(map[string]any); ok {
+				items := findDependsOn(data)
+				result = append(result, items...)
+			}
 		}
 	}
-	return result
+	return pie.Unique(result)
 }
