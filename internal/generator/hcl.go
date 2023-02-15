@@ -11,7 +11,6 @@ import (
 )
 
 var regexVars = regexp.MustCompilePOSIX(`"\$\$\{([^\}]+)\}"`)
-var regexTFVar = regexp.MustCompilePOSIX(`\$\{([^\}]+)\}`)
 
 func serializeToHCL(attributeName string, data any) (string, error) {
 	val, err := asCTY(data)
@@ -54,14 +53,4 @@ func asCTY(source any) (cty.Value, error) {
 	}
 
 	return ctyJsonVal.Value, nil
-}
-
-func findVariables(input string) []string {
-	matches := regexTFVar.FindAllStringSubmatch(input, -1)
-	result := []string{}
-	for _, match := range matches {
-		item := match[1]
-		result = append(result, item)
-	}
-	return result
 }

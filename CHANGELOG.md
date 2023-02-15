@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.6.6 (2023-02-14)
+ - Revert the `depends_on` change since it causes data sources to be read too
+   late resulting in unexpected changes.
+   See https://itnext.io/beware-of-depends-on-for-modules-it-might-bite-you-da4741caac70
+
 ## 2.6.5 (2023-02-14)
  - Set `depends_on` on components (modules) when output variables are used. This
    turned out to be neccessary when the variables were used in data sources.
