@@ -21,19 +21,7 @@ The rest can be left empty.
 
 Use that token to configure your MACH composer environment:
 
-```yaml
----
-global:
-  environment: test
-  cloud: aws
-  sentry:
-    auth_token: <auth-token>
-    organization: companyA
-    project: mach-services
-    rate_limit_window: 21600
-    rate_limit_count: 100
-  ...
-```
+{{ external_markdown('https://raw.githubusercontent.com/mach-composer/mach-composer-plugin-sentry/main/README.md', '## Usage') }}
 
 The rate limits can also be defined/overwritten on [`site`](../../reference/syntax/sites.md)
 and [`component`](../../reference/syntax/sites.md#components) level
