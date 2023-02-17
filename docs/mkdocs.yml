@@ -43,6 +43,7 @@ nav:
       - Components: topics/deployment/config/components.md
   - Integrations:
     - topics/integrations/commercetools.md
+    - topics/integrations/commercelayer.md
     - topics/integrations/contentful.md
     - topics/integrations/amplience.md
     - topics/integrations/sentry.md
@@ -127,6 +128,7 @@ extra:
 
 plugins:
   - include-markdown
+  - external-markdown
   - search:
       lang: en
 

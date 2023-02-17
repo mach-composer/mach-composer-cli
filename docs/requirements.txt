@@ -4,3 +4,4 @@ pymdown-extensions==9.9.1
 fontawesome-markdown==0.2.6
 mkdocs-mermaid2-plugin==0.6.0
 mkdocs-include-markdown-plugin==4.0.3
+mkdocs-embed-external-markdown==2.3.0

@@ -18,6 +18,8 @@ use OpenID Connect. See how this works with GitHub at
 
 === "AWS"
 
+{% raw %}
+
     ```yaml
     name: Deploy Test
     on:
@@ -142,8 +144,11 @@ use OpenID Connect. See how this works with GitHub at
           - name: Cleanup terraform plan
             run: aws s3 rm --recursive s3://${{ env.AWS_PLAN_BUCKET }}/${{ github.event.pull_request.number }}/
     ```
+{% endraw %}
 
 === "Azure"
+
+{% raw %}
 
     ```yaml
     name: MACH composer rollout
@@ -174,6 +179,7 @@ use OpenID Connect. See how this works with GitHub at
             ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
             ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
     ```
+{% endraw %}
 
 ## Component deployment
 
@@ -185,6 +191,8 @@ function app ZIP file.
 Example GitHub action to package and deploy a component on AWS.
 
 === "Node"
+
+{% raw %}
 
     ```yaml
     name: Package and upload
@@ -238,3 +246,4 @@ Example GitHub action to package and deploy a component on AWS.
           - name: Upload
             run: aws s3 cp .serverless/${{ env.PACKAGE_NAME }}.zip s3://${{ env.AWS_BUCKET_NAME }}/${{ steps.artifact-name.outputs.artifact }}
     ```
+{% endraw %}
