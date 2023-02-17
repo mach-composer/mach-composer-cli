@@ -5,11 +5,13 @@ When configured, MACH will load the
 which can be used by any component that needs the Amplience integration.
 
 For this you need to define a **client_id**, **client_secret** in your
-[general config](../../reference/syntax/global.md#amplience).
+[general config](../../reference/syntax/global.md#amplience). These are optional if you define them at the `sites` level
 
-## site configuration
+## Configure MACH composer
 
-Each site can have their own Amplience configuration and but needs a hub id.
+{{ external_markdown('https://raw.githubusercontent.com/mach-composer/mach-composer-plugin-amplience/main/README.md', '## Usage') }}
+
+Each site can optionally have their own Amplience access configuration, but always needs a hub id.
 
 You can define the id of the hub your [site configuration](../../reference/syntax/sites.md#amplience)
 by giving it a **hub_id**.
