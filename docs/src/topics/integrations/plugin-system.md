@@ -28,10 +28,11 @@ mach_composer:
       version: 0.1.2
 ```
 
-In order to be backwards compatible, MACH composer itself currently ships the
-plug-ins that were previously part of MACH composer itself. When you specify
-specific versions of plug-ins, these will alsways prevail and MACH composer will
-try to download these.
+!!! note "Backwards compatibility"
+    In order to be backwards compatible, MACH composer itself currently ships the
+    plug-ins that were previously part of MACH composer itself. When you specify
+    specific versions of plug-ins, these will alsways prevail and MACH composer will
+    try to download these.
 
 ## Overriding plugin behaviour
 
