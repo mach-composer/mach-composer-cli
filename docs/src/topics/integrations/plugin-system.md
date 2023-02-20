@@ -33,7 +33,7 @@ plug-ins that were previously part of MACH composer itself. When you specify
 specific versions of plug-ins, these will alsways prevail and MACH composer will
 try to download these.
 
-## Overriding plugin behaviour: use plug-ins!
+## Overriding plugin behaviour
 
 As the plug-ins are open source and hosted on GitHub Releases, overriding
 behaviour of a MACH composer plug-in is quite easy. Just fork the repository,
