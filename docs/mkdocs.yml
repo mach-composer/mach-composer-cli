@@ -41,7 +41,8 @@ nav:
       - topics/deployment/config/azure.md
       - topics/deployment/config/integrations.md
       - Components: topics/deployment/config/components.md
-  - Integrations:
+  - Plugins:
+    - topics/integrations/plugin-system.md
     - topics/integrations/commercetools.md
     - topics/integrations/commercelayer.md
     - topics/integrations/contentful.md
