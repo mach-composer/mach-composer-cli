@@ -35,6 +35,7 @@
  - Add optional support to automatically download MACH composer plugins when
    defined in the config file. For example::
 
+    ```yaml
     mach_composer:
       version: 1
       plugins:
@@ -44,6 +45,7 @@
         sentry:
           source: mach-composer/sentry
           version: 0.1.2
+    ```
 
    Will download the plugins to your local plugin directory if these are not
    found.
