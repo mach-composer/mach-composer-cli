@@ -1,6 +1,6 @@
 #syntax=docker/dockerfile:1.4.0
 
-FROM goreleaser/goreleaser:v1.13.0 AS builder
+FROM goreleaser/goreleaser:v1.15.2 AS builder
 ARG GORELEASER_ARGS
 
 COPY . /code/
