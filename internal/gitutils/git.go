@@ -1,4 +1,4 @@
-package updater
+package gitutils
 
 import (
 	"context"
@@ -43,7 +43,7 @@ type gitCommitAuthor struct {
 	Date  time.Time
 }
 
-func GetLastVersionGit(ctx context.Context, c *config.Component, origin string) (*ChangeSet, error) {
+func GetLastVersionGit(ctx context.Context, c *config.Component, origin string) ([]gitCommit, error) {
 	cacheDir, err := getGitCachePath(origin)
 	if err != nil {
 		return nil, err
@@ -65,18 +65,8 @@ func GetLastVersionGit(ctx context.Context, c *config.Component, origin string) 
 		return nil, err
 	}
 
-	cs := &ChangeSet{
-		Changes:   commits,
-		Component: c,
-	}
+	return commits, nil
 
-	if len(commits) < 1 {
-		cs.LastVersion = c.Version
-	} else {
-		cs.LastVersion = commits[0].Commit
-	}
-
-	return cs, nil
 }
 
 func getGitCachePath(origin string) (string, error) {

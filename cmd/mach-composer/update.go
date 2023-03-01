@@ -10,6 +10,7 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/labd/mach-composer/internal/cli"
+	"github.com/labd/mach-composer/internal/gitutils"
 	"github.com/labd/mach-composer/internal/updater"
 )
 
@@ -19,6 +20,7 @@ var updateFlags struct {
 	components    []string
 	commit        bool
 	commitMessage string
+	cloud         bool
 }
 
 var updateCmd = &cobra.Command{
@@ -45,6 +47,7 @@ func init() {
 	updateCmd.Flags().BoolVarP(&updateFlags.check, "check", "", false, "Only checks for updates, doesnt change files.")
 	updateCmd.Flags().BoolVarP(&updateFlags.commit, "commit", "c", false, "Automatically commits the change.")
 	updateCmd.Flags().StringVarP(&updateFlags.commitMessage, "commit-message", "m", "", "Use a custom message for the commit.")
+	updateCmd.Flags().BoolVar(&updateFlags.cloud, "cloud", false, "Use MACH composer cloud to check for updates.")
 }
 
 func updateFunc(ctx context.Context, args []string) error {
@@ -60,7 +63,7 @@ func updateFunc(ctx context.Context, args []string) error {
 
 	writeChanges := !updateFlags.check
 
-	u, err := updater.NewUpdater(ctx, updateFlags.configFile)
+	u, err := updater.NewUpdater(ctx, updateFlags.configFile, updateFlags.cloud)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Failed to update %s: %v\n", updateFlags.configFile, err.Error())
 		os.Exit(1)
@@ -102,7 +105,7 @@ func updateFunc(ctx context.Context, args []string) error {
 			commitMessage = generateCommitMessage(map[string]string{updateFlags.configFile: changes})
 		}
 
-		err = updater.Commit(ctx, []string{updateFlags.configFile}, commitMessage)
+		err = gitutils.Commit(ctx, []string{updateFlags.configFile}, commitMessage)
 		if err != nil {
 			return err
 		}

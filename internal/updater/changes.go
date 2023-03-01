@@ -3,6 +3,7 @@ package updater
 import (
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/labd/mach-composer/internal/config"
 )
@@ -14,9 +15,23 @@ type UpdateSet struct {
 
 type ChangeSet struct {
 	LastVersion string
-	Changes     []gitCommit
+	Changes     []CommitData
 	Component   *config.Component
 	Forced      bool
+}
+
+type CommitData struct {
+	Commit    string
+	Parents   []string
+	Author    CommitAuthor
+	Committer CommitAuthor
+	Message   string
+}
+
+type CommitAuthor struct {
+	Name  string
+	Email string
+	Date  time.Time
 }
 
 func (cs *ChangeSet) HasChanges() bool {

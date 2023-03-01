@@ -77,6 +77,7 @@ func TerraformApplySite(ctx context.Context, cfg *config.MachConfig, site *confi
 	}
 	if planFilename != "" {
 		cmd = append(cmd, planFilename)
+		cmd = append(cmd, "-lockfile=readonly")
 	}
 
 	return RunTerraform(ctx, path, cmd...)
