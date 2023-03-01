@@ -131,6 +131,10 @@ func findSpecificUpdate(ctx context.Context, cfg *PartialConfig, filename string
 }
 
 func getLastVersion(ctx context.Context, cfg *PartialConfig, c *config.Component, origin string) (*ChangeSet, error) {
+	if c.Branch == "" {
+		c.Branch = "main"
+	}
+
 	if cfg.client != nil {
 		return getLastVersionCloud(ctx, cfg, c, origin)
 	}
