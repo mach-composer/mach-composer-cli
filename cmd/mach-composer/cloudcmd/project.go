@@ -21,7 +21,7 @@ var listProjectCmd = &cobra.Command{
 			return err
 		}
 		paginator, _, err := (client.
-			AccountManagementApi.
+			OrganizationManagementApi.
 			ProjectQuery(ctx, organization).
 			Execute())
 		if err != nil {
@@ -57,7 +57,7 @@ var createProjectCmd = &cobra.Command{
 		}
 
 		resource, _, err := (client.
-			AccountManagementApi.
+			OrganizationManagementApi.
 			ProjectCreate(ctx, organization).
 			ProjectDraft(mccsdk.ProjectDraft{
 				Name: name,

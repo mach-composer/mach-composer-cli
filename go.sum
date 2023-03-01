@@ -282,6 +282,8 @@ github.com/mach-composer/mach-composer-plugin-sentry v0.1.2 h1:58IjdfNTrpbCaTJEi
 github.com/mach-composer/mach-composer-plugin-sentry v0.1.2/go.mod h1:pvt4wqNSCM/2mUNw6Ih1lrjAx/yO3kSPbWGuBaCyf2c=
 github.com/mach-composer/mcc-sdk-go v0.0.3-0.20230202151625-0e49f562e6c4 h1:9CGcw2o/GHxw+J6dp9LvNcersTk1qgCQ9aGR4fQQjnQ=
 github.com/mach-composer/mcc-sdk-go v0.0.3-0.20230202151625-0e49f562e6c4/go.mod h1:rE23R5N7WysVWT3UVt4W5ZBfMyaRkgsoRP3zTLrrCjI=
+github.com/mach-composer/mcc-sdk-go v0.0.3-0.20230301072130-d1c0f6c7e0f0 h1:j50lfg7zohGqwAuQGi7UEsiAL+5fjTkLC+nOZ7lZPJI=
+github.com/mach-composer/mcc-sdk-go v0.0.3-0.20230301072130-d1c0f6c7e0f0/go.mod h1:rE23R5N7WysVWT3UVt4W5ZBfMyaRkgsoRP3zTLrrCjI=
 github.com/magiconair/properties v1.8.7 h1:IeQXZAiQcpL9mgcAe1Nu6cX9LLw6ExEHKjN0VQdvPDY=
 github.com/magiconair/properties v1.8.7/go.mod h1:Dhd985XPs7jluiymwWYZ0G4Z61jb3vdS329zhj2hYo0=
 github.com/matryer/is v1.2.0 h1:92UTHpy8CDwaJ08GqLDzhhuixiBUUD1p3AU6PHddz4A=

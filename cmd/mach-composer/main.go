@@ -38,7 +38,8 @@ var (
 			logger = logger.Output(cli.NewConsoleWriter())
 			log.Logger = logger
 
-			ctx, cancel := context.WithCancel(cmd.Context())
+			ctx := logger.WithContext(cmd.Context())
+			ctx, cancel := context.WithCancel(ctx)
 
 			// Register a signal handler to cancel the current context
 			c := make(chan os.Signal, 1)

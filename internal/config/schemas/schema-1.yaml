@@ -38,6 +38,8 @@ definitions:
           - number
       variables_file:
         type: string
+      cloud:
+        $ref: "#/definitions/MachComposerCloud"
       plugins:
         type: object
         additionalProperties: false
@@ -51,6 +53,16 @@ definitions:
               version:
                 type: string
 
+  MachComposerCloud:
+    type: object
+    required:
+      - organization
+      - project
+    properties:
+      organization:
+        type: string
+      project:
+        type: string
 
   GlobalConfig:
     type: object

@@ -22,7 +22,7 @@ var listOrganizationCmd = &cobra.Command{
 		}
 
 		paginator, _, err := (client.
-			AccountManagementApi.
+			OrganizationManagementApi.
 			OrganizationQuery(ctx).
 			Execute())
 		if err != nil {
@@ -58,7 +58,7 @@ var createOrganizationCmd = &cobra.Command{
 		}
 
 		resource, _, err := (client.
-			AccountManagementApi.
+			OrganizationManagementApi.
 			OrganizationCreate(ctx).
 			OrganizationDraft(organizationDraft).
 			Execute())
@@ -84,7 +84,7 @@ var listOrganizationUsersCmd = &cobra.Command{
 		}
 
 		paginator, _, err := (client.
-			AccountManagementApi.
+			OrganizationManagementApi.
 			OrganizationUserQuery(ctx, organization).
 			Execute())
 		if err != nil {
@@ -127,7 +127,7 @@ var addOrganizationUsersCmd = &cobra.Command{
 		}
 
 		_, _, err = (client.
-			AccountManagementApi.
+			OrganizationManagementApi.
 			OrganizationUserInvite(ctx, organization).
 			OrganizationUserInviteDraft(mccsdk.OrganizationUserInviteDraft{
 				Email: email,

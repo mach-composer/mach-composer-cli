@@ -116,6 +116,22 @@ type MachComposer struct {
 	Version       any                         `yaml:"version"`
 	VariablesFile string                      `yaml:"variables_file"`
 	Plugins       map[string]MachPluginConfig `yaml:"plugins"`
+	Cloud         MachComposerCloud           `yaml:"cloud"`
+}
+
+type MachComposerCloud struct {
+	Organization string `yaml:"organization"`
+	Project      string `yaml:"project"`
+}
+
+func (mcc *MachComposerCloud) Empty() bool {
+	if mcc.Organization == "" {
+		return true
+	}
+	if mcc.Project == "" {
+		return true
+	}
+	return false
 }
 
 type MachPluginConfig struct {

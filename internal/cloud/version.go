@@ -7,11 +7,11 @@ import (
 	"github.com/elliotchance/pie/v2"
 	"github.com/mach-composer/mcc-sdk-go/mccsdk"
 
-	"github.com/labd/mach-composer/internal/updater"
+	"github.com/labd/mach-composer/internal/gitutils"
 )
 
 func AutoRegisterVersion(ctx context.Context, client *mccsdk.APIClient, organization, project, componentKey string) (string, error) {
-	branch, err := updater.GetCurrentBranch(ctx, ".")
+	branch, err := gitutils.GetCurrentBranch(ctx, ".")
 	if err != nil {
 		return "", err
 	}
@@ -30,7 +30,7 @@ func AutoRegisterVersion(ctx context.Context, client *mccsdk.APIClient, organiza
 		baseRef = lastVersion.Version
 	}
 
-	commits, err := updater.GetRecentCommits(ctx, ".", branch, baseRef)
+	commits, err := gitutils.GetRecentCommits(ctx, ".", branch, baseRef)
 	if err != nil {
 		return "", err
 	}
