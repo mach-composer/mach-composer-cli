@@ -34,7 +34,7 @@ func generateFunc(ctx context.Context, args []string) error {
 		Site:       generateFlags.siteName,
 	}
 
-	_, err := generator.WriteFiles(cfg, genOptions)
+	_, err := generator.WriteFiles(ctx, cfg, genOptions)
 	if err != nil {
 		return err
 	}

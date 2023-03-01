@@ -45,7 +45,7 @@ func applyFunc(ctx context.Context, args []string) error {
 	// Note that we do this in multiple passes to minimize ending up with
 	// half broken runs. We could in the future also run some parts in parallel
 
-	paths, err := generator.WriteFiles(cfg, &generator.GenerateOptions{
+	paths, err := generator.WriteFiles(ctx, cfg, &generator.GenerateOptions{
 		OutputPath: generateFlags.outputPath,
 		Site:       generateFlags.siteName,
 	})
