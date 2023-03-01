@@ -5,6 +5,9 @@
    Git repository.
  - Add `mach-composer cloud update-component` to update an existing component
    to for example rename the key.
+ - Update built-in plugins to the following versions:
+    mach-composer-plugin-commercetools v0.1.7
+    mach-composer-plugin-sentry v0.1.3
 
 ## 2.6.6 (2023-02-14)
  - Revert the `depends_on` change since it causes data sources to be read too
