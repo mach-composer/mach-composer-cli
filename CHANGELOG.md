@@ -1,4 +1,15 @@
 # Changelog
+## 2.7.0 (2023-03-01)
+ - Add `--cloud` argument to the `mach-composer update` command to fetch the
+   latest version registered instead of retrieving the latest commit from the
+   Git repository.
+ - Add `mach-composer cloud update-component` to update an existing component
+   to for example rename the key.
+
+## 2.6.6 (2023-02-14)
+ - Revert the `depends_on` change since it causes data sources to be read too
+   late resulting in unexpected changes.
+   See https://itnext.io/beware-of-depends-on-for-modules-it-might-bite-you-da4741caac70
 
 ## 2.6.6 (2023-02-14)
  - Revert the `depends_on` change since it causes data sources to be read too
