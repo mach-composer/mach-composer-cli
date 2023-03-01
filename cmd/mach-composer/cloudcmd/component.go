@@ -125,6 +125,54 @@ var componentRegisterVersionCmd = &cobra.Command{
 	},
 }
 
+var componentUpdateCmd = &cobra.Command{
+	Use:   "update-component [key]",
+	Short: "Update component",
+	Args:  cobra.ExactArgs(1),
+	RunE: func(cmd *cobra.Command, args []string) error {
+		ctx := cmd.Context()
+		organization := MustGetString(cmd, "organization")
+		project := MustGetString(cmd, "project")
+		componentKey := args[0]
+
+		newKey, err := cmd.Flags().GetString("key")
+		if err != nil {
+			return err
+		}
+		patches := []mccsdk.PatchRequestInner{}
+
+		if newKey != "" {
+			patches = append(patches, mccsdk.PatchRequestInner{
+				JSONPatchRequestAddReplaceTest: &mccsdk.JSONPatchRequestAddReplaceTest{
+					Path:  "/key",
+					Op:    "replace",
+					Value: newKey,
+				},
+			})
+		}
+
+		if len(patches) == 0 {
+			return nil
+		}
+
+		client, err := cloud.NewClient(ctx)
+		if err != nil {
+			return err
+		}
+		resource, _, err := client.
+			ComponentsApi.
+			ComponentPatch(ctx, organization, project, componentKey).
+			PatchRequestInner(patches).
+			Execute()
+		if err != nil {
+			return err
+		}
+
+		cmd.Printf("Updated component: %s\n", resource.GetKey())
+		return nil
+	},
+}
+
 var componentListVersionCmd = &cobra.Command{
 	Use:   "list-component-versions [name]",
 	Short: "List all version for an existing component",
@@ -215,6 +263,10 @@ func init() {
 
 	CloudCmd.AddCommand(componentListCmd)
 	registerContextFlags(componentListCmd)
+
+	CloudCmd.AddCommand(componentUpdateCmd)
+	registerContextFlags(componentUpdateCmd)
+	componentUpdateCmd.Flags().String("key", "", "Set new component key")
 
 	CloudCmd.AddCommand(componentRegisterVersionCmd)
 	registerContextFlags(componentRegisterVersionCmd)
