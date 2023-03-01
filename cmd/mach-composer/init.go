@@ -35,7 +35,7 @@ func initFunc(ctx context.Context, args []string) error {
 
 	generateFlags.ValidateSite(cfg)
 
-	paths, err := generator.WriteFiles(cfg, &generator.GenerateOptions{
+	paths, err := generator.WriteFiles(ctx, cfg, &generator.GenerateOptions{
 		OutputPath: generateFlags.outputPath,
 		Site:       generateFlags.siteName,
 	})

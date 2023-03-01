@@ -1,6 +1,7 @@
 package generator
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"io/ioutil"
@@ -13,6 +14,7 @@ import (
 	"github.com/hashicorp/hcl/v2/hclwrite"
 	"github.com/rs/zerolog/log"
 
+	"github.com/labd/mach-composer/internal/cloud"
 	"github.com/labd/mach-composer/internal/config"
 	"github.com/labd/mach-composer/internal/lockfile"
 )
@@ -22,8 +24,14 @@ type GenerateOptions struct {
 	Site       string
 }
 
-func WriteFiles(cfg *config.MachConfig, options *GenerateOptions) (map[string]string, error) {
+func WriteFiles(ctx context.Context, cfg *config.MachConfig, options *GenerateOptions) (map[string]string, error) {
 	locations := FileLocations(cfg, options)
+	if cfg.MachComposer.CloudEnabled() {
+		if err := cloud.ResolveComponentsData(ctx, cfg); err != nil {
+			return nil, err
+		}
+	}
+
 	for i := range cfg.Sites {
 		site := cfg.Sites[i]
 
@@ -45,7 +53,7 @@ func WriteFiles(cfg *config.MachConfig, options *GenerateOptions) (map[string]st
 		filename := filepath.Join(path, "site.tf")
 
 		log.Info().Msgf("Writing %s", filename)
-		body, err := renderSite(cfg, &site)
+		body, err := renderSite(ctx, cfg, &site)
 		if err != nil {
 			return nil, err
 		}

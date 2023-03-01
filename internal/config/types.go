@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/elliotchance/pie/v2"
+	"github.com/mach-composer/mcc-sdk-go/mccsdk"
 	"gopkg.in/yaml.v3"
 
 	"github.com/labd/mach-composer/internal/plugins"
@@ -119,9 +120,15 @@ type MachComposer struct {
 	Cloud         MachComposerCloud           `yaml:"cloud"`
 }
 
+func (mc *MachComposer) CloudEnabled() bool {
+	return !mc.Cloud.Empty()
+}
+
 type MachComposerCloud struct {
 	Organization string `yaml:"organization"`
 	Project      string `yaml:"project"`
+
+	Client *mccsdk.APIClient
 }
 
 func (mcc *MachComposerCloud) Empty() bool {

@@ -52,7 +52,7 @@ func TestRenderSite(t *testing.T) {
 		})
 	require.NoError(t, err)
 
-	body, err := renderSite(cfg, &cfg.Sites[0])
+	body, err := renderSite(context.TODO(), cfg, &cfg.Sites[0])
 	assert.NoError(t, err)
 	assert.NotEmpty(t, body)
 }
