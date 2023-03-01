@@ -1,4 +1,9 @@
 # Changelog
+
+## 2.7.1 (2023-03-01)
+ - Default to branch `main` when no branch is defined for a component when
+   retrieving the last version.
+
 ## 2.7.0 (2023-03-01)
  - Add `--cloud` argument to the `mach-composer update` command to fetch the
    latest version registered instead of retrieving the latest commit from the
