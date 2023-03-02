@@ -104,7 +104,7 @@ components with MACH composer ☁️.
 
 ## 3. Integrate MACH composer ☁️ in your MACH composer configuration
 
-!!! warning "This feature is not available yet"
+!!! tip "This feature is available since MACH composer 2.7.x"
 
 The last step is to integrate MACH composer ☁️ in your existing MACH composer
 YAML configuration. You can achieve this by adding the following configuration
@@ -116,5 +116,7 @@ mach_composer:
     project_id: "my-aws-example"
 ```
 
-In the future, when running `mach update`, MACH composer will fetch the latest
-versions from MACH composer ☁️ instead of the components github repository.
+When running `mach-composer update --cloud`, MACH composer will fetch the latest
+versions from MACH composer ☁️ instead of the components github repository. As a
+result, this process will be much faster as well as more robust, as component
+versions are guaranteed to exist.
