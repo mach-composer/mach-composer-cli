@@ -161,11 +161,19 @@ func getLastVersionCloud(ctx context.Context, cfg *PartialConfig, c *config.Comp
 		Execute()
 
 	if err != nil {
+		if strings.HasPrefix(c.Source, "git:") {
+			zerolog.Ctx(ctx).Warn().Msgf("Error checking for %s in MACH Composer Cloud, falling back to Git", c.Name)
+			return getLastVersionGit(ctx, cfg, c, origin)
+		}
 		zerolog.Ctx(ctx).Error().Err(err).Msgf("Error checking for latest version of %s", c.Name)
 		return nil, nil
 	}
 
 	if version == nil {
+		if strings.HasPrefix(c.Source, "git:") {
+			zerolog.Ctx(ctx).Warn().Msgf("No version found for %s in MACH Composer Cloud, falling back to Git", c.Name)
+			return getLastVersionGit(ctx, cfg, c, origin)
+		}
 		zerolog.Ctx(ctx).Warn().Msgf("No version found for %s", c.Name)
 		return nil, nil
 	}

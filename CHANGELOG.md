@@ -3,6 +3,8 @@
 ## 2.7.2 (2023-03-03)
  - Remove the `-lockfile=readonly` argument to terraform apply. This was
    introduced in 2.7.0 but didn't work correctly.
+ - Add fallback to check in git when using `mach-composer update --cloud` when
+   a component isn't found.
 
 ## 2.7.1 (2023-03-01)
  - Default to branch `main` when no branch is defined for a component when
