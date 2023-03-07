@@ -1,8 +1,6 @@
 package main
 
 import (
-	"context"
-
 	"github.com/spf13/cobra"
 
 	"github.com/labd/mach-composer/internal/generator"
@@ -16,7 +14,7 @@ var terraformCmd = &cobra.Command{
 		preprocessGenerateFlags()
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		handleError(terraformFunc(cmd.Context(), args))
+		handleError(terraformFunc(cmd, args))
 	},
 }
 
@@ -24,8 +22,8 @@ func init() {
 	registerGenerateFlags(terraformCmd)
 }
 
-func terraformFunc(ctx context.Context, args []string) error {
-	cfg := loadConfig(ctx, true)
+func terraformFunc(cmd *cobra.Command, args []string) error {
+	cfg := loadConfig(cmd, true)
 	defer cfg.Close()
 
 	generateFlags.ValidateSite(cfg)
@@ -35,7 +33,7 @@ func terraformFunc(ctx context.Context, args []string) error {
 		Site:       generateFlags.siteName,
 	})
 
-	return runner.TerraformProxy(ctx, cfg, paths, &runner.ProxyOptions{
+	return runner.TerraformProxy(cmd.Context(), cfg, paths, &runner.ProxyOptions{
 		Site:    generateFlags.siteName,
 		Command: args,
 	})

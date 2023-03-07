@@ -13,7 +13,7 @@ var componentsCmd = &cobra.Command{
 		preprocessGenerateFlags()
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		cfg := loadConfig(cmd.Context(), false)
+		cfg := loadConfig(cmd, false)
 		defer cfg.Close()
 		generateFlags.ValidateSite(cfg)
 

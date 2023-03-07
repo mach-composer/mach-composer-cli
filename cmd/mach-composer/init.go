@@ -1,8 +1,6 @@
 package main
 
 import (
-	"context"
-
 	"github.com/spf13/cobra"
 
 	"github.com/labd/mach-composer/internal/cli"
@@ -17,11 +15,11 @@ var initCmd = &cobra.Command{
 		preprocessGenerateFlags()
 	},
 
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(cmd *cobra.Command, args []string) error {
 		cli.DeprecationWarning(&cli.DeprecationOptions{
 			Message: "the init command will change in the next version. For initializing terraform please use 'mach-composer terraform init'.",
 		})
-		handleError(initFunc(cmd.Context(), args))
+		return initFunc(cmd, args)
 	},
 }
 
@@ -29,9 +27,10 @@ func init() {
 	registerGenerateFlags(initCmd)
 }
 
-func initFunc(ctx context.Context, args []string) error {
-	cfg := loadConfig(ctx, true)
+func initFunc(cmd *cobra.Command, args []string) error {
+	cfg := loadConfig(cmd, true)
 	defer cfg.Close()
+	ctx := cmd.Context()
 
 	generateFlags.ValidateSite(cfg)
 
