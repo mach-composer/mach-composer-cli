@@ -3,10 +3,9 @@ on:
     branches:
       - 'main'
 
-
 permissions:
-  contents: read
-
+  contents: write
+  pull-requests: write
 
 jobs:
   generate-pr:
@@ -42,3 +41,4 @@ jobs:
         title: Release ${{ steps.latest.outputs.output }}
         branch: release/${{ steps.latest.outputs.output }}
         commit-message: Release ${{ steps.latest.outputs.output }}
+        token: ${{ secrets.GITHUB_TOKEN }}
