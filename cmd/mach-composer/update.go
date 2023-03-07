@@ -40,6 +40,7 @@ var updateCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		handleError(updateFunc(cmd.Context(), args))
 	},
+	ValidArgsFunction: AutocompleteComponentName,
 }
 
 func init() {
@@ -48,6 +49,8 @@ func init() {
 	updateCmd.Flags().BoolVarP(&updateFlags.commit, "commit", "c", false, "Automatically commits the change.")
 	updateCmd.Flags().StringVarP(&updateFlags.commitMessage, "commit-message", "m", "", "Use a custom message for the commit.")
 	updateCmd.Flags().BoolVar(&updateFlags.cloud, "cloud", false, "Use MACH composer cloud to check for updates.")
+
+	handleError(updateCmd.MarkFlagFilename("file", "yml", "yaml"))
 }
 
 func updateFunc(ctx context.Context, args []string) error {

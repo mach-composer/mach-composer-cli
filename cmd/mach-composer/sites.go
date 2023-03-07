@@ -13,7 +13,7 @@ var sitesCmd = &cobra.Command{
 		preprocessGenerateFlags()
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
-		cfg := loadConfig(cmd.Context(), false)
+		cfg := loadConfig(cmd, false)
 		defer cfg.Close()
 
 		generateFlags.ValidateSite(cfg)

@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"errors"
 	"fmt"
 	"os"
@@ -37,6 +36,11 @@ func registerGenerateFlags(cmd *cobra.Command) {
 	cmd.Flags().StringVarP(&generateFlags.siteName, "site", "s", "", "Site to parse. If not set parse all sites.")
 	cmd.Flags().BoolVarP(&generateFlags.ignoreVersion, "ignore-version", "", false, "Skip MACH composer version check")
 	cmd.Flags().StringVarP(&generateFlags.outputPath, "output-path", "", "", "Output path, defaults to `cwd`/deployments.")
+
+	handleError(cmd.MarkFlagFilename("var-file", "yml", "yaml"))
+	handleError(cmd.MarkFlagFilename("file", "yml", "yaml"))
+
+	cmd.RegisterFlagCompletionFunc("site", AutocompleteSiteName)
 }
 
 func preprocessGenerateFlags() {
@@ -74,7 +78,7 @@ func handleError(err error) {
 }
 
 // loadConfig parses and validates the given config file path.
-func loadConfig(ctx context.Context, resolveVars bool) *config.MachConfig {
+func loadConfig(cmd *cobra.Command, resolveVars bool) *config.MachConfig {
 	opts := &config.ConfigOptions{
 		NoResolveVars: !resolveVars,
 	}
@@ -82,7 +86,12 @@ func loadConfig(ctx context.Context, resolveVars bool) *config.MachConfig {
 		opts.VarFilenames = []string{generateFlags.varFile}
 	}
 
-	cfg, err := config.Open(ctx, generateFlags.configFile, opts)
+	configFile, err := cmd.Flags().GetString("file")
+	if err != nil {
+		cli.PrintExitError("Missing config filename", err.Error())
+	}
+
+	cfg, err := config.Open(cmd.Context(), configFile, opts)
 	if err != nil {
 		cli.PrintExitError("An error occured while loading the config file", err.Error())
 	}

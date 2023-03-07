@@ -1,8 +1,6 @@
 package main
 
 import (
-	"context"
-
 	"github.com/spf13/cobra"
 
 	"github.com/labd/mach-composer/internal/generator"
@@ -21,7 +19,7 @@ var showPlanCmd = &cobra.Command{
 	},
 
 	Run: func(cmd *cobra.Command, args []string) {
-		handleError(showPlanFunc(cmd.Context(), args))
+		handleError(showPlanFunc(cmd, args))
 	},
 }
 
@@ -30,9 +28,10 @@ func init() {
 	showPlanCmd.Flags().BoolVarP(&showPlanFlags.noColor, "no-color", "", false, "Disable color output")
 }
 
-func showPlanFunc(ctx context.Context, args []string) error {
-	cfg := loadConfig(ctx, true)
+func showPlanFunc(cmd *cobra.Command, args []string) error {
+	cfg := loadConfig(cmd, true)
 	defer cfg.Close()
+	ctx := cmd.Context()
 
 	generateFlags.ValidateSite(cfg)
 
