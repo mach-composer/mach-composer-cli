@@ -3,28 +3,35 @@ on:
     branches:
       - 'main'
 
+
+permissions:
+  contents: read
+
+
 jobs:
   generate-pr:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
       uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
 
     - name: Batch changes
-      uses: miniscruff/changie-action@v1
+      uses: miniscruff/changie-action@b6d52c80deb236a5b548f8774cd5a18b87da9e9a # v1.0.1
       with:
         version: latest
         args: batch auto
 
     - name: Merge changes
-      uses: miniscruff/changie-action@v1
+      uses: miniscruff/changie-action@b6d52c80deb236a5b548f8774cd5a18b87da9e9a # v1.0.1
       with:
         version: latest
         args: merge
 
     - name: Get the latest version
       id: latest
-      uses: miniscruff/changie-action@v1
+      uses: miniscruff/changie-action@b6d52c80deb236a5b548f8774cd5a18b87da9e9a # v1.0.1
       with:
         version: latest
         args: latest
