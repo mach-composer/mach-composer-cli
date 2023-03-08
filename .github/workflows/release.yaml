@@ -1,9 +1,7 @@
 name: Create release
 
 on:
-  push:
-    tags:
-      - 'v*'
+  workflow_dispatch:
 
 env:
   IMAGE_NAME: ghcr.io/labd/mach-composer
