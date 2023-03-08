@@ -1,0 +1,4 @@
+kind: Added
+body: Improve the auto-completion with support for the config files, sites and components
+  (#139)
+time: 2023-03-08T08:12:08.032091+01:00
