@@ -62,3 +62,9 @@ jobs:
       with:
         name: output
         path: output/**/*
+
+    - name: Prepare release
+      if: github.ref == 'refs/heads/main' && github.event.type != 'pull_request'
+      uses: labd/changie-release-action@v0.1.0
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}

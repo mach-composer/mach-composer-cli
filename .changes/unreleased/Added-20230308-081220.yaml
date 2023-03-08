@@ -1,0 +1,3 @@
+kind: Added
+body: Add support for resolving a component version $LATEST. When the version is defined as $LATEST resolve the version by querying mach composer cloud. This is only enabled when the config file has cloud support enabled by defining the organization/project
+time: 2023-03-08T08:12:20.003873+01:00
