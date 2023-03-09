@@ -10,14 +10,14 @@ require (
 	github.com/grokify/go-pkce v0.2.0
 	github.com/hashicorp/go-getter v1.7.0
 	github.com/hashicorp/go-hclog v1.4.0
-	github.com/hashicorp/go-plugin v1.4.8
+	github.com/hashicorp/go-plugin v1.4.9
 	github.com/hashicorp/go-retryablehttp v0.7.2
-	github.com/hashicorp/hcl/v2 v2.16.1
+	github.com/hashicorp/hcl/v2 v2.16.2
 	github.com/lithammer/dedent v1.1.0
 	github.com/mach-composer/mach-composer-plugin-amplience v0.1.3
 	github.com/mach-composer/mach-composer-plugin-aws v0.1.0
 	github.com/mach-composer/mach-composer-plugin-azure v0.1.0
-	github.com/mach-composer/mach-composer-plugin-commercetools v0.1.7
+	github.com/mach-composer/mach-composer-plugin-commercetools v0.1.8
 	github.com/mach-composer/mach-composer-plugin-contentful v0.1.0
 	github.com/mach-composer/mach-composer-plugin-sdk v0.0.6
 	github.com/mach-composer/mach-composer-plugin-sentry v0.1.3
@@ -26,14 +26,14 @@ require (
 	github.com/olekukonko/tablewriter v0.0.5
 	github.com/rs/zerolog v1.29.0
 	github.com/skratchdot/open-golang v0.0.0-20200116055534-eef842397966
-	github.com/spf13/afero v1.9.4
+	github.com/spf13/afero v1.9.5
 	github.com/spf13/cobra v1.6.1
 	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.15.0
 	github.com/stretchr/testify v1.8.2
 	github.com/xeipuuv/gojsonschema v1.2.0
 	github.com/zclconf/go-cty v1.13.0
-	golang.org/x/oauth2 v0.5.0
+	golang.org/x/oauth2 v0.6.0
 	gopkg.in/yaml.v3 v3.0.1
 )
 
@@ -103,9 +103,9 @@ require (
 	golang.org/x/crypto v0.6.0 // indirect
 	golang.org/x/exp v0.0.0-20230224173230-c95f2b4c22f2 // indirect
 	golang.org/x/mod v0.8.0 // indirect
-	golang.org/x/net v0.7.0 // indirect
-	golang.org/x/sys v0.5.0 // indirect
-	golang.org/x/text v0.7.0 // indirect
+	golang.org/x/net v0.8.0 // indirect
+	golang.org/x/sys v0.6.0 // indirect
+	golang.org/x/text v0.8.0 // indirect
 	golang.org/x/tools v0.6.0 // indirect
 	golang.org/x/xerrors v0.0.0-20220907171357-04be3eba64a2 // indirect
 	google.golang.org/api v0.111.0 // indirect
