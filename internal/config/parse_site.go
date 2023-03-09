@@ -33,12 +33,14 @@ func parseSitesNode(cfg *MachConfig, sitesNode *yaml.Node) error {
 			}
 
 			if err := plugin.SetSiteConfig(siteId, data); err != nil {
-				return fmt.Errorf("plugin.SetSiteConfig failed: %w", err)
+				return fmt.Errorf("%s.SetSiteConfig failed: %w", plugin.Name, err)
 			}
 		}
 
 		if node, ok := nodes["endpoints"]; ok {
-			parseSiteEndpointNode(cfg, siteId, node)
+			if err := parseSiteEndpointNode(cfg, siteId, node); err != nil {
+				return err
+			}
 		}
 
 		if err := parseSiteComponentsNode(cfg, siteId, nodes["components"]); err != nil {
