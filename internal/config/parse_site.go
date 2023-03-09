@@ -39,7 +39,7 @@ func parseSitesNode(cfg *MachConfig, sitesNode *yaml.Node) error {
 
 		if node, ok := nodes["endpoints"]; ok {
 			if err := parseSiteEndpointNode(cfg, siteId, node); err != nil {
-				return err
+				return fmt.Errorf("failed to parse endpoints: %w", err)
 			}
 		}
 
@@ -53,7 +53,7 @@ func parseSitesNode(cfg *MachConfig, sitesNode *yaml.Node) error {
 
 func parseSiteEndpointNode(cfg *MachConfig, siteId string, node *yaml.Node) error {
 	nodes := mapYamlNodes(node.Content)
-	knownTags := []string{"url", "key", "zone"}
+	knownTags := []string{"url", "key", "zone", "throttling_rate_limit", "throttling_burst_limit"}
 
 	for endpointId, endpointNode := range nodes {
 		if endpointNode.Kind == yaml.ScalarNode {
