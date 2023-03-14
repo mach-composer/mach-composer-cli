@@ -3,6 +3,7 @@ package cloud
 import (
 	"context"
 	"fmt"
+	"os"
 
 	"github.com/elliotchance/pie/v2"
 	"github.com/mach-composer/mcc-sdk-go/mccsdk"
@@ -10,8 +11,13 @@ import (
 	"github.com/labd/mach-composer/internal/gitutils"
 )
 
-func AutoRegisterVersion(ctx context.Context, client *mccsdk.APIClient, organization, project, componentKey string) (string, error) {
-	branch, err := gitutils.GetCurrentBranch(ctx, ".")
+func AutoRegisterVersion(ctx context.Context, client *mccsdk.APIClient, organization, project, componentKey string, dryRun bool, gitFilterPaths []string) (string, error) {
+	cwd, err := os.Getwd()
+	if err != nil {
+		return "", err
+	}
+
+	branch, err := gitutils.GetCurrentBranch(ctx, cwd)
 	if err != nil {
 		return "", err
 	}
@@ -30,7 +36,7 @@ func AutoRegisterVersion(ctx context.Context, client *mccsdk.APIClient, organiza
 		baseRef = lastVersion.Version
 	}
 
-	commits, err := gitutils.GetRecentCommits(ctx, ".", branch, baseRef)
+	commits, err := gitutils.GetRecentCommits(ctx, cwd, branch, baseRef, gitFilterPaths)
 	if err != nil {
 		return "", err
 	}
@@ -40,19 +46,28 @@ func AutoRegisterVersion(ctx context.Context, client *mccsdk.APIClient, organiza
 		return "'", nil
 	}
 
+	versionDraft := commits[0].Commit
+	newVersion := &mccsdk.ComponentVersion{}
+
 	// Register new version
-	newVersion, _, err := client.
-		ComponentsApi.
-		ComponentVersionCreate(ctx, organization, project, componentKey).
-		ComponentVersionDraft(mccsdk.ComponentVersionDraft{
-			Version: commits[0].Commit,
-			Branch:  branch,
-		}).
-		Execute() //nolint:bodyclose
-	if err != nil {
-		return "", err
+	if dryRun {
+		fmt.Printf("Would create new version: %s (branch=%s)\n", versionDraft, branch)
+		newVersion.Version = versionDraft
+	} else {
+		var err error
+		newVersion, _, err = client.
+			ComponentsApi.
+			ComponentVersionCreate(ctx, organization, project, componentKey).
+			ComponentVersionDraft(mccsdk.ComponentVersionDraft{
+				Version: versionDraft,
+				Branch:  branch,
+			}).
+			Execute() //nolint:bodyclose
+		if err != nil {
+			return "", err
+		}
+		fmt.Printf("Created new version: %s (branch=%s)\n", newVersion.Version, branch)
 	}
-	fmt.Printf("Created new version: %s (branch=%s)\n", newVersion.Version, branch)
 
 	// Push commits
 	newCommits := make([]mccsdk.CommitData, len(commits))
@@ -75,16 +90,23 @@ func AutoRegisterVersion(ctx context.Context, client *mccsdk.APIClient, organiza
 		}
 	}
 
-	_, err = client.
-		ComponentsApi.
-		ComponentVersionPushCommits(ctx, organization, project, componentKey, newVersion.Version).
-		ComponentVersionCommits(mccsdk.ComponentVersionCommits{
-			Commits: newCommits,
-		}).
-		Execute() //nolint:bodyclose
-	if err != nil {
-		return newVersion.Version, err
+	if !dryRun {
+		_, err = client.
+			ComponentsApi.
+			ComponentVersionPushCommits(ctx, organization, project, componentKey, newVersion.Version).
+			ComponentVersionCommits(mccsdk.ComponentVersionCommits{
+				Commits: newCommits,
+			}).
+			Execute() //nolint:bodyclose
+		if err != nil {
+			return newVersion.Version, err
+		}
+		fmt.Printf("Recorded %d commits for version: %s\n", len(newCommits), newVersion.Version)
+	} else {
+		fmt.Printf("Found %d commits for version: %s\n", len(newCommits), newVersion.Version)
+		for _, c := range newCommits {
+			fmt.Printf("%s %s\n", c.Commit, c.Subject)
+		}
 	}
-	fmt.Printf("Recorded %d commits for version: %s\n", len(newCommits), newVersion.Version)
 	return newVersion.Version, nil
 }

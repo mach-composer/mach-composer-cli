@@ -12,6 +12,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/elliotchance/pie/v2"
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/plumbing"
 	"github.com/go-git/go-git/v5/plumbing/object"
@@ -60,7 +61,7 @@ func GetLastVersionGit(ctx context.Context, c *config.Component, origin string) 
 	}
 	fetchGitRepository(ctx, source, cacheDir)
 	path := filepath.Join(cacheDir, source.Name)
-	commits, err := GetRecentCommits(ctx, path, branch, c.Version)
+	commits, err := GetRecentCommits(ctx, path, branch, c.Version, []string{})
 	if err != nil {
 		return nil, err
 	}
@@ -127,8 +128,49 @@ func fetchGitRepository(ctx context.Context, source *gitSource, cacheDir string)
 	}
 }
 
+func getGitPath(path string) (string, error) {
+	// Walk upwards to find a .git directory from the current path
+	// This is needed because the current working directory is not always the
+	// same as the root of the repository
+	if path == "." {
+		var err error
+		path, err = os.Getwd()
+		if err != nil {
+			return "", err
+		}
+	}
+
+	for {
+		gitDir := filepath.Join(path, ".git")
+		_, err := os.Stat(gitDir)
+		if err == nil {
+			return path, nil
+		}
+		if os.IsNotExist(err) {
+			path = filepath.Dir(path)
+			if path == "/" {
+				return "", errors.New("could not find .git directory")
+			}
+			continue
+		}
+		return "", err
+	}
+}
+
+func OpenRepository(path string) (*git.Repository, error) {
+	gitPath, err := getGitPath(path)
+	if err != nil {
+		return nil, err
+	}
+	repo, err := git.PlainOpen(gitPath)
+	if err != nil {
+		return nil, err
+	}
+	return repo, nil
+}
+
 func GetCurrentBranch(ctx context.Context, path string) (string, error) {
-	repository, err := git.PlainOpen(path)
+	repository, err := OpenRepository(path)
 	if err != nil {
 		return "", err
 	}
@@ -141,8 +183,13 @@ func GetCurrentBranch(ctx context.Context, path string) (string, error) {
 }
 
 // GetRecentCommits returns all commits in descending order (newest first)
-func GetRecentCommits(ctx context.Context, path string, branch string, baseRef string) ([]gitCommit, error) {
-	repository, err := git.PlainOpen(path)
+func GetRecentCommits(ctx context.Context, basePath string, branch string, baseRef string, extraPaths []string) ([]gitCommit, error) {
+	gitPath, err := getGitPath(basePath)
+	if err != nil {
+		return nil, err
+	}
+
+	repository, err := OpenRepository(gitPath)
 	if err != nil {
 		return nil, err
 	}
@@ -158,7 +205,7 @@ func GetRecentCommits(ctx context.Context, path string, branch string, baseRef s
 	if baseRef != "" {
 		baseRevision, err = repository.ResolveRevision(plumbing.Revision(baseRef))
 		if err != nil {
-			return nil, fmt.Errorf("failed to find commit %s in repository %s: %w", baseRef, path, err)
+			return nil, fmt.Errorf("failed to find commit %s in repository %s: %w", baseRef, gitPath, err)
 		}
 	}
 
@@ -166,7 +213,7 @@ func GetRecentCommits(ctx context.Context, path string, branch string, baseRef s
 	if branch == "" {
 		branchRef, err := repository.Head()
 		if err != nil {
-			err = fmt.Errorf("failed to resolve HEAD in repository (%s): %w", path, err)
+			err = fmt.Errorf("failed to resolve HEAD in repository (%s): %w", gitPath, err)
 			return nil, err
 		}
 		hash := branchRef.Hash()
@@ -179,7 +226,14 @@ func GetRecentCommits(ctx context.Context, path string, branch string, baseRef s
 		}
 	}
 
-	commits, err := commitsBetween(repository, baseRevision, branchRevision)
+	filterPaths := []string{basePath}
+	filterPaths = append(filterPaths, extraPaths...)
+	filterPaths, err = relativePaths(gitPath, filterPaths)
+	if err != nil {
+		return nil, err
+	}
+
+	commits, err := commitsBetween(repository, baseRevision, branchRevision, filterPaths)
 	if err != nil {
 		return nil, err
 	}
@@ -212,14 +266,42 @@ func GetRecentCommits(ctx context.Context, path string, branch string, baseRef s
 	return result, nil
 }
 
+// relativePaths returns the relative paths of the given paths to the given
+// gitPath
+func relativePaths(gitPath string, paths []string) ([]string, error) {
+	var err error
+	gitPath, err = filepath.Abs(gitPath)
+	if err != nil {
+		return nil, err
+	}
+
+	result := []string{}
+	for _, p := range paths {
+		rel, err := filepath.Rel(gitPath, p)
+		if err != nil {
+			return nil, err
+		}
+		result = append(result, rel)
+	}
+	return result, nil
+}
+
 // commitsBetween returns the commits from x to y. It should equal the
 // functionality of `git log base..head`
 // See https://github.com/go-git/go-git/issues/69
 // FIXME: very naive implementation
-func commitsBetween(repository *git.Repository, first, last *plumbing.Hash) ([]*object.Commit, error) {
+func commitsBetween(repository *git.Repository, first, last *plumbing.Hash, paths []string) ([]*object.Commit, error) {
 	cIter, err := repository.Log(&git.LogOptions{
 		Order: git.LogOrderCommitterTime,
 		From:  *last,
+		PathFilter: func(path string) bool {
+			if len(paths) == 0 {
+				return true
+			}
+			return pie.Any(paths, func(p string) bool {
+				return strings.HasPrefix(path, p)
+			})
+		},
 	})
 	if err != nil {
 		return nil, err

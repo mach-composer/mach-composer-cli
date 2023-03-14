@@ -2,7 +2,9 @@ package cloudcmd
 
 import (
 	"os"
+	"path/filepath"
 
+	"github.com/elliotchance/pie/v2"
 	"github.com/mach-composer/mcc-sdk-go/mccsdk"
 	"github.com/spf13/cobra"
 
@@ -85,6 +87,10 @@ var componentRegisterVersionCmd = &cobra.Command{
 
 		organization := MustGetString(cmd, "organization")
 		project := MustGetString(cmd, "project")
+		gitFilterPaths, err := cmd.Flags().GetStringArray("git-filter-paths")
+		if err != nil {
+			return err
+		}
 
 		auto, err := cmd.Flags().GetBool("auto")
 		if err != nil {
@@ -116,7 +122,19 @@ var componentRegisterVersionCmd = &cobra.Command{
 				resource.GetComponent(), resource.GetVersion())
 
 		} else {
-			_, err := cloud.AutoRegisterVersion(ctx, client, organization, project, componentKey)
+			dryRun, err := cmd.Flags().GetBool("dry-run")
+			if err != nil {
+				return err
+			}
+
+			cwd, err := os.Getwd()
+			if err != nil {
+				return err
+			}
+			gitFilterPaths = pie.Map(gitFilterPaths, func(path string) string {
+				return filepath.Join(cwd, path)
+			})
+			_, err = cloud.AutoRegisterVersion(ctx, client, organization, project, componentKey, dryRun, gitFilterPaths)
 			if err != nil {
 				return err
 			}
@@ -271,6 +289,8 @@ func init() {
 	CloudCmd.AddCommand(componentRegisterVersionCmd)
 	registerContextFlags(componentRegisterVersionCmd)
 	componentRegisterVersionCmd.Flags().Bool("auto", false, "Automate")
+	componentRegisterVersionCmd.Flags().Bool("dry-run", false, "Dry run")
+	componentRegisterVersionCmd.Flags().StringArray("git-filter-paths", nil, "Filter comits based on given paths")
 
 	CloudCmd.AddCommand(componentListVersionCmd)
 	registerContextFlags(componentListVersionCmd)
