@@ -6,7 +6,9 @@ require (
 	github.com/adrg/xdg v0.4.0
 	github.com/elliotchance/pie/v2 v2.5.1
 	github.com/fatih/color v1.14.1
+	github.com/go-git/go-billy/v5 v5.4.1
 	github.com/go-git/go-git/v5 v5.6.0
+	github.com/google/uuid v1.3.0
 	github.com/grokify/go-pkce v0.2.0
 	github.com/hashicorp/go-getter v1.7.0
 	github.com/hashicorp/go-hclog v1.4.0
@@ -57,11 +59,9 @@ require (
 	github.com/flosch/pongo2/v5 v5.0.0 // indirect
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
 	github.com/go-git/gcfg v1.5.0 // indirect
-	github.com/go-git/go-billy/v5 v5.4.1 // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/google/go-cmp v0.5.9 // indirect
-	github.com/google/uuid v1.3.0 // indirect
 	github.com/googleapis/enterprise-certificate-proxy v0.2.3 // indirect
 	github.com/googleapis/gax-go/v2 v2.7.0 // indirect
 	github.com/gosimple/unidecode v1.0.1 // indirect
