@@ -183,6 +183,7 @@ func GetCurrentBranch(ctx context.Context, path string) (string, error) {
 }
 
 // GetRecentCommits returns all commits in descending order (newest first)
+// baseRef is the commit to start from, if empty the current HEAD is used
 func GetRecentCommits(ctx context.Context, basePath string, branch string, baseRef string, extraPaths []string) ([]gitCommit, error) {
 	gitPath, err := getGitPath(basePath)
 	if err != nil {
@@ -209,6 +210,7 @@ func GetRecentCommits(ctx context.Context, basePath string, branch string, baseR
 		}
 	}
 
+	// Resolve the last comit in the branch
 	var branchRevision *plumbing.Hash
 	if branch == "" {
 		branchRef, err := repository.Head()
@@ -281,7 +283,7 @@ func relativePaths(gitPath string, paths []string) ([]string, error) {
 		if err != nil {
 			return nil, err
 		}
-		result = append(result, rel)
+		result = append(result, fmt.Sprintf("%s%s", rel, string(filepath.Separator)))
 	}
 	return result, nil
 }
