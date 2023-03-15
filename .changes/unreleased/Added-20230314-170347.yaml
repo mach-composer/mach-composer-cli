@@ -1,5 +1,0 @@
-kind: Added
-body: Add `--dry-run` and `--git-filter-paths` to `cloud register-component-version`
-  command. The `--git-filter-paths` argument can be used to limit the scope of the
-  changes when working within monorepo's
-time: 2023-03-14T17:03:47.816564+01:00
