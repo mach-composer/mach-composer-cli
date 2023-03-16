@@ -2,6 +2,7 @@ package cloud
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"os"
 
@@ -36,37 +37,42 @@ func AutoRegisterVersion(ctx context.Context, client *mccsdk.APIClient, organiza
 		baseRef = lastVersion.Version
 	}
 
-	commits, err := gitutils.GetRecentCommits(ctx, cwd, branch, baseRef, gitFilterPaths)
+	newVersion, err := gitutils.GetVersionInfo(ctx, cwd, branch)
 	if err != nil {
 		return "", err
 	}
-
-	if len(commits) == 0 {
-		fmt.Printf("no new commits found since last version (%s)\n", baseRef)
-		return "'", nil
-	}
-
-	versionDraft := commits[0].Commit
-	newVersion := &mccsdk.ComponentVersion{}
+	versionIdentifier := newVersion.Identifier()
 
 	// Register new version
 	if dryRun {
-		fmt.Printf("Would create new version: %s (branch=%s)\n", versionDraft, branch)
-		newVersion.Version = versionDraft
+		fmt.Printf("Would create new version: %s (branch=%s)\n", versionIdentifier, branch)
 	} else {
-		var err error
-		newVersion, _, err = client.
+		createdVersion, _, err := client.
 			ComponentsApi.
 			ComponentVersionCreate(ctx, organization, project, componentKey).
 			ComponentVersionDraft(mccsdk.ComponentVersionDraft{
-				Version: versionDraft,
+				Version: versionIdentifier,
 				Branch:  branch,
 			}).
 			Execute() //nolint:bodyclose
 		if err != nil {
 			return "", err
 		}
-		fmt.Printf("Created new version: %s (branch=%s)\n", newVersion.Version, branch)
+		fmt.Printf("Created new version: %s (branch=%s)\n", createdVersion.Version, branch)
+	}
+
+	commits, err := gitutils.GetRecentCommits(ctx, cwd, baseRef, branch, gitFilterPaths)
+	if err != nil {
+		if errors.Is(err, gitutils.ErrGitRevisionNotFound) {
+			fmt.Printf("Failed to calculate changes, last version (%s) not found in the repository\n", baseRef)
+			return "", nil
+		}
+		return "", err
+	}
+
+	if len(commits) == 0 {
+		fmt.Printf("No new commits found since last version (%s)\n", baseRef)
+		return "'", nil
 	}
 
 	// Push commits
@@ -93,20 +99,20 @@ func AutoRegisterVersion(ctx context.Context, client *mccsdk.APIClient, organiza
 	if !dryRun {
 		_, err = client.
 			ComponentsApi.
-			ComponentVersionPushCommits(ctx, organization, project, componentKey, newVersion.Version).
+			ComponentVersionPushCommits(ctx, organization, project, componentKey, versionIdentifier).
 			ComponentVersionCommits(mccsdk.ComponentVersionCommits{
 				Commits: newCommits,
 			}).
 			Execute() //nolint:bodyclose
 		if err != nil {
-			return newVersion.Version, err
+			return versionIdentifier, err
 		}
-		fmt.Printf("Recorded %d commits for version: %s\n", len(newCommits), newVersion.Version)
+		fmt.Printf("Recorded %d commits for version: %s\n", len(newCommits), versionIdentifier)
 	} else {
-		fmt.Printf("Found %d commits for version: %s\n", len(newCommits), newVersion.Version)
+		fmt.Printf("Found %d commits for version: %s\n", len(newCommits), versionIdentifier)
 		for _, c := range newCommits {
 			fmt.Printf("%s %s\n", c.Commit, c.Subject)
 		}
 	}
-	return newVersion.Version, nil
+	return versionIdentifier, nil
 }

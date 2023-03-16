@@ -67,11 +67,16 @@ func TestCommitsBetween(t *testing.T) {
 	secondhash, err := tr.commit("Second commit")
 	require.NoError(t, err)
 
-	commits, err := commitsBetween(tr.repository(), nil, &secondhash, []string{})
+	ctx := context.Background()
+
+	targetRev := plumbing.Revision(secondhash.String())
+	baseRev := plumbing.Revision(firsthash.String())
+
+	commits, err := commitsBetween(ctx, tr.repository(), nil, &targetRev, []string{})
 	require.NoError(t, err)
 	assert.Equal(t, 2, len(commits))
 
-	commits, err = commitsBetween(tr.repository(), &firsthash, &secondhash, []string{})
+	commits, err = commitsBetween(ctx, tr.repository(), &baseRev, &targetRev, []string{})
 	require.NoError(t, err)
 	assert.Equal(t, 1, len(commits))
 }
@@ -107,12 +112,15 @@ func TestCommitsBetweenFilterPath(t *testing.T) {
 	thirdhash, err := tr.commit("third commit")
 	require.NoError(t, err)
 
+	ctx := context.Background()
+	targetRev := plumbing.Revision(thirdhash.String())
+
 	// Check results
-	commits, err := commitsBetween(tr.repository(), nil, &thirdhash, []string{})
+	commits, err := commitsBetween(ctx, tr.repository(), nil, &targetRev, []string{})
 	require.NoError(t, err)
 	assert.Equal(t, 3, len(commits))
 
-	commits, err = commitsBetween(tr.repository(), nil, &thirdhash, []string{"wanted/"})
+	commits, err = commitsBetween(ctx, tr.repository(), nil, &targetRev, []string{"wanted/"})
 	require.NoError(t, err)
 	assert.Equal(t, 1, len(commits))
 }
@@ -135,11 +143,35 @@ func TestGetRecentCommitsInvalidStart(t *testing.T) {
 	_, err = tr.r.Head()
 	require.NoError(t, err)
 
-	commits, err := GetRecentCommits(context.Background(), path, "", lastVersion, []string{})
+	commits, err := GetRecentCommits(context.Background(), path, lastVersion, "", []string{})
+	require.ErrorIs(t, err, ErrGitRevisionNotFound)
+	require.Nil(t, commits)
+}
+
+func TestGetRecentCommitsValidStart(t *testing.T) {
+	path := t.TempDir()
+	tr := NewTestRepository(path)
+
+	err := tr.addTextfile("test-1.txt", "test-1")
+	require.NoError(t, err)
+	h, err := tr.commit("Initial commit")
+	require.NoError(t, err)
+
+	err = tr.addTextfile("test-2.txt", "test-2")
+	require.NoError(t, err)
+	_, err = tr.commit("Second commit")
+	require.NoError(t, err)
+
+	_, err = tr.r.Head()
+	require.NoError(t, err)
+
+	lastVersion := h.String()
+
+	commits, err := GetRecentCommits(context.Background(), path, lastVersion, "", []string{})
 	require.NoError(t, err)
 
 	require.NotNil(t, commits)
-	assert.Equal(t, 2, len(commits))
+	assert.Equal(t, 1, len(commits))
 }
 
 func TestFilterPaths(t *testing.T) {

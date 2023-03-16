@@ -87,7 +87,7 @@ var componentRegisterVersionCmd = &cobra.Command{
 
 		organization := MustGetString(cmd, "organization")
 		project := MustGetString(cmd, "project")
-		gitFilterPaths, err := cmd.Flags().GetStringArray("git-filter-paths")
+		gitFilterPaths, err := cmd.Flags().GetStringArray("git-filter-path")
 		if err != nil {
 			return err
 		}
@@ -132,6 +132,10 @@ var componentRegisterVersionCmd = &cobra.Command{
 				return err
 			}
 			gitFilterPaths = pie.Map(gitFilterPaths, func(path string) string {
+				if filepath.IsAbs(path) {
+					return path
+				}
+
 				return filepath.Join(cwd, path)
 			})
 			_, err = cloud.AutoRegisterVersion(ctx, client, organization, project, componentKey, dryRun, gitFilterPaths)
@@ -290,7 +294,7 @@ func init() {
 	registerContextFlags(componentRegisterVersionCmd)
 	componentRegisterVersionCmd.Flags().Bool("auto", false, "Automate")
 	componentRegisterVersionCmd.Flags().Bool("dry-run", false, "Dry run")
-	componentRegisterVersionCmd.Flags().StringArray("git-filter-paths", nil, "Filter comits based on given paths")
+	componentRegisterVersionCmd.Flags().StringArray("git-filter-path", nil, "Filter comits based on given paths")
 
 	CloudCmd.AddCommand(componentListVersionCmd)
 	registerContextFlags(componentListVersionCmd)
