@@ -17,4 +17,3 @@ linters:
   - tenv
   - typecheck
   - unused
-  - whitespace

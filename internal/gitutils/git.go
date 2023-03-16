@@ -24,6 +24,8 @@ import (
 	"github.com/labd/mach-composer/internal/utils"
 )
 
+var ErrGitRevisionNotFound = errors.New("git revision not found")
+
 type gitSource struct {
 	URL        string
 	Repository string
@@ -45,13 +47,28 @@ type gitCommitAuthor struct {
 	Date  time.Time
 }
 
+type gitVersionInfo struct {
+	Hash     plumbing.Hash
+	Tag      string
+	Revision plumbing.Revision
+}
+
+func (g *gitVersionInfo) Identifier() string {
+	return g.Hash.String()[0:7]
+}
+
 func OpenRepository(path string) (*git.Repository, error) {
-	gitPath, err := getGitPath(path)
-	if err != nil {
-		return nil, err
-	}
-	repo, err := git.PlainOpen(gitPath)
-	if err != nil {
+	repo, err := git.PlainOpen(path)
+	if err == git.ErrRepositoryNotExists {
+		gitPath, err := searchGitPath(path)
+		if err != nil {
+			return nil, err
+		}
+		repo, err = git.PlainOpen(gitPath)
+		if err != nil {
+			return nil, err
+		}
+	} else if err != nil {
 		return nil, err
 	}
 
@@ -109,7 +126,7 @@ func GetLastVersionGit(ctx context.Context, c *config.Component, origin string) 
 	}
 	fetchGitRepository(ctx, source, cacheDir)
 	path := filepath.Join(cacheDir, source.Name)
-	commits, err := GetRecentCommits(ctx, path, branch, c.Version, []string{})
+	commits, err := GetRecentCommits(ctx, path, c.Version, branch, []string{})
 	if err != nil {
 		return nil, err
 	}
@@ -130,10 +147,39 @@ func GetCurrentBranch(ctx context.Context, path string) (string, error) {
 	return branchRef.Name().Short(), nil
 }
 
+// GetVersionInfo returns the latest commit hash of a specific branch
+func GetVersionInfo(ctx context.Context, path string, branch string) (*gitVersionInfo, error) {
+	repository, err := OpenRepository(path)
+	if err != nil {
+		return nil, fmt.Errorf("failed to open repository: %w", err)
+	}
+
+	// Resolve the last commit in the branch
+	info := &gitVersionInfo{}
+	if branch == "" {
+		branchRef, err := repository.Head()
+		if err != nil {
+			err = fmt.Errorf("failed to resolve HEAD in repository (%s): %w", path, err)
+			return nil, err
+		}
+		info.Hash = branchRef.Hash()
+		info.Revision = plumbing.Revision("HEAD")
+	} else {
+		branchRef := plumbing.NewBranchReferenceName(branch)
+		branchRevision, err := repository.ResolveRevision(plumbing.Revision(branchRef))
+		if err != nil {
+			return nil, fmt.Errorf("failed to find branch %s in repository: %w", branch, err)
+		}
+		info.Hash = *branchRevision
+		info.Revision = plumbing.Revision(branchRef)
+	}
+	return info, nil
+}
+
 // GetRecentCommits returns all commits in descending order (newest first)
 // baseRef is the commit to start from, if empty the current HEAD is used
-func GetRecentCommits(ctx context.Context, basePath string, branch string, baseRef string, extraPaths []string) ([]gitCommit, error) {
-	gitPath, err := getGitPath(basePath)
+func GetRecentCommits(ctx context.Context, basePath string, baseRevision, targetRevision string, extraPaths []string) ([]gitCommit, error) {
+	gitPath, err := searchGitPath(basePath)
 	if err != nil {
 		return nil, err
 	}
@@ -143,43 +189,14 @@ func GetRecentCommits(ctx context.Context, basePath string, branch string, baseR
 		return nil, fmt.Errorf("failed to open repository: %w", err)
 	}
 
-	// Resolve the base commit in the repository. If it's not found, we'll
-	// start from the beginning of the repository.
-	var baseRevision *plumbing.Hash
-	if baseRef != "" {
-		baseRevision, err = repository.ResolveRevision(plumbing.Revision(baseRef))
-		if err != nil {
-			zerolog.Ctx(ctx).Warn().Err(err).Msgf("failed to find commit %s in repository %s", baseRef, gitPath)
-			baseRevision = nil
-		}
-	}
-
-	// Resolve the last commit in the branch
-	var branchRevision *plumbing.Hash
-	if branch == "" {
-		branchRef, err := repository.Head()
-		if err != nil {
-			err = fmt.Errorf("failed to resolve HEAD in repository (%s): %w", gitPath, err)
-			return nil, err
-		}
-		hash := branchRef.Hash()
-		branchRevision = &hash
-	} else {
-		branchRef := plumbing.NewBranchReferenceName(branch)
-		branchRevision, err = repository.ResolveRevision(plumbing.Revision(branchRef))
-		if err != nil {
-			return nil, fmt.Errorf("failed to find branch %s in repository: %w", branch, err)
-		}
-	}
-
-	relevantPaths := []string{basePath}
-	relevantPaths = append(relevantPaths, extraPaths...)
-	paths, err := filterPaths(gitPath, relevantPaths)
+	paths, err := filterPaths(gitPath, extraPaths)
 	if err != nil {
 		return nil, err
 	}
 
-	commits, err := commitsBetween(repository, baseRevision, branchRevision, paths)
+	baseRev := asRevision(baseRevision)
+	targetRev := asRevision(targetRevision)
+	commits, err := commitsBetween(ctx, repository, baseRev, targetRev, paths)
 	if err != nil {
 		return nil, err
 	}
@@ -274,10 +291,11 @@ func fetchGitRepository(ctx context.Context, source *gitSource, cacheDir string)
 	}
 }
 
-func getGitPath(path string) (string, error) {
-	// Walk upwards to find a .git directory from the current path
-	// This is needed because the current working directory is not always the
-	// same as the root of the repository
+// Walk upwards to find a .git directory from the current path
+// This is needed because the current working directory is not always the
+// same as the root of the repository
+func searchGitPath(path string) (string, error) {
+
 	if path == "." {
 		var err error
 		path, err = os.Getwd()
@@ -287,23 +305,25 @@ func getGitPath(path string) (string, error) {
 	}
 
 	for {
-		gitDir := filepath.Join(path, ".git")
-		_, err := os.Stat(gitDir)
+		_, err := git.PlainOpen(path)
 		if err == nil {
 			return path, nil
 		}
-		if os.IsNotExist(err) {
-			path = filepath.Dir(path)
-			if path == "/" {
-				return "", errors.New("could not find .git directory")
-			}
-			continue
+
+		if err != git.ErrRepositoryNotExists {
+			return "", fmt.Errorf("failed to find open repository: %w", err)
 		}
-		return "", err
+
+		path = filepath.Dir(path)
+		if path == "/" {
+			break
+		}
 	}
+
+	return "", errors.New("could not find .git directory")
 }
 
-// filterPaths returns the paths to filter on for git commits. It cretes
+// filterPaths returns the paths to filter on for git commits. It creates
 // relative paths from the gitPath to the paths provided.
 func filterPaths(gitPath string, paths []string) ([]string, error) {
 	var err error
@@ -314,10 +334,15 @@ func filterPaths(gitPath string, paths []string) ([]string, error) {
 
 	result := []string{}
 	for _, p := range paths {
-
-		absPath, err := filepath.Abs(p)
-		if err != nil {
-			return nil, err
+		var absPath string
+		if filepath.IsAbs(p) {
+			absPath = p
+		} else {
+			ap, err := filepath.Abs(p)
+			if err != nil {
+				return nil, err
+			}
+			absPath = ap
 		}
 
 		// If the path is the same as the git path, then all paths
@@ -341,14 +366,44 @@ func filterPaths(gitPath string, paths []string) ([]string, error) {
 	return result, nil
 }
 
-// commitsBetween returns the commits from x to y. It should equal the
-// functionality of `git log base..head`
+// commitsBetween returns the commits between revisions first and last. It
+// should equal the functionality of `git log base..head`
 // See https://github.com/go-git/go-git/issues/69
-// FIXME: very naive implementation
-func commitsBetween(repository *git.Repository, first, last *plumbing.Hash, paths []string) ([]*object.Commit, error) {
+func commitsBetween(ctx context.Context, repository *git.Repository, first, last *plumbing.Revision, paths []string) ([]*object.Commit, error) {
+	zerolog.Ctx(ctx).Debug().Msgf("Getting commits between %s and %s (paths = %s)", first, last, paths)
+	if first != nil {
+		_, err := repository.ResolveRevision(*first)
+		if err != nil {
+			zerolog.Ctx(ctx).Debug().Err(err).Msgf("failed to find commit %s in repository", first)
+			return nil, ErrGitRevisionNotFound
+		}
+	}
+
+	// Resolve the base commit in the repository. If it's not found, we'll
+	// start from the beginning of the repository.
+	var firstHash, lastHash *plumbing.Hash
+	if first != nil {
+		if val, err := repository.ResolveRevision(*first); err != nil {
+			zerolog.Ctx(ctx).Warn().Err(err).Msgf("failed to resolve %s in repository", first.String())
+			return []*object.Commit{}, nil
+		} else {
+			firstHash = val
+		}
+	}
+
+	if last == nil {
+		last = asRevision("HEAD")
+	}
+
+	if val, err := repository.ResolveRevision(*last); err != nil {
+		return []*object.Commit{}, fmt.Errorf("failed to resolve %s in repository", last.String())
+	} else {
+		lastHash = val
+	}
+
 	cIter, err := repository.Log(&git.LogOptions{
 		Order: git.LogOrderCommitterTime,
-		From:  *last,
+		From:  *lastHash,
 		PathFilter: func(path string) bool {
 			if len(paths) == 0 {
 				return true
@@ -364,7 +419,7 @@ func commitsBetween(repository *git.Repository, first, last *plumbing.Hash, path
 
 	result := []*object.Commit{}
 	err = cIter.ForEach(func(c *object.Commit) error {
-		if first != nil && *first == c.Hash {
+		if first != nil && *firstHash == c.Hash {
 			return storer.ErrStop
 		}
 		result = append(result, c)
@@ -394,4 +449,12 @@ func runGit(ctx context.Context, cwd string, args ...string) []byte {
 	}
 
 	return output
+}
+
+func asRevision(s string) *plumbing.Revision {
+	if s == "" {
+		return nil
+	}
+	r := plumbing.Revision(s)
+	return &r
 }
