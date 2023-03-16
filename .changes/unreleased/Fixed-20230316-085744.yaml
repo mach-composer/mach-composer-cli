@@ -1,0 +1,3 @@
+kind: Fixed
+body: Don't error when a previous version is not found in the git repository
+time: 2023-03-16T08:57:44.28891+01:00
