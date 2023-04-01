@@ -207,6 +207,13 @@ func renderComponent(ctx context.Context, cfg *config.MachConfig, site *config.S
 
 		module "{{ .ComponentName }}" {
 			source = "{{ .Source }}"
+			{{ if .ComponentVersion }}
+				component_version = "{{ .ComponentVersion }}"
+			{{ end }}
+
+			{{ if .SiteName }}
+				site = "{{ .SiteName }}"
+			{{ end }}
 
 			{{ if .ComponentVariables }}
 				{{ .ComponentVariables }}
@@ -217,10 +224,8 @@ func renderComponent(ctx context.Context, cfg *config.MachConfig, site *config.S
 			{{ end }}
 
 			{{ if .HasCloudIntegration }}
-			component_version       = "{{ .ComponentVersion }}"
-			environment             = "{{ .Environment }}"
-			site                    = "{{ .SiteName }}"
-			tags                    = local.tags
+			environment = "{{ .Environment }}"
+			tags = local.tags
 			{{ end }}
 
 			{{ range $item := .PluginVariables }}
