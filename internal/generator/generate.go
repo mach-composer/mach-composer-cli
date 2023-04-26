@@ -227,17 +227,21 @@ func renderComponent(ctx context.Context, cfg *config.MachConfig, site *config.S
 				{{ $item }}
 			{{ end }}
 
+			{{ if .PluginProviders }}
 			providers = {
 				{{ range $item := .PluginProviders }}
 					{{ $item }},
 				{{ end }}
 			}
+			{{ end }}
 
+			{{ if .PluginDependsOn }}
 			depends_on = [
 				{{ range $item := .PluginDependsOn }}
 					{{ $item }},
 				{{ end }}
 			]
+			{{ end }}
 		}
 	`
 

@@ -1,0 +1,3 @@
+kind: Fixed
+body: Don't render empty depends_on or providers block in modules
+time: 2023-04-26T10:49:59.292488+02:00
