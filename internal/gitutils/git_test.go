@@ -72,11 +72,11 @@ func TestCommitsBetween(t *testing.T) {
 	targetRev := plumbing.Revision(secondhash.String())
 	baseRev := plumbing.Revision(firsthash.String())
 
-	commits, err := commitsBetween(ctx, tr.repository(), nil, &targetRev, []string{})
+	commits, err := commitsBetween(ctx, "test", tr.repository(), nil, &targetRev, []string{})
 	require.NoError(t, err)
 	assert.Equal(t, 2, len(commits))
 
-	commits, err = commitsBetween(ctx, tr.repository(), &baseRev, &targetRev, []string{})
+	commits, err = commitsBetween(ctx, "test", tr.repository(), &baseRev, &targetRev, []string{})
 	require.NoError(t, err)
 	assert.Equal(t, 1, len(commits))
 }
@@ -116,11 +116,11 @@ func TestCommitsBetweenFilterPath(t *testing.T) {
 	targetRev := plumbing.Revision(thirdhash.String())
 
 	// Check results
-	commits, err := commitsBetween(ctx, tr.repository(), nil, &targetRev, []string{})
+	commits, err := commitsBetween(ctx, "test", tr.repository(), nil, &targetRev, []string{})
 	require.NoError(t, err)
 	assert.Equal(t, 3, len(commits))
 
-	commits, err = commitsBetween(ctx, tr.repository(), nil, &targetRev, []string{"wanted/"})
+	commits, err = commitsBetween(ctx, "test", tr.repository(), nil, &targetRev, []string{"wanted/"})
 	require.NoError(t, err)
 	assert.Equal(t, 1, len(commits))
 }
@@ -143,7 +143,7 @@ func TestGetRecentCommitsInvalidStart(t *testing.T) {
 	_, err = tr.r.Head()
 	require.NoError(t, err)
 
-	commits, err := GetRecentCommits(context.Background(), path, lastVersion, "", []string{})
+	commits, err := GetRecentCommits(context.Background(), "my-component", path, lastVersion, "", []string{})
 	require.ErrorIs(t, err, ErrGitRevisionNotFound)
 	require.Nil(t, commits)
 }
@@ -167,7 +167,7 @@ func TestGetRecentCommitsValidStart(t *testing.T) {
 
 	lastVersion := h.String()
 
-	commits, err := GetRecentCommits(context.Background(), path, lastVersion, "", []string{})
+	commits, err := GetRecentCommits(context.Background(), "my-component", path, lastVersion, "", []string{})
 	require.NoError(t, err)
 
 	require.NotNil(t, commits)

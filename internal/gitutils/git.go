@@ -122,7 +122,7 @@ func GetLastVersionGit(ctx context.Context, c *config.Component, origin string) 
 	}
 	fetchGitRepository(ctx, source, cacheDir)
 	path := filepath.Join(cacheDir, source.Name)
-	commits, err := GetRecentCommits(ctx, path, c.Version, branch, []string{})
+	commits, err := GetRecentCommits(ctx, c.Name, path, c.Version, branch, []string{})
 	if err != nil {
 		return nil, err
 	}
@@ -174,7 +174,7 @@ func GetVersionInfo(ctx context.Context, path string, branch string) (*gitVersio
 
 // GetRecentCommits returns all commits in descending order (newest first)
 // baseRef is the commit to start from, if empty the current HEAD is used
-func GetRecentCommits(ctx context.Context, basePath string, baseRevision, targetRevision string, extraPaths []string) ([]gitCommit, error) {
+func GetRecentCommits(ctx context.Context, name, basePath string, baseRevision, targetRevision string, extraPaths []string) ([]gitCommit, error) {
 	gitPath, err := searchGitPath(basePath)
 	if err != nil {
 		return nil, err
@@ -192,7 +192,7 @@ func GetRecentCommits(ctx context.Context, basePath string, baseRevision, target
 
 	baseRev := asRevision(baseRevision)
 	targetRev := asRevision(targetRevision)
-	commits, err := commitsBetween(ctx, repository, baseRev, targetRev, paths)
+	commits, err := commitsBetween(ctx, name, repository, baseRev, targetRev, paths)
 	if err != nil {
 		return nil, err
 	}

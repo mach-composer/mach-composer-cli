@@ -61,7 +61,7 @@ func AutoRegisterVersion(ctx context.Context, client *mccsdk.APIClient, organiza
 		fmt.Printf("Created new version: %s (branch=%s)\n", createdVersion.Version, branch)
 	}
 
-	commits, err := gitutils.GetRecentCommits(ctx, cwd, baseRef, branch, gitFilterPaths)
+	commits, err := gitutils.GetRecentCommits(ctx, componentKey, cwd, baseRef, branch, gitFilterPaths)
 	if err != nil {
 		if errors.Is(err, gitutils.ErrGitRevisionNotFound) {
 			fmt.Printf("Failed to calculate changes, last version (%s) not found in the repository\n", baseRef)

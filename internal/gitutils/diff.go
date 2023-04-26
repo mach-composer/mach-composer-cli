@@ -17,12 +17,12 @@ import (
 // commitsBetween returns the commits between revisions first and last. It
 // should equal the functionality of `git log base..head`
 // See https://github.com/go-git/go-git/issues/69
-func commitsBetween(ctx context.Context, repository *git.Repository, first, last *plumbing.Revision, paths []string) ([]*object.Commit, error) {
-	zerolog.Ctx(ctx).Debug().Msgf("Getting commits between %s and %s (paths = %s)", first, last, paths)
+func commitsBetween(ctx context.Context, name string, repository *git.Repository, first, last *plumbing.Revision, paths []string) ([]*object.Commit, error) {
+	zerolog.Ctx(ctx).Debug().Msgf("Getting %s commits between %s and %s (paths = %s)", name, first, last, paths)
 	if first != nil {
 		_, err := repository.ResolveRevision(*first)
 		if err != nil {
-			zerolog.Ctx(ctx).Debug().Err(err).Msgf("failed to find commit %s in repository", first)
+			zerolog.Ctx(ctx).Debug().Err(err).Msgf("%s: failed to find commit %s in repository", name, first)
 			return nil, ErrGitRevisionNotFound
 		}
 	}
@@ -32,7 +32,7 @@ func commitsBetween(ctx context.Context, repository *git.Repository, first, last
 	var firstHash, lastHash *plumbing.Hash
 	if first != nil {
 		if val, err := repository.ResolveRevision(*first); err != nil {
-			zerolog.Ctx(ctx).Warn().Err(err).Msgf("failed to resolve %s in repository", first.String())
+			zerolog.Ctx(ctx).Warn().Err(err).Msgf("%s: failed to resolve %s in repository", name, first.String())
 			return []*object.Commit{}, nil
 		} else {
 			firstHash = val
@@ -44,7 +44,12 @@ func commitsBetween(ctx context.Context, repository *git.Repository, first, last
 	}
 
 	if val, err := repository.ResolveRevision(*last); err != nil {
-		return []*object.Commit{}, fmt.Errorf("failed to resolve %s in repository", last.String())
+		remoteRevision := asRevision(fmt.Sprintf("remotes/origin/%s", *last))
+		if val, err := repository.ResolveRevision(*remoteRevision); err != nil {
+			return []*object.Commit{}, fmt.Errorf("%s: failed to resolve %s in repository", name, last.String())
+		} else {
+			lastHash = val
+		}
 	} else {
 		lastHash = val
 	}
