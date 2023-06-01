@@ -1,6 +1,9 @@
 ---
 mach_composer:
   version: 1
+  cloud:
+    organization_id: "lab-digital"
+    project_id: "my-azure-example"
   plugins:
     aws:
       source: mach-composer/azure-minimal #unopinioned version of Azure integration
@@ -8,6 +11,7 @@ mach_composer:
     commercetools:
       source: mach-composer/commercetools
       version: 0.1.8
+
 global:
   environment: test
   terraform_config:
@@ -22,6 +26,7 @@ global:
     subscription_id: <your-subscription-id>
     region: westeurope
     resources_prefix: ""
+
 sites:
   - identifier: my-site
     commercetools:
@@ -45,6 +50,7 @@ sites:
           FOO_VAR: my-value
         secrets:
           MY_SECRET: secretvalue
+
 components:
   - name: your-component
     source: git::https://github.com/<username>/<your-component>.git//terraform
