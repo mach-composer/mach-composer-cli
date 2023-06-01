@@ -46,12 +46,14 @@ nav:
       - Components: topics/deployment/config/components.md
   - Plugins:
     - topics/integrations/plugin-system.md
-    - topics/integrations/commercetools.md
-    - topics/integrations/commercelayer.md
-    - topics/integrations/contentful.md
     - topics/integrations/amplience.md
-    - topics/integrations/sentry.md
     - topics/integrations/apollo_federation.md
+    - topics/integrations/aws.md
+    - topics/integrations/azure.md
+    - topics/integrations/commercelayer.md
+    - topics/integrations/commercetools.md
+    - topics/integrations/contentful.md
+    - topics/integrations/sentry.md
   - topics/security.md
   - Architecture guidance:
     - Overview: topics/architecture/index.md
