@@ -2,6 +2,12 @@
 This section will describe how to setup your CI/CD pipeline using GitHub Actions
 including some examples.
 
+!!! tip "Github Actions is the preferred CI/CD platform for MACH composer"
+    While any CI/CD platform can run MACH composer, our examplesand tooling will focus around GitHub Actions, as this is the preferred platform for many of our clients, and provides the best developer experience.
+
+    In case you use a different CI/CD solution, take the below pipelines as examples. Essentially, a CI/CD pipeline should run a combination of the `mach-composer plan` and `mach-composer apply` commands.
+
+
 ## MACH stack deployment
 This page describes how to deploy your MACH composer configuration to your
 cloud provider. We recommend to use a PR workflow whereby changes are done via
@@ -16,7 +22,7 @@ use OpenID Connect. See how this works with GitHub at
 
 ### Example
 
-=== "AWS"
+=== "AWS example"
 
 {% raw %}
 
@@ -146,6 +152,7 @@ use OpenID Connect. See how this works with GitHub at
     ```
 {% endraw %}
 
+<!--
 === "Azure"
 
 {% raw %}
@@ -180,6 +187,8 @@ use OpenID Connect. See how this works with GitHub at
             ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
     ```
 {% endraw %}
+
+-->
 
 ## Component deployment
 

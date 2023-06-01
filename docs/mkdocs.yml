@@ -27,6 +27,9 @@ nav:
     - tutorial/azure/manual.md
   - GCP:
     - tutorial/gcp/step-3-setup-gcp.md
+  - Example configurations:
+    - tutorial/examples/aws-config-example.md
+    - tutorial/examples/azure-config-example.md
 - Explanations:
   - topics/concepts.md
   - Components:
@@ -43,12 +46,14 @@ nav:
       - Components: topics/deployment/config/components.md
   - Plugins:
     - topics/integrations/plugin-system.md
-    - topics/integrations/commercetools.md
-    - topics/integrations/commercelayer.md
-    - topics/integrations/contentful.md
     - topics/integrations/amplience.md
-    - topics/integrations/sentry.md
     - topics/integrations/apollo_federation.md
+    - topics/integrations/aws.md
+    - topics/integrations/azure.md
+    - topics/integrations/commercelayer.md
+    - topics/integrations/commercetools.md
+    - topics/integrations/contentful.md
+    - topics/integrations/sentry.md
   - topics/security.md
   - Architecture guidance:
     - Overview: topics/architecture/index.md
@@ -82,12 +87,11 @@ nav:
     - howto/security/handle-secrets.md
     - howto/security/encrypt.md
   - CI/CD:
-    - Setup GitLab: howto/ci/gitlab.md
     - Setup GitHub actions: howto/ci/github.md
     - Setup Azure DevOps: howto/ci/devops.md
+    - Setup GitLab: howto/ci/gitlab.md
   - commercetools:
     - howto/commercetools/store-vars.md
-  - howto/apollo-federation.md
 - Cloud ☁️:
   - cloud/index.md
   - Getting started: cloud/getting-started.md

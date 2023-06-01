@@ -5,6 +5,12 @@ any of the supported clouds, including the setup of a commercetools project.
 Also, we explain how to create your first MACH component (a serverless
 microservice), and attach it to your project.
 
+!!! info "Landing zone creation"
+    This tutorial walks through the creation of a Landing Zone in Azure and AWS. This is a simple setup, and for production workloads, it is very likely that you will need to deviate from this. MACH composer can be deployed in any landingzone, and it is not required to have control over that from the MACH composer perspective.
+
+    In production deployments we often see these landings zones being provided by the central cloud organisation, who setup the right accounts and guardrails, in which MACH composer can be deployed.
+
+
 ## How does MACH composer work?
 
 MACH composer takes a [YAML configuration](../reference/syntax/index.md) as
