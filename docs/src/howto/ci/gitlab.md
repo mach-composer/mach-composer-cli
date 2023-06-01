@@ -6,4 +6,4 @@
 
     For a current implementation of a GitHub CI/CD flow, please see the [Github CI/CD documentation of MACH composer](./github.md).
 
-For the old, outdated Azure devops documentation, [click here](./gitlab_old.md).
+For the old, outdated Gitlab CI/CD documentation, [click here](./gitlab_old.md).
