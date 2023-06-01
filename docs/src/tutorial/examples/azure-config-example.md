@@ -1,4 +1,8 @@
----
+# Azure MACH config
+
+The below is a simplified example of a full configuration that should work.
+
+```yaml
 mach_composer:
   version: 1
   plugins:
@@ -54,3 +58,4 @@ components:
     integrations:
       - azure
       - commercetools
+```

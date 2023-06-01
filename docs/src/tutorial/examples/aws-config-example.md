@@ -1,27 +1,26 @@
----
+# AWS MACH config
+
+The below is a simplified example of a full configuration that should work.
+
+```yaml
 mach_composer:
   version: 1
   plugins:
     aws:
-      source: mach-composer/azure-minimal #unopinioned version of Azure integration
+      source: mach-composer/aws
       version: 0.1.0
     commercetools:
       source: mach-composer/commercetools
       version: 0.1.8
+
 global:
   environment: test
   terraform_config:
-    azure_remote_state:
-      resource_group: mach-shared-we-rg
-      storage_account: machsharedwesaterra
-      container_name: tfstate
-      state_folder: test
-  cloud: azure
-  azure:
-    tenant_id: <your-tenant-id>
-    subscription_id: <your-subscription-id>
-    region: westeurope
-    resources_prefix: ""
+    aws_remote_state:
+      bucket: <your bucket>
+      key_prefix: mach
+      region: eu-central-1
+  cloud: aws
 sites:
   - identifier: my-site
     commercetools:
@@ -39,18 +38,22 @@ sites:
         countries:
           - GB
           - NL
+    aws:
+      account_id: 123456789
+      region: eu-central-1
     components:
       - name: your-component
         variables:
           FOO_VAR: my-value
         secrets:
           MY_SECRET: secretvalue
+
+
 components:
   - name: your-component
     source: git::https://github.com/<username>/<your-component>.git//terraform
     version: 0.1.0
-    azure:
-      short_name: yourcomp
     integrations:
-      - azure
+      - aws
       - commercetools
+```

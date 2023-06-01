@@ -1,8 +1,16 @@
 ---
 mach_composer:
-  version: '1.1'
+  version: 1
   organization_id: "lab-digital"
   project_id: "my-aws-example"
+  plugins:
+    aws:
+      source: mach-composer/aws
+      version: 0.1.0
+    commercetools:
+      source: mach-composer/commercetools
+      version: 0.1.8
+
 global:
   environment: test
   terraform_config:

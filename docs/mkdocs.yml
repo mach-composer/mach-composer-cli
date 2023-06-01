@@ -27,6 +27,9 @@ nav:
     - tutorial/azure/manual.md
   - GCP:
     - tutorial/gcp/step-3-setup-gcp.md
+  - Example configurations:
+    - tutorial/examples/aws-config-example.md
+    - tutorial/examples/azure-config-example.md
 - Explanations:
   - topics/concepts.md
   - Components:
@@ -82,12 +85,11 @@ nav:
     - howto/security/handle-secrets.md
     - howto/security/encrypt.md
   - CI/CD:
-    - Setup GitLab: howto/ci/gitlab.md
     - Setup GitHub actions: howto/ci/github.md
     - Setup Azure DevOps: howto/ci/devops.md
+    - Setup GitLab: howto/ci/gitlab.md
   - commercetools:
     - howto/commercetools/store-vars.md
-  - howto/apollo-federation.md
 - Cloud ☁️:
   - cloud/index.md
   - Getting started: cloud/getting-started.md
