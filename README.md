@@ -41,7 +41,7 @@ brew install mach-composer
 
 ### Windows
 
-Windows installation thorugh Chocolatery is currently instable. We recommend to [download the latest release from Github Releases](https://github.com/labd/mach-composer/releases/latest).
+Windows installation thorugh Chocolatery is currently instable. We recommend to [download the latest release from Github Releases](https://github.com/labd/mach-composer/releases/latest). Also, it is recommended to run MACH composer through [WSL](https://learn.microsoft.com/en-us/windows/wsl/install).
 
 <!--```ps
 choco install mach-composer --version=2.5.0
