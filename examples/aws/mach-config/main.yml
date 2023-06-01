@@ -1,8 +1,9 @@
 ---
 mach_composer:
   version: 1
-  organization_id: "lab-digital"
-  project_id: "my-aws-example"
+  cloud:
+    organization_id: "lab-digital"
+    project_id: "my-aws-example"
   plugins:
     aws:
       source: mach-composer/aws
@@ -19,6 +20,7 @@ global:
       key_prefix: mach
       region: eu-central-1
   cloud: aws
+
 sites:
   - identifier: my-site
     commercetools:
@@ -45,7 +47,6 @@ sites:
           FOO_VAR: my-value
         secrets:
           MY_SECRET: secretvalue
-
 
 components:
   - name: your-component
