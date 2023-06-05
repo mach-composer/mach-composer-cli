@@ -2,6 +2,8 @@
 
 **Documentation:** [docs.machcomposer.io](https://docs.machcomposer.io)
 
+**Plug-ins overview:** [MACH composer plug-ins README](https://github.com/mach-composer#cli-plugins)
+
 MACH composer is a framework that you use to orchestrate and extend modern
 digital commerce & experience platforms, based on MACH technologies and cloud
 native services. It provides a standards-based, future-proof tool-set and
