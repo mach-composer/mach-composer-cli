@@ -2,6 +2,7 @@ package cloud
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/labd/mach-composer/internal/config"
 )
@@ -36,9 +37,12 @@ func resolveComponentVersion(ctx context.Context, cfg *config.MachConfig, c *con
 		ComponentsApi.ComponentLatestVersion(ctx, organization, project, c.Name).
 		Branch(c.Branch).
 		Execute()
-
 	if err != nil {
 		return err
+	}
+
+	if version == nil {
+		return fmt.Errorf("failed to resolve latest version for component %s (branch %s)", c.Name, c.Branch)
 	}
 
 	c.Version = version.Version
