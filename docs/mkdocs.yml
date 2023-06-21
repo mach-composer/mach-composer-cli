@@ -54,6 +54,7 @@ nav:
     - topics/integrations/commercetools.md
     - topics/integrations/contentful.md
     - topics/integrations/sentry.md
+    - topics/integrations/googlecloud.md
   - topics/security.md
   - Architecture guidance:
     - Overview: topics/architecture/index.md
