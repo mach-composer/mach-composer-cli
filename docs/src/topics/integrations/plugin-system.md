@@ -17,40 +17,46 @@ In order to add the AWS and Sentry plugins to your MACH composer configuration,
 add the the below configuration to your MACH composer YAML configuration.
 
 ```yaml
- mach_composer:
-    version: 1
-    variables_file: prd-secrets.yml
-    plugins:
-      amplience:
-        source: mach-composer-plugin-amplience
-        version: 0.1.3
-      apollostudio:
-        source: mach-composer-plugin-apollostudio
-        version: 0.0.2
-      aws:
-        source: mach-composer-plugin-aws
-        version: 0.1.0
-      azure:
-        source: mach-composer-plugin-azure
-        version: 0.1.0
-      azure-minimal:
-        source: mach-composer-plugin-azure-minimal
-        version: 0.1.0
-      commercelayer:
-        source: mach-composer-plugin-commercelayer
-        version: 0.0.3
-      commercetools:
-        source: mach-composer-plugin-commercetools
-        version: 0.1.8
-      contentful:
-        source: mach-composer-plugin-contentful
-        version: 0.1.0
-      sentry:
-        source: mach-composer-plugin-sentry
-        version: 0.1.3
-      vercel:
-        source: mach-composer-plugin-vercel
-        version: 0.2.0
+mach_composer:
+ version: 1
+ variables_file: prd-secrets.yml
+ plugins:
+   amplience:
+     source: mach-composer/amplience
+     version: 0.1.3
+   apollostudio:
+     source: mach-composer/apollostudio
+     version: 0.0.2
+   aws:
+     source: mach-composer/aws
+     version: 0.1.0
+   azure:
+     source: mach-composer/azure
+     version: 0.1.0
+   azure-minimal:
+     source: mach-composer/azure-minimal
+     version: 0.1.0
+   commercelayer:
+     source: mach-composer/commercelayer
+     version: 0.0.3
+   commercetools:
+     source: mach-composer/commercetools
+     version: 0.1.8
+   contentful:
+     source: mach-composer/contentful
+     version: 0.1.0
+   gcp:
+     source: mach-composer/gcp
+     version: 0.1.1
+   honeycomb:
+     source: mach-composer/honeycomb
+     version: 0.1.0
+   sentry:
+     source: mach-composer/sentry
+     version: 0.1.3
+   vercel:
+     source: mach-composer/vercel
+     version: 0.2.0
 ```
 
 !!! note "Backwards compatibility"
