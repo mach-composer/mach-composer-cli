@@ -1,4 +1,5 @@
 {% set commercetools = site.commercetools %}
+{% set version = general_config.terraform_config.providers.commercetools %}
 
 provider "commercetools" {
     client_id     = {{ commercetools.client_id|tf }}
@@ -15,9 +16,15 @@ resource "commercetools_project_settings" "project" {
     countries  = [{% for country in commercetools.project_settings.countries %}{{ country|tf }}{% if not loop.last %},{% endif %}{% endfor %}]
     currencies = [{% for currency in commercetools.project_settings.currencies %}{{ currency|tf }}{% if not loop.last %},{% endif %}{% endfor %}]
     languages  = [{% for language in commercetools.project_settings.languages %}{{ language|tf }}{% if not loop.last %},{% endif %}{% endfor %}]
+    {% if version < "1.0.0" %}
+    messages = {
+        enabled = {{ commercetools.project_settings.messages_enabled|tf }}
+    }
+    {% else %}
     messages {
         enabled = {{ commercetools.project_settings.messages_enabled|tf }}
     }
+    {% endif %}
     {% if commercetools.project_settings.enable_search_index_products is not none %}
     enable_search_index_products = {{ commercetools.project_settings.enable_search_index_products|tf }}
     {% endif %}
