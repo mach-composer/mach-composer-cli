@@ -12,17 +12,24 @@ clean:
 	find . -name '__pycache__' -delete
 	find . -name '*.egg-info' | xargs rm -rf
 
-install:
-	pip install -r requirements_dev.txt
+install: requirements
+	pip install pip-tools
+	pip-sync requirements_dev.txt requirements.txt
 
 upgrade:
 	pip install pip-tools pur
 	pur -r requirements.in
 	pip-compile -v --upgrade
 
-requirements:
+requirements: requirements_dev.txt requirements.txt
+
+requirements_dev.txt: requirements_dev.in requirements.txt
 	pip install pip-tools
-	pip-compile
+	pip-compile requirements_dev.in
+
+requirements.txt: requirements.in
+	pip install pip-tools
+	pip-compile requirements.in
 
 schema:
 	python generate_schema.py

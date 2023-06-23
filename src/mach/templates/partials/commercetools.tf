@@ -1,5 +1,9 @@
 {% set commercetools = site.commercetools %}
-{% set version = general_config.terraform_config.providers.commercetools %}
+{% if providers %}
+{% set version = providers.commercetools %}
+{% else %}
+{% set version = "1.0.0" %}
+{% endif %}
 
 provider "commercetools" {
     client_id     = {{ commercetools.client_id|tf }}

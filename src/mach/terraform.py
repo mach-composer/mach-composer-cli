@@ -20,10 +20,12 @@ def generate_terraform(config: MachConfig, *, site: str = None):
         site_dir = config.deployment_path / Path(s.identifier)
         site_dir.mkdir(exist_ok=True)
         output_file = site_dir / Path("site.tf")
+        providers = config.general_config.terraform_config.providers
         content = _clean_tf(
             template.render(
                 config=config,
                 general_config=config.general_config,
+                providers=providers,
                 site=s,
             )
         )
@@ -160,9 +162,7 @@ def run_terraform(command: Union[List[str], str], cwd):
     """Run any Terraform command."""
     if isinstance(command, str):
         command = [command]
-    p = subprocess.run(
-        ["terraform", *command], cwd=cwd, stdout=sys.stdout, stderr=sys.stderr
-    )
+    p = subprocess.run(["terraform", *command], cwd=cwd, stdout=sys.stdout, stderr=sys.stderr)
     p.check_returncode()
 
 
