@@ -41,7 +41,7 @@ mach_composer:
      version: 0.0.3
    commercetools:
      source: mach-composer/commercetools
-     version: 0.1.8
+     version: 0.1.9
    contentful:
      source: mach-composer/contentful
      version: 0.1.0

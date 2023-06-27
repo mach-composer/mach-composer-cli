@@ -18,7 +18,7 @@ require (
 	github.com/mach-composer/mach-composer-plugin-amplience v0.1.3
 	github.com/mach-composer/mach-composer-plugin-aws v0.1.0
 	github.com/mach-composer/mach-composer-plugin-azure v0.1.0
-	github.com/mach-composer/mach-composer-plugin-commercetools v0.1.8
+	github.com/mach-composer/mach-composer-plugin-commercetools v0.1.9
 	github.com/mach-composer/mach-composer-plugin-contentful v0.1.0
 	github.com/mach-composer/mach-composer-plugin-sdk v0.0.6
 	github.com/mach-composer/mach-composer-plugin-sentry v0.1.3

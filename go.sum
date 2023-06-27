@@ -453,6 +453,8 @@ github.com/mach-composer/mach-composer-plugin-azure v0.1.0 h1:VhsQ80VXevafFiWjy1
 github.com/mach-composer/mach-composer-plugin-azure v0.1.0/go.mod h1:VP68pGFlcVpY3EF06Iv3CbqpN0C9cuwtKPlrFJJrfDc=
 github.com/mach-composer/mach-composer-plugin-commercetools v0.1.8 h1:lcwUBHpCGd+bTpOwsAb7dT8faJ83vkhvWhGSEqjWC0Y=
 github.com/mach-composer/mach-composer-plugin-commercetools v0.1.8/go.mod h1:nvl8wSeXfSmColcwouRyhrqZRb5nc5ulw+JpeJU6eqM=
+github.com/mach-composer/mach-composer-plugin-commercetools v0.1.9 h1:Z0qFafBSHbRP7vS9tB9yWx0HhgK/UIW9dOr1qYs/oEU=
+github.com/mach-composer/mach-composer-plugin-commercetools v0.1.9/go.mod h1:nvl8wSeXfSmColcwouRyhrqZRb5nc5ulw+JpeJU6eqM=
 github.com/mach-composer/mach-composer-plugin-contentful v0.1.0 h1:fez6IoZQAIh3vLVXEkfnT5Jd9avH/g+NztwIxzr9gSA=
 github.com/mach-composer/mach-composer-plugin-contentful v0.1.0/go.mod h1:PSo6Zr8tBSlE13jJy+qQjHVtmFbWy359qCdQR2rte70=
 github.com/mach-composer/mach-composer-plugin-helpers v0.0.4 h1:n5jVGw4hE6ydXsfAZp0Cvi6qKK5CcASvtOn8mb3VEM8=
