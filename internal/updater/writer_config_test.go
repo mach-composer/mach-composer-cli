@@ -1,9 +1,11 @@
 package updater
 
 import (
+	"context"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"gopkg.in/yaml.v3"
 
 	"github.com/labd/mach-composer/internal/config"
 	"github.com/labd/mach-composer/internal/utils"
@@ -54,7 +56,16 @@ func TestMachConfigUpdater(t *testing.T) {
 		},
 	}
 
-	output := MachConfigUpdater(data, updates)
+	raw := &PartialRawConfig{}
+	if err := yaml.Unmarshal(data, raw); err != nil {
+		t.Fatal(err)
+	}
+
+	cfg := PartialConfig{
+		ComponentsNode: &raw.Components,
+	}
+
+	output := machConfigUpdater(context.Background(), &cfg, data, updates)
 	expected := []byte(utils.TrimIndent(`
         ---
         components:
@@ -69,7 +80,7 @@ func TestMachConfigUpdater(t *testing.T) {
         -
           source: "git::https://github.com/<username>/<your-component>.git//terraform"
           version: "quoted"
-		  name: "foobar"
+          name: "foobar"
 	`))
 
 	assert.EqualValues(t, string(expected), string(output))

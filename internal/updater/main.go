@@ -3,6 +3,7 @@ package updater
 import (
 	"context"
 	"fmt"
+	"path"
 	"path/filepath"
 	"strings"
 
@@ -15,13 +16,20 @@ import (
 )
 
 type PartialConfig struct {
-	MachComposer config.MachComposer `yaml:"mach_composer"`
-	Components   []config.Component  `yaml:"components"`
-	Sops         yaml.Node           `yaml:"sops"`
+	MachComposer   config.MachComposer `yaml:"mach_composer"`
+	Components     []config.Component  `yaml:"components"`
+	ComponentsNode *yaml.Node
+	Sops           yaml.Node `yaml:"sops"`
 
 	isEncrypted bool
 	filename    string `yaml:"-"`
 	client      *mccsdk.APIClient
+}
+
+type PartialRawConfig struct {
+	MachComposer config.MachComposer `yaml:"mach_composer"`
+	Components   yaml.Node           `yaml:"components"`
+	Sops         yaml.Node           `yaml:"sops"`
 }
 
 func (c *PartialConfig) GetComponent(name string) *config.Component {
@@ -31,10 +39,6 @@ func (c *PartialConfig) GetComponent(name string) *config.Component {
 		}
 	}
 	return nil
-}
-
-type PartialRawConfig struct {
-	Components yaml.Node
 }
 
 type WorkerJob struct {
@@ -53,31 +57,58 @@ func (e *UpdateError) Error() string {
 }
 
 type Updater struct {
-	filename string
+	filename string // Should always point to the filename containg the components
 	config   *PartialConfig
 	updates  []ChangeSet
 }
 
+// NewUpdater creates an update to update the component versions in a config
+// file.
 func NewUpdater(ctx context.Context, filename string, useCloud bool) (*Updater, error) {
 	body, err := utils.AFS.ReadFile(filename)
 	if err != nil {
 		return nil, err
 	}
 
-	cfg := &PartialConfig{}
-	err = yaml.Unmarshal(body, cfg)
+	raw := &PartialRawConfig{}
+	err = yaml.Unmarshal(body, raw)
 	if err != nil {
 		return nil, fmt.Errorf("failed to unmarshall yaml: %w", err)
 	}
-	cfg.filename = filepath.Base(filename)
+
+	// Resolve $ref references for the components.
+	componentsFilename, err := config.LoadRefData(ctx, &raw.Components, path.Dir(filename))
+	if err != nil {
+		return nil, err
+	}
+
+	components := []config.Component{}
+	if err := raw.Components.Decode(&components); err != nil {
+		return nil, fmt.Errorf("decoding error: %w", err)
+	}
+
+	cfg := &PartialConfig{
+		MachComposer:   raw.MachComposer,
+		Components:     components,
+		ComponentsNode: &raw.Components,
+		Sops:           raw.Sops,
+		filename:       filepath.Base(filename),
+	}
 
 	// If we have a Sops node which is a mapping then we can assume that this
-	// file is encrypted.
-	cfg.isEncrypted = cfg.Sops.Kind == yaml.MappingNode
+	// file is encrypted. This is only relevant if the components are stored in
+	// main config file, and not referenced
+	if componentsFilename == "" {
+		cfg.isEncrypted = cfg.Sops.Kind == yaml.MappingNode
+	}
 
 	result := &Updater{
 		filename: filename,
 		config:   cfg,
+	}
+
+	if componentsFilename != "" {
+		result.filename = path.Join(path.Dir(filename), componentsFilename)
 	}
 
 	if useCloud {
@@ -154,9 +185,9 @@ func (u *Updater) Write(ctx context.Context) bool {
 
 	updateSet := u.GetUpdateSet()
 	if u.config.isEncrypted {
-		SopsFileWriter(ctx, u.config, updateSet)
+		sopsFileWriter(ctx, u.config, updateSet)
 	} else {
-		MachFileWriter(updateSet)
+		machFileWriter(ctx, u.config, updateSet)
 	}
 
 	return true

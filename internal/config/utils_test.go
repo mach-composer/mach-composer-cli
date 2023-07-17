@@ -95,11 +95,12 @@ func TestMapYamlNodes(t *testing.T) {
 
 func TestLoadRefData(t *testing.T) {
 	tests := []struct {
-		name       string
-		node       *yaml.Node
-		refContent string
-		expected   *yaml.Node
-		wantErr    bool
+		name        string
+		node        *yaml.Node
+		refContent  string
+		refFilename string
+		expected    *yaml.Node
+		wantErr     bool
 	}{
 		{
 			name: "mapping node with $ref",
@@ -110,7 +111,8 @@ func TestLoadRefData(t *testing.T) {
 					{Value: "ref.yaml"},
 				},
 			},
-			refContent: "key: value",
+			refContent:  "key: value",
+			refFilename: "ref.yaml",
 			expected: &yaml.Node{
 				Kind: yaml.MappingNode,
 				Content: []*yaml.Node{
@@ -134,6 +136,7 @@ func TestLoadRefData(t *testing.T) {
 					other-node:
 						key: value
 			`),
+			refFilename: "ref.yaml#/some-node/other-node",
 			expected: &yaml.Node{
 				Kind: yaml.MappingNode,
 				Content: []*yaml.Node{
@@ -152,7 +155,8 @@ func TestLoadRefData(t *testing.T) {
 					{Value: "value"},
 				},
 			},
-			refContent: "",
+			refContent:  "",
+			refFilename: "",
 			expected: &yaml.Node{
 				Kind: yaml.MappingNode,
 				Content: []*yaml.Node{
@@ -171,9 +175,10 @@ func TestLoadRefData(t *testing.T) {
 					{Value: "other.yaml"},
 				},
 			},
-			refContent: "",
-			expected:   nil,
-			wantErr:    true,
+			refContent:  "",
+			refFilename: "other.yaml",
+			expected:    nil,
+			wantErr:     true,
 		},
 	}
 
@@ -187,10 +192,11 @@ func TestLoadRefData(t *testing.T) {
 				require.NoError(t, err)
 			}
 
-			err := loadRefData(context.Background(), tc.node, "./")
+			filename, err := LoadRefData(context.Background(), tc.node, "./")
 			if tc.wantErr {
 				assert.Error(t, err)
 			} else {
+				assert.Equal(t, filename, tc.refFilename)
 				assert.NoError(t, err)
 
 				expectedData := []byte{}
