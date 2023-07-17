@@ -94,7 +94,7 @@ func loadConfig(ctx context.Context, filename string, pr *plugins.PluginReposito
 		return nil, err
 	}
 
-	if err := loadRefData(ctx, &raw.Components, path.Dir(filename)); err != nil {
+	if _, err := LoadRefData(ctx, &raw.Components, path.Dir(filename)); err != nil {
 		return nil, err
 	}
 

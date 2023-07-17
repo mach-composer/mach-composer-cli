@@ -60,25 +60,25 @@ func iterateYamlNodes(
 	return nil
 }
 
-func loadRefData(ctx context.Context, node *yaml.Node, cwd string) error {
+func LoadRefData(ctx context.Context, node *yaml.Node, cwd string) (string, error) {
 	if node.Kind != yaml.MappingNode {
-		return nil
+		return "", nil
 	}
 
 	data := mapYamlNodes(node.Content)
 	ref, ok := data["$ref"]
 	if !ok {
-		return nil
+		return "", nil
 	}
 
 	newNode, err := loadRefDocument(ctx, ref.Value, cwd)
 	if err != nil {
-		return err
+		return "", err
 	}
 	node.Kind = newNode.Kind
 	node.Content = newNode.Content
 
-	return nil
+	return ref.Value, nil
 }
 
 func loadRefDocument(ctx context.Context, filename, cwd string) (*yaml.Node, error) {
