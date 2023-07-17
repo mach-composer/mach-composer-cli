@@ -1,0 +1,3 @@
+kind: Fixed
+body: Allow running mach-composer update with referenced components file
+time: 2023-07-17T16:11:43.30426+02:00
