@@ -353,7 +353,7 @@ func TestParseComponentsNodeRef(t *testing.T) {
 	err = yaml.Unmarshal(data, &intermediate)
 	require.NoError(t, err)
 
-	err = loadRefData(context.Background(), &intermediate.Components, "")
+	_, err = LoadRefData(context.Background(), &intermediate.Components, "")
 	require.NoError(t, err)
 
 	cfg := &MachConfig{

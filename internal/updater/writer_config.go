@@ -1,6 +1,7 @@
 package updater
 
 import (
+	"context"
 	"fmt"
 	"strings"
 
@@ -10,14 +11,8 @@ import (
 	"github.com/labd/mach-composer/internal/utils"
 )
 
-func MachConfigUpdater(src []byte, updateSet *UpdateSet) []byte {
-	data := PartialRawConfig{}
-	err := yaml.Unmarshal(src, &data)
-	if err != nil {
-		log.Fatal().Err(err).Msg("failed to unmarshal")
-	}
-
-	nodes := mapComponentNodes(&data.Components)
+func machConfigUpdater(ctx context.Context, cfg *PartialConfig, src []byte, updateSet *UpdateSet) []byte {
+	nodes := mapComponentNodes(cfg.ComponentsNode)
 
 	// Walk through the updated components and search the corresponding yaml node
 	// via the previously created mapping. Withing the node search for the
@@ -27,7 +22,7 @@ func MachConfigUpdater(src []byte, updateSet *UpdateSet) []byte {
 	for _, c := range updateSet.updates {
 		node, ok := nodes[c.Component.Name]
 		if !ok {
-			log.Warn().Msg("Component with update not found in yaml file")
+			log.Warn().Msgf("Component %s with update not found in yaml file", c.Component.Name)
 			continue
 		}
 
@@ -78,15 +73,15 @@ func mapComponentNodes(node *yaml.Node) map[string]*yaml.Node {
 	return nodes
 }
 
-// MachFileWriter updates the contents of a mach file with the updated
+// machFileWriter updates the contents of a mach file with the updated
 // version of the components
-func MachFileWriter(updates *UpdateSet) {
+func machFileWriter(ctx context.Context, cfg *PartialConfig, updates *UpdateSet) {
 	input, err := utils.AFS.ReadFile(updates.filename)
 	if err != nil {
 		log.Fatal().Err(err).Msg("failed to read file")
 	}
 
-	output := MachConfigUpdater(input, updates)
+	output := machConfigUpdater(ctx, cfg, input, updates)
 
 	err = utils.AFS.WriteFile(updates.filename, output, 0644)
 	if err != nil {

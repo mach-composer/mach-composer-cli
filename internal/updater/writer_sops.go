@@ -8,9 +8,9 @@ import (
 	"github.com/labd/mach-composer/internal/utils"
 )
 
-// SopsFileWriter updates the contents of a mach file with the updated
+// sopsFileWriter updates the contents of a mach file with the updated
 // version of the components
-func SopsFileWriter(ctx context.Context, cfg *PartialConfig, updates *UpdateSet) {
+func sopsFileWriter(ctx context.Context, cfg *PartialConfig, updates *UpdateSet) {
 	indexMap := make(map[string]int)
 
 	for i := range cfg.Components {
