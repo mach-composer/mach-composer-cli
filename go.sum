@@ -451,8 +451,6 @@ github.com/mach-composer/mach-composer-plugin-aws v0.1.0 h1:5aWBkJfZxAbbRR/gFX2w
 github.com/mach-composer/mach-composer-plugin-aws v0.1.0/go.mod h1:YPKffqqvGpM1dGN0ffcU3DccYxM46GXLN92Khc0Ubes=
 github.com/mach-composer/mach-composer-plugin-azure v0.1.0 h1:VhsQ80VXevafFiWjy1854dhT3FcEk2b11vBiZMrVX6E=
 github.com/mach-composer/mach-composer-plugin-azure v0.1.0/go.mod h1:VP68pGFlcVpY3EF06Iv3CbqpN0C9cuwtKPlrFJJrfDc=
-github.com/mach-composer/mach-composer-plugin-commercetools v0.1.8 h1:lcwUBHpCGd+bTpOwsAb7dT8faJ83vkhvWhGSEqjWC0Y=
-github.com/mach-composer/mach-composer-plugin-commercetools v0.1.8/go.mod h1:nvl8wSeXfSmColcwouRyhrqZRb5nc5ulw+JpeJU6eqM=
 github.com/mach-composer/mach-composer-plugin-commercetools v0.1.9 h1:Z0qFafBSHbRP7vS9tB9yWx0HhgK/UIW9dOr1qYs/oEU=
 github.com/mach-composer/mach-composer-plugin-commercetools v0.1.9/go.mod h1:nvl8wSeXfSmColcwouRyhrqZRb5nc5ulw+JpeJU6eqM=
 github.com/mach-composer/mach-composer-plugin-contentful v0.1.0 h1:fez6IoZQAIh3vLVXEkfnT5Jd9avH/g+NztwIxzr9gSA=
