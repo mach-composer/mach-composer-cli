@@ -76,7 +76,7 @@ func renderTerraformConfig(cfg *config.MachConfig, site *config.SiteConfig) (str
 		}
 	}
 
-	template := `
+	tpl := `
 		terraform {
 			{{ .BackendConfig }}
 
@@ -103,7 +103,7 @@ func renderTerraformConfig(cfg *config.MachConfig, site *config.SiteConfig) (str
 		BackendConfig: backendConfig,
 		IncludeSOPS:   cfg.Variables.HasEncrypted(site.Identifier),
 	}
-	return renderGoTemplate(template, templateContext)
+	return renderGoTemplate(tpl, templateContext)
 }
 
 func renderTerraformResources(cfg *config.MachConfig, site *config.SiteConfig) (string, error) {
@@ -119,7 +119,7 @@ func renderTerraformResources(cfg *config.MachConfig, site *config.SiteConfig) (
 		}
 	}
 
-	template := `
+	tpl := `
 		{{ range $fs := .FileSources }}
 			data "local_file" "variables" {
 				filename = "{{ $fs.Filename }}"
@@ -143,12 +143,12 @@ func renderTerraformResources(cfg *config.MachConfig, site *config.SiteConfig) (
 		Resources:   resources,
 		FileSources: cfg.Variables.GetEncryptedSources(site.Identifier),
 	}
-	return renderGoTemplate(template, templateContext)
+	return renderGoTemplate(tpl, templateContext)
 }
 
 // renderComponent uses templates/component.tf to generate a terraform snippet
 // for each component
-func renderComponent(ctx context.Context, cfg *config.MachConfig, site *config.SiteConfig, component *config.SiteComponent) (string, error) {
+func renderComponent(_ context.Context, cfg *config.MachConfig, site *config.SiteConfig, component *config.SiteComponent) (string, error) {
 
 	tc := struct {
 		ComponentName       string
@@ -199,7 +199,7 @@ func renderComponent(ctx context.Context, cfg *config.MachConfig, site *config.S
 		tc.PluginDependsOn = append(tc.PluginDependsOn, cr.DependsOn...)
 	}
 
-	template := `
+	tpl := `
 		# Module: {{ .ComponentName }}
 		{{ range $resource := .PluginResources }}
 			{{ $resource }}
@@ -254,14 +254,14 @@ func renderComponent(ctx context.Context, cfg *config.MachConfig, site *config.S
 	if len(component.Variables) > 0 {
 		val, err := serializeToHCL("variables", component.Variables)
 		if err != nil {
-			return "", nil
+			return "", err
 		}
 		tc.ComponentVariables = val
 	}
 	if len(component.Secrets) > 0 {
 		val, err := serializeToHCL("secrets", component.Secrets)
 		if err != nil {
-			return "", nil
+			return "", err
 		}
 		tc.ComponentSecrets = val
 	}
@@ -270,7 +270,7 @@ func renderComponent(ctx context.Context, cfg *config.MachConfig, site *config.S
 		tc.Source += fmt.Sprintf("?ref=%s", component.Definition.Version)
 	}
 
-	return renderGoTemplate(template, tc)
+	return renderGoTemplate(tpl, tc)
 }
 
 func renderGoTemplate(t string, data any) (string, error) {

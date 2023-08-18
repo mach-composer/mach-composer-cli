@@ -8,26 +8,54 @@ import (
 
 var varComponentRegex = regexp.MustCompile(`\${(component(?:\.[^\}]+)+)}`)
 
+func interpolateComponentVar(value any) (any, error) {
+	var result any
+
+	switch v := value.(type) {
+	case string:
+		parsed, err := parseComponentVariable(v)
+		if err != nil {
+			return nil, err
+		}
+		result = parsed
+	case []any:
+		var slice []any
+		for _, element := range v {
+			ipElement, err := interpolateComponentVar(element)
+			if err != nil {
+				return nil, err
+			}
+			slice = append(slice, ipElement)
+		}
+
+		result = slice
+	case map[string]any:
+		var ipMap = map[string]any{}
+		for key, element := range v {
+			ipElement, err := interpolateComponentVar(element)
+			if err != nil {
+				return nil, err
+			}
+			ipMap[key] = ipElement
+		}
+
+		result = ipMap
+	default:
+		result = v
+	}
+
+	return result, nil
+}
+
 func InterpolateComponentVars(data map[string]any) (map[string]any, error) {
 	result := map[string]any{}
 
 	for key, value := range data {
-		switch v := value.(type) {
-		case string:
-			parsed, err := parseComponentVariable(v)
-			if err != nil {
-				return nil, err
-			}
-			result[key] = parsed
-		case map[string]any:
-			parsed, err := InterpolateComponentVars(v)
-			if err != nil {
-				return nil, err
-			}
-			result[key] = parsed
-		default:
-			result[key] = value
+		ipVal, err := interpolateComponentVar(value)
+		if err != nil {
+			return nil, err
 		}
+		result[key] = ipVal
 	}
 	return result, nil
 }
