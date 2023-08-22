@@ -2,8 +2,8 @@
 mach_composer:
   version: 1
   cloud:
-    organization_id: "lab-digital"
-    project_id: "my-aws-example"
+    organization: "lab-digital"
+    project: "my-aws-example"
   plugins:
     aws:
       source: mach-composer/aws
@@ -39,7 +39,7 @@ sites:
           - GB
           - NL
     aws:
-      account_id: 123456789
+      account_id: "123456789"
       region: eu-central-1
     components:
       - name: your-component

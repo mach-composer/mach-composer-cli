@@ -173,7 +173,8 @@ type SiteComponent struct {
 type Component struct {
 	Name         string
 	Source       string
-	Version      string `yaml:"version"`
+	Paths        []string `yaml:"paths"`
+	Version      string   `yaml:"version"`
 	Branch       string
 	Integrations []string
 	Endpoints    map[string]string `yaml:"endpoints"`

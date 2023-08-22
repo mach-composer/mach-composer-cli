@@ -2,8 +2,8 @@
 mach_composer:
   version: 1
   cloud:
-    organization_id: "lab-digital"
-    project_id: "my-azure-example"
+    organization: "lab-digital"
+    project: "my-azure-example"
   plugins:
     aws:
       source: mach-composer/azure-minimal #unopinioned version of Azure integration

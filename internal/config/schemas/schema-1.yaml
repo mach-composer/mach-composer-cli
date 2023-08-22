@@ -98,7 +98,7 @@ definitions:
 
   RemoteState:
     type: object
-    properties: {}
+    properties: { }
 
   SiteConfig:
     type: object
@@ -166,6 +166,10 @@ definitions:
         type: string
       source:
         type: string
+      paths:
+        type: array
+        items:
+          type: string
       version:
         type: string
       integrations:
