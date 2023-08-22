@@ -43,13 +43,13 @@ type gitCommitAuthor struct {
 	Date  time.Time
 }
 
-type gitVersionInfo struct {
+type GitVersionInfo struct {
 	Hash     plumbing.Hash
 	Tag      string
 	Revision plumbing.Revision
 }
 
-func (g *gitVersionInfo) Identifier() string {
+func (g *GitVersionInfo) Identifier() string {
 	return g.Hash.String()[0:7]
 }
 
@@ -77,7 +77,7 @@ func OpenRepository(path string) (*git.Repository, error) {
 	return repo, nil
 }
 
-func Commit(ctx context.Context, fileNames []string, message string) error {
+func Commit(_ context.Context, fileNames []string, message string) error {
 	path, err := os.Getwd()
 	if err != nil {
 		return err
@@ -122,7 +122,7 @@ func GetLastVersionGit(ctx context.Context, c *config.Component, origin string) 
 	}
 	fetchGitRepository(ctx, source, cacheDir)
 	path := filepath.Join(cacheDir, source.Name)
-	commits, err := GetRecentCommits(ctx, path, c.Version, branch, []string{})
+	commits, err := GetRecentCommits(ctx, path, c.Version, branch, c.Paths)
 	if err != nil {
 		return nil, err
 	}
@@ -130,7 +130,7 @@ func GetLastVersionGit(ctx context.Context, c *config.Component, origin string) 
 	return commits, nil
 }
 
-func GetCurrentBranch(ctx context.Context, path string) (string, error) {
+func GetCurrentBranch(_ context.Context, path string) (string, error) {
 	repository, err := OpenRepository(path)
 	if err != nil {
 		return "", err
@@ -144,14 +144,14 @@ func GetCurrentBranch(ctx context.Context, path string) (string, error) {
 }
 
 // GetVersionInfo returns the latest commit hash of a specific branch
-func GetVersionInfo(ctx context.Context, path string, branch string) (*gitVersionInfo, error) {
+func GetVersionInfo(_ context.Context, path string, branch string) (*GitVersionInfo, error) {
 	repository, err := OpenRepository(path)
 	if err != nil {
 		return nil, fmt.Errorf("failed to open repository: %w", err)
 	}
 
 	// Resolve the last commit in the branch
-	info := &gitVersionInfo{}
+	info := &GitVersionInfo{}
 	if branch == "" {
 		branchRef, err := repository.Head()
 		if err != nil {
@@ -174,7 +174,7 @@ func GetVersionInfo(ctx context.Context, path string, branch string) (*gitVersio
 
 // GetRecentCommits returns all commits in descending order (newest first)
 // baseRef is the commit to start from, if empty the current HEAD is used
-func GetRecentCommits(ctx context.Context, basePath string, baseRevision, targetRevision string, extraPaths []string) ([]gitCommit, error) {
+func GetRecentCommits(ctx context.Context, basePath string, baseRevision, targetRevision string, filterPaths []string) ([]gitCommit, error) {
 	gitPath, err := searchGitPath(basePath)
 	if err != nil {
 		return nil, err
@@ -185,14 +185,9 @@ func GetRecentCommits(ctx context.Context, basePath string, baseRevision, target
 		return nil, fmt.Errorf("failed to open repository: %w", err)
 	}
 
-	paths, err := filterPaths(gitPath, extraPaths)
-	if err != nil {
-		return nil, err
-	}
-
 	baseRev := asRevision(baseRevision)
 	targetRev := asRevision(targetRevision)
-	commits, err := commitsBetween(ctx, repository, baseRev, targetRev, paths)
+	commits, err := commitsBetween(ctx, repository, baseRev, targetRev, filterPaths)
 	if err != nil {
 		return nil, err
 	}
@@ -375,7 +370,7 @@ func runGit(ctx context.Context, cwd string, args ...string) []byte {
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {
-		fmt.Fprintln(os.Stderr, string(output))
+		_, _ = fmt.Fprintln(os.Stderr, string(output))
 		os.Exit(1)
 	}
 

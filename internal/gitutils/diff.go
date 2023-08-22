@@ -57,7 +57,7 @@ func commitsBetween(ctx context.Context, repository *git.Repository, first, last
 		return nil, err
 	}
 
-	result := []*object.Commit{}
+	var result []*object.Commit
 	err = cIter.ForEach(func(c *object.Commit) error {
 		if first != nil && *firstHash == c.Hash {
 			return storer.ErrStop
