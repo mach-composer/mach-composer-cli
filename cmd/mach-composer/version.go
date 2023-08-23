@@ -5,7 +5,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/labd/mach-composer/internal/cli"
+	"github.com/mach-composer/mach-composer-cli/internal/cli"
 )
 
 var versionCmd = &cobra.Command{

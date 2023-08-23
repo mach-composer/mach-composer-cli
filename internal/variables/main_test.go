@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"gopkg.in/yaml.v3"
 
-	"github.com/labd/mach-composer/internal/utils"
+	"github.com/mach-composer/mach-composer-cli/internal/utils"
 )
 
 func TestNewVariablesFromFile(t *testing.T) {

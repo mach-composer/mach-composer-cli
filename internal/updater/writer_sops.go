@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/labd/mach-composer/internal/utils"
+	"github.com/mach-composer/mach-composer-cli/internal/utils"
 )
 
 // sopsFileWriter updates the contents of a mach file with the updated

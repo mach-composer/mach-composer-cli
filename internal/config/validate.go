@@ -12,8 +12,8 @@ import (
 	"github.com/xeipuuv/gojsonschema"
 	"gopkg.in/yaml.v3"
 
-	"github.com/labd/mach-composer/internal/cli"
-	"github.com/labd/mach-composer/internal/plugins"
+	"github.com/mach-composer/mach-composer-cli/internal/cli"
+	"github.com/mach-composer/mach-composer-cli/internal/plugins"
 )
 
 //go:embed schemas/*

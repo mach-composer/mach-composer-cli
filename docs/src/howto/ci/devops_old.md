@@ -124,7 +124,7 @@ steps:
     -e ARM_CLIENT_SECRET=$(DevOpsClientSecret) \
     -e ARM_SUBSCRIPTION_ID=$SP_SUBSCRIPTION_ID \
     -e ARM_TENANT_ID=$SP_TENANT_ID \
-    docker.pkg.github.com/labd/mach-composer/mach:2.0.0 \
+    docker.pkg.github.com/mach-composer/mach-composer-cli/mach:2.0.0 \
     apply --with-sp-login --auto-approve -f main.yml
   displayName: Apply
 ```

@@ -53,7 +53,7 @@ can set a `TF_PLUGIN_CACHE_DIR` as described in the
 
       ```yaml
       ---
-      image: docker.pkg.github.com/labd/mach-composer/mach:0.4
+      image: docker.pkg.github.com/mach-composer/mach-composer-cli/mach:0.4
 
       cache:
         paths:
@@ -82,7 +82,7 @@ can set a `TF_PLUGIN_CACHE_DIR` as described in the
 
       ```yaml
       ---
-      image: docker.pkg.github.com/labd/mach-composer/mach:2.0.0
+      image: docker.pkg.github.com/mach-composer/mach-composer-cli/mach:2.0.0
 
       cache:
         paths:

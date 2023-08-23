@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/labd/mach-composer/internal/config"
+	"github.com/mach-composer/mach-composer-cli/internal/config"
 )
 
 func ResolveComponentsData(ctx context.Context, cfg *config.MachConfig) error {

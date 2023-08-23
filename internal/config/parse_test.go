@@ -10,9 +10,9 @@ import (
 	"github.com/stretchr/testify/require"
 	"gopkg.in/yaml.v3"
 
-	"github.com/labd/mach-composer/internal/plugins"
-	"github.com/labd/mach-composer/internal/utils"
-	"github.com/labd/mach-composer/internal/variables"
+	"github.com/mach-composer/mach-composer-cli/internal/plugins"
+	"github.com/mach-composer/mach-composer-cli/internal/utils"
+	"github.com/mach-composer/mach-composer-cli/internal/variables"
 )
 
 func TestMain(m *testing.M) {

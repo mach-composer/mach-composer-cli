@@ -6,9 +6,9 @@ import (
 	"github.com/elliotchance/pie/v2"
 	"gopkg.in/yaml.v3"
 
-	"github.com/labd/mach-composer/internal/cli"
-	"github.com/labd/mach-composer/internal/utils"
-	"github.com/labd/mach-composer/internal/variables"
+	"github.com/mach-composer/mach-composer-cli/internal/cli"
+	"github.com/mach-composer/mach-composer-cli/internal/utils"
+	"github.com/mach-composer/mach-composer-cli/internal/variables"
 )
 
 func parseSitesNode(cfg *MachConfig, sitesNode *yaml.Node) error {

@@ -1,4 +1,4 @@
-[![MACH composer](https://github.com/labd/mach-composer/blob/main/docs/src/_img/logo.png?raw=true)](https://docs.machcomposer.io)
+[![MACH composer](https://github.com/mach-composer/mach-composer-cli/blob/main/docs/src/_img/logo.png?raw=true)](https://docs.machcomposer.io)
 
 **Documentation:** [docs.machcomposer.io](https://docs.machcomposer.io)
 
@@ -37,13 +37,14 @@ organisation.
 ### MacOS
 
 ```bash
-brew tap labd/mach-composer
+brew tap mach-composer/mach-composer
 brew install mach-composer
 ```
 
 ### Windows
 
-Windows installation thorugh Chocolatery is currently instable. We recommend to [download the latest release from Github Releases](https://github.com/labd/mach-composer/releases/latest). Also, it is recommended to run MACH composer through [WSL](https://learn.microsoft.com/en-us/windows/wsl/install).
+Windows installation through Chocolatery is currently unstable. We recommend to [download the latest release from Github 
+Releases](https://github.com/mach-composer/mach-composer-cli/releases/latest). Also, it is recommended to run MACH composer through [WSL](https://learn.microsoft.com/en-us/windows/wsl/install).
 
 <!--```ps
 choco install mach-composer --version=2.5.0

@@ -16,7 +16,7 @@ cover-html: cover
 	go tool cover -html=coverage.out -o coverage.html
 
 docker:
-	docker build -t docker.pkg.github.com/labd/mach-composer/mach:latest . --progress=plain
+	docker build -t docker.pkg.github.com/mach-composer/mach-composer-cli/mach:latest . --progress=plain
 
 
 update-deps:

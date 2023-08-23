@@ -3,7 +3,7 @@ package main
 import (
 	"github.com/spf13/cobra"
 
-	"github.com/labd/mach-composer/internal/generator"
+	"github.com/mach-composer/mach-composer-cli/internal/generator"
 )
 
 var generateCmd = &cobra.Command{

@@ -39,7 +39,7 @@ For reference implementations of components:
     through terraform completely.<br>
     Though solutions exist when there is no 'full blown' terrafrom support, in
     which case you could fall back to a CLI. We recently did this to implement
-    [Apollo Studio support](https://github.com/labd/mach-composer/pull/78).
+    [Apollo Studio support](https://github.com/mach-composer/mach-composer-cli/pull/78).
 
 ### Terraform state backend
 

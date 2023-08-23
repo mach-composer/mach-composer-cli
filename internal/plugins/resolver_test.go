@@ -11,7 +11,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/labd/mach-composer/internal/utils"
+	"github.com/mach-composer/mach-composer-cli/internal/utils"
 )
 
 func TestResolveBuiltinPlugin(t *testing.T) {

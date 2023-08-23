@@ -6,7 +6,7 @@ import (
 	"os"
 	"os/exec"
 
-	"github.com/labd/mach-composer/internal/utils"
+	"github.com/mach-composer/mach-composer-cli/internal/utils"
 )
 
 func RunTerraform(ctx context.Context, cwd string, args ...string) error {

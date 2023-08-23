@@ -19,9 +19,9 @@ builds:
       - all=-trimpath={{.Env.GOPATH}}
     ldflags: |
       -s -w
-        -X github.com/labd/mach-composer/internal/cli.version={{.Version}}
-        -X github.com/labd/mach-composer/internal/cli.commit={{.Commit}}
-        -X github.com/labd/mach-composer/internal/cli.date={{.CommitDate}}
+        -X github.com/mach-composer/mach-composer-cli/internal/cli.version={{.Version}}
+        -X github.com/mach-composer/mach-composer-cli/internal/cli.commit={{.Commit}}
+        -X github.com/mach-composer/mach-composer-cli/internal/cli.date={{.CommitDate}}
         -extldflags '-static'
     goos:
       - freebsd
@@ -48,9 +48,9 @@ changelog:
 brews:
   - name: "{{ .ProjectName }}"
     tap:
-      owner: labd
+      owner: mach-composer
       name: homebrew-{{ .ProjectName }}
-    url_template: https://github.com/labd/mach-composer/releases/download/v{{ .Version }}/{{ .ArtifactName }}
+    url_template: https://github.com/mach-composer/mach-composer-cli/releases/download/v{{ .Version }}/{{ .ArtifactName }}
     commit_author:
       name: goreleaserbot
       email: opensource@labdigital.nl
@@ -71,15 +71,15 @@ chocolateys:
     authors: Lab Digital
 
     project_url: https://machcomposer.io/
-    license_url: https://github.com/labd/mach-composer/blob/main/LICENSE
-    project_source_url: https://github.com/labd/mach-composer
+    license_url: https://github.com/mach-composer/mach-composer-cli/blob/main/LICENSE
+    project_source_url: https://github.com/mach-composer/mach-composer-cli
     docs_url: https://docs.machcomposer.io
-    bug_tracker_url: https://github.com/labd/mach-composer/issues
+    bug_tracker_url: https://github.com/mach-composer/mach-composer-cli/issues
 
     # Template for the url which is determined by the given Token (github,
     # gitlab or gitea)
     # Default depends on the client.
-    url_template: "https://github.com/labd/mach-composer/releases/download/{{ .Tag }}/{{ .ArtifactName }}"
+    url_template: "https://github.com/mach-composer/mach-composer-cli/releases/download/{{ .Tag }}/{{ .ArtifactName }}"
 
     # App's icon.
     # Default is empty.
@@ -105,7 +105,7 @@ chocolateys:
     # providing a URL to an external list of Release Notes is perfectly
     # acceptable.
     # Default is empty.
-    release_notes: "https://github.com/labd/mach-composer/releases/tag/v{{ .Version }}"
+    release_notes: "https://github.com/mach-composer/mach-composer-cli/releases/tag/v{{ .Version }}"
 
     api_key: '{{ .Env.CHOCOLATEY_API_KEY }}'
     skip_publish: true
@@ -122,15 +122,9 @@ archives:
         format: zip
 
 milestones:
-  -
-    repo:
-      owner: labd
-      name: mach-composer
+  - repo:
+      owner: mach-composer
+      name: mach-composer-cli
     close: true
     fail_on_error: false
     name_template: "{{ .Major }}.{{ .Minor }}.{{ .Patch }}"
-
-# signs:
-#   - id: mach-composer
-#     artifacts: checksum
-#     args: ["--batch", "-u", "{{ .Env.GPG_FINGERPRINT }}", "--armor", "--output", "${signature}", "--detach-sign", "${artifact}"]

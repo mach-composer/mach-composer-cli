@@ -2,7 +2,7 @@ site_name: MACH composer
 
 # Repository
 repo_name: labd/mach-composer
-repo_url: https://github.com/labd/mach-composer
+repo_url: https://github.com/mach-composer/mach-composer-cli
 # edit_uri: tree/master/docs/src
 edit_uri: ""
 

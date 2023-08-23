@@ -1,4 +1,4 @@
-module github.com/labd/mach-composer
+module github.com/mach-composer/mach-composer-cli
 
 go 1.19
 

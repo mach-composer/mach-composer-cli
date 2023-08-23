@@ -140,8 +140,8 @@ $ curl https://cytbsqhtp5.execute-api.eu-central-1.amazonaws.com/api/healthcheck
 ## Example files
 
 You can find example files needed for preparing the infrastructure and a
-configuration file [on GitHub](https://github.com/labd/mach-composer/tree/master/examples/aws) in the
-[/examples](https://github.com/labd/mach-composer/tree/master/examples/aws)
+configuration file [on GitHub](https://github.com/mach-composer/mach-composer-cli/tree/master/examples/aws) in the
+[/examples](https://github.com/mach-composer/mach-composer-cli/tree/master/examples/aws)
 directory
 
 ## Further reading

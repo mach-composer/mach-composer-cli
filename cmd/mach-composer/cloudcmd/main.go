@@ -10,7 +10,7 @@ import (
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 
-	"github.com/labd/mach-composer/internal/cloud"
+	"github.com/mach-composer/mach-composer-cli/internal/cloud"
 )
 
 var CloudCmd = &cobra.Command{

@@ -14,9 +14,9 @@ import (
 	"github.com/hashicorp/hcl/v2/hclwrite"
 	"github.com/rs/zerolog/log"
 
-	"github.com/labd/mach-composer/internal/cloud"
-	"github.com/labd/mach-composer/internal/config"
-	"github.com/labd/mach-composer/internal/lockfile"
+	"github.com/mach-composer/mach-composer-cli/internal/cloud"
+	"github.com/mach-composer/mach-composer-cli/internal/config"
+	"github.com/mach-composer/mach-composer-cli/internal/lockfile"
 )
 
 type GenerateOptions struct {
@@ -63,7 +63,7 @@ func WriteFiles(ctx context.Context, cfg *config.MachConfig, options *GenerateOp
 		if err := validateFile(formatted); err != nil {
 			log.Error().Msg("The generated terraform code is invalid. " +
 				"This is a bug in mach composer. Please report the issue at " +
-				"https://github.com/labd/mach-composer")
+				"https://github.com/mach-composer/mach-composer-cli")
 			// os.Exit(255)
 		}
 

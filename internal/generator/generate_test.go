@@ -8,9 +8,9 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/labd/mach-composer/internal/config"
-	"github.com/labd/mach-composer/internal/plugins"
-	"github.com/labd/mach-composer/internal/utils"
+	"github.com/mach-composer/mach-composer-cli/internal/config"
+	"github.com/mach-composer/mach-composer-cli/internal/plugins"
+	"github.com/mach-composer/mach-composer-cli/internal/utils"
 )
 
 func TestRenderSite(t *testing.T) {
