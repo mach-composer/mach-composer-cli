@@ -65,26 +65,6 @@ brews:
       - name: git
         type: optional
 
-  # We still support the old labd namespace for legacy reasons
-  - name: "{{ .ProjectName }}"
-    tap:
-      owner: labd
-      name: homebrew-{{ .ProjectName }}
-    url_template: https://github.com/mach-composer/mach-composer-cli/releases/download/v{{ .Version }}/{{ .ArtifactName }}
-    commit_author:
-      name: goreleaserbot
-      email: opensource@labdigital.nl
-    homepage: "https://machcomposer.io/"
-    description: |
-      MACH composer is a framework that you use to orchestrate and extend
-      modern digital commerce & experience platforms, based on MACH
-      technologies and cloud native services..
-    license: "MIT"
-    dependencies:
-      - name: terraform
-      - name: git
-        type: optional
-
 chocolateys:
   - title: MACH composer
     owners: Lab
