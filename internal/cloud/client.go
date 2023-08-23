@@ -13,7 +13,7 @@ import (
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/clientcredentials"
 
-	"github.com/labd/mach-composer/internal/utils"
+	"github.com/mach-composer/mach-composer-cli/internal/utils"
 )
 
 const cliClientID = "b0b9ccbd-0613-4ccf-86a1-dab07b8b5619"

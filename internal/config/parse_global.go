@@ -6,7 +6,7 @@ import (
 
 	"gopkg.in/yaml.v3"
 
-	"github.com/labd/mach-composer/internal/plugins"
+	"github.com/mach-composer/mach-composer-cli/internal/plugins"
 )
 
 func parseGlobalNode(cfg *MachConfig, globalNode *yaml.Node) error {

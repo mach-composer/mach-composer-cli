@@ -9,9 +9,9 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/labd/mach-composer/internal/cli"
-	"github.com/labd/mach-composer/internal/gitutils"
-	"github.com/labd/mach-composer/internal/updater"
+	"github.com/mach-composer/mach-composer-cli/internal/cli"
+	"github.com/mach-composer/mach-composer-cli/internal/gitutils"
+	"github.com/mach-composer/mach-composer-cli/internal/updater"
 )
 
 var updateFlags struct {

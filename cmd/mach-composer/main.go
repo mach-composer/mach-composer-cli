@@ -9,8 +9,8 @@ import (
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 
-	"github.com/labd/mach-composer/cmd/mach-composer/cloudcmd"
-	"github.com/labd/mach-composer/internal/cli"
+	"github.com/mach-composer/mach-composer-cli/cmd/mach-composer/cloudcmd"
+	"github.com/mach-composer/mach-composer-cli/internal/cli"
 )
 
 var (

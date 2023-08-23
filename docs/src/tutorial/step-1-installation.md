@@ -17,14 +17,14 @@ brew install mach-composer
 !!! warning "Windows support is experimental"
     Windows support is experimental and not yet fully tested. We recommend running MACH composer through [WSL2](https://learn.microsoft.com/en-us/windows/wsl/install).
 
-    Additionally, currently the latest version of MACH composer cannot be installed with Chocolatery. We recommend installing the latest version manually through downloading the [latest available binaries from Github](https://github.com/labd/mach-composer/releases/latest).
+    Additionally, currently the latest version of MACH composer cannot be installed with Chocolatery. We recommend installing the latest version manually through downloading the [latest available binaries from Github](https://github.com/mach-composer/mach-composer-cli/releases/latest).
 
 ```ps
 choco install mach-composer
 ```
 
 ### Alternatives
-You can always download the latest release via the [GitHub release page](https://github.com/labd/mach-composer/releases)
+You can always download the latest release via the [GitHub release page](https://github.com/mach-composer/mach-composer-cli/releases)
 
 
 ## Install Terraform

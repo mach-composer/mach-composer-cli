@@ -8,7 +8,7 @@ import (
 	"github.com/rs/zerolog/log"
 	"gopkg.in/yaml.v3"
 
-	"github.com/labd/mach-composer/internal/utils"
+	"github.com/mach-composer/mach-composer-cli/internal/utils"
 )
 
 func machConfigUpdater(ctx context.Context, cfg *PartialConfig, src []byte, updateSet *UpdateSet) []byte {

@@ -30,7 +30,7 @@ The configuration file has the following structure:
 
 
 !!! tip "JSON schema"
-    A JSON schema for the syntax is [available on GitHub](https://github.com/labd/mach-composer/blob/master/schema.json).
+    A JSON schema for the syntax is [available on GitHub](https://github.com/mach-composer/mach-composer-cli/blob/master/schema.json).
     This can be used to configure IntelliSense autocompletion support in VSCode.
 
 ## Including YAML files

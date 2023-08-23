@@ -63,7 +63,7 @@ to be passed on to the docker container:
         -e AWS_DEFAULT_REGION=<your-region> \
         -e AWS_ACCESS_KEY_ID=<your-access-key-id> \
         -e AWS_SECRET_ACCESS_KEY=<your-secret-access-key> \
-        docker.pkg.github.com/labd/mach-composer/mach:latest \
+        docker.pkg.github.com/mach-composer/mach-composer-cli/mach:latest \
         apply
     ```
 === "Azure"
@@ -76,7 +76,7 @@ to be passed on to the docker container:
         -e ARM_CLIENT_SECRET=<your-client-secret> \
         -e ARM_SUBSCRIPTION_ID=<your-subscription-id> \
         -e ARM_TENANT_ID=<your-tenant-id> \
-        docker.pkg.github.com/labd/mach-composer/mach:latest \
+        docker.pkg.github.com/mach-composer/mach-composer-cli/mach:latest \
         apply --with-sp-login
     ```
 
@@ -101,7 +101,7 @@ directory;
 docker run --rm \
     --volume $(pwd):/code \
     --volume $(pwd)/.terraform_cache:/root/.terraform.d/plugin-cache \
-    docker.pkg.github.com/labd/mach-composer/mach:latest \
+    docker.pkg.github.com/mach-composer/mach-composer-cli/mach:latest \
     apply
 ```
 

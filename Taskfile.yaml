@@ -6,8 +6,8 @@ tasks:
       - |
         go build \
         -ldflags " \
-          -X github.com/labd/mach-composer/internal/cli.version={{ .version }}-dev \
-          -X github.com/labd/mach-composer/internal/cli.date={{ .date }} \
+          -X github.com/mach-composer/mach-composer-cli/internal/cli.version={{ .version }}-dev \
+          -X github.com/mach-composer/mach-composer-cli/internal/cli.date={{ .date }} \
         " \
         -o bin/ ./cmd/...
       - cmd: codesign --deep --force -s - bin/mach-composer

@@ -10,9 +10,9 @@ import (
 	"github.com/mach-composer/mcc-sdk-go/mccsdk"
 	"gopkg.in/yaml.v3"
 
-	"github.com/labd/mach-composer/internal/cloud"
-	"github.com/labd/mach-composer/internal/config"
-	"github.com/labd/mach-composer/internal/utils"
+	"github.com/mach-composer/mach-composer-cli/internal/cloud"
+	"github.com/mach-composer/mach-composer-cli/internal/config"
+	"github.com/mach-composer/mach-composer-cli/internal/utils"
 )
 
 type PartialConfig struct {

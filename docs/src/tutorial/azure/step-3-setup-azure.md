@@ -90,7 +90,7 @@ Now the state is stored in the Storage Account.
 
 ## Example
 
-See the [examples directory](https://github.com/labd/mach-composer/tree/master/examples/azure/infra/) for an example of a Terraform setup
+See the [examples directory](https://github.com/mach-composer/mach-composer-cli/tree/master/examples/azure/infra/) for an example of a Terraform setup
 
 
 ## Manual setup

@@ -9,8 +9,8 @@ import (
 
 	"github.com/elliotchance/pie/v2"
 
-	"github.com/labd/mach-composer/internal/config"
-	"github.com/labd/mach-composer/internal/variables"
+	"github.com/mach-composer/mach-composer-cli/internal/config"
+	"github.com/mach-composer/mach-composer-cli/internal/variables"
 )
 
 // renderSite is responsible for generating the `site.tf` file. Therefore it is

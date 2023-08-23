@@ -8,7 +8,7 @@ import (
 
 	"github.com/rs/zerolog/log"
 
-	"github.com/labd/mach-composer/internal/config"
+	"github.com/mach-composer/mach-composer-cli/internal/config"
 )
 
 type PlanOptions struct {

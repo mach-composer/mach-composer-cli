@@ -11,7 +11,7 @@ import (
 	"github.com/fatih/color"
 	"github.com/rs/zerolog"
 
-	"github.com/labd/mach-composer/internal/utils"
+	"github.com/mach-composer/mach-composer-cli/internal/utils"
 )
 
 type ConsoleWriter struct {

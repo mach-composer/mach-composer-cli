@@ -12,8 +12,8 @@ import (
 	"github.com/mach-composer/mcc-sdk-go/mccsdk"
 	"gopkg.in/yaml.v3"
 
-	"github.com/labd/mach-composer/internal/plugins"
-	"github.com/labd/mach-composer/internal/variables"
+	"github.com/mach-composer/mach-composer-cli/internal/plugins"
+	"github.com/mach-composer/mach-composer-cli/internal/variables"
 )
 
 type rawConfig struct {

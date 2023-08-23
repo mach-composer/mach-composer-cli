@@ -5,7 +5,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/labd/mach-composer/internal/config"
+	"github.com/mach-composer/mach-composer-cli/internal/config"
 )
 
 func TestFileLocations(t *testing.T) {

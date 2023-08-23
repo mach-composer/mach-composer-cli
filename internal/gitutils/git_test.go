@@ -25,19 +25,19 @@ func TestParseGitSource(t *testing.T) {
 		expected *gitSource
 	}{
 		{
-			source: "git::https://github.com/labd/mach-composer",
+			source: "git::https://github.com/mach-composer/mach-composer-cli",
 			expected: &gitSource{
-				Repository: "https://github.com/labd/mach-composer",
+				Repository: "https://github.com/mach-composer/mach-composer-cli",
 				Path:       "",
-				Name:       "mach-composer",
+				Name:       "mach-composer-cli",
 			},
 		},
 		{
-			source: "git::https://github.com/labd/mach-composer//terraform",
+			source: "git::https://github.com/mach-composer/mach-composer-cli//terraform",
 			expected: &gitSource{
-				Repository: "https://github.com/labd/mach-composer",
+				Repository: "https://github.com/mach-composer/mach-composer-cli",
 				Path:       "terraform",
-				Name:       "mach-composer",
+				Name:       "mach-composer-cli",
 			},
 		},
 	}

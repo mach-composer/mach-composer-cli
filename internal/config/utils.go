@@ -9,7 +9,7 @@ import (
 	"github.com/elliotchance/pie/v2"
 	"gopkg.in/yaml.v3"
 
-	"github.com/labd/mach-composer/internal/utils"
+	"github.com/mach-composer/mach-composer-cli/internal/utils"
 )
 
 func nodeAsMap(n *yaml.Node) (map[string]any, error) {

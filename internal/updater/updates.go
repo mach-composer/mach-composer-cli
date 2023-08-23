@@ -8,8 +8,8 @@ import (
 
 	"github.com/rs/zerolog"
 
-	"github.com/labd/mach-composer/internal/config"
-	"github.com/labd/mach-composer/internal/gitutils"
+	"github.com/mach-composer/mach-composer-cli/internal/config"
+	"github.com/mach-composer/mach-composer-cli/internal/gitutils"
 )
 
 func findUpdates(ctx context.Context, cfg *PartialConfig, filename string) (*UpdateSet, error) {

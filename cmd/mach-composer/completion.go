@@ -4,7 +4,7 @@ import (
 	"github.com/elliotchance/pie/v2"
 	"github.com/spf13/cobra"
 
-	"github.com/labd/mach-composer/internal/config"
+	"github.com/mach-composer/mach-composer-cli/internal/config"
 )
 
 func AutocompleteSiteName(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {

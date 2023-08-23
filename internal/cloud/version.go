@@ -9,7 +9,7 @@ import (
 	"github.com/elliotchance/pie/v2"
 	"github.com/mach-composer/mcc-sdk-go/mccsdk"
 
-	"github.com/labd/mach-composer/internal/gitutils"
+	"github.com/mach-composer/mach-composer-cli/internal/gitutils"
 )
 
 func AutoRegisterVersion(ctx context.Context, client *mccsdk.APIClient, organization, project, componentKey string, dryRun bool, gitFilterPaths []string) (string, error) {

@@ -169,7 +169,7 @@ use OpenID Connect. See how this works with GitHub at
       mach:
         runs-on: ubuntu-latest
         container:
-          image: docker.pkg.github.com/labd/mach-composer/mach:2.0.0
+          image: docker.pkg.github.com/mach-composer/mach-composer-cli/mach:2.0.0
           credentials:
             username: ${{ secrets.GITHUB_USER }}
             password: ${{ secrets.GITHUB_TOKEN }}

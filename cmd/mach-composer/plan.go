@@ -3,8 +3,8 @@ package main
 import (
 	"github.com/spf13/cobra"
 
-	"github.com/labd/mach-composer/internal/generator"
-	"github.com/labd/mach-composer/internal/runner"
+	"github.com/mach-composer/mach-composer-cli/internal/generator"
+	"github.com/mach-composer/mach-composer-cli/internal/runner"
 )
 
 var planFlags struct {

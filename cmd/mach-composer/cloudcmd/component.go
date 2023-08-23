@@ -8,7 +8,7 @@ import (
 	"github.com/mach-composer/mcc-sdk-go/mccsdk"
 	"github.com/spf13/cobra"
 
-	"github.com/labd/mach-composer/internal/cloud"
+	"github.com/mach-composer/mach-composer-cli/internal/cloud"
 )
 
 var componentCreateCmd = &cobra.Command{

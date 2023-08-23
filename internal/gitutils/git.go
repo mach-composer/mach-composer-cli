@@ -16,8 +16,8 @@ import (
 	"github.com/go-git/go-git/v5/plumbing"
 	"github.com/rs/zerolog/log"
 
-	"github.com/labd/mach-composer/internal/config"
-	"github.com/labd/mach-composer/internal/utils"
+	"github.com/mach-composer/mach-composer-cli/internal/config"
+	"github.com/mach-composer/mach-composer-cli/internal/utils"
 )
 
 var ErrGitRevisionNotFound = errors.New("git revision not found")
