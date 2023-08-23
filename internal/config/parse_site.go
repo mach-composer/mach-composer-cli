@@ -38,6 +38,14 @@ func parseSitesNode(cfg *MachConfig, sitesNode *yaml.Node) error {
 		}
 
 		if node, ok := nodes["endpoints"]; ok {
+			cli.DeprecationWarning(&cli.DeprecationOptions{
+				Message: "the usage of endpoints is deprecated and will be removed in the next major version",
+				Details: `
+				Configure endpoints by creating the API gateway as a separate component and configuring routes in the
+				in the components that provide the logic.
+				`,
+				Site: siteId,
+			})
 			if err := parseSiteEndpointNode(cfg, siteId, node); err != nil {
 				return fmt.Errorf("failed to parse endpoints: %w", err)
 			}
