@@ -1,5 +1,6 @@
 deployments/
 dist/
+local/
 /output
 /coverage.html
 /coverage.out
