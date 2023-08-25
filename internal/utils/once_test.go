@@ -5,7 +5,10 @@ import (
 	"sync"
 	"sync/atomic"
 	"testing"
+	"time"
 )
+
+var lock = sync.Mutex{}
 
 func TestOnceMapGet(t *testing.T) {
 	doCounter := atomic.Int64{}
@@ -28,9 +31,13 @@ func TestOnceMapGet(t *testing.T) {
 		wg.Add(1)
 		go func(k string) {
 			defer wg.Done()
+
+			lock.Lock()
 			onceMap.Get(k).Do(func() {
+				time.Sleep(time.Second)
 				doCounter.Add(1)
 			})
+			lock.Unlock()
 			totalCounter.Add(1)
 		}(k)
 	}
