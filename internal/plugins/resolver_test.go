@@ -4,37 +4,12 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
-	"os"
 	"runtime"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-
-	"github.com/mach-composer/mach-composer-cli/internal/utils"
 )
-
-func TestResolveBuiltinPlugin(t *testing.T) {
-	oldArgs := os.Args
-	defer func() { os.Args = oldArgs }()
-
-	os.Args = []string{"./mach-composer"}
-
-	// Create dummy executable
-	fh, err := utils.AFS.Create("mach-composer")
-	require.NoError(t, err)
-	if _, err := fh.WriteString("executable"); err != nil {
-		require.NoError(t, err)
-	}
-	fh.Close()
-
-	cfg := NewDefaultPlugin("aws")
-	plugin, err := resolvePlugin(cfg)
-	require.NoError(t, err)
-
-	assert.Equal(t, "./mach-composer", plugin.Path)
-	assert.Equal(t, []string{"plugin", "aws"}, plugin.Args)
-}
 
 func TestQueryPluginRegistry(t *testing.T) {
 	// Set up test data

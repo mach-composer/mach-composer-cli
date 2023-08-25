@@ -114,8 +114,31 @@ func loadPlugins(ctx context.Context, raw *rawConfig) error {
 
 	if len(raw.MachComposer.Plugins) == 0 {
 		log.Debug().Msg("No plugins specified; loading default plugins")
-		if err := raw.plugins.LoadDefault(ctx); err != nil {
-			return err
+		raw.MachComposer.Plugins = map[string]MachPluginConfig{
+			"amplience": {
+				Source:  "mach-composer/amplience",
+				Version: "0.1.3",
+			},
+			"aws": {
+				Source:  "mach-composer/aws",
+				Version: "0.1.0",
+			},
+			"azure": {
+				Source:  "mach-composer/azure",
+				Version: "0.1.0",
+			},
+			"commercetools": {
+				Source:  "mach-composer/commercetools",
+				Version: "0.1.5",
+			},
+			"contentful": {
+				Source:  "mach-composer/contentful",
+				Version: "0.1.0",
+			},
+			"sentry": {
+				Source:  "mach-composer/sentry",
+				Version: "0.1.2",
+			},
 		}
 	}
 

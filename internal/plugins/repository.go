@@ -97,18 +97,6 @@ func (p *PluginRepository) LoadPlugin(ctx context.Context, name string, config P
 	return nil
 }
 
-// LoadDefault will load all the default plugins. Needed until we move to full
-// remote plugins only
-func (p *PluginRepository) LoadDefault(ctx context.Context) error {
-	for _, name := range localPluginNames {
-		pluginConfig := NewDefaultPlugin(name)
-		if err := p.LoadPlugin(ctx, name, pluginConfig); err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
 func (p *PluginRepository) loadSchema(name string) (*schema.ValidationSchema, error) {
 	plugin, err := p.Get(name)
 	if err != nil {
