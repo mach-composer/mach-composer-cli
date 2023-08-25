@@ -48,7 +48,7 @@ func parseComponentsNode(cfg *MachConfig, node *yaml.Node, source string) error 
 		return fmt.Errorf("verify of components failed: %w", err)
 	}
 	knownKeys := []string{
-		"name", "source", "version", "branch", "integrations", "endpoints",
+		"name", "source", "version", "branch", "integrations", "endpoints", "paths",
 	}
 	for _, component := range node.Content {
 		nodes := mapYamlNodes(component.Content)
