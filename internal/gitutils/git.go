@@ -20,6 +20,8 @@ import (
 	"github.com/mach-composer/mach-composer-cli/internal/utils"
 )
 
+var downloadFiles = utils.OnceMap[string]{}
+
 var ErrGitRevisionNotFound = errors.New("git revision not found")
 
 type gitSource struct {
@@ -55,7 +57,7 @@ func (g *GitVersionInfo) Identifier() string {
 
 func OpenRepository(path string) (*git.Repository, error) {
 	repo, err := git.PlainOpen(path)
-	if err == git.ErrRepositoryNotExists {
+	if errors.Is(err, git.ErrRepositoryNotExists) {
 		gitPath, err := searchGitPath(path)
 		if err != nil {
 			return nil, err
@@ -120,8 +122,13 @@ func GetLastVersionGit(ctx context.Context, c *config.Component, origin string) 
 	if c.Branch != "" {
 		branch = c.Branch
 	}
-	fetchGitRepository(ctx, source, cacheDir)
+
 	path := filepath.Join(cacheDir, source.Name)
+
+	downloadFiles.Get(path).Do(func() {
+		fetchGitRepository(ctx, source, path)
+	})
+
 	commits, err := GetRecentCommits(ctx, path, c.Version, branch, c.Paths)
 	if err != nil {
 		return nil, err
@@ -267,18 +274,17 @@ func parseGitSource(source string) (*gitSource, error) {
 	return result, nil
 }
 
-// fetchGitRepository clones or updates the repository. We only need the history
-// so clone using --bare
-func fetchGitRepository(ctx context.Context, source *gitSource, cacheDir string) {
-	dest := filepath.Join(cacheDir, source.Name)
-
+// fetchGitRepository clones or updates the repository. We only need the history so clone using --bare
+func fetchGitRepository(ctx context.Context, source *gitSource, dest string) {
 	_, err := os.Stat(dest)
 	if os.IsNotExist(err) {
 		output := runGit(ctx, ".", "clone", "--bare", source.Repository, dest)
-		log.Debug().Msgf(string(output))
+		log.Ctx(ctx).Debug().
+			Msgf("downloaded new repository %s at destination %s: %s", source.Name, dest, string(output))
 	} else {
 		output := runGit(ctx, dest, "fetch", "-f", "origin", "*:*")
-		log.Debug().Msgf(string(output))
+		log.Ctx(ctx).Debug().
+			Msgf("updated existing repository %s at destination %s: %s", source.Name, dest, string(output))
 	}
 }
 
@@ -301,7 +307,7 @@ func searchGitPath(path string) (string, error) {
 			return path, nil
 		}
 
-		if err != git.ErrRepositoryNotExists {
+		if !errors.Is(err, git.ErrRepositoryNotExists) {
 			return "", fmt.Errorf("failed to find open repository: %w", err)
 		}
 
