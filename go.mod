@@ -15,13 +15,7 @@ require (
 	github.com/hashicorp/go-retryablehttp v0.7.2
 	github.com/hashicorp/hcl/v2 v2.16.2
 	github.com/lithammer/dedent v1.1.0
-	github.com/mach-composer/mach-composer-plugin-amplience v0.1.3
-	github.com/mach-composer/mach-composer-plugin-aws v0.1.0
-	github.com/mach-composer/mach-composer-plugin-azure v0.1.0
-	github.com/mach-composer/mach-composer-plugin-commercetools v0.1.9
-	github.com/mach-composer/mach-composer-plugin-contentful v0.1.0
 	github.com/mach-composer/mach-composer-plugin-sdk v0.0.6
-	github.com/mach-composer/mach-composer-plugin-sentry v0.1.3
 	github.com/mach-composer/mcc-sdk-go v0.0.3-0.20230301072130-d1c0f6c7e0f0
 	github.com/mattn/go-isatty v0.0.17
 	github.com/olekukonko/tablewriter v0.0.5
@@ -52,10 +46,8 @@ require (
 	github.com/aws/aws-sdk-go v1.44.211 // indirect
 	github.com/bgentry/go-netrc v0.0.0-20140422174119-9fd32a8b3d3d // indirect
 	github.com/cloudflare/circl v1.3.3 // indirect
-	github.com/creasty/defaults v1.6.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/emirpasic/gods v1.18.1 // indirect
-	github.com/flosch/pongo2/v5 v5.0.0 // indirect
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
 	github.com/go-git/gcfg v1.5.0 // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
@@ -64,7 +56,6 @@ require (
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/googleapis/enterprise-certificate-proxy v0.2.3 // indirect
 	github.com/googleapis/gax-go/v2 v2.7.0 // indirect
-	github.com/gosimple/unidecode v1.0.1 // indirect
 	github.com/hashicorp/go-cleanhttp v0.5.2 // indirect
 	github.com/hashicorp/go-safetemp v1.0.0 // indirect
 	github.com/hashicorp/go-version v1.6.0 // indirect
@@ -76,7 +67,6 @@ require (
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/kevinburke/ssh_config v1.2.0 // indirect
 	github.com/klauspost/compress v1.16.0 // indirect
-	github.com/mach-composer/mach-composer-plugin-helpers v0.0.4 // indirect
 	github.com/magiconair/properties v1.8.7 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-runewidth v0.0.14 // indirect
@@ -90,7 +80,6 @@ require (
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/rivo/uniseg v0.4.4 // indirect
 	github.com/sergi/go-diff v1.3.1 // indirect
-	github.com/sirupsen/logrus v1.9.0 // indirect
 	github.com/skeema/knownhosts v1.1.0 // indirect
 	github.com/spf13/cast v1.5.0 // indirect
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
