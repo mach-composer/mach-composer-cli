@@ -19,7 +19,7 @@ be created.
 
 Some of the components are referenced through the Terraform variables and can be
 used within the component to link them with the new component resources. For
-example when creating an route to an API endpoint in AWS:
+example when creating a route to an API endpoint in AWS:
 
 ```terraform
 resource "aws_apigatewayv2_integration" "gateway" {

@@ -70,12 +70,12 @@ See [Syntax](../../reference/syntax/index.md) for all configuration options.
 
 In [step 4](./step-4-setup-aws-site.md) we've used the
 [`terraform-aws-mach-account` module](https://github.com/labd/terraform-aws-mach-account)
-to setup the AWS account for us.
+to set up the AWS account for us.
 
 This also created an IAM **user** called `mach` and a **role** `mach` that we
 can use to perform MACH composer deployments with.
 
-In this tutorial, we'll be using the `mach` role so we can configure the
+In this tutorial, we'll be using the `mach` role, so we can configure the
 credentials in the same fashion we did for the
 [component upload](./step-5-create-component.md#upload):
 
@@ -147,7 +147,7 @@ directory
 ## Further reading
 
 - See the [CLI reference](../../reference/cli.md#apply) for more deployment options.
-- Setup your CI/CD pipeline on [GitLab](../../howto/ci/gitlab.md), [GitHub](../../howto/ci/github.md) or [Azure DevOps](../../howto/ci/devops.md)
+- Set up your CI/CD pipeline on [GitLab](../../howto/ci/gitlab.md), [GitHub](../../howto/ci/github.md) or [Azure DevOps](../../howto/ci/devops.md)
 - [Encrypting your configuration](../../howto/security/encrypt.md) with SOPS
 - How to create a [new MACH component](../../howto/components/create-component.md)
 - [Architectural Guidance](../../topics/architecture/index.md)

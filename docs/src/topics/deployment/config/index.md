@@ -106,7 +106,7 @@ docker run --rm \
 ```
 
 !!! tip "Caching in CI/CD"
-    For an example on how to setup the Terraform plugin cache, see the examples in the how-to's for:
+    For an example on how to set up the Terraform plugin cache, see the examples in the how-tos for:
 
     - [GitLab](../../../howto/ci/gitlab.md#terraform-plugin-cache)
     - GitHub actions (todo)

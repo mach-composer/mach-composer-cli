@@ -162,7 +162,7 @@ Patch release to fix windows distribution via chocolatey
 
 This release introduces support for plugins in mach-composer. All previous
 supported plugins (also called integrations) are still bundled with the
-exectutable but will in the future be distributed separately.
+exectutable but will be distributed separately.
 
 With this release it is also possible to use build custom plugins. A plugin
 should be created with the mach-composer-plugin-sdk and the resulting executable
@@ -210,7 +210,7 @@ Other changes include:
 ## 2.4.0 (2022-11-29)
 
 - Major rewrite to move to a plugin based system. The plugins are for now all
-  built-in and part of the mach composer release but will in the future be
+  built-in and part of the mach composer release but will be
   moved to external plugins.
 - Use `go-git` to retrieve the git log instead of executing `git` directly. This
   fixes (#188)
@@ -225,7 +225,7 @@ Other changes include:
 
 ## 2.3.0 (2022-10-01)
 
-- Fix windows version due to wrong handling of the path separator (#182)
+- Fix Windows version due to wrong handling of the path separator (#182)
 - Restore the `sites` subcommand to output the sites in the config (#178)
 - Restore the `components` subcommand to output the components in the config  (#179)
 - Support only passing one config file and use `main.yml` as default for now (#177)
@@ -361,7 +361,7 @@ A number of features which were minimal used are removed.
 
 **For Azure**
 
-- Each component that has an `endpoint` defined needs to have an Terraform output defined for that endpoint. For example:<br>
+- Each component that has an `endpoint` defined needs to have a Terraform output defined for that endpoint. For example:<br>
   ```terraform
   output "azure_endpoint_main" {
     value = {
@@ -611,7 +611,7 @@ var.variables["CT_API_URL"]
 var.variables["CT_AUTH_URL"]
 ```
 
-Instead you should use:
+Instead, you should use:
 
 ```
 var.ct_project_key
@@ -627,7 +627,7 @@ var.ct_auth_url
 ## 0.4.2 (2020-11-02)
 
 - Add 'encrypt' option to AWS state backend
-- Correctly depend component modules to the commercetools project settings resource
+- Correctly depend on component modules to the commercetools project settings resource
 - Extend Azure regions mapping
 
 

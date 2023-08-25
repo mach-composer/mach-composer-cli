@@ -6,10 +6,11 @@ Also, we explain how to create your first MACH component (a serverless
 microservice), and attach it to your project.
 
 !!! info "Landing zone creation"
-    This tutorial walks through the creation of a Landing Zone in Azure and AWS. This is a simple setup, and for production workloads, it is very likely that you will need to deviate from this. MACH composer can be deployed in any landingzone, and it is not required to have control over that from the MACH composer perspective.
+This tutorial walks through the creation of a Landing Zone in Azure and AWS. This is a simple setup, and for production
+workloads, it is very likely that you will need to deviate from this. MACH composer can be deployed in any landing-zone, and
+it is not required to have control over that from the MACH composer perspective.
 
     In production deployments we often see these landings zones being provided by the central cloud organisation, who setup the right accounts and guardrails, in which MACH composer can be deployed.
-
 
 ## How does MACH composer work?
 
@@ -27,10 +28,10 @@ MACH composer is intended for managing multiple instances of the architecture.
 In this tutorial we'll walk you through the steps required to get started with MACH.
 
 - Step 1: [Install necessary tools](./step-1-installation.md)
-- Step 2: [Setup your commercetools project](./step-2-setup-ct.md)
+- Step 2: [Set up your commercetools project](./step-2-setup-ct.md)
 - For **AWS**:
-    - Step 3: [Setup your AWS services account](./aws/step-3-setup-aws-services.md)
-    - Step 4: [Setup your site-specific AWS account](./aws/step-4-setup-aws-site.md)
+    - Step 3: [Set up your AWS services account](./aws/step-3-setup-aws-services.md)
+    - Step 4: [Set up your site-specific AWS account](./aws/step-4-setup-aws-site.md)
     - Step 5: [Create your first MACH component](./aws/step-5-create-component.md)
     - Step 6: [Setup and deploy your MACH stack](./aws/step-6-create-mach-stack.md)
 - For **Azure**:

@@ -29,7 +29,7 @@ entire commerce environment.
 #### Simple components
 For some components, the *domain* and thus the implementation is quite
 straight-forward and clear, like for example a component responsible for
-**handling payments** or a component that should **sends a confirmation email**
+**handling payments** or a component that should **send a confirmation email**
 upon a new order.
 
 #### Complex components
@@ -43,7 +43,7 @@ for example:
 - New object is upload to a S3 bucket or Storage account
 - New order is received through a commercetools Order
 
-Instead of provided these seperate pieces of functionality in two seperate
+Instead of provided these separate pieces of functionality in two separate
 components, it would make more sense to include that in one component so that
 when including that component in your MACH stack, all ERP-related
 functionality is taken care of.

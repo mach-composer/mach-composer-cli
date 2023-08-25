@@ -22,7 +22,7 @@ Regardless of what [integration](#integrations) the components has, two
 variables must be set on the component if those are actually set in your MACH
 configuration.
 
-So only if you have following configuration for your component:
+So only if you have the following configuration for your component:
 
 ```yaml
 components:
@@ -67,7 +67,7 @@ Available integrations are:
 - `apollo_federation`
 
 By default, integrations are set on the given cloud provider. So when no
-`integrations` defintion is given, it defaults to `['aws']` in case of an AWS
+`integrations` definition is given, it defaults to `['aws']` in case of an AWS
 deployment.
 
 !!! tip "Non-cloud components"

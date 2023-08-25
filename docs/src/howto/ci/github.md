@@ -1,9 +1,10 @@
 # Deploy using GitHub Actions
-This section will describe how to setup your CI/CD pipeline using GitHub Actions
+This section will describe how to set up your CI/CD pipeline using GitHub Actions
 including some examples.
 
-!!! tip "Github Actions is the preferred CI/CD platform for MACH composer"
-    While any CI/CD platform can run MACH composer, our examplesand tooling will focus around GitHub Actions, as this is the preferred platform for many of our clients, and provides the best developer experience.
+!!! tip "GitHub Actions is the preferred CI/CD platform for MACH composer"
+    While any CI/CD platform can run MACH composer, our examples and tooling will focus around GitHub Actions, as this is 
+the preferred platform for many of our clients, and provides the best developer experience.
 
     In case you use a different CI/CD solution, take the below pipelines as examples. Essentially, a CI/CD pipeline should run a combination of the `mach-composer plan` and `mach-composer apply` commands.
 

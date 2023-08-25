@@ -1,8 +1,8 @@
 # Azure components
 
-All components within a Azure-based MACH composer configuration are
+All components within an Azure-based MACH composer configuration are
 automatically considered to have a 'azure' integration by default. Only if
-'azure' is explicitely omitted from the `integrations` definition, it won't
+'azure' is explicitly omitted from the `integrations` definition, it won't
 require any Azure-specific variables.
 
 To be able to create the resources needed, a couple of extra
@@ -65,7 +65,7 @@ variable "azure_monitor_action_group_id" {
 !!! info "Monitor action group"
     `monitor_action_group_id` is set to the
     [action group](../../topics/deployment/config/azure.md#action-groups)
-    ID when a [alert_group](../syntax/global.md#azure) is configured.
+    ID when an [alert_group](../syntax/global.md#azure) is configured.
 
 ### With `endpoints`
 
@@ -116,18 +116,18 @@ output "azure_endpoint_webhooks" {
 #### Defining `outputs`
 
 As shown in the example above, the component needs to have an output *per
-endpoint* defined in order to instruct MACH how to setup Frontdoor routing.
+endpoint* defined in order to instruct MACH how to set up Frontdoor routing.
 
 This output needs to have a name in the form of `azure_endpoint_<endpoint-name>` and contain the following attributes:
 
 - **`address`** - (Required) The host address to route traffic to
-- `host_header` - The value to use as the host header sent to the backend. By default will take the value of `address`.
+- `host_header` - The value to use as the host header sent to the backend. By default, will take the value of `address`.
 - `http_port` -  The HTTP TCP port number. Possible values are between `1` - `65535`. Defaults to `80`.
 - `https_port` - The HTTPS TCP port number. Possible values are between `1` - `65535`. Defaults to `443`.
 - `health_probe_path` - The path to use for the Health Probe. If left empty, health probe won't be enabled.
 - `health_probe_protocol` - Protocol scheme to use for the Health Probe. Defaults to `Http`
 - `health_probe_method` - Specifies HTTP method the health probe uses when querying the service. Possible values include: `GET` and `HEAD`. Defaults to `GET`.
-- `routes` - A list of custom Frontdoor routing rules. By default MACH will generate one default routing rule for each component.
+- `routes` - A list of custom Frontdoor routing rules. By default, MACH will generate one default routing rule for each component.
 
 **`routes` options**
 
@@ -182,7 +182,7 @@ variable "azure_app_service_plan" {
 
 ## Packaging and deploying
 
-For Azure functions, the deployment process constist of two steps:
+For Azure functions, the deployment process consists of two steps:
 
 - Packaging the function
 - Deploying it to the [function app storage](../../tutorial/azure/step-3-setup-azure.md)
@@ -250,7 +250,7 @@ MACH composer creates a name prefix which can be used to name all other resource
 This prefix is built up using
 
 - The configured [resources prefix](../syntax/global.md#azure)
-- The [site identifier](../#syntax/sites.md)
+- The [site identifier](../syntax/sites.md)
 - Region
 
 So for example, when creating a function app, we can define this as:
@@ -288,7 +288,7 @@ resource "azurerm_storage_account" "main" {
 
 Where `sa` stands for *'storage account'*
 
-[^1]: Some resources have a name restriction of max 24 characters. Obviously we
+> **WARNING**: Some resources have a name restriction of max 24 characters. Obviously we
 want to avoid hitting that limit. See
 [Azure naming restrictions](#azure-naming-restrictions) on how to avoid that.
 

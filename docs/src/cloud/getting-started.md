@@ -7,7 +7,7 @@ actions](../reference/cli.md#cloud).
 
 !!! info "The below steps can be achieved through the dashboard" 
     While MACH composer ☁️ is an API-first product, we also provide a dashboard that
-    you can use to manage your projects and components. All of the actions above
+    you can use to manage your projects and components. All the actions above
      can also be achieved through it.
 
     You can login to the dashboard here: [https://app.mach.cloud](https://app.mach.cloud)
@@ -19,10 +19,10 @@ MACH composer ☁️.
 
 ## 1. Create a MACH composer ☁️ account, organization and project
 
-1. **Create a MACH composer cloud account by logging in with Github**
+1. **Create a MACH composer cloud account by logging in with GitHub**
 
     ```bash
-    # this will open a browser in which you can login through a Github account
+    # this will open a browser in which you can login through a GitHub account
     % mach-composer cloud login
     Successfully authenticated to mach composer cloud
     ```
@@ -30,7 +30,7 @@ MACH composer ☁️.
     !!! warning "Currently we're in private beta and need to manually approve new accounts."
 
 
-2. **Create an organization**
+1. **Create an organization**
     ```bash
     % mach-composer cloud create-organization --key my-org --name "My org name"
     Created new organization: my-org
@@ -38,7 +38,7 @@ MACH composer ☁️.
 
     !!! info "You can be part of multiple organizations and also invite other users to your organization by using the `mach-composer cloud add-organization-user` command."
 
-3. **Create a project**
+1. **Create a project**
     ```bash
     % mach-composer cloud create-project my-project "My Project" --organization my-org
     Created new project: my-project
@@ -62,7 +62,7 @@ components with MACH composer ☁️.
 
 2. **Now you can push new versions of a component.**
 
-    Run the following command from a github repository.
+    Run the following command from a GitHub repository.
 
     ```bash
     $ mach-composer cloud register-component-version
@@ -74,10 +74,10 @@ components with MACH composer ☁️.
     to MACH composer ☁️. For more info about using the component registry, [take
     a look at its documentation](component-registry.md).
 
-3. **In CI/CD context you need to create API Client credentials"**
+3. **In CI/CD context you need to create API Client credentials**
     
-    When you are logged in from the commandlinek the MACH composer CLI will
-    manage your API credentials for you through Github authentication. but in
+    When you are logged in from the commandline the MACH composer CLI will
+    manage your API credentials for you through GitHub authentication. but in
     CI/CD context, you need to create a set of API Client credentials to make it
     work. `mach-composer` will detect the `MCC_CLIENT_ID` and
     `MCC_CLIENT_SECRET` environment variables. 
@@ -117,6 +117,6 @@ mach_composer:
 ```
 
 When running `mach-composer update --cloud`, MACH composer will fetch the latest
-versions from MACH composer ☁️ instead of the components github repository. As a
+versions from MACH composer ☁️ instead of the components GitHub repository. As a
 result, this process will be much faster as well as more robust, as component
 versions are guaranteed to exist.

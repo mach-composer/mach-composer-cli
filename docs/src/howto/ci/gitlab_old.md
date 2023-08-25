@@ -1,13 +1,13 @@
 # Deploy using GitLab CI/CD
 
-This section will describe how to setup your CI/CD pipeline using GitLab
+This section will describe how to set up your CI/CD pipeline using GitLab
 including some examples.
 
 !!! warning "Gitlab CI/CD documentation is no longer maintained"
 
-    While it is perfectly possible to implement MACH composer in a Gitlab CI/CD pipeline, we will not be updating its documentation anymore, as Github Actions seems to be the preferred CI/CD solution for most of our users.
+    While it is perfectly possible to implement MACH composer in a Gitlab CI/CD pipeline, we will not be updating its documentation anymore, as GitHub Actions seems to be the preferred CI/CD solution for most of our users.
 
-    For a current implementation of a GitHub CI/CD flow, please see the [Github CI/CD documentation of MACH composer](./github.md).
+    For a current implementation of a GitHub CI/CD flow, please see the [GitHub CI/CD documentation of MACH composer](./github.md).
 
 ## MACH stack deployment
 
@@ -15,7 +15,7 @@ How to set up the deployment process for your MACH composer configuration.
 
 ### Providing cloud credentials
 
-We have to make sure the the necessary AWS or Azure credentials are set in the
+We have to make sure the necessary AWS or Azure credentials are set in the
 GitLab CI/CD settings;
 
 ![CI/CD variables](../../_img/deployment/gitlab/variables.png)

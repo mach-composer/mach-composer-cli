@@ -6,4 +6,4 @@
 - Security:
     - How to [deal with secrets](./security/handle-secrets.md)
     - How to [encrypt your MACH configuration](./security/encrypt.md)
-- How to setup up a CI/CD pipeline with [GitHub](./ci/github.md) actions.
+- How to set up a CI/CD pipeline with [GitHub](./ci/github.md) actions.

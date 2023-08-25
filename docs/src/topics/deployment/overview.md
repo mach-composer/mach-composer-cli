@@ -3,7 +3,7 @@
 ## Stage 1: Pushing a component to the component artifact repository
 
 MACH composer is primarily used to deploy components in an individual site, and
-provide it with the right context (settings, endpoints, etc).
+provide it with the right context (settings, endpoints, etc.).
 
 Components themselves are responsible for publishing their own artifacts into
 an artifact repository (which can be a simple S3 bucket). And usually that is
@@ -22,7 +22,7 @@ hosting options in cloud providers (i.e. AWS Fargate).
     Usually, components have a `/terraform` directory in the root of the
     component, containing the Terraform module, which is the entrypoint for MACH
     Composer. And MACH composer in turn leverages
-    [Terraforms 'modules sources'](https://www.terraform.io/docs/language/modules/sources.html)
+    [Terraform's 'modules sources'](https://www.terraform.io/docs/language/modules/sources.html)
     functionality to 'pull together' different modules from different Git
     repositories.
 
@@ -42,7 +42,7 @@ sequenceDiagram
 
 !!! tip "MACH composer ☁️ provides a component registry API" 
     To improve the stability of your MACH composer pipelines, it is often not
-    reliable to rely on updating component versions based on Github commits. In
+    reliable to rely on updating component versions based on GitHub commits. In
     order to improve this, we are introducing a [Component Registry as part of
     MACH composer ☁️](../../cloud/component-registry.md).
 

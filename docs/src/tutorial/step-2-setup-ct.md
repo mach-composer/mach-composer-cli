@@ -8,7 +8,7 @@
 
 Login in commercetools: [https://mc.europe-west1.gcp.commercetools.com/login](https://mc.europe-west1.gcp.commercetools.com/login)
 
-If you don't have an account yet, you can [signup for a free trail](https://ok.commercetools.com/free-trial#start-free-trial-form)
+If you don't have an account yet, you can [sign up for a free trial](https://ok.commercetools.com/free-trial#start-free-trial-form)
 
 !!! note "commercetools regions"
     By default MACH composer uses the `europe-west1` region of commercetools.

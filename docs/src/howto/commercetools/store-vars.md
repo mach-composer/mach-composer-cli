@@ -91,7 +91,7 @@ locals {
 For the store secrets you can use the same technique as for the [store variables](#using-store-variables).
 This especially will be sufficient for most cases when implementing for Azure.
 
-On AWS it might be a better option to combine secrets per store into one secrets
+On AWS, it might be a better option to combine secrets per store into one secrets
 value to avoid too much latency when fetching those secrets.
 
 ### AWS
@@ -121,7 +121,7 @@ resource "aws_secretsmanager_secret_version" "store_secret" {
     More considerations about this in the [
       'Handle secrets in components'](../security/handle-secrets.md#combine-or-split-up) how-to.
 
-#### Seperate secrets
+#### Separate secrets
 ```terraform
 locals {
   store_secrets = flatten([

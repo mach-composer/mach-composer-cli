@@ -357,7 +357,7 @@ Can overwrite any value from the generic [Azure settings](#azure):
 - `region` - Azure region to deploy in
 - `service_plans` - Map of custom [service plan configurations](#service_plans)
 
-And adds the following exta attributes:
+And adds the following extra attributes:
 
 - `alert_group` - List of [Alert groups](#alert_group)
 - `resource_group` - Name of an already existing resource group.
@@ -501,10 +501,10 @@ components:
 
 - **`name`** - (Required) Reference to a [component](./components.md) definition
 - `variables` - Variables for this component
-- `secrets` - Variables for this component that should be stored in a encrypted key-value store
+- `secrets` - Variables for this component that should be stored in an encrypted key-value store
 - `store_variables` - [commercetools store](#stores)-specific variables for this component
 - `store_secrets` - [commercetools store](#stores)-specific variables for this
-  component that should be stored in a encrypted key-value store
+  component that should be stored in an encrypted key-value store
 - `health_check_path` - Defines a custom healthcheck path.<br>
   Overwrites the default `health_check_path` defined in the component definition
 - `sentry` - [Sentry configuration](#sentry_1) block
@@ -520,7 +520,7 @@ Overwrites any value specified in the site configs [Sentry block](#sentry)
 
 
 [^1]: commercetools uses [Localized strings](https://docs.commercetools.com/http-api-types#localizedstring)
-to be able to define strings in mulitple languages.<br>
+to be able to define strings in multiple languages.<br>
 Whenever a localized string needs to be defined, this can be done in the following format:
 ```yaml
 some-string:

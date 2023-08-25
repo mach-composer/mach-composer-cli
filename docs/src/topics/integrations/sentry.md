@@ -7,7 +7,7 @@ It's also possible for MACH composer to manage the keys (and DSN values) for
 you.  This allows you to generate a unique DSN per component as well as have
 fine-grained control over rate-limiting.
 
-To let MACH composer manage your DSN values, you need to define a
+To let MACH composer manage your DSN values, you need to define an
 **auth token**, **project** and **organization**.
 
 ## Create auth token
@@ -28,7 +28,7 @@ and [`component`](../../reference/syntax/sites.md#components) level
 
 ## Integrate with components
 
-When `sentry` is set as an [component integration](../../reference/components/structure.md#integrations),
+When `sentry` is set as a [component integration](../../reference/components/structure.md#integrations),
 the component should have the following Terraform variables defined:
 
 - `sentry_dsn`

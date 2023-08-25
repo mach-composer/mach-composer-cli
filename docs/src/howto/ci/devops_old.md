@@ -1,16 +1,16 @@
 # Deploy using Azure DevOps pipelines
 
-This section will describe how to setup your CI/CD pipeline using DevOps including some examples.
+This section will describe how to set up your CI/CD pipeline using DevOps including some examples.
 
 !!! warning "Azure DevOps documentation is no longer maintained"
 
     While it is perfectly possible to implement MACH composer in an Azure DevOps pipeline, we will not be updating its documentation anymore, as Azure DevOps seems to be on its way out. We will be focusing on GitHub Actions instead.
 
-    For a current implementation of a GitHub CI/CD flow, please see the [Github CI/CD documentation of MACH composer](./github.md).
+    For a current implementation of a GitHub CI/CD flow, please see the [GitHub CI/CD documentation of MACH composer](./github.md).
 
 ## MACH stack deployment
 
-How to set up the deployment process fro your MACH configuration.
+How to set up the deployment process for your MACH configuration.
 
 ### Providing credentials
 
@@ -53,7 +53,7 @@ We need to configure a Docker Registry service connection for the pipeline to us
    ![New connection](../../_img/deployment/devops/docker_connection.png)
 
 #### 4. Component repositories
-1. Generate a SSH key pair.  [Instructions](https://docs.microsoft.com/en-us/azure/devops/repos/git/use-ssh-keys-to-authenticate?view=azure-devops#step-1-create-your-ssh-keys).
+1. Generate an SSH key pair.  [Instructions](https://docs.microsoft.com/en-us/azure/devops/repos/git/use-ssh-keys-to-authenticate?view=azure-devops#step-1-create-your-ssh-keys).
 2. Add the public key to the [SSH public keys](https://docs.microsoft.com/en-us/azure/devops/repos/git/use-ssh-keys-to-authenticate?view=azure-devops#step-2--add-the-public-key-to-azure-devops-servicestfs) of a user that has (at least read-) access to the component repositories.
 3. Store the private key in the KeyVault.<br>
    ```bash
@@ -62,7 +62,7 @@ We need to configure a Docker Registry service connection for the pipeline to us
 
 #### 5. Provide SP credentials
 
-MACH composer needs to be able to login to Azure to manage the resources.<br>
+MACH composer needs to be able to log in to Azure to manage the resources.<br>
 We need to be able to provide the following environment variables:
 
 - `ARM_CLIENT_ID`

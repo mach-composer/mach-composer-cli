@@ -17,7 +17,7 @@ For more information about these configuration options, see the [syntax](../../r
 
 !!! tip "More fine-grained control"
     MACH composer provides a couple of basic configuration options which in most
-    cases are sufficient and is setup very quickly.<br>
+    cases are sufficient and is set up very quickly.<br>
     If you need more control over the configuration in your project, you can
     load custom configuration through a new component which would include the
     necessary Terraform configuration for that.<br>
@@ -167,7 +167,7 @@ commercetools:
 
 ## Integrate with components
 
-When `commercetools` is set as an [component integration](../../reference/components/structure.md#integrations),
+When `commercetools` is set as a [component integration](../../reference/components/structure.md#integrations),
 the component should have the following Terraform variables defined:
 
 - `ct_project_key`

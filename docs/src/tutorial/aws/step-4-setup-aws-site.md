@@ -80,7 +80,7 @@ module "mach_account" {
 
 !!! info "`deploy_principle_identifiers`"
     We specify our root account here, so it makes it easier for this tutorial to
-    setup credentials to be able to deploy using MACH.
+    set up credentials to be able to deploy using MACH.
 
 #### `policies.tf`
 
@@ -180,8 +180,8 @@ dynamodb_table = "lock"
 role_arn       = "arn:aws:iam::<account-id>:role/admin"
 encrypt        = "true"
 ```
-2. Uncomment the `# backend "s3" {}` line in `main.tf`
-3. Perform the following command:
+1. Uncomment the `# backend "s3" {}` line in `main.tf`
+2. Perform the following command:
 ```bash
 $ terraform init -force-copy -var-file=envs/tst.tfvars  -backend-config=backend-configs/tst.conf
 ```

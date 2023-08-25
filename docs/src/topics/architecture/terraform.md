@@ -1,6 +1,6 @@
 # Everything-as-configuration-as-code
 
-As a principle, MACH composer encourages declaratively defining your
+As a principle, MACH composer encourages declarative defining your
 configuration as code, as much as possible. This will enable you to manage much
 of your infrastructure in an automated fashion, which in turn will enable you to
 scale your MACH ecosystem to many instances and use-cases.
@@ -15,7 +15,7 @@ can be managed by MACH composer*.
 
 Find supported services on these pages:
 
-- [Offical providers](https://www.terraform.io/docs/providers/index.html)
+- [Official providers](https://www.terraform.io/docs/providers/index.html)
 - [Community providers](https://www.terraform.io/docs/providers/type/community-index.html)
 
 
@@ -31,7 +31,7 @@ did with the Terraform Provider for Commercetools](https://blog.labdigital.nl/co
     which explains how to build your own Terraform Provider.
 
 
-When yo don't have the time or the resources to create your own Terraform
+When you don't have the time or the resources to create your own Terraform
 provider, there are other options (that we're not shy of using in production
 ourselves) that allow you to apply infra-as-code principles:
 

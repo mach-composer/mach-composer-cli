@@ -12,7 +12,7 @@ In that case, the component itself is responsible for the following steps:
 In this section a couple of methods – for various cloud providers – will be described.
 
 !!! tip "Second stage deployment"
-    The second stage deployment is described in the ['MACH configuration deployment' section](./config/components.md)
+    The second stage deployment is described in the [MACH configuration deployment section](./config/components.md)
 
 ## Package
 
@@ -140,7 +140,7 @@ $ ./build.sh upload
 ```
 ## Setting up CI
 
-Refer to the CI/CD section for instructions on how to setup your Continuous
+Refer to the CI/CD section for instructions on how to set up your Continuous
 Integration pipeline for component deployments:
 
 - [GitLab](../../howto/ci/gitlab.md#component-deployment)
@@ -154,6 +154,6 @@ As part of the [MACH deployment](./config/index.md), the component will be
 loaded as a Terraform module so that the component can deploy the necessary
 resources needed for the specific site it is configured for.
 
-This is what we call the ['second stage' deployment](./config/components.md).
+This is what we call the [second stage deployment](./config/components.md).
 
 ###

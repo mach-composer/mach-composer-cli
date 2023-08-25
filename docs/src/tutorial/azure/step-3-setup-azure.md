@@ -6,7 +6,7 @@ In this step we will set up the following in Azure:
 2. Storage account for function app code packages
 3. Registered providers needed for various services
 
-This section will demonstrate how to setup Azure using Terraform.
+This section will demonstrate how to set up Azure using Terraform.
 
 ## 1. Prepare
 
@@ -95,4 +95,4 @@ See the [examples directory](https://github.com/mach-composer/mach-composer-cli/
 
 ## Manual setup
 
-See instructions on how to [setup Azure manually](./manual.md).
+See instructions on how to [set up Azure manually](./manual.md).

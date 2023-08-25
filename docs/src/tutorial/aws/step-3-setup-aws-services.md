@@ -1,6 +1,6 @@
 # Step 3. Add AWS services account
 
-In AWS we need two accounts:
+In AWS, we need two accounts:
 
 1. [**Service account**](#setup-service-account) for any shared resources amongst all MACH stacks
 2. [**Site-specific account**](./step-4-setup-aws-site.md) for resources specific to a single MACH stack
@@ -8,14 +8,14 @@ In AWS we need two accounts:
 In this step we'll create the first one, the service account.
 
 !!! tip "Tenancy model"
-      As described in the [tenancy model](../../topics/architecture/tenancy.md#aws-tenancy), we advice to setup your MACH environment by creating **one service AWS account** containing shared resources and create an **AWS account per stack**.
+      As described in the [tenancy model](../../topics/architecture/tenancy.md#aws-tenancy), we advise to set up your MACH environment by creating **one service AWS account** containing shared resources and create an **AWS account per stack**.
 
       This way, all resources are strictly separated from eachother.
 
 
 ## Setup service account
 
-For this account we will create a;
+For this account we will create a
 
 1. **Terraform state backend** to store the infrastructure state
 2. **Artifact repository** to deploy all MACH components to
@@ -30,7 +30,7 @@ For this account we will create a;
 
 !!! info "No root AWS account yet?"
     Go to [AWS support](https://aws.amazon.com/premiumsupport/knowledge-center/create-and-activate-aws-account/)
-    for instructions on how to setup your AWS root account.
+    for instructions on how to set up your AWS root account.
 
 ### 2. Setup your Terraform configuration
 
@@ -101,7 +101,7 @@ module "shared-config" {
 
 !!! info "`allow_assume_deploy_role`"
     We specify our root account here, so it makes it easier for this tutorial to
-    setup credentials to be able to deploy the components.
+    set up credentials to be able to deploy the components.
 
 ### 3. Terraform apply
 
@@ -121,7 +121,7 @@ Now the state is stored in the S3 bucket, and the DynamoDB table will be used to
 lock the state to prevent concurrent modification.
 
 !!! tip "Next: step 4"
-    Next we'll setup the [AWS account for a MACH stack](step-4-setup-aws-site.md).
+    Next we'll set up the [AWS account for a MACH stack](step-4-setup-aws-site.md).
 
 [^1]: For the sake of simplicity we will use the default administrator role that
 AWS will create for us.<br> However, as best practise, we advise to create an

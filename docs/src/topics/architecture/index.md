@@ -13,11 +13,11 @@ more about how to use Terraform (and for what) on this page.
 ##[Designing your tenancy model](./tenancy.md)
 
 MACH composer is intended to facilitate multi-tenancy on top of a range of MACH
-services, micro-services and integrations. This page describes what to look at
+services, microservices and integrations. This page describes what to look at
 when designing your tenancy model, from different perspectives.
 
 
-## Resposibilities
+## Responsibilities
 
 !!! TODO
     explain about responsibilities in the system
@@ -25,7 +25,7 @@ when designing your tenancy model, from different perspectives.
 ## Example architecture
 
 !!! TODO
-    create example archicture overview (diagrams)
+    create example architecture overview (diagrams)
 
 ## Example AWS infrastructure
 

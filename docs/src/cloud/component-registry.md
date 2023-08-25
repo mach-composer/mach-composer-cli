@@ -16,10 +16,10 @@ $ mach-composer cloud register-component-version
 ``` 
 
 !!! warning "Only register a version, if there is an artifact."
-    Pushing a new version should only bedone after an artifact was
+    Pushing a new version should only be done after an artifact was
     actually created and published to your artifact repository.
 
-If your using Github Actions, we have created a [convenient GitHub Action for
+If your using GitHub Actions, we have created a [convenient GitHub Action for
 registering
 versions](https://github.com/mach-composer/new-component-version-action), that
 you can simply include in an existing component pipeline.
@@ -109,7 +109,7 @@ Updates for api-service (0771f35...66e74f4)
 ### The problem
 
 After updating and running `mach-composer apply`, usually some Terraform code
-will naively take this version inforation and use it to deploy either a Lambda
+will naively take this version information and use it to deploy either a Lambda
 or Docker container by building an artifact name like this:
 `my-component-{version}.zip`.
 
@@ -121,5 +121,5 @@ the `mach-composer apply` execution to fail - sometimes silently.
 
 Our solution to this is to provide a way to register 'deployable versions' with
 MACH composer cloud, as part of the component CI/CD workflow: **after
-succesfully building and storing the component artifact, it must be registered
-with the MACH composer API.**.
+successfully building and storing the component artifact, it must be registered
+with the MACH composer API**.

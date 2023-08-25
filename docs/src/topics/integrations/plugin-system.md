@@ -5,16 +5,16 @@ In order to make it more flexible and easier to add support for new MACH
 services to MACH composer, we've introduced a plug-in system that allows anyone
 to create a plugin.
 
-If a plug-in is not availale on the `$PATH`, MACH composer will try to fetch the
+If a plug-in is not available on the `$PATH`, MACH composer will try to fetch the
 plugin from the location that's given in the configuration. We use GitHub
 releases for hosting plug-ins. Any GitHub organisation and repository can be
 used to host a plugin.
 
-The officially supported plug-ins are hosted at the [MACH composer github
+The officially supported plug-ins are hosted at the [MACH composer GitHub
 organization](https://github.com/mach-composer?q=plugin&type=all&language=&sort=).
 
 In order to add the AWS and Sentry plugins to your MACH composer configuration,
-add the the below configuration to your MACH composer YAML configuration.
+add the below configuration to your MACH composer YAML configuration.
 
 ```yaml
 mach_composer:
@@ -62,7 +62,7 @@ mach_composer:
 !!! note "Backwards compatibility"
     In order to be backwards compatible, MACH composer itself currently ships the
     plug-ins that were previously part of MACH composer itself. When you specify
-    specific versions of plug-ins, these will alsways prevail and MACH composer will
+    specific versions of plug-ins, these will always prevail and MACH composer will
     try to download these.
 
 ## Overriding plugin behaviour

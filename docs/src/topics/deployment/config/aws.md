@@ -24,12 +24,12 @@ components:
 ```
 
 !!! note ""
-    This `default` endpoint doesnt need to be defined in your [endpoints definition](../../../reference/syntax/sites.md#endpoints).
+    This `default` endpoint doesn't need to be defined in your [endpoints' definition](../../../reference/syntax/sites.md#endpoints).
 
 ### Custom endpoint
 
 A site might have a couple of [endpoints](../../../reference/syntax/sites.md#endpoints)
-defined and for each endpoint MACH composer will create:
+defined and for each endpoint MACH composer will create:S
 
 - API Gateway + default routing
 - ACM Certificate (with DNS validation)
@@ -40,4 +40,4 @@ defined and for each endpoint MACH composer will create:
     MACH composer will not create and manage the Route53 zone itself but expects
     it to be created already as described in the
     [prerequisites](../../../tutorial/aws/step-4-setup-aws-site.md) section.<br>
-    It will try to lookup that zone using the `route53_zone_name` setting.
+    It will try to look up that zone using the `route53_zone_name` setting.

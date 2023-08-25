@@ -1,6 +1,6 @@
 # MACH composer concepts
 
-MACH composer is intended as the 'center piece' of your MACH architecture, and
+MACH composer is intended as the 'centerpiece' of your MACH architecture, and
 coordinates everything in terms of infrastructure, MACH services, sites and
 components configuration, and deploying all of that. Underneath Terraform is
 used to manage all of this.
@@ -24,7 +24,7 @@ different composition of components.
 
 ## First class support for a number of MACH services and cloud platforms
 MACH composer offers first-class support for a number of MACH services such as
-commercetools, Amplience and contentful. Also it offers native support for the
+commercetools, Amplience and contentful. Also, it offers native support for the
 major cloud platforms, AWS, Azure and soon GCP.
 
 First-class support means that the YAML configuration may contain attributes
@@ -34,7 +34,7 @@ components to integrate with a particular MACH or cloud service.
 ## Easy management of multiple MACH environments
 MACH composer is intended to power multiple environments/sites from a single
 source. By copy/pasting an existing configuration, and making the necessary
-adjustments, MACH composer can rollout your new environment or sites.
+adjustments, MACH composer can roll out your new environment or sites.
 
 ## Integration with CI/CD process
 MACH composer is intended to run in CI/CD context and can be integrated into

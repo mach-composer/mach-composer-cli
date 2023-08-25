@@ -1,6 +1,6 @@
 # ![MACH composer](./_img/logo.png)
 
-This documentation describes the workings of MACH composer. Intended to setup
+This documentation describes the workings of MACH composer. Intended to set up
 and manage a **M**icroservices based, **A**PI-first, **C**loud-native SaaS and
 **H**eadless platform.
 
@@ -23,14 +23,14 @@ It includes:
   and Azure Functions), including (alpha) support for building your microservices
   with the Serverless Framework
 - Multi-tenancy support for managing many instances of your platform, that share
-  the same library of micro services
+  the same library of microservices
 - CI/CD tools for automating the delivery of your MACH ecosystem
 - Tight integration with AWS an Azure, including an (opinionated) setup of these
   cloud environments
 
-The framework is intended as the 'center piece' of your MACH architecture and
+The framework is intended as the 'centerpiece' of your MACH architecture and
 incorporates industry best practises such as the 12 Factor Methodology,
-Infrastrucure-as-code, DevOps, immutable deployments, FAAS, etc.
+Infrastructure-as-code, DevOps, immutable deployments, FAAS, etc.
 
 With combining (and requiring) these practises, using the framework has
 significant impact on your engineering methodology and organisation. On the
@@ -41,7 +41,7 @@ organisation.
 ## Documentation structure
 
 - [Tutorials](./tutorial/intro.md) introduces you to MACH composer and lets you
-  setup your MACH stack in a couple of steps
+  set up your MACH stack in a couple of steps
 - [Explanations](./topics/concepts.md) explanations of concepts, best practises
   and techniques
 - [Reference guides](./reference/index.md) contain technical reference for the

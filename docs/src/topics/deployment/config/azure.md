@@ -12,7 +12,7 @@ MACH composer will create a **[resource group](https://registry.terraform.io/pro
 
 Only when a MACH composer stack contains components that have an
 [`endpoint`](../../../reference/syntax/components.md) defined, MACH composer
-will setup a **Frontdoor instance** to be able to route traffic to that component.
+will set up a **Frontdoor instance** to be able to route traffic to that component.
 
 ### Default endpoint
 
@@ -29,16 +29,16 @@ components:
 ```
 
 !!! note ""
-    This `default` endpoint doesn't need to be defined in your [endpoints definition](../../../reference/syntax/sites.md#endpoints).
+    This `default` endpoint doesn't need to be defined in your [endpoints' definition](../../../reference/syntax/sites.md#endpoints).
 
 ### Custom endpoint
 
 Whenever a custom endpoint from your [endpoints definition](../../../reference/syntax/sites.md#endpoints)
 is used, MACH composer will require that you have configured
 [`frontdoor`](../../../reference/syntax/global.md#frontdoor) for additional DNS
-information that it needs to setup your Frontdoor instance.
+information that it needs to set up your Frontdoor instance.
 
-In addition to that it will also setup the necessary DNS record.
+In addition to that it will also set up the necessary DNS record.
 
 ### Component routing
 
@@ -79,11 +79,6 @@ The routing in Frontdoor that will be created:
     defining routing options in [output values](../../../reference/components/azure.md#defining-outputs).
 
 ## App service plans
-
-MACH composer can create an [App service plan](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/app_service_plan)
-that can be used for any MACH component that uses the `service_plan`
-configuration option (either in the [component definition](../../../reference/syntax/components.md#azure)
-or the [site-specific configuration](../../../reference/syntax/sites.md#azure_1)).
 
 What kind and how many service plans it will create depends on what service
 plans are needed by the components, and how the

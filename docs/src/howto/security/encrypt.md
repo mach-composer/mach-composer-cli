@@ -56,7 +56,7 @@ For example, if you would run MACH composer with
 mach-composer apply -f main.yml --var-file variables.yml
 ```
 
-and `variables.yml` is encrpyted with SOPS, MACH composer will use
+and `variables.yml` is encrypted with SOPS, MACH composer will use
 [terraform-sops](https://github.com/carlpett/terraform-provider-sops) to make
 sure the encrypted variables are used in a secure manner.
 

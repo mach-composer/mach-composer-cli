@@ -1,6 +1,6 @@
 # Integrations
 
-Each integration brings it's own set of managed resources that gets created by
+Each integration brings its own set of managed resources that gets created by
 MACH composer when configured for a specific MACH composer stack.
 
 ### commercetools
@@ -40,4 +40,4 @@ It will use the information from the [amplience settings](../../../reference/syn
 to pass to the components that have `amplience` included in their integrations.
 
 !!! note ""
-    [more info](../../integrations/amplience.md) about the Ampience integration
+    [more info](../../integrations/amplience.md) about the Amplience integration

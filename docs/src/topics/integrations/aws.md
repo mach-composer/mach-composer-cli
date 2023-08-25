@@ -2,7 +2,7 @@
 
 This plugin provides integration with microsoft Amazon Web Services.
 
-Please see the [syntax section for AWS](../../reference/syntax/sites.md#aws_1) specific configuration options. This will be moved to this plugin documentation in the future.
+Please see the [syntax section for AWS](../../reference/syntax/sites.md#aws) specific configuration options. This will be moved to this plugin documentation in the future.
 
 
 <!-- ## Plugin usage

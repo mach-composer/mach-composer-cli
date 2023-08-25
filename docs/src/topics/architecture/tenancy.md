@@ -14,8 +14,8 @@ project/environments/etc that you wish. We always recommend to apply the
 principle: use the lowest possible number of environments, as each of them will
 come with additional complexity, management overhead and cost.
 
-The less environments, the better - while of course always making sure that 'it
-fits'. If there are good reasons to setup additional environments, then set them
+The fewer environments, the better - while of course always making sure that 'it
+fits'. If there are good reasons to set up additional environments, then set them
 up instead of trying to fit a square into a circle.
 
 !!! info "Multi tenancy"
@@ -50,7 +50,7 @@ controls to design a sane structure that matches your organisational needs.
 1. Consider which commercetools `organisations` you will create (usually one per geographic region is sufficient)
 2. Consider when to create a new commercetools `project`.
 3. Consider how to look at the different geographic regions that commercetools has
-4. Consider how commercetools `project` multi-lingual and multi-country support can help when building multi-lingual and country commerce sites?
+4. Consider how commercetools `project` multilingual and multi-country support can help when building multilingual and country commerce sites?
 5. Consider using commercetools' `shipping zones`
 6. Consider when to work with inventory and supply `channels`, including connecting these to `stores`
 7. Consider what commercetools `stores` can do for you within a `project` context
@@ -70,7 +70,7 @@ controls to design a sane structure that matches your organisational needs.
 1. Known limitations when scaling commercetools `projects` across use-cases:
     - Currently, commercetools is implementing `assortments` in their product
       catalogue, which will enable you to create store-specific assortments (and
-      thus catalogues). Currently this is not supported yet, but expected in Q1
+      thus catalogues). Currently, this is not supported yet, but expected in Q1
       2021
     - The Merchant Center does not always provide the `store` 'context'. This
       means that managers of store A might be able to see resources of store B.
@@ -96,7 +96,7 @@ controls to design a sane structure that matches your organisational needs.
 1. Consider when to create a new Amplience `hub`. Often `hub` are mapped against a commercetools `projects`
 2. Consider when to create a new Amplience `repositories`.
 3. Consider how to use `repositories` to support your use cases
-4. Consider how multi-lingual `content types` can help when building multi-lingual content and sites?
+4. Consider how multilingual `content types` can help when building multilingual content and sites?
 
 <br/>
 *Relevant Amplience resources:*
@@ -118,9 +118,9 @@ controls to design a sane structure that matches your organisational needs.
 
 ## Cloud provider tenancy
 
-Cloud provider tenancy is aimend at partitioning the platform to a level where
+Cloud provider tenancy is aimed at partitioning the platform to a level where
 certain resources are grouped together logically, and securely. Structuring this
-suffifient, will allow you to scale the platform across many users and (3rd)
+sufficient, will allow you to scale the platform across many users and (3rd)
 parties working on it, while limiting the 'attack surface' in case any
 environment would be compromised.
 
@@ -133,12 +133,12 @@ In short:
 
 1. Follow [AWS account best practices](https://aws.amazon.com/organizations/getting-started/best-practices/).
 2. Create **one AWS account per commercetools project** that you create, which
-   hosts all of the AWS resources tied to that commercetools project.
+   hosts all the AWS resources tied to that commercetools project.
 3. Create one dedicated '*service*' or '*shared*' account that hosts shared
    resources like component artifacts and centralized routing.
 
 !!! tip ""
-      See the instructions on [how to setup AWS](../../tutorial/aws/step-3-setup-aws-services.md)
+      See the instructions on [how to set up AWS](../../tutorial/aws/step-3-setup-aws-services.md)
       to get a good overview of the way a typical MACH-ready AWS environment is set up
 
 ### Azure tenancy
@@ -152,7 +152,7 @@ In short:
 3. Have all resources per site be created in their own separate Azure Resource Group. MACH composer will do this for you automatically. [^1]
 
 !!! tip ""
-      See the instructions on [how to setup Azure](../../tutorial/azure/step-3-setup-azure.md)
+      See the instructions on [how to set up Azure](../../tutorial/azure/step-3-setup-azure.md)
       to get a good overview of the way a typical MACH-ready Azure environment
       is set up
 ## Building 'context aware' components

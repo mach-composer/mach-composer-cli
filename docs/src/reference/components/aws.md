@@ -1,7 +1,7 @@
 # AWS components
 
-All components within a AWS-based MACH composer configuration are automatically
-considered to have a 'aws' integration by default. Only if 'aws' is explicitely
+All components within an AWS-based MACH composer configuration are automatically
+considered to have a 'aws' integration by default. Only if 'aws' is explicitly
 omitted from the `integrations` definition, it won't require any AWS-specific
 variables.
 
@@ -49,9 +49,6 @@ variable "aws_endpoint_webhooks" {
 
 AWS Lambda functions need to be uploaded to a S3 bucket. From there AWS Lambda
 will run the functions for you once instructed by the Terraform deployment.
-
-[Read more](../../topics/deployment/components.md#on-aws) about AWS component
-deployments.
 
 ### Configure runtime
 When defining your AWS Lambda function resource, you can reference back to the

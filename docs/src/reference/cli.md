@@ -1,7 +1,7 @@
 # CLI Reference
 
 
-MACH composer's command line interface allows you to peform the following actions:
+MACH composer's command line interface allows you to perform the following actions:
 
 ```bash
 $ mach-composer
@@ -49,14 +49,14 @@ mach-composer apply --auto-approve -f main.yml
 - `--site` or `-s TEXT` Site to apply. If not set apply all sites.
 - `--component` or `-c TEXT` Specific component to target.
 - `--output-path TEXT` Output path, defaults to `cwd`/deployments`.
-- `--reuse` Supress a terraform init for improved speed (not recommended for production usage)
+- `--reuse` Suppress a terraform init for improved speed (not recommended for production usage)
 - `--ignore-version` Skip MACH composer version check
 - `--destroy` Destroy option is a convenient way to destroy all remote objects managed by this mach config
 
 
 
 ## `init`
-Initiliaze the Terraform directory.
+Initialize the Terraform directory.
 
 ```bash
 mach-composer terraform init -f main.yml
@@ -72,7 +72,7 @@ mach-composer terraform init -f main.yml
 
 
 ## `plan`
-Output the deploy plan.
+Output the deployment plan.
 
 ```bash
 mach-composer plan -f main.yml
@@ -85,7 +85,7 @@ mach-composer plan -f main.yml
 - `--site` or `-s TEXT` Site to generate plan of. If not set generate plans for all sites.
 - `--component` or `-c TEXT` Specific component to target.
 - `--output-path TEXT` Output path, defaults to `cwd`/deployments.
-- `--reuse` Supress a terraform init for improved speed (not recommended for production usage)
+- `--reuse` Suppress a terraform init for improved speed (not recommended for production usage)
 - `--ignore-version` Skip MACH composer version check
 - `--destroy` Destroy option is a convenient way to destroy all remote objects managed by this mach config
 
@@ -112,12 +112,12 @@ mach-composer update pim-importer v1.2.0 -c
 
 - `--file` or `-f TEXT` YAML file to update. If not set update all *.yml files.
 - `--verbose` or `-v` Verbose output.
-- `--check` Only checks for updates, doesnt change files.
+- `--check` Only checks for updates, doesn't change files.
 - `--commit` or `-c` Automatically commits the change.
 
 ## `cloud`
 
-The `cloud` subcommand contains all of the actions you can perform against [MACH composer ☁️](../cloud/index.md).
+The `cloud` subcommand contains all the actions you can perform against [MACH composer ☁️](../cloud/index.md).
 
 ```bash
 % mach-composer cloud     

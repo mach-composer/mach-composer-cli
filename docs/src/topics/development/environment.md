@@ -5,7 +5,7 @@ environment so you can use MACH composer to the fullest.
 
 ## Installing the CLI
 
-MACH composer is written in Go. For macOs and Linux users the easiest way to
+MACH composer is written in Go. For macOS and Linux users the easiest way to
 install MACH composer is via brew:
 
 ```bash

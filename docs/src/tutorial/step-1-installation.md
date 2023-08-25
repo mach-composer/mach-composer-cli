@@ -17,7 +17,7 @@ brew install mach-composer
 !!! warning "Windows support is experimental"
     Windows support is experimental and not yet fully tested. We recommend running MACH composer through [WSL2](https://learn.microsoft.com/en-us/windows/wsl/install).
 
-    Additionally, currently the latest version of MACH composer cannot be installed with Chocolatery. We recommend installing the latest version manually through downloading the [latest available binaries from Github](https://github.com/mach-composer/mach-composer-cli/releases/latest).
+    Additionally, currently the latest version of MACH composer cannot be installed with Chocolatery. We recommend installing the latest version manually through downloading the [latest available binaries from GitHub](https://github.com/mach-composer/mach-composer-cli/releases/latest).
 
 ```ps
 choco install mach-composer
@@ -30,7 +30,7 @@ You can always download the latest release via the [GitHub release page](https:/
 ## Install Terraform
 Make sure you have Terraform installed on your machine.
 
-On MacOS and Linux we recommend using [tfenv](https://github.com/tfutils/tfenv)
+On macOS and Linux we recommend using [tfenv](https://github.com/tfutils/tfenv)
 to easily switch between Terraform versions when needed.
 
 1. Install [tfenv](https://github.com/tfutils/tfenv): Follow the instructions on [https://github.com/tfutils/tfenv](https://github.com/tfutils/tfenv)
@@ -39,7 +39,7 @@ to easily switch between Terraform versions when needed.
    $ tfenv install latest
    ```
 
-For windows you can install it via chocolatey.
+For Windows, you can install it via chocolatey.
 
 ```ps
 choco install terraform
@@ -47,4 +47,4 @@ choco install terraform
 
 
 !!! tip "Next: step 2"
-    Next we'll [setup our commercetools project](./step-2-setup-ct.md)
+    Next we'll [set up our commercetools project](./step-2-setup-ct.md)

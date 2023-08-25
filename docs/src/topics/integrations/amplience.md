@@ -18,7 +18,7 @@ by giving it a **hub_id**.
 
 ## Integrate with components
 
-When `amplience` is set as an [component integration](../../reference/components/structure.md#integrations),
+When `amplience` is set as a [component integration](../../reference/components/structure.md#integrations),
 the component should have the following Terraform variables defined:
 
 - `amplience_client_id`
