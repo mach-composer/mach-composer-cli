@@ -9,6 +9,8 @@ import (
 type Type string
 
 const (
+	DefaultType        Type = ""
+	LocalType          Type = "local"
 	AwsType            Type = "aws"
 	GcpType            Type = "gcp"
 	AzureType          Type = "azure"
@@ -23,6 +25,21 @@ type Renderer interface {
 
 func NewRenderer(typ Type, key string, data map[string]any) (Renderer, error) {
 	switch typ {
+	case DefaultType:
+		//Fallthrough to local
+		fallthrough
+	case LocalType:
+		state := &LocalState{}
+		if err := mapstructure.Decode(data, state); err != nil {
+			return nil, err
+		}
+		if err := defaults.Set(state); err != nil {
+			return nil, err
+		}
+		return &LocalRenderer{
+			state: state,
+			key:   key,
+		}, nil
 	case AwsType:
 		state := &AwsState{}
 		if err := mapstructure.Decode(data, state); err != nil {

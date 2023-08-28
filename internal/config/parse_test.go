@@ -198,7 +198,7 @@ func TestParse(t *testing.T) {
 			Cloud:                  "my-plugin",
 			TerraformStateProvider: "my-plugin",
 			TerraformConfig: &TerraformConfig{
-				RemoteState: map[string]string{
+				RemoteState: map[string]any{
 					"plugin": "my-plugin",
 				},
 				Providers: map[string]string{

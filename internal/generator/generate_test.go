@@ -2,6 +2,7 @@ package generator
 
 import (
 	"context"
+	"github.com/mach-composer/mach-composer-cli/internal/state"
 	"testing"
 
 	"github.com/spf13/afero"
@@ -51,6 +52,9 @@ func TestRenderSite(t *testing.T) {
 			Plugins: pr,
 		})
 	require.NoError(t, err)
+
+	resolver, _ := state.NewRenderer(state.DefaultType, "my-site", nil)
+	_ = cfg.StateRepository.Add("my-site", resolver)
 
 	body, err := renderSite(context.TODO(), cfg, &cfg.Sites[0])
 	assert.NoError(t, err)

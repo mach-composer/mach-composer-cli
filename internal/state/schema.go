@@ -13,6 +13,10 @@ func GetSchema(key Type) (*map[string]any, error) {
 	s := map[string]any{}
 
 	switch key {
+	case DefaultType:
+		fallthrough
+	case LocalType:
+		loadSchemaNode("schemas/local.schema.json", &s)
 	case AwsType:
 		loadSchemaNode("schemas/aws.schema.json", &s)
 	case AzureType:

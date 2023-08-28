@@ -99,6 +99,7 @@ definitions:
                   - gcp
                   - azure
                   - terraform_cloud
+                  - local
           - $ref: "#/definitions/RemoteState"
 
   RemoteState:
