@@ -1,19 +1,17 @@
 package generator
 
 import (
-	"bytes"
 	"context"
 	"fmt"
-	"strings"
-	"text/template"
-
 	"github.com/elliotchance/pie/v2"
+	"github.com/mach-composer/mach-composer-cli/internal/utils"
+	"strings"
 
 	"github.com/mach-composer/mach-composer-cli/internal/config"
 	"github.com/mach-composer/mach-composer-cli/internal/variables"
 )
 
-// renderSite is responsible for generating the `site.tf` file. Therefore it is
+// renderSite is responsible for generating the `site.tf` file. Therefore, it is
 // the main entrypoint for generating the terraform file for each site.
 func renderSite(ctx context.Context, cfg *config.MachConfig, site *config.SiteConfig) (string, error) {
 	result := []string{
@@ -63,17 +61,12 @@ func renderTerraformConfig(cfg *config.MachConfig, site *config.SiteConfig) (str
 		}
 	}
 
-	backendConfig := ""
-	if cfg.Global.TerraformStateProvider != "" {
-		statePlugin, err := cfg.Plugins.Get(cfg.Global.TerraformStateProvider)
-		if err != nil {
-			return "", fmt.Errorf("failed to resolve plugin for terraform state: %w", err)
-		}
-
-		backendConfig, err = statePlugin.RenderTerraformStateBackend(site.Identifier)
-		if err != nil {
-			return "", fmt.Errorf("failed to render backend config: %w", err)
-		}
+	if !cfg.StateRepository.Has(site.Identifier) {
+		return "", fmt.Errorf("state repository does not have a backend for site %s", site.Identifier)
+	}
+	backendConfig, err := cfg.StateRepository.Get(site.Identifier).Backend()
+	if err != nil {
+		return "", err
 	}
 
 	tpl := `
@@ -97,13 +90,14 @@ func renderTerraformConfig(cfg *config.MachConfig, site *config.SiteConfig) (str
 	templateContext := struct {
 		Providers     []string
 		BackendConfig string
+		RemoteState   string
 		IncludeSOPS   bool
 	}{
 		Providers:     providers,
 		BackendConfig: backendConfig,
 		IncludeSOPS:   cfg.Variables.HasEncrypted(site.Identifier),
 	}
-	return renderGoTemplate(tpl, templateContext)
+	return utils.RenderGoTemplate(tpl, templateContext)
 }
 
 func renderTerraformResources(cfg *config.MachConfig, site *config.SiteConfig) (string, error) {
@@ -143,7 +137,7 @@ func renderTerraformResources(cfg *config.MachConfig, site *config.SiteConfig) (
 		Resources:   resources,
 		FileSources: cfg.Variables.GetEncryptedSources(site.Identifier),
 	}
-	return renderGoTemplate(tpl, templateContext)
+	return utils.RenderGoTemplate(tpl, templateContext)
 }
 
 // renderComponent uses templates/component.tf to generate a terraform snippet
@@ -270,18 +264,5 @@ func renderComponent(_ context.Context, cfg *config.MachConfig, site *config.Sit
 		tc.Source += fmt.Sprintf("?ref=%s", component.Definition.Version)
 	}
 
-	return renderGoTemplate(tpl, tc)
-}
-
-func renderGoTemplate(t string, data any) (string, error) {
-	tpl, err := template.New("template").Parse(t)
-	if err != nil {
-		return "", err
-	}
-
-	var content bytes.Buffer
-	if err := tpl.Execute(&content, data); err != nil {
-		return "", err
-	}
-	return content.String(), nil
+	return utils.RenderGoTemplate(tpl, tc)
 }

@@ -3,6 +3,7 @@ package config
 import (
 	"context"
 	"fmt"
+	"github.com/mach-composer/mach-composer-cli/internal/state"
 	"path"
 	"path/filepath"
 
@@ -167,12 +168,13 @@ func resolveConfig(ctx context.Context, intermediate *rawConfig) (*MachConfig, e
 	}
 
 	cfg := &MachConfig{
-		ConfigHash:   cfgHash,
-		extraFiles:   make(map[string][]byte, 0),
-		Filename:     filepath.Base(intermediate.filename),
-		MachComposer: intermediate.MachComposer,
-		Variables:    intermediate.variables,
-		Plugins:      intermediate.plugins,
+		ConfigHash:      cfgHash,
+		StateRepository: state.NewRepository(),
+		extraFiles:      make(map[string][]byte),
+		Filename:        filepath.Base(intermediate.filename),
+		MachComposer:    intermediate.MachComposer,
+		Variables:       intermediate.variables,
+		Plugins:         intermediate.plugins,
 	}
 
 	if err := parseGlobalNode(cfg, &intermediate.Global); err != nil {

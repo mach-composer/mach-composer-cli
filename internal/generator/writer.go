@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/mach-composer/mach-composer-cli/internal/state"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -32,20 +33,31 @@ func WriteFiles(ctx context.Context, cfg *config.MachConfig, options *GenerateOp
 		}
 	}
 
-	for i := range cfg.Sites {
-		site := cfg.Sites[i]
+	for _, site := range cfg.Sites {
+		renderer, err := state.NewRenderer(
+			state.Type(cfg.Global.TerraformStateProvider),
+			site.Identifier,
+			cfg.Global.TerraformConfig.RemoteState,
+		)
+		if err != nil {
+			return nil, err
+		}
+		err = cfg.StateRepository.Add(renderer.Key(), renderer)
+		if err != nil {
+			return nil, err
+		}
 
 		if options.Site != "" && site.Identifier != options.Site {
 			continue
 		}
 
 		path := locations[site.Identifier]
-		lockfile, err := lockfile.GetLockFile(cfg, path)
+		lockFile, err := lockfile.GetLockFile(cfg, path)
 		if err != nil {
 			return nil, err
 		}
 
-		if !lockfile.HasChanges(cfg) {
+		if !lockFile.HasChanges(cfg) {
 			log.Info().Msgf("Files for site %s are up-to-date", site.Identifier)
 			continue
 		}
@@ -64,7 +76,6 @@ func WriteFiles(ctx context.Context, cfg *config.MachConfig, options *GenerateOp
 			log.Error().Msg("The generated terraform code is invalid. " +
 				"This is a bug in mach composer. Please report the issue at " +
 				"https://github.com/mach-composer/mach-composer-cli")
-			// os.Exit(255)
 		}
 
 		if err := os.MkdirAll(path, 0700); err != nil {
@@ -84,10 +95,10 @@ func WriteFiles(ctx context.Context, cfg *config.MachConfig, options *GenerateOp
 		}
 
 		// Write the lock file
-		if err := lockfile.SetTerraformFiles(); err != nil {
+		if err := lockFile.SetTerraformFiles(); err != nil {
 			return nil, err
 		}
-		if err := lockfile.Write(); err != nil {
+		if err := lockFile.Write(); err != nil {
 			return nil, err
 		}
 	}

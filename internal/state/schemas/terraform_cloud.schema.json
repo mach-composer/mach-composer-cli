@@ -1,0 +1,33 @@
+{
+  "type": "object",
+  "description": "Terraform Cloud state backend configuration.",
+  "additionalProperties": false,
+  "required": [
+    "organization"
+  ],
+  "properties": {
+    "plugin": {
+      "type": "string"
+    },
+    "hostname": {
+      "type": "string"
+    },
+    "organization": {
+      "type": "string"
+    },
+    "token": {
+      "type": "string"
+    },
+    "workspaces": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "prefix": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

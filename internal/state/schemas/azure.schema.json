@@ -1,0 +1,28 @@
+{
+  "type": "object",
+  "description": "Azure storage account state backend configuration.",
+  "additionalProperties": false,
+  "required": [
+    "resource_group",
+    "storage_account",
+    "container_name"
+  ],
+  "properties": {
+    "plugin": {
+      "type": "string"
+    },
+    "resource_group": {
+      "type": "string"
+    },
+    "storage_account": {
+      "type": "string"
+    },
+    "container_name": {
+      "type": "string"
+    },
+    "state_folder": {
+      "type": "string",
+      "default": ""
+    }
+  }
+}

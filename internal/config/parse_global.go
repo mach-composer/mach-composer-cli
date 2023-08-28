@@ -1,12 +1,9 @@
 package config
 
 import (
-	"errors"
 	"fmt"
-
+	"github.com/mach-composer/mach-composer-cli/internal/cli"
 	"gopkg.in/yaml.v3"
-
-	"github.com/mach-composer/mach-composer-cli/internal/plugins"
 )
 
 func parseGlobalNode(cfg *MachConfig, globalNode *yaml.Node) error {
@@ -36,33 +33,70 @@ func parseGlobalNode(cfg *MachConfig, globalNode *yaml.Node) error {
 	}
 
 	if node, ok := nodes["terraform_config"]; ok {
-		childs := mapYamlNodes(node.Content)
+		children := mapYamlNodes(node.Content)
 
 		// Backwards compat
-		if child, ok := childs["aws_remote_state"]; ok {
+		if child, ok := children["aws_remote_state"]; ok {
+			cli.DeprecationWarning(&cli.DeprecationOptions{
+				Message: "the usage of `aws_remote_state` is deprecated and will be removed in the next major version",
+				Details: `
+				Please move the configuration to the remote_state block and add the provider name as plugin.
+				
+				For example:
+				
+				    aws_remote_state:
+					  key_prefix: mach-composer
+					  region: eu-central-1
+					  bucket: "mcc-terraform-state"
+				
+				To:
+				
+				    remote_state:
+					  plugin: aws
+					  key_prefix: mach-composer
+					  region: eu-central-1
+					  bucket: "mcc-terraform-state"
+				`,
+			})
 			data, err := nodeAsMap(child)
 			if err != nil {
 				return err
 			}
-			if err := cfg.Plugins.SetRemoteState("aws", data); err != nil {
-				if _, ok := err.(*plugins.PluginNotFoundError); ok {
-					return errors.New("the aws plugin is required when setting aws_remote_state")
-				}
-				return err
-			}
+
+			cfg.Global.TerraformConfig.RemoteState = data
 			cfg.Global.TerraformStateProvider = "aws"
 			return nil
-		} else if child, ok := childs["azure_remote_state"]; ok {
+		} else if child, ok := children["azure_remote_state"]; ok {
+			cli.DeprecationWarning(&cli.DeprecationOptions{
+				Message: "the usage of `azure_remote_state` is deprecated and will be removed in the next major version",
+				Details: `
+				Please move the configuration to the remote_state block and add the provider name as plugin.
+				
+				For example:
+				
+				    azure_remote_state:
+						resource_group: some-resource-group
+						storage_account: some-account
+						container_name: some-container
+				
+				To:
+				
+				    remote_state:
+						plugin: azure
+						resource_group: some-resource-group
+						storage_account: some-account
+						container_name: some-container
+				`,
+			})
 			data, err := nodeAsMap(child)
 			if err != nil {
 				return err
 			}
-			if err := cfg.Plugins.SetRemoteState("azure", data); err != nil {
-				return err
-			}
+
+			cfg.Global.TerraformConfig.RemoteState = data
 			cfg.Global.TerraformStateProvider = "azure"
 			return nil
-		} else if child, ok := childs["remote_state"]; ok {
+		} else if child, ok := children["remote_state"]; ok {
 			data, err := nodeAsMap(child)
 			if err != nil {
 				return err
@@ -73,9 +107,6 @@ func parseGlobalNode(cfg *MachConfig, globalNode *yaml.Node) error {
 				return fmt.Errorf("plugin needs to be defined for remote_state")
 			}
 
-			if err := cfg.Plugins.SetRemoteState(pluginName, data); err != nil {
-				return err
-			}
 			cfg.Global.TerraformStateProvider = pluginName
 			return nil
 		}
