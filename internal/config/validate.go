@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/mach-composer/mach-composer-cli/internal/state"
 	"strconv"
 	"strings"
 
@@ -201,11 +202,11 @@ func createFullSchema(pr *plugins.PluginRepository, globalNode *yaml.Node) (map[
 
 	statePluginName, ok := g.TerraformConfig.RemoteState["plugin"]
 	if ok {
-		stateSchema, err := pr.GetSchema(statePluginName)
+		stateSchema, err := state.GetSchema(state.Type(statePluginName.(string)))
 		if err != nil {
 			return nil, fmt.Errorf("unable to get state schema")
 		}
-		definitions["RemoteState"] = stateSchema.RemoteStateSchema
+		definitions["RemoteState"] = *stateSchema
 	}
 
 	// Disable additionalProperties

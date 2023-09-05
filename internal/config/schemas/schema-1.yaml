@@ -94,6 +94,12 @@ definitions:
             properties:
               plugin:
                 type: string
+                enum:
+                  - aws
+                  - gcp
+                  - azure
+                  - terraform_cloud
+                  - local
           - $ref: "#/definitions/RemoteState"
 
   RemoteState:

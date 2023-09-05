@@ -5,6 +5,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"github.com/mach-composer/mach-composer-cli/internal/state"
 	"log"
 	"strings"
 
@@ -90,6 +91,8 @@ type MachConfig struct {
 	Global       GlobalConfig `yaml:"global"`
 	Sites        []SiteConfig `yaml:"sites"`
 	Components   []Component  `yaml:"components"`
+
+	StateRepository *state.Repository
 
 	extraFiles  map[string][]byte         `yaml:"-"`
 	ConfigHash  string                    `yaml:"-"`
@@ -182,7 +185,7 @@ type Component struct {
 
 type TerraformConfig struct {
 	Providers   map[string]string `yaml:"providers"`
-	RemoteState map[string]string `yaml:"remote_state"`
+	RemoteState map[string]any    `yaml:"remote_state"`
 }
 
 func (sc SiteComponent) HasCloudIntegration(g *GlobalConfig) bool {

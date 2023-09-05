@@ -4,6 +4,7 @@ go 1.19
 
 require (
 	github.com/adrg/xdg v0.4.0
+	github.com/creasty/defaults v1.7.0
 	github.com/elliotchance/pie/v2 v2.5.1
 	github.com/fatih/color v1.14.1
 	github.com/go-git/go-billy/v5 v5.4.1
@@ -18,6 +19,7 @@ require (
 	github.com/mach-composer/mach-composer-plugin-sdk v0.0.6
 	github.com/mach-composer/mcc-sdk-go v0.0.3-0.20230301072130-d1c0f6c7e0f0
 	github.com/mattn/go-isatty v0.0.17
+	github.com/mitchellh/mapstructure v1.5.0
 	github.com/olekukonko/tablewriter v0.0.5
 	github.com/rs/zerolog v1.29.0
 	github.com/skratchdot/open-golang v0.0.0-20200116055534-eef842397966
@@ -73,7 +75,6 @@ require (
 	github.com/mitchellh/go-homedir v1.1.0 // indirect
 	github.com/mitchellh/go-testing-interface v1.14.1 // indirect
 	github.com/mitchellh/go-wordwrap v1.0.1 // indirect
-	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/oklog/run v1.1.0 // indirect
 	github.com/pelletier/go-toml/v2 v2.0.7 // indirect
 	github.com/pjbgf/sha1cd v0.3.0 // indirect

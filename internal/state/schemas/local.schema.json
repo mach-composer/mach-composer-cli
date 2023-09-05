@@ -1,0 +1,13 @@
+{
+  "type": "object",
+  "description": "Local state backend configuration.",
+  "additionalProperties": false,
+  "properties": {
+    "plugin": {
+      "type": "string"
+    },
+    "path": {
+      "type": "string"
+    }
+  }
+}
