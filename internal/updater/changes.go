@@ -55,7 +55,13 @@ func OutputChanges(cs *ChangeSet) string {
 	}
 
 	for _, commit := range cs.Changes {
-		fmt.Fprintf(&b, "  %s: %s (%s <%s>)\n", commit.Commit, commit.Message, commit.Author.Name, commit.Author.Email)
+		fmt.Fprintf(&b, "  %s: %s (%s <%s> %s)\n",
+			commit.Commit,
+			commit.Message,
+			commit.Author.Name,
+			commit.Author.Email,
+			commit.Author.Date.Format(time.RFC3339),
+		)
 	}
 	fmt.Fprintln(&b, "")
 
