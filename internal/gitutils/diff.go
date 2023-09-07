@@ -34,7 +34,7 @@ func commitsBetween(ctx context.Context, repository *git.Repository, first, last
 	if first != nil {
 		_, err := repository.ResolveRevision(*first)
 		if err != nil {
-			return nil, fmt.Errorf("revision %s invalid: %s", first.String(), err.Error())
+			return nil, ErrGitRevisionNotFound
 		}
 	}
 

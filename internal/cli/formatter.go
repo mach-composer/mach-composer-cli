@@ -40,10 +40,7 @@ func (w ConsoleWriter) Write(p []byte) (n int, err error) {
 
 	var extraFields strings.Builder
 	for key, value := range event {
-		if key == "message" || key == "level" || key == "error" || key == "details" {
-			continue
-		}
-		extraFields.WriteString(fmt.Sprintf("\n | %s=%s", key, value))
+		extraFields.WriteString(fmt.Sprintf("%s=%s ", key, value))
 	}
 
 	if level, ok := event["level"].(string); ok {

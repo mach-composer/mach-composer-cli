@@ -179,6 +179,27 @@ func GetVersionInfo(_ context.Context, path string, branch string) (*GitVersionI
 	return info, nil
 }
 
+func commitExists(ctx context.Context, gitPath, baseRevision, targetRevision string) error {
+	containsCommit, err := branchContainsCommit(ctx, gitPath, targetRevision, baseRevision)
+	if err != nil {
+		return err
+	}
+
+	if !containsCommit {
+		branches, err := branchesContainingCommit(ctx, gitPath, baseRevision)
+		if err != nil {
+			return err
+		}
+		found := "not found in any branch"
+		if len(branches) > 0 {
+			found = fmt.Sprintf("exists in %s", strings.Join(branches, ", "))
+		}
+		return fmt.Errorf("failed to find commit %s in branch %s (%s)", baseRevision, targetRevision, found)
+	}
+
+	return nil
+}
+
 // GetRecentCommits returns all commits in descending order (newest first)
 // baseRef is the commit to start from, if empty the current HEAD is used
 func GetRecentCommits(ctx context.Context, basePath string, baseRevision, targetRevision string, filterPaths []string) ([]gitCommit, error) {
@@ -195,22 +216,8 @@ func GetRecentCommits(ctx context.Context, basePath string, baseRevision, target
 	baseRev := asRevision(baseRevision)
 	targetRev := asRevision(targetRevision)
 
-	containsCommit, err := branchContainsCommit(ctx, gitPath, targetRev.String(), baseRev.String())
-	if err != nil {
+	if err = commitExists(ctx, gitPath, baseRevision, targetRevision); err != nil {
 		return nil, err
-	}
-
-	if !containsCommit {
-		branches, err := branchesContainingCommit(ctx, gitPath, baseRev.String())
-		if err != nil {
-			return nil, err
-		}
-		found := "not found in any branch"
-		if branches != "" {
-			found = fmt.Sprintf("exists in %s", branches)
-		}
-		return nil, fmt.Errorf("failed to find commit %s in branch %s (%s)", baseRev.String(), targetRev.String(),
-			found)
 	}
 
 	commits, err := commitsBetween(ctx, repository, baseRev, targetRev, filterPaths)
@@ -341,7 +348,7 @@ func searchGitPath(path string) (string, error) {
 
 // runGit executes the git command
 func runGit(ctx context.Context, cwd string, args ...string) ([]byte, error) {
-	log.Debug().Msgf("Running: git %s\n", strings.Join(args, " "))
+	log.Debug().Msgf("Running: git %s", strings.Join(args, " "))
 	cmd := exec.CommandContext(
 		ctx,
 		"git",
@@ -366,29 +373,29 @@ func asRevision(s string) *plumbing.Revision {
 	return &r
 }
 
-func cleanOutput(output string) string {
-	cleaned := strings.TrimSpace(output)
-	temp := strings.Split(cleaned, "\n")
-	for i, line := range temp {
-		temp[i] = strings.TrimSpace(line)
-	}
-	return strings.Join(temp, ", ")
-}
-
 func branchContainsCommit(ctx context.Context, gitPath, targetRev, baseRev string) (bool, error) {
 	output, err := runGit(ctx, gitPath, "branch", "-a", targetRev, "--contains", baseRev)
 	if err != nil {
-		return false, fmt.Errorf(cleanOutput(err.Error()))
+		return false, fmt.Errorf(strings.TrimSpace(err.Error()))
 	}
 
 	return len(output) > 0, nil
 }
 
-func branchesContainingCommit(ctx context.Context, gitPath, baseRev string) (string, error) {
+func branchesContainingCommit(ctx context.Context, gitPath, baseRev string) ([]string, error) {
 	output, err := runGit(ctx, gitPath, "branch", "--contains", baseRev)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
-	return cleanOutput(string(output)), nil
+	var branches []string
+	outputBranches := strings.Split(string(output), "\n")
+	for _, branch := range outputBranches {
+		if branch == "" {
+			continue
+		}
+		branches = append(branches, strings.TrimSpace(branch))
+	}
+
+	return branches, nil
 }

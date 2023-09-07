@@ -18,11 +18,11 @@ func TestCommitsBetweenResolveFirstError(t *testing.T) {
 	tr := NewTestRepository("")
 
 	// First commit
-	err := tr.addTextfile("test-1.txt", "test")
+	err := tr.addTextFile("test-1.txt", "test")
 	require.NoError(t, err)
 
 	// Second commit
-	err = tr.addTextfile("test-2.txt", "test")
+	err = tr.addTextFile("test-2.txt", "test")
 	require.NoError(t, err)
 
 	secondHash, err := tr.commit("Second commit")
@@ -42,14 +42,14 @@ func TestCommitsBetween(t *testing.T) {
 	tr := NewTestRepository("")
 
 	// First commit
-	err := tr.addTextfile("test-1.txt", "test")
+	err := tr.addTextFile("test-1.txt", "test")
 	require.NoError(t, err)
 
 	firstHash, err := tr.commit("Initial commit")
 	require.NoError(t, err)
 
 	// Second commit
-	err = tr.addTextfile("test-2.txt", "test")
+	err = tr.addTextFile("test-2.txt", "test")
 	require.NoError(t, err)
 
 	secondHash, err := tr.commit("Second commit")
@@ -73,7 +73,7 @@ func TestCommitsBetweenFilterPath(t *testing.T) {
 	tr := NewTestRepository("")
 
 	// First commit
-	err := tr.addTextfile("test-1.txt", "test")
+	err := tr.addTextFile("test-1.txt", "test")
 	require.NoError(t, err)
 
 	firstHash, err := tr.commit("Initial commit")
@@ -81,20 +81,20 @@ func TestCommitsBetweenFilterPath(t *testing.T) {
 	require.NotNil(t, firstHash)
 
 	// Second commit
-	err = tr.addTextfile("test-2.txt", "test")
+	err = tr.addTextFile("test-2.txt", "test")
 	require.NoError(t, err)
 
-	err = tr.addTextfile("wanted/test-2.txt", "test")
+	err = tr.addTextFile("wanted/test-2.txt", "test")
 	require.NoError(t, err)
 
 	_, err = tr.commit("Second commit")
 	require.NoError(t, err)
 
 	// Third commit
-	err = tr.addTextfile("test-3.txt", "test")
+	err = tr.addTextFile("test-3.txt", "test")
 	require.NoError(t, err)
 
-	err = tr.addTextfile("wantedotherdir/test-3.txt", "test")
+	err = tr.addTextFile("wantedotherdir/test-3.txt", "test")
 	require.NoError(t, err)
 
 	thirdHash, err := tr.commit("third commit")
