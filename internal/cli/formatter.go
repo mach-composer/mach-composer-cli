@@ -63,6 +63,12 @@ func (w ConsoleWriter) Write(p []byte) (n int, err error) {
 			if details, ok := event["details"].(string); ok {
 				printDetails(os.Stderr, details, c)
 			}
+			for key, value := range event {
+				if key == "message" || key == "level" || key == "error" || key == "details" {
+					continue
+				}
+				fmt.Fprintln(os.Stderr, c.Sprint("| "), fmt.Sprintf("%s=%s", key, value))
+			}
 			fmt.Fprintln(os.Stderr, c.Sprint("|"))
 
 		case zerolog.LevelErrorValue:
@@ -71,6 +77,12 @@ func (w ConsoleWriter) Write(p []byte) (n int, err error) {
 			fmt.Fprintln(os.Stderr, c.Sprint("| Error:"), message.String())
 			if details, ok := event["details"].(string); ok {
 				printDetails(os.Stderr, details, c)
+			}
+			for key, value := range event {
+				if key == "message" || key == "level" || key == "error" || key == "details" {
+					continue
+				}
+				fmt.Fprintln(os.Stderr, c.Sprint("| "), fmt.Sprintf("%s=%s", key, value))
 			}
 			fmt.Fprintln(os.Stderr, c.Sprint("|"))
 		}

@@ -82,7 +82,7 @@ func NewUpdater(ctx context.Context, filename string, useCloud bool) (*Updater, 
 		return nil, err
 	}
 
-	components := []config.Component{}
+	var components []config.Component
 	if err := raw.Components.Decode(&components); err != nil {
 		return nil, fmt.Errorf("decoding error: %w", err)
 	}

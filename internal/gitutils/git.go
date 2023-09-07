@@ -166,7 +166,7 @@ func GetVersionInfo(_ context.Context, path string, branch string) (*GitVersionI
 			return nil, err
 		}
 		info.Hash = branchRef.Hash()
-		info.Revision = plumbing.Revision("HEAD")
+		info.Revision = "HEAD"
 	} else {
 		branchRef := plumbing.NewBranchReferenceName(branch)
 		branchRevision, err := repository.ResolveRevision(plumbing.Revision(branchRef))
@@ -177,6 +177,27 @@ func GetVersionInfo(_ context.Context, path string, branch string) (*GitVersionI
 		info.Revision = plumbing.Revision(branchRef)
 	}
 	return info, nil
+}
+
+func commitExists(ctx context.Context, gitPath, baseRevision, targetRevision string) error {
+	containsCommit, err := branchContainsCommit(ctx, gitPath, targetRevision, baseRevision)
+	if err != nil {
+		return err
+	}
+
+	if !containsCommit {
+		branches, err := branchesContainingCommit(ctx, gitPath, baseRevision)
+		if err != nil {
+			return err
+		}
+		found := "not found in any branch"
+		if len(branches) > 0 {
+			found = fmt.Sprintf("exists in %s", strings.Join(branches, ", "))
+		}
+		return fmt.Errorf("failed to find commit %s in branch %s (%s)", baseRevision, targetRevision, found)
+	}
+
+	return nil
 }
 
 // GetRecentCommits returns all commits in descending order (newest first)
@@ -194,6 +215,11 @@ func GetRecentCommits(ctx context.Context, basePath string, baseRevision, target
 
 	baseRev := asRevision(baseRevision)
 	targetRev := asRevision(targetRevision)
+
+	if err = commitExists(ctx, gitPath, baseRevision, targetRevision); err != nil {
+		return nil, err
+	}
+
 	commits, err := commitsBetween(ctx, repository, baseRev, targetRev, filterPaths)
 	if err != nil {
 		return nil, err
@@ -278,11 +304,11 @@ func parseGitSource(source string) (*gitSource, error) {
 func fetchGitRepository(ctx context.Context, source *gitSource, dest string) {
 	_, err := os.Stat(dest)
 	if os.IsNotExist(err) {
-		output := runGit(ctx, ".", "clone", "--bare", source.Repository, dest)
+		output, _ := runGit(ctx, ".", "clone", "--bare", source.Repository, dest)
 		log.Ctx(ctx).Debug().
 			Msgf("downloaded new repository %s at destination %s: %s", source.Name, dest, string(output))
 	} else {
-		output := runGit(ctx, dest, "fetch", "-f", "origin", "*:*")
+		output, _ := runGit(ctx, dest, "fetch", "-f", "origin", "*:*")
 		log.Ctx(ctx).Debug().
 			Msgf("updated existing repository %s at destination %s: %s", source.Name, dest, string(output))
 	}
@@ -320,52 +346,9 @@ func searchGitPath(path string) (string, error) {
 	return "", errors.New("could not find .git directory")
 }
 
-// filterPaths returns the paths to filter on for git commits. It creates
-// relative paths from the gitPath to the paths provided.
-func filterPaths(gitPath string, paths []string) ([]string, error) {
-	var err error
-	gitPath, err = filepath.Abs(gitPath)
-	if err != nil {
-		return nil, err
-	}
-
-	result := []string{}
-	for _, p := range paths {
-		var absPath string
-		if filepath.IsAbs(p) {
-			absPath = p
-		} else {
-			ap, err := filepath.Abs(p)
-			if err != nil {
-				return nil, err
-			}
-			absPath = ap
-		}
-
-		// If the path is the same as the git path, then all paths
-		// are targets
-		if absPath == gitPath {
-			return []string{}, nil
-		}
-
-		rel, err := filepath.Rel(gitPath, absPath)
-		if err != nil {
-			return nil, err
-		}
-
-		fi, err := os.Stat(absPath)
-		if err == nil && fi.IsDir() {
-			rel = rel + string(filepath.Separator)
-		}
-
-		result = append(result, rel)
-	}
-	return result, nil
-}
-
 // runGit executes the git command
-func runGit(ctx context.Context, cwd string, args ...string) []byte {
-	log.Debug().Msgf("Running: git %s\n", strings.Join(args, " "))
+func runGit(ctx context.Context, cwd string, args ...string) ([]byte, error) {
+	log.Debug().Msgf("Running: git %s", strings.Join(args, " "))
 	cmd := exec.CommandContext(
 		ctx,
 		"git",
@@ -376,11 +359,10 @@ func runGit(ctx context.Context, cwd string, args ...string) []byte {
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {
-		_, _ = fmt.Fprintln(os.Stderr, string(output))
-		os.Exit(1)
+		return nil, fmt.Errorf("failed to run git command: %s", output)
 	}
 
-	return output
+	return output, nil
 }
 
 func asRevision(s string) *plumbing.Revision {
@@ -389,4 +371,31 @@ func asRevision(s string) *plumbing.Revision {
 	}
 	r := plumbing.Revision(s)
 	return &r
+}
+
+func branchContainsCommit(ctx context.Context, gitPath, targetRev, baseRev string) (bool, error) {
+	output, err := runGit(ctx, gitPath, "branch", "-a", targetRev, "--contains", baseRev)
+	if err != nil {
+		return false, fmt.Errorf(strings.TrimSpace(err.Error()))
+	}
+
+	return len(output) > 0, nil
+}
+
+func branchesContainingCommit(ctx context.Context, gitPath, baseRev string) ([]string, error) {
+	output, err := runGit(ctx, gitPath, "branch", "--contains", baseRev)
+	if err != nil {
+		return nil, err
+	}
+
+	var branches []string
+	outputBranches := strings.Split(string(output), "\n")
+	for _, branch := range outputBranches {
+		if branch == "" {
+			continue
+		}
+		branches = append(branches, strings.TrimSpace(branch))
+	}
+
+	return branches, nil
 }
