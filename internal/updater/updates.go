@@ -6,14 +6,14 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
 
 	"github.com/mach-composer/mach-composer-cli/internal/config"
 	"github.com/mach-composer/mach-composer-cli/internal/gitutils"
 )
 
 func findUpdates(ctx context.Context, cfg *PartialConfig, filename string) (*UpdateSet, error) {
-	zerolog.Ctx(ctx).Info().Msgf("Checking if there are updates for %d components\n", len(cfg.Components))
+	log.Ctx(ctx).Info().Msgf("Checking if there are updates for %d components\n", len(cfg.Components))
 	if cfg.client == nil {
 		return findUpdatesParallel(ctx, cfg, filename)
 	}
@@ -36,7 +36,7 @@ func findUpdatesSerial(ctx context.Context, cfg *PartialConfig, filename string)
 		}
 
 		output := OutputChanges(cs)
-		zerolog.Ctx(ctx).Info().Msg(output)
+		log.Ctx(ctx).Info().Msg(output)
 
 		if cs.HasChanges() {
 			updates.updates = append(updates.updates, *cs)
@@ -47,12 +47,12 @@ func findUpdatesSerial(ctx context.Context, cfg *PartialConfig, filename string)
 
 func findUpdatesParallel(ctx context.Context, cfg *PartialConfig, filename string) (*UpdateSet, error) {
 	numUpdates := len(cfg.Components)
-	jobs := make(chan WorkerJob, numUpdates)
-	results := make(chan *ChangeSet, numUpdates)
-	errors := make(chan error, numUpdates)
+	jobChan := make(chan WorkerJob, numUpdates)
+	resChan := make(chan *ChangeSet, numUpdates)
+	errChan := make(chan error, numUpdates)
 
 	var wg sync.WaitGroup
-	const numWorkers = 4
+	var numWorkers = 4
 
 	// Start 4 workers
 	for i := 0; i < numWorkers; i++ {
@@ -60,51 +60,59 @@ func findUpdatesParallel(ctx context.Context, cfg *PartialConfig, filename strin
 		go func() {
 			defer wg.Done()
 
-			for j := range jobs {
-				cs, err := getLastVersion(ctx, cfg, j.component, j.cfg.filename)
+			for j := range jobChan {
+				c := j.component
+
+				logger := log.Ctx(ctx).With().Str("component", c.Name).Logger()
+
+				ctx = logger.WithContext(ctx)
+
+				cs, err := getLastVersion(ctx, cfg, c, cfg.filename)
 				if err != nil {
-					errors <- err
-					return
+					log.Ctx(ctx).Error().Msg(err.Error())
+					errChan <- err
+					continue
 				}
 
 				if cs == nil {
 					continue
 				}
 
-				results <- cs
+				resChan <- cs
+				continue
 			}
 		}()
 	}
 
 	// Send work
-	for i := range cfg.Components {
-		jobs <- WorkerJob{
-			component: &cfg.Components[i],
+	for _, c := range cfg.Components {
+		component := c
+		jobChan <- WorkerJob{
+			component: &component,
 			cfg:       cfg,
 		}
 	}
-	close(jobs)
+	close(jobChan)
 
 	wg.Wait()
-	close(errors)
+	close(errChan)
+	close(resChan)
 
-	for err := range errors {
-		return nil, err
+	if n := len(errChan); n > 0 {
+		return nil, fmt.Errorf("failed to update %d components", n)
 	}
 
 	// Process results as we receive them from the channel
 	updates := UpdateSet{
 		filename: filename,
 	}
-	for i := 0; i < numUpdates; i++ {
-		changeSet := <-results
-
+	for changeSet := range resChan {
 		if changeSet == nil {
 			continue
 		}
 
 		output := OutputChanges(changeSet)
-		zerolog.Ctx(ctx).Info().Msg(output)
+		log.Ctx(ctx).Info().Msg(output)
 
 		if changeSet.HasChanges() {
 			updates.updates = append(updates.updates, *changeSet)
@@ -115,13 +123,13 @@ func findUpdatesParallel(ctx context.Context, cfg *PartialConfig, filename strin
 }
 
 func findSpecificUpdate(ctx context.Context, cfg *PartialConfig, filename string, component *config.Component) (*UpdateSet, error) {
-	changeSet, err := getLastVersion(ctx, cfg, component, cfg.filename)
+	changeSet, err := getLastVersion(ctx, cfg, component, filename)
 	if err != nil {
 		return nil, err
 	}
 
 	output := OutputChanges(changeSet)
-	zerolog.Ctx(ctx).Info().Msg(output)
+	log.Ctx(ctx).Info().Msg(output)
 
 	updates := UpdateSet{
 		filename: cfg.filename,
@@ -140,7 +148,7 @@ func getLastVersion(ctx context.Context, cfg *PartialConfig, c *config.Component
 	}
 
 	if strings.HasPrefix(c.Source, "git:") {
-		return getLastVersionGit(ctx, cfg, c, origin)
+		return getLastVersionGit(ctx, c, origin)
 	}
 
 	err := &UpdateError{
@@ -162,19 +170,19 @@ func getLastVersionCloud(ctx context.Context, cfg *PartialConfig, c *config.Comp
 
 	if err != nil {
 		if strings.HasPrefix(c.Source, "git:") {
-			zerolog.Ctx(ctx).Warn().Msgf("Error checking for %s in MACH Composer Cloud, falling back to Git", c.Name)
-			return getLastVersionGit(ctx, cfg, c, origin)
+			log.Ctx(ctx).Warn().Msgf("Error checking for %s in MACH Composer Cloud, falling back to Git", c.Name)
+			return getLastVersionGit(ctx, c, origin)
 		}
-		zerolog.Ctx(ctx).Error().Err(err).Msgf("Error checking for latest version of %s", c.Name)
+		log.Ctx(ctx).Error().Err(err).Msgf("Error checking for latest version of %s", c.Name)
 		return nil, nil
 	}
 
 	if version == nil {
 		if strings.HasPrefix(c.Source, "git:") {
-			zerolog.Ctx(ctx).Warn().Msgf("No version found for %s in MACH Composer Cloud, falling back to Git", c.Name)
-			return getLastVersionGit(ctx, cfg, c, origin)
+			log.Ctx(ctx).Warn().Msgf("No version found for %s in MACH Composer Cloud, falling back to Git", c.Name)
+			return getLastVersionGit(ctx, c, origin)
 		}
-		zerolog.Ctx(ctx).Warn().Msgf("No version found for %s", c.Name)
+		log.Ctx(ctx).Warn().Msgf("No version found for %s", c.Name)
 		return nil, nil
 	}
 
@@ -218,7 +226,7 @@ func getLastVersionCloud(ctx context.Context, cfg *PartialConfig, c *config.Comp
 	return cs, nil
 }
 
-func getLastVersionGit(ctx context.Context, cfg *PartialConfig, c *config.Component, origin string) (*ChangeSet, error) {
+func getLastVersionGit(ctx context.Context, c *config.Component, origin string) (*ChangeSet, error) {
 	commits, err := gitutils.GetLastVersionGit(ctx, c, origin)
 	if err != nil {
 		return nil, err

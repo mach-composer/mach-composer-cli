@@ -9,19 +9,32 @@ import (
 	"github.com/go-git/go-git/v5/plumbing"
 	"github.com/go-git/go-git/v5/plumbing/object"
 	"github.com/go-git/go-git/v5/plumbing/storer"
-	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
 )
 
-// commitsBetween returns the commits between revisions first and last. It
-// should equal the functionality of `git log base..head`
-// See https://github.com/go-git/go-git/issues/69
+func pathFilter(paths []string) func(path string) bool {
+	return func(path string) bool {
+		if len(paths) == 0 {
+			return true
+		}
+
+		for _, p := range paths {
+			if strings.HasPrefix(path, p) {
+				return true
+			}
+		}
+		return false
+	}
+}
+
+// commitsBetween returns the commits between revisions first and last. It should equal the functionality of
+// `git log base..head`. See https://github.com/go-git/go-git/issues/69
 func commitsBetween(ctx context.Context, repository *git.Repository, first, last *plumbing.Revision, paths []string) ([]*object.Commit, error) {
-	zerolog.Ctx(ctx).Debug().Msgf("Getting commits between %s and %s (paths = %s)", first, last, paths)
+	log.Ctx(ctx).Debug().Msgf("Getting commits between %s and %s (paths = %s)", first, last, paths)
 	if first != nil {
 		_, err := repository.ResolveRevision(*first)
 		if err != nil {
-			zerolog.Ctx(ctx).Debug().Err(err).Msgf("failed to find commit %s in repository", first)
-			return nil, ErrGitRevisionNotFound
+			return nil, fmt.Errorf("revision %s invalid: %s", first.String(), err.Error())
 		}
 	}
 
@@ -30,7 +43,7 @@ func commitsBetween(ctx context.Context, repository *git.Repository, first, last
 	var firstHash, lastHash *plumbing.Hash
 	if first != nil {
 		if val, err := repository.ResolveRevision(*first); err != nil {
-			zerolog.Ctx(ctx).Warn().Err(err).Msgf("failed to resolve %s in repository", first.String())
+			log.Ctx(ctx).Warn().Err(err).Msgf("failed to resolve %s in repository", first.String())
 			return []*object.Commit{}, nil
 		} else {
 			firstHash = val
@@ -48,16 +61,9 @@ func commitsBetween(ctx context.Context, repository *git.Repository, first, last
 	}
 
 	cIter, err := repository.Log(&git.LogOptions{
-		Order: git.LogOrderCommitterTime,
-		PathFilter: func(path string) bool {
-			for _, p := range paths {
-				if strings.HasPrefix(path, p) {
-					return true
-				}
-			}
-			return false
-		},
-		From: *lastHash,
+		Order:      git.LogOrderCommitterTime,
+		PathFilter: pathFilter(paths),
+		From:       *lastHash,
 	})
 	if err != nil {
 		return nil, err
@@ -65,8 +71,10 @@ func commitsBetween(ctx context.Context, repository *git.Repository, first, last
 	defer cIter.Close()
 
 	var result []*object.Commit
+	var found = first == nil
 	err = cIter.ForEach(func(c *object.Commit) error {
 		if first != nil && *firstHash == c.Hash {
+			found = true
 			return storer.ErrStop
 		}
 
@@ -76,5 +84,9 @@ func commitsBetween(ctx context.Context, repository *git.Repository, first, last
 	if err != nil {
 		return nil, err
 	}
+	if !found {
+		log.Ctx(ctx).Warn().Msgf("found commit %s in %s but failed to find changes in paths %s", first, last, paths)
+	}
+
 	return result, nil
 }
