@@ -12,7 +12,6 @@ import (
 
 	"github.com/mach-composer/mach-composer-cli/internal/plugins"
 	"github.com/mach-composer/mach-composer-cli/internal/utils"
-	"github.com/mach-composer/mach-composer-cli/internal/variables"
 )
 
 func TestMain(m *testing.M) {
@@ -52,7 +51,7 @@ func TestParseBasic(t *testing.T) {
 	intermediate, err := newRawConfig("test.yml", document)
 	require.NoError(t, err)
 
-	vars := variables.NewVariables()
+	vars := NewVariables()
 	vars.Set("foo", "foobar")
 	vars.Set("foo.bar", "1")
 	vars.Set("bar.foo", "2")
@@ -85,10 +84,10 @@ func TestParseBasic(t *testing.T) {
 			{
 				Name:       "",
 				Identifier: "my-site",
-				Components: []SiteComponent{
+				Components: []SiteComponentConfig{
 					{
 						Name: "your-component",
-						Variables: map[string]any{
+						Variables: SiteComponentVars{
 							"FOO_VAR":       "my-value",
 							"BAR_VAR":       "foobar",
 							"MULTIPLE_VARS": "1 2",
@@ -218,7 +217,7 @@ func TestParse(t *testing.T) {
 						"url":                    "internal-api.my-site.nl",
 					},
 				},
-				Components: []SiteComponent{
+				Components: []SiteComponentConfig{
 					{
 						Name: "your-component",
 						Variables: map[string]any{

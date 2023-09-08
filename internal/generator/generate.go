@@ -8,7 +8,6 @@ import (
 	"strings"
 
 	"github.com/mach-composer/mach-composer-cli/internal/config"
-	"github.com/mach-composer/mach-composer-cli/internal/variables"
 )
 
 // renderSite is responsible for generating the `site.tf` file. Therefore, it is
@@ -132,7 +131,7 @@ func renderTerraformResources(cfg *config.MachConfig, site *config.SiteConfig) (
 	`
 	templateContext := struct {
 		Resources   []string
-		FileSources []variables.FileSource
+		FileSources []config.FileSource
 	}{
 		Resources:   resources,
 		FileSources: cfg.Variables.GetEncryptedSources(site.Identifier),
@@ -142,7 +141,7 @@ func renderTerraformResources(cfg *config.MachConfig, site *config.SiteConfig) (
 
 // renderComponent uses templates/component.tf to generate a terraform snippet
 // for each component
-func renderComponent(_ context.Context, cfg *config.MachConfig, site *config.SiteConfig, component *config.SiteComponent) (string, error) {
+func renderComponent(_ context.Context, cfg *config.MachConfig, site *config.SiteConfig, component *config.SiteComponentConfig) (string, error) {
 
 	tc := struct {
 		ComponentName       string

@@ -1,4 +1,4 @@
-package variables
+package config
 
 import (
 	"testing"
@@ -107,7 +107,7 @@ func TestInterpolateComponentVarsSuccess(t *testing.T) {
 
 	for _, testCase := range testCases {
 		t.Run(testCase.Description, func(t *testing.T) {
-			result, err := InterpolateComponentVars(testCase.Input)
+			result, err := interpolateComponentVar(testCase.Input)
 			assert.NoError(t, err)
 			assert.Equal(t, testCase.Expected, result)
 		})

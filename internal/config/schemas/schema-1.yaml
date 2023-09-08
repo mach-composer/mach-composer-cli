@@ -159,6 +159,10 @@ definitions:
         type: object
       health_check_path:
         type: string
+      depends_on:
+        type: array
+        items:
+          type: string
 
   ComponentConfig:
     type: object

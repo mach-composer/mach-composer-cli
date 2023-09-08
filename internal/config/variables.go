@@ -1,4 +1,4 @@
-package variables
+package config
 
 import (
 	"context"
@@ -23,7 +23,7 @@ func (e *NotFoundError) Error() string {
 	return fmt.Sprintf("variable %s not found", e.Name)
 }
 
-// Support both ${var.foobar} as well as ${env.foobar}
+// Support both ${var.foobar} and ${env.foobar}
 var varRegex = regexp.MustCompile(`\${((?:var|env)(?:\.[^\}]+)+)}`)
 
 const globalNodeContext = "__global__"
