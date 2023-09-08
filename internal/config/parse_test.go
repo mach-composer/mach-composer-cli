@@ -88,12 +88,28 @@ func TestParseBasic(t *testing.T) {
 					{
 						Name: "your-component",
 						Variables: SiteComponentVars{
-							"FOO_VAR":       "my-value",
-							"BAR_VAR":       "foobar",
-							"MULTIPLE_VARS": "1 2",
+							"FOO_VAR": &SiteComponentVar{
+								Value:        "my-value",
+								Interpolated: "my-value",
+								References:   nil,
+							},
+							"BAR_VAR": &SiteComponentVar{
+								Value:        "foobar",
+								Interpolated: "foobar",
+								References:   nil,
+							},
+							"MULTIPLE_VARS": &SiteComponentVar{
+								Value:        "1 2",
+								Interpolated: "1 2",
+								References:   nil,
+							},
 						},
-						Secrets: map[string]any{
-							"MY_SECRET": "secretvalue",
+						Secrets: SiteComponentVars{
+							"MY_SECRET": &SiteComponentVar{
+								Value:        "secretvalue",
+								Interpolated: "secretvalue",
+								References:   nil,
+							},
 						},
 						Definition: &component,
 					},
@@ -152,7 +168,7 @@ func TestParse(t *testing.T) {
             - my-plugin
     `))
 
-	vars := variables.NewVariables()
+	vars := NewVariables()
 	vars.Set("foo", "foobar")
 	vars.Set("foo.bar", "1")
 	vars.Set("bar.foo", "2")
@@ -220,13 +236,29 @@ func TestParse(t *testing.T) {
 				Components: []SiteComponentConfig{
 					{
 						Name: "your-component",
-						Variables: map[string]any{
-							"FOO_VAR":       "my-value",
-							"BAR_VAR":       "foobar",
-							"MULTIPLE_VARS": "1 2",
+						Variables: SiteComponentVars{
+							"FOO_VAR": &SiteComponentVar{
+								Value:        "my-value",
+								Interpolated: "my-value",
+								References:   nil,
+							},
+							"BAR_VAR": &SiteComponentVar{
+								Value:        "foobar",
+								Interpolated: "foobar",
+								References:   nil,
+							},
+							"MULTIPLE_VARS": &SiteComponentVar{
+								Value:        "1 2",
+								Interpolated: "1 2",
+								References:   nil,
+							},
 						},
-						Secrets: map[string]any{
-							"MY_SECRET": "secretvalue",
+						Secrets: SiteComponentVars{
+							"MY_SECRET": &SiteComponentVar{
+								Value:        "secretvalue",
+								Interpolated: "secretvalue",
+								References:   nil,
+							},
 						},
 						Definition: &component,
 					},
@@ -290,7 +322,7 @@ func TestResolveMissingVar(t *testing.T) {
 
 	intermediate, err := newRawConfig("main.yml", document)
 	require.NoError(t, err)
-	intermediate.variables = &variables.Variables{}
+	intermediate.variables = &Variables{}
 
 	err = resolveVariables(context.Background(), intermediate)
 	assert.Error(t, err)

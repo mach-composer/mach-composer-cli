@@ -24,7 +24,7 @@ func (e *NotFoundError) Error() string {
 }
 
 // Support both ${var.foobar} and ${env.foobar}
-var varRegex = regexp.MustCompile(`\${((?:var|env)(?:\.[^\}]+)+)}`)
+var varRegex = regexp.MustCompile(`\${((?:var|env)(?:\.[^}]+)+)}`)
 
 const globalNodeContext = "__global__"
 
@@ -181,9 +181,8 @@ func (v *Variables) interpolateValue(nc string, val string) (string, error) {
 	return val, nil
 }
 
-// newVariablesFromFile creates a new Variables struct based on the contents
-// of the given file.
-func (v *Variables) Load(ctx context.Context, filename string) error {
+// Load will load a given config file into the variables object
+func (v *Variables) Load(_ context.Context, filename string) error {
 	if v.loadedFile {
 		panic("Only one external file is supported currently")
 	}

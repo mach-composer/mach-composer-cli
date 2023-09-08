@@ -11,7 +11,7 @@ import (
 	ctyjson "github.com/zclconf/go-cty/cty/json"
 )
 
-var regexVars = regexp.MustCompilePOSIX(`"\$\$\{([^\}]+)\}"`)
+var regexVars = regexp.MustCompilePOSIX(`"\$\$\{([^}]+)}"`)
 
 func serializeToHCL(attributeName string, data config.SiteComponentVars) (string, error) {
 	val, err := asCTY(data)

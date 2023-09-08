@@ -26,8 +26,8 @@ func (lr *LocalRenderer) Backend() (string, error) {
 
 	tpl := `
 	backend "remote" {
-		{{ if .State.Identifier }}
-		path = "{{ .State.Identifier }}"
+		{{ if .State.Path }}
+		path = "{{ .State.Path }}"
 		{{ end }}
 	}
 	`
