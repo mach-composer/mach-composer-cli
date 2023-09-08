@@ -1,25 +1,25 @@
-package tree
+package dependency
 
 import (
 	"fmt"
 	"github.com/dominikbraun/graph"
 	"github.com/mach-composer/mach-composer-cli/internal/config"
 	"path"
+	"slices"
 )
 
 type edges map[string][]string
 
 func (e *edges) Add(to, from string) {
+	if slices.Contains((*e)[to], from) {
+		return
+	}
 	(*e)[to] = append((*e)[to], from)
-}
-
-var nodeHash = func(n Node) string {
-	return n.Path()
 }
 
 func FromConfig(cfg *config.MachConfig) (graph.Graph[string, Node], Node, error) {
 	var edges = edges{}
-	g := graph.New(nodeHash, graph.Directed(), graph.Tree(), graph.PreventCycles())
+	g := graph.New(func(n Node) string { return n.Path() }, graph.Directed(), graph.Tree(), graph.PreventCycles())
 
 	project := &Project{
 		nodeImpl: nodeImpl{
@@ -81,6 +81,11 @@ func FromConfig(cfg *config.MachConfig) (graph.Graph[string, Node], Node, error)
 				for _, dependency := range cp {
 					edges.Add(component.Path(), path.Join(site.Path(), dependency))
 				}
+			}
+			if cp := componentConfig.Secrets.ListComponents(); len(cp) > 0 {
+				for _, dependency := range cp {
+					edges.Add(component.Path(), path.Join(site.Path(), dependency))
+				}
 				continue
 			}
 
@@ -105,6 +110,11 @@ func FromConfig(cfg *config.MachConfig) (graph.Graph[string, Node], Node, error)
 			Msg:    "validation failed",
 			Errors: errList,
 		}
+	}
+
+	g, err = graph.TransitiveReduction(g)
+	if err != nil {
+		return nil, nil, err
 	}
 
 	return g, project, nil

@@ -1,17 +1,25 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
-	"github.com/dominikbraun/graph"
-	"github.com/mach-composer/mach-composer-cli/internal/tree"
+	"github.com/dominikbraun/graph/draw"
+	"github.com/mach-composer/mach-composer-cli/internal/dependency"
 	"github.com/spf13/cobra"
-	"github.com/xlab/treeprint"
-	"strings"
 )
 
 var graphCmd = &cobra.Command{
 	Use:   "graph",
-	Short: "Determine the execution graph for the project",
+	Short: "Print the execution graph for this project",
+	Long: `
+Print the execution graph for this project. Note that the output will be in the DOT Language (https://graphviz.org/about/).
+
+This output can be used to generate actual files with the dependency graph. 
+A tool like graphviz can be used to make this transformation:
+  
+  'mach-composer graph -f main.yml | dot -Tpng -o image.png'
+	
+	`,
 	PreRun: func(cmd *cobra.Command, args []string) {
 		preprocessGenerateFlags()
 	},
@@ -28,41 +36,18 @@ func graphFunc(cmd *cobra.Command, _ []string) error {
 	cfg := loadConfig(cmd, true)
 	defer cfg.Close()
 
-	g, root, err := tree.FromConfig(cfg)
+	t, _, err := dependency.FromConfig(cfg)
 	if err != nil {
 		return err
 	}
 
-	am, err := g.AdjacencyMap()
+	var buff bytes.Buffer
+	err = draw.DOT(t, &buff, draw.GraphAttribute("label", cfg.Filename))
 	if err != nil {
 		return err
 	}
 
-	tr := treeprint.NewWithRoot(root)
-	ram, _ := am[root.Path()]
-
-	for k, _ := range ram {
-		processNode(tr, am, k)
-	}
-
-	fmt.Println(tr.String())
+	fmt.Println(buff.String())
 
 	return nil
-}
-
-func processNode(tp treeprint.Tree, am map[string]map[string]graph.Edge[string], path string) {
-	ram := am[path]
-
-	e := strings.Split(path, "/")
-
-	if len(ram) == 0 {
-		tp.AddNode(e[len(e)-1])
-		return
-	}
-
-	tp2 := tp.AddBranch(e[len(e)-1])
-
-	for k, _ := range ram {
-		processNode(tp2, am, k)
-	}
 }
