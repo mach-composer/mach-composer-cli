@@ -8,7 +8,6 @@ import (
 
 	"github.com/mach-composer/mach-composer-cli/internal/cli"
 	"github.com/mach-composer/mach-composer-cli/internal/utils"
-	"github.com/mach-composer/mach-composer-cli/internal/variables"
 )
 
 func parseSitesNode(cfg *MachConfig, sitesNode *yaml.Node) error {
@@ -206,17 +205,6 @@ func resolveSiteComponents(cfg *MachConfig) error {
 				return fmt.Errorf("component %s does not exist in global components.", c.Name)
 			}
 			c.Definition = ref
-
-			var err error
-			c.Variables, err = variables.InterpolateComponentVars(c.Variables)
-			if err != nil {
-				return err
-			}
-
-			c.Secrets, err = variables.InterpolateComponentVars(c.Secrets)
-			if err != nil {
-				return err
-			}
 		}
 	}
 	return nil

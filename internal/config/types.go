@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"github.com/mach-composer/mach-composer-cli/internal/state"
 	"log"
+	"slices"
 	"strings"
 
 	"github.com/elliotchance/pie/v2"
@@ -14,7 +15,6 @@ import (
 	"gopkg.in/yaml.v3"
 
 	"github.com/mach-composer/mach-composer-cli/internal/plugins"
-	"github.com/mach-composer/mach-composer-cli/internal/variables"
 )
 
 type rawConfig struct {
@@ -26,7 +26,7 @@ type rawConfig struct {
 	document  *yaml.Node                `yaml:"-"`
 	filename  string                    `yaml:"-"`
 	plugins   *plugins.PluginRepository `yaml:"-"`
-	variables *variables.Variables      `yaml:"-"`
+	variables *Variables                `yaml:"-"`
 }
 
 func (r *rawConfig) validate() error {
@@ -49,12 +49,12 @@ func (r *rawConfig) validate() error {
 
 func (r *rawConfig) computeHash() (string, error) {
 	hashConfig := struct {
-		MachComposer MachComposer         `json:"mach_composer"`
-		Global       yaml.Node            `json:"global"`
-		Sites        yaml.Node            `json:"sites"`
-		Components   yaml.Node            `json:"components"`
-		Filename     string               `json:"filename"`
-		Variables    *variables.Variables `json:"variables"`
+		MachComposer MachComposer `json:"mach_composer"`
+		Global       yaml.Node    `json:"global"`
+		Sites        yaml.Node    `json:"sites"`
+		Components   yaml.Node    `json:"components"`
+		Filename     string       `json:"filename"`
+		Variables    *Variables   `json:"variables"`
 	}{
 		MachComposer: r.MachComposer,
 		Global:       r.Global,
@@ -76,7 +76,7 @@ func (r *rawConfig) computeHash() (string, error) {
 func newRawConfig(filename string, document *yaml.Node) (*rawConfig, error) {
 	r := &rawConfig{
 		filename:  filename,
-		variables: variables.NewVariables(),
+		variables: NewVariables(),
 		document:  document,
 	}
 	if err := document.Decode(r); err != nil {
@@ -97,7 +97,7 @@ type MachConfig struct {
 	extraFiles  map[string][]byte         `yaml:"-"`
 	ConfigHash  string                    `yaml:"-"`
 	Plugins     *plugins.PluginRepository `yaml:"-"`
-	Variables   *variables.Variables      `yaml:"-"`
+	Variables   *Variables                `yaml:"-"`
 	IsEncrypted bool                      `yaml:"-"`
 }
 
@@ -156,30 +156,74 @@ type GlobalConfig struct {
 	TerraformConfig        *TerraformConfig `yaml:"terraform_config"`
 }
 
-// Site contains all configuration needed for a site.
+// SiteConfig contains all configuration needed for a site.
 type SiteConfig struct {
-	Name         string
-	Identifier   string
+	Name         string         `yaml:"name"`
+	Identifier   string         `yaml:"identifier"`
 	RawEndpoints map[string]any `yaml:"endpoints"`
 
-	Components []SiteComponent `yaml:"components"`
+	Components []SiteComponentConfig `yaml:"components"`
 }
 
-type SiteComponent struct {
-	Name      string
-	Variables map[string]any
-	Secrets   map[string]any
+type SiteComponentConfig struct {
+	Name       string            `yaml:"name"`
+	Definition *Component        `yaml:"-"`
+	Variables  SiteComponentVars `yaml:"variables"`
+	Secrets    SiteComponentVars `yaml:"secrets"`
 
-	Definition *Component `yaml:"-"`
+	DependsOn []string `yaml:"depends_on"`
+}
+
+type SiteComponentVars map[string]*SiteComponentVar
+
+func (scv *SiteComponentVars) Interpolated() map[string]any {
+	var original = map[string]any{}
+
+	for K, v := range *scv {
+		original[K] = v.Interpolated
+	}
+
+	return original
+}
+
+func (scv *SiteComponentVars) ListComponents() []string {
+	var references []string
+
+	for _, v := range *scv {
+		references = append(references, v.References...)
+	}
+
+	return slices.Compact(references)
+}
+
+type SiteComponentVar struct {
+	Value        any
+	Interpolated any
+	References   []string
+}
+
+func (s *SiteComponentVar) UnmarshalYAML(value *yaml.Node) error {
+	var val any
+	err := value.Decode(&val)
+	if err != nil {
+		return err
+	}
+
+	s.Value = val
+	s.Interpolated, s.References, err = interpolateComponentVar(val)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 type Component struct {
-	Name         string
-	Source       string
-	Paths        []string `yaml:"paths"`
-	Version      string   `yaml:"version"`
-	Branch       string
-	Integrations []string
+	Name         string            `yaml:"name"`
+	Source       string            `yaml:"source"`
+	Paths        []string          `yaml:"paths"`
+	Version      string            `yaml:"version"`
+	Branch       string            `yaml:"branch"`
+	Integrations []string          `yaml:"integrations"`
 	Endpoints    map[string]string `yaml:"endpoints"`
 }
 
@@ -188,7 +232,7 @@ type TerraformConfig struct {
 	RemoteState map[string]any    `yaml:"remote_state"`
 }
 
-func (sc SiteComponent) HasCloudIntegration(g *GlobalConfig) bool {
+func (sc *SiteComponentConfig) HasCloudIntegration(g *GlobalConfig) bool {
 	if sc.Definition == nil {
 		log.Fatalf("Component %s was not resolved properly (missing definition)", sc.Name)
 	}

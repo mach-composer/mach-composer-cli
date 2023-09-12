@@ -2,6 +2,7 @@ package generator
 
 import (
 	"encoding/json"
+	"github.com/mach-composer/mach-composer-cli/internal/config"
 	"regexp"
 	"strings"
 
@@ -10,9 +11,9 @@ import (
 	ctyjson "github.com/zclconf/go-cty/cty/json"
 )
 
-var regexVars = regexp.MustCompilePOSIX(`"\$\$\{([^\}]+)\}"`)
+var regexVars = regexp.MustCompilePOSIX(`"\$\$\{([^}]+)}"`)
 
-func serializeToHCL(attributeName string, data any) (string, error) {
+func serializeToHCL(attributeName string, data config.SiteComponentVars) (string, error) {
 	val, err := asCTY(data)
 	if err != nil {
 		return "", err
@@ -42,8 +43,8 @@ func fixVariableReference(data string) string {
 	return data
 }
 
-func asCTY(source any) (cty.Value, error) {
-	jsonBytes, err := json.Marshal(source)
+func asCTY(source config.SiteComponentVars) (cty.Value, error) {
+	jsonBytes, err := json.Marshal(source.Interpolated())
 	if err != nil {
 		return cty.NilVal, err
 	}

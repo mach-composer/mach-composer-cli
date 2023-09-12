@@ -12,7 +12,6 @@ import (
 
 	"github.com/mach-composer/mach-composer-cli/internal/plugins"
 	"github.com/mach-composer/mach-composer-cli/internal/utils"
-	"github.com/mach-composer/mach-composer-cli/internal/variables"
 )
 
 type ConfigOptions struct {
@@ -56,7 +55,7 @@ func Open(ctx context.Context, filename string, opts *ConfigOptions) (*MachConfi
 	// to be passed as argument.
 	if !opts.NoResolveVars {
 		if err := resolveVariables(ctx, raw); err != nil {
-			if notFoundErr, ok := err.(*variables.NotFoundError); ok {
+			if notFoundErr, ok := err.(*NotFoundError); ok {
 				err = &SyntaxError{
 					message:  fmt.Sprintf("unable to resolve variable %#v", notFoundErr.Name),
 					line:     notFoundErr.Node.Line,

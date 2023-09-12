@@ -50,8 +50,8 @@ func (lr *LocalRenderer) RemoteState() (string, error) {
 	  backend = "local"
 	
 	  config = {
-		{{ if .State.Path }}
-		path = "{{ .State.Path }}"
+		{{ if .State.Identifier }}
+		path = "{{ .State.Identifier }}"
 		{{ end }}
 	  }
 	}

@@ -8,7 +8,6 @@ import (
 	"strings"
 
 	"github.com/mach-composer/mach-composer-cli/internal/config"
-	"github.com/mach-composer/mach-composer-cli/internal/variables"
 )
 
 // renderSite is responsible for generating the `site.tf` file. Therefore, it is
@@ -33,7 +32,7 @@ func renderSite(ctx context.Context, cfg *config.MachConfig, site *config.SiteCo
 	}
 	result = append(result, val)
 
-	// Render every component (incuding component specific resources)
+	// Render every component (including component specific resources)
 	for i := range site.Components {
 		component := &site.Components[i]
 		val, err := renderComponent(ctx, cfg, site, component)
@@ -50,7 +49,7 @@ func renderSite(ctx context.Context, cfg *config.MachConfig, site *config.SiteCo
 // renderTerraformConfig renders the terraform settings block which defines the
 // remote state to be used and the providers to be loaded.
 func renderTerraformConfig(cfg *config.MachConfig, site *config.SiteConfig) (string, error) {
-	providers := []string{}
+	var providers []string
 	for _, plugin := range cfg.Plugins.All() {
 		content, err := plugin.RenderTerraformProviders(site.Identifier)
 		if err != nil {
@@ -132,7 +131,7 @@ func renderTerraformResources(cfg *config.MachConfig, site *config.SiteConfig) (
 	`
 	templateContext := struct {
 		Resources   []string
-		FileSources []variables.FileSource
+		FileSources []config.FileSource
 	}{
 		Resources:   resources,
 		FileSources: cfg.Variables.GetEncryptedSources(site.Identifier),
@@ -142,7 +141,7 @@ func renderTerraformResources(cfg *config.MachConfig, site *config.SiteConfig) (
 
 // renderComponent uses templates/component.tf to generate a terraform snippet
 // for each component
-func renderComponent(_ context.Context, cfg *config.MachConfig, site *config.SiteConfig, component *config.SiteComponent) (string, error) {
+func renderComponent(_ context.Context, cfg *config.MachConfig, site *config.SiteConfig, component *config.SiteComponentConfig) (string, error) {
 
 	tc := struct {
 		ComponentName       string

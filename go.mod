@@ -1,10 +1,11 @@
 module github.com/mach-composer/mach-composer-cli
 
-go 1.19
+go 1.21
 
 require (
 	github.com/adrg/xdg v0.4.0
 	github.com/creasty/defaults v1.7.0
+	github.com/dominikbraun/graph v0.23.0
 	github.com/elliotchance/pie/v2 v2.5.1
 	github.com/fatih/color v1.14.1
 	github.com/go-git/go-billy/v5 v5.4.1
