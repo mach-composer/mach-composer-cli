@@ -198,7 +198,7 @@ function app ZIP file.
 
 ### Example
 
-Example GitHub action to package and deploy a component on AWS.
+Example GitHub Action to package and deploy a component on AWS.
 
 === "Node"
 
