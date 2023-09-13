@@ -5,9 +5,10 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
-	"github.com/mach-composer/mach-composer-cli/internal/state"
 	"log"
 	"strings"
+
+	"github.com/mach-composer/mach-composer-cli/internal/state"
 
 	"github.com/elliotchance/pie/v2"
 	"github.com/mach-composer/mcc-sdk-go/mccsdk"
@@ -195,11 +196,7 @@ func (sc SiteComponent) HasCloudIntegration(g *GlobalConfig) bool {
 	return pie.Contains(sc.Definition.Integrations, g.Cloud)
 }
 
-// UseVersionReference indicates if the module should be referenced with the
-// version.
-// This will be mainly used for development purposes when referring to a local
-// directory; versioning is not possible, but we should still be able to define
-// a version in our component for the actual function deployment itself.
-func (c *Component) UseVersionReference() bool {
+// IsGitSource indicates if the source definition refers to Git.
+func (c *Component) IsGitSource() bool {
 	return strings.HasPrefix(c.Source, "git")
 }
