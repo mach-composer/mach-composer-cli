@@ -107,7 +107,7 @@ func Commit(_ context.Context, fileNames []string, message string) error {
 	return nil
 }
 
-func GetLastVersionGit(ctx context.Context, c *config.Component, origin string) ([]gitCommit, error) {
+func GetLastVersionGit(ctx context.Context, c *config.ComponentConfig, origin string) ([]gitCommit, error) {
 	cacheDir, err := getGitCachePath(origin)
 	if err != nil {
 		return nil, err

@@ -16,8 +16,8 @@ import (
 )
 
 type PartialConfig struct {
-	MachComposer   config.MachComposer `yaml:"mach_composer"`
-	Components     []config.Component  `yaml:"components"`
+	MachComposer   config.MachComposer      `yaml:"mach_composer"`
+	Components     []config.ComponentConfig `yaml:"components"`
 	ComponentsNode *yaml.Node
 	Sops           yaml.Node `yaml:"sops"`
 
@@ -32,7 +32,7 @@ type PartialRawConfig struct {
 	Sops         yaml.Node           `yaml:"sops"`
 }
 
-func (c *PartialConfig) GetComponent(name string) *config.Component {
+func (c *PartialConfig) GetComponent(name string) *config.ComponentConfig {
 	for i := range c.Components {
 		if strings.EqualFold(c.Components[i].Name, name) {
 			return &c.Components[i]
@@ -42,7 +42,7 @@ func (c *PartialConfig) GetComponent(name string) *config.Component {
 }
 
 type WorkerJob struct {
-	component *config.Component
+	component *config.ComponentConfig
 	cfg       *PartialConfig
 }
 
@@ -82,7 +82,7 @@ func NewUpdater(ctx context.Context, filename string, useCloud bool) (*Updater, 
 		return nil, err
 	}
 
-	var components []config.Component
+	var components []config.ComponentConfig
 	if err := raw.Components.Decode(&components); err != nil {
 		return nil, fmt.Errorf("decoding error: %w", err)
 	}

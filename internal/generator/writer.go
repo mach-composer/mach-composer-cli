@@ -15,7 +15,6 @@ import (
 	"github.com/hashicorp/hcl/v2/hclwrite"
 	"github.com/rs/zerolog/log"
 
-	"github.com/mach-composer/mach-composer-cli/internal/cloud"
 	"github.com/mach-composer/mach-composer-cli/internal/config"
 	"github.com/mach-composer/mach-composer-cli/internal/lockfile"
 )
@@ -27,11 +26,6 @@ type GenerateOptions struct {
 
 func WriteFiles(ctx context.Context, cfg *config.MachConfig, options *GenerateOptions) (map[string]string, error) {
 	locations := FileLocations(cfg, options)
-	if cfg.MachComposer.CloudEnabled() {
-		if err := cloud.ResolveComponentsData(ctx, cfg); err != nil {
-			return nil, err
-		}
-	}
 
 	for _, site := range cfg.Sites {
 		renderer, err := state.NewRenderer(
@@ -52,12 +46,12 @@ func WriteFiles(ctx context.Context, cfg *config.MachConfig, options *GenerateOp
 		}
 
 		path := locations[site.Identifier]
-		lockFile, err := lockfile.GetLockFile(cfg, path)
+		lock, err := lockfile.GetLock(cfg, path)
 		if err != nil {
 			return nil, err
 		}
 
-		if !lockFile.HasChanges(cfg) {
+		if !lock.HasChanges(cfg) {
 			log.Info().Msgf("Files for site %s are up-to-date", site.Identifier)
 			continue
 		}
@@ -94,11 +88,10 @@ func WriteFiles(ctx context.Context, cfg *config.MachConfig, options *GenerateOp
 			}
 		}
 
-		// Write the lock file
-		if err := lockFile.SetTerraformFiles(); err != nil {
+		if err := lock.Update(cfg); err != nil {
 			return nil, err
 		}
-		if err := lockFile.Write(); err != nil {
+		if err := lockfile.WriteLock(lock); err != nil {
 			return nil, err
 		}
 	}
@@ -183,7 +176,7 @@ func copyFile(srcPath, dstPath string) error {
 	}
 	defer dst.Close()
 
-	// Write the contents of the source file to the destination file
+	// WriteLock the contents of the source file to the destination file
 	_, err = dst.Write(srcContents)
 	if err != nil {
 		return err

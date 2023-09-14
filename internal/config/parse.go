@@ -157,18 +157,12 @@ func loadPlugins(ctx context.Context, raw *rawConfig) error {
 
 // parseConfig is responsible for parsing a mach composer yaml config file and
 // creating the resulting MachConfig struct.
-func resolveConfig(ctx context.Context, intermediate *rawConfig) (*MachConfig, error) {
+func resolveConfig(_ context.Context, intermediate *rawConfig) (*MachConfig, error) {
 	if err := intermediate.validate(); err != nil {
 		return nil, err
 	}
 
-	cfgHash, err := intermediate.computeHash()
-	if err != nil {
-		return nil, err
-	}
-
 	cfg := &MachConfig{
-		ConfigHash:      cfgHash,
 		StateRepository: state.NewRepository(),
 		extraFiles:      make(map[string][]byte),
 		Filename:        filepath.Base(intermediate.filename),
