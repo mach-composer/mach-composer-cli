@@ -52,7 +52,7 @@ func findUpdatesParallel(ctx context.Context, cfg *PartialConfig, filename strin
 	errChan := make(chan error, numUpdates)
 
 	var wg sync.WaitGroup
-	var numWorkers = 4
+	var numWorkers = 10
 
 	// Start 4 workers
 	for i := 0; i < numWorkers; i++ {
@@ -250,6 +250,7 @@ func getLastVersionGit(ctx context.Context, c *config.Component, origin string) 
 			Name:  c.Committer.Name,
 			Date:  c.Committer.Date,
 		}
+		cd[i].Tags = c.Tags
 	}
 
 	cs := &ChangeSet{
