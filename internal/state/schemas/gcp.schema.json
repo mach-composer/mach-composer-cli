@@ -6,7 +6,7 @@
     "bucket"
   ],
   "properties": {
-    "plugin": {
+    "backend": {
       "type": "string"
     },
     "bucket": {

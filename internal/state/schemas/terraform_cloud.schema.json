@@ -6,7 +6,7 @@
     "organization"
   ],
   "properties": {
-    "plugin": {
+    "backend": {
       "type": "string"
     },
     "hostname": {

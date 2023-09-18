@@ -90,9 +90,9 @@ definitions:
           - type: object
             additionalProperties: true
             required:
-              - plugin
+              - backend
             properties:
-              plugin:
+              backend:
                 type: string
                 enum:
                   - aws

@@ -64,7 +64,7 @@ func (tcr *TerraformCloudRenderer) RemoteState() (string, error) {
 
 	template := `
 	data "terraform_remote_state" "{{ .Key }}" {
-	  backend = "aws"
+	  backend = "remote"
 	
 	  config = {
 	    organization = "{{ .State.Organization }}"

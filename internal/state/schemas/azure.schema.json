@@ -8,7 +8,7 @@
     "container_name"
   ],
   "properties": {
-    "plugin": {
+    "backend": {
       "type": "string"
     },
     "resource_group": {

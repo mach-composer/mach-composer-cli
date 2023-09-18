@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+
 	"github.com/mach-composer/mach-composer-cli/internal/cli"
 	"gopkg.in/yaml.v3"
 )
@@ -40,7 +41,7 @@ func parseGlobalNode(cfg *MachConfig, globalNode *yaml.Node) error {
 			cli.DeprecationWarning(&cli.DeprecationOptions{
 				Message: "the usage of `aws_remote_state` is deprecated and will be removed in the next major version",
 				Details: `
-				Please move the configuration to the remote_state block and add the provider name as plugin.
+				Please move the configuration to the remote_state block and add the provider name as backend.
 				
 				For example:
 				
@@ -52,7 +53,7 @@ func parseGlobalNode(cfg *MachConfig, globalNode *yaml.Node) error {
 				To:
 				
 				    remote_state:
-					  plugin: aws
+					  backend: aws
 					  key_prefix: mach-composer
 					  region: eu-central-1
 					  bucket: "mcc-terraform-state"
@@ -70,7 +71,7 @@ func parseGlobalNode(cfg *MachConfig, globalNode *yaml.Node) error {
 			cli.DeprecationWarning(&cli.DeprecationOptions{
 				Message: "the usage of `azure_remote_state` is deprecated and will be removed in the next major version",
 				Details: `
-				Please move the configuration to the remote_state block and add the provider name as plugin.
+				Please move the configuration to the remote_state block and add the provider name as backend.
 				
 				For example:
 				
@@ -82,7 +83,7 @@ func parseGlobalNode(cfg *MachConfig, globalNode *yaml.Node) error {
 				To:
 				
 				    remote_state:
-						plugin: azure
+						backend: azure
 						resource_group: some-resource-group
 						storage_account: some-account
 						container_name: some-container
@@ -102,12 +103,12 @@ func parseGlobalNode(cfg *MachConfig, globalNode *yaml.Node) error {
 				return err
 			}
 
-			pluginName, ok := data["plugin"].(string)
+			backendName, ok := data["backend"].(string)
 			if !ok {
-				return fmt.Errorf("plugin needs to be defined for remote_state")
+				return fmt.Errorf("backend needs to be defined for remote_state")
 			}
 
-			cfg.Global.TerraformStateProvider = pluginName
+			cfg.Global.TerraformStateProvider = backendName
 			return nil
 		}
 	}
