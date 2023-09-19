@@ -105,7 +105,7 @@ func LoadRefData(ctx context.Context, node *yaml.Node, cwd string) (*yaml.Node, 
 
 func loadRefDocument(_ context.Context, filename, cwd string) (*yaml.Node, error) {
 	parts := strings.SplitN(filename, "#", 2)
-	fname := filepath.Join(cwd, parts[0])
+	fname := parts[0]
 
 	body, err := utils.AFS.ReadFile(fname)
 	if err != nil {

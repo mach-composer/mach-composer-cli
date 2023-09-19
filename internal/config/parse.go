@@ -4,9 +4,10 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/mach-composer/mach-composer-cli/internal/state"
 	"path"
 	"path/filepath"
+
+	"github.com/mach-composer/mach-composer-cli/internal/state"
 
 	"github.com/rs/zerolog/log"
 	"gopkg.in/yaml.v3"
