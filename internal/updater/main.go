@@ -77,7 +77,7 @@ func NewUpdater(ctx context.Context, filename string, useCloud bool) (*Updater, 
 	}
 
 	// Resolve $ref references for the components.
-	componentsFilename, err := config.LoadRefData(ctx, &raw.Components, path.Dir(filename))
+	componentsFilename, err := config.LoadRefData(ctx, &raw.Components)
 	if err != nil {
 		return nil, err
 	}

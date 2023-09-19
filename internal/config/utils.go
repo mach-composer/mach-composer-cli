@@ -3,7 +3,6 @@ package config
 import (
 	"context"
 	"fmt"
-	"path/filepath"
 	"strings"
 
 	"github.com/elliotchance/pie/v2"
@@ -60,7 +59,7 @@ func iterateYamlNodes(
 	return nil
 }
 
-func LoadRefData(ctx context.Context, node *yaml.Node, cwd string) (string, error) {
+func LoadRefData(ctx context.Context, node *yaml.Node) (string, error) {
 	if node.Kind != yaml.MappingNode {
 		return "", nil
 	}
@@ -71,7 +70,7 @@ func LoadRefData(ctx context.Context, node *yaml.Node, cwd string) (string, erro
 		return "", nil
 	}
 
-	newNode, err := loadRefDocument(ctx, ref.Value, cwd)
+	newNode, err := loadRefDocument(ctx, ref.Value)
 	if err != nil {
 		return "", err
 	}
@@ -81,9 +80,9 @@ func LoadRefData(ctx context.Context, node *yaml.Node, cwd string) (string, erro
 	return ref.Value, nil
 }
 
-func loadRefDocument(ctx context.Context, filename, cwd string) (*yaml.Node, error) {
+func loadRefDocument(ctx context.Context, filename string) (*yaml.Node, error) {
 	parts := strings.SplitN(filename, "#", 2)
-	fname := filepath.Join(cwd, parts[0])
+	fname := parts[0]
 
 	body, err := utils.AFS.ReadFile(fname)
 	if err != nil {

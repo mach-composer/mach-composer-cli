@@ -3,9 +3,9 @@ package config
 import (
 	"context"
 	"fmt"
-	"github.com/mach-composer/mach-composer-cli/internal/state"
-	"path"
 	"path/filepath"
+
+	"github.com/mach-composer/mach-composer-cli/internal/state"
 
 	"github.com/rs/zerolog/log"
 	"gopkg.in/yaml.v3"
@@ -95,7 +95,7 @@ func loadConfig(ctx context.Context, filename string, pr *plugins.PluginReposito
 		return nil, err
 	}
 
-	if _, err := LoadRefData(ctx, &raw.Components, path.Dir(filename)); err != nil {
+	if _, err := LoadRefData(ctx, &raw.Components); err != nil {
 		return nil, err
 	}
 
