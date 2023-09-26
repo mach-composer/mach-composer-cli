@@ -321,7 +321,7 @@ func TestParseComponentsNodeInline(t *testing.T) {
 	err = cfg.Plugins.Add("my-cloud", plugins.NewMockPlugin())
 	require.NoError(t, err)
 
-	err = parseComponentsNode(cfg, &intermediate.Components, "main.yml")
+	err = parseComponentsNode(cfg, &intermediate.Components)
 	require.NoError(t, err)
 	assert.Len(t, cfg.Components, 1)
 	assert.Equal(t, "your-component", cfg.Components[0].Name)
@@ -353,8 +353,10 @@ func TestParseComponentsNodeRef(t *testing.T) {
 	err = yaml.Unmarshal(data, &intermediate)
 	require.NoError(t, err)
 
-	_, err = LoadRefData(context.Background(), &intermediate.Components, "")
-	require.NoError(t, err)
+	componentNode, fileName, err := LoadRefData(context.Background(), &intermediate.Components, "")
+	assert.NoError(t, err)
+	assert.Equal(t, "components.yml#/components", fileName)
+	intermediate.Components = *componentNode
 
 	cfg := &MachConfig{
 		Plugins: plugins.NewPluginRepository(),
@@ -365,7 +367,7 @@ func TestParseComponentsNodeRef(t *testing.T) {
 	err = cfg.Plugins.Add("my-cloud", plugins.NewMockPlugin())
 	require.NoError(t, err)
 
-	err = parseComponentsNode(cfg, &intermediate.Components, "main.yml")
+	err = parseComponentsNode(cfg, &intermediate.Components)
 	require.NoError(t, err)
 	assert.Len(t, cfg.Components, 1)
 	assert.Equal(t, "your-component", cfg.Components[0].Name)
@@ -395,6 +397,11 @@ func TestParseComponentsNodeInclude(t *testing.T) {
 	err = yaml.Unmarshal(data, &intermediate)
 	require.NoError(t, err)
 
+	componentNode, fileName, err := LoadRefData(context.Background(), &intermediate.Components, "")
+	assert.NoError(t, err)
+	assert.Equal(t, "components.yml", fileName)
+	intermediate.Components = *componentNode
+
 	cfg := &MachConfig{
 		Plugins: plugins.NewPluginRepository(),
 		Global: GlobalConfig{
@@ -404,7 +411,7 @@ func TestParseComponentsNodeInclude(t *testing.T) {
 	err = cfg.Plugins.Add("my-cloud", plugins.NewMockPlugin())
 	require.NoError(t, err)
 
-	err = parseComponentsNode(cfg, &intermediate.Components, "main.yml")
+	err = parseComponentsNode(cfg, &intermediate.Components)
 	require.NoError(t, err)
 	assert.Len(t, cfg.Components, 1)
 	assert.Equal(t, "your-component", cfg.Components[0].Name)

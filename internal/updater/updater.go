@@ -76,11 +76,12 @@ func NewUpdater(ctx context.Context, filename string, useCloud bool) (*Updater, 
 		return nil, fmt.Errorf("failed to unmarshall yaml: %w", err)
 	}
 
-	// Resolve $ref references for the components.
-	componentsFilename, err := config.LoadRefData(ctx, &raw.Components, path.Dir(filename))
+	// Resolve $ref and include() references for the components.
+	componentNode, componentsFilename, err := config.LoadRefData(ctx, &raw.Components, path.Dir(filename))
 	if err != nil {
 		return nil, err
 	}
+	raw.Components = *componentNode
 
 	var components []config.Component
 	if err := raw.Components.Decode(&components); err != nil {

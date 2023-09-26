@@ -11,7 +11,7 @@ import (
 	"github.com/mach-composer/mach-composer-cli/internal/utils"
 )
 
-func machConfigUpdater(ctx context.Context, cfg *PartialConfig, src []byte, updateSet *UpdateSet) []byte {
+func machConfigUpdater(_ context.Context, cfg *PartialConfig, src []byte, updateSet *UpdateSet) []byte {
 	nodes := mapComponentNodes(cfg.ComponentsNode)
 
 	// Walk through the updated components and search the corresponding yaml node
