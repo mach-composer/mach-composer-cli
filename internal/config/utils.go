@@ -3,7 +3,9 @@ package config
 import (
 	"context"
 	"fmt"
+	"github.com/mach-composer/mach-composer-cli/internal/cli"
 	"path/filepath"
+	"regexp"
 	"strings"
 
 	"github.com/elliotchance/pie/v2"
@@ -60,28 +62,48 @@ func iterateYamlNodes(
 	return nil
 }
 
-func LoadRefData(ctx context.Context, node *yaml.Node, cwd string) (string, error) {
-	if node.Kind != yaml.MappingNode {
-		return "", nil
-	}
+// LoadRefData will load referenced files and replace the node with the content of these files. It works both with the
+// ${include()} syntax and the $ref syntax.
+func LoadRefData(ctx context.Context, node *yaml.Node, cwd string) (*yaml.Node, string, error) {
+	switch node.Kind {
+	case yaml.ScalarNode:
+		cli.DeprecationWarning(&cli.DeprecationOptions{
+			Message: "the '${include()}' syntax is deprecated and will be removed in version 3.0",
+			Details: `
+				For example instead of:
+					components: ${include(components.yml)}
 
-	data := mapYamlNodes(node.Content)
-	ref, ok := data["$ref"]
-	if !ok {
-		return "", nil
-	}
+				You should use:
+					components:
+						$ref: "components.yml"
+			`,
+		})
 
-	newNode, err := loadRefDocument(ctx, ref.Value, cwd)
-	if err != nil {
-		return "", err
-	}
-	node.Kind = newNode.Kind
-	node.Content = newNode.Content
+		newNode, filePath, err := loadIncludeDocument(node, cwd)
+		if err != nil {
+			return nil, "", err
+		}
 
-	return ref.Value, nil
+		return newNode, filePath, nil
+	case yaml.MappingNode:
+		data := mapYamlNodes(node.Content)
+		ref, ok := data["$ref"]
+		if !ok {
+			return nil, "", nil
+		}
+
+		newNode, err := loadRefDocument(ctx, ref.Value, cwd)
+		if err != nil {
+			return nil, "", err
+		}
+
+		return newNode, ref.Value, nil
+	default:
+		return node, "", nil
+	}
 }
 
-func loadRefDocument(ctx context.Context, filename, cwd string) (*yaml.Node, error) {
+func loadRefDocument(_ context.Context, filename, cwd string) (*yaml.Node, error) {
 	parts := strings.SplitN(filename, "#", 2)
 	fname := filepath.Join(cwd, parts[0])
 
@@ -111,4 +133,26 @@ func loadRefDocument(ctx context.Context, filename, cwd string) (*yaml.Node, err
 	}
 
 	return root, nil
+}
+
+func loadIncludeDocument(node *yaml.Node, path string) (*yaml.Node, string, error) {
+	re := regexp.MustCompile(`\$\{include\(([^)]+)\)\}`)
+	data := re.FindStringSubmatch(node.Value)
+	if len(data) != 2 {
+		return nil, "", fmt.Errorf("failed to parse ${include()} tag")
+	}
+	filename := filepath.Join(path, data[1])
+	body, err := utils.AFS.ReadFile(filename)
+	if err != nil {
+		return nil, "", err
+	}
+
+	result := yaml.Node{}
+	if err = yaml.Unmarshal(body, &result); err != nil {
+		return nil, "", err
+	}
+	if len(result.Content) != 1 {
+		return nil, "", fmt.Errorf("invalid yaml file")
+	}
+	return result.Content[0], filename, nil
 }

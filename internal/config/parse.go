@@ -2,6 +2,7 @@ package config
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"github.com/mach-composer/mach-composer-cli/internal/state"
 	"path"
@@ -95,9 +96,11 @@ func loadConfig(ctx context.Context, filename string, pr *plugins.PluginReposito
 		return nil, err
 	}
 
-	if _, err := LoadRefData(ctx, &raw.Components, path.Dir(filename)); err != nil {
+	componentNode, _, err := LoadRefData(ctx, &raw.Components, path.Dir(filename))
+	if err != nil {
 		return nil, err
 	}
+	raw.Components = *componentNode
 
 	// Load the plugins
 	raw.plugins = pr
@@ -172,13 +175,14 @@ func resolveConfig(_ context.Context, intermediate *rawConfig) (*MachConfig, err
 	}
 
 	if err := parseGlobalNode(cfg, &intermediate.Global); err != nil {
-		if _, ok := err.(*plugins.PluginNotFoundError); ok {
+		var pluginNotFoundError *plugins.PluginNotFoundError
+		if errors.As(err, &pluginNotFoundError) {
 			return nil, err
 		}
 		return nil, fmt.Errorf("failed to parse global node: %w", err)
 	}
 
-	if err := parseComponentsNode(cfg, &intermediate.Components, intermediate.filename); err != nil {
+	if err := parseComponentsNode(cfg, &intermediate.Components); err != nil {
 		return nil, fmt.Errorf("failed to parse components node: %w", err)
 	}
 
