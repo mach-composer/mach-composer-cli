@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/rs/zerolog/log"
+	"math"
 	"runtime"
 	"strings"
 
@@ -51,7 +52,7 @@ func findUpdatesParallel(ctx context.Context, cfg *PartialConfig, filename strin
 	resChan := make(chan *ChangeSet, numUpdates)
 	errChan := make(chan error, numUpdates)
 
-	var numWorkers = runtime.NumCPU() - 1
+	var numWorkers = int(math.Ceil(float64(runtime.NumCPU() / 2)))
 	var sem = semaphore.NewWeighted(int64(numWorkers))
 
 	log.Info().Msgf("Running on %d workers", numWorkers)
