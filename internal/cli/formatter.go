@@ -46,20 +46,21 @@ func (w ConsoleWriter) Write(p []byte) (n int, err error) {
 	if level, ok := event["level"].(string); ok {
 		switch level {
 		case zerolog.LevelTraceValue:
-			c := color.New(color.FgMagenta, color.Faint)
-			c.Println(message.String(), extraFields.String())
+			c := color.New(color.FgWhite, color.Faint)
+			_, _ = c.Println(message.String(), extraFields.String())
 
 		case zerolog.LevelDebugValue:
-			c := color.New(color.FgYellow, color.Faint)
-			c.Println(message.String(), extraFields.String())
+			c := color.New(color.FgWhite, color.Faint)
+			_, _ = c.Println(message.String(), extraFields.String())
 
 		case zerolog.LevelInfoValue:
-			fmt.Println(message.String())
+			c := color.New(color.Bold)
+			_, _ = c.Println(message.String())
 
 		case zerolog.LevelWarnValue:
 			c := color.New(color.FgYellow, color.Bold)
-			fmt.Fprintln(os.Stderr, c.Sprint("|"))
-			fmt.Fprintln(os.Stderr, c.Sprint("| Warning:"), message.String())
+			_, _ = fmt.Fprintln(os.Stderr, c.Sprint("|"))
+			_, _ = fmt.Fprintln(os.Stderr, c.Sprint("| Warning:"), message.String())
 			if details, ok := event["details"].(string); ok {
 				printDetails(os.Stderr, details, c)
 			}
@@ -67,14 +68,14 @@ func (w ConsoleWriter) Write(p []byte) (n int, err error) {
 				if key == "message" || key == "level" || key == "error" || key == "details" {
 					continue
 				}
-				fmt.Fprintln(os.Stderr, c.Sprint("| "), fmt.Sprintf("%s=%s", key, value))
+				_, _ = fmt.Fprintln(os.Stderr, c.Sprint("| "), fmt.Sprintf("%s=%s", key, value))
 			}
-			fmt.Fprintln(os.Stderr, c.Sprint("|"))
+			_, _ = fmt.Fprintln(os.Stderr, c.Sprint("|"))
 
 		case zerolog.LevelErrorValue:
 			c := color.New(color.FgRed, color.Bold)
-			fmt.Fprintln(os.Stderr, c.Sprint("|"))
-			fmt.Fprintln(os.Stderr, c.Sprint("| Error:"), message.String())
+			_, _ = fmt.Fprintln(os.Stderr, c.Sprint("|"))
+			_, _ = fmt.Fprintln(os.Stderr, c.Sprint("| Error:"), message.String())
 			if details, ok := event["details"].(string); ok {
 				printDetails(os.Stderr, details, c)
 			}
@@ -82,9 +83,9 @@ func (w ConsoleWriter) Write(p []byte) (n int, err error) {
 				if key == "message" || key == "level" || key == "error" || key == "details" {
 					continue
 				}
-				fmt.Fprintln(os.Stderr, c.Sprint("| "), fmt.Sprintf("%s=%s", key, value))
+				_, _ = fmt.Fprintln(os.Stderr, c.Sprint("| "), fmt.Sprintf("%s=%s", key, value))
 			}
-			fmt.Fprintln(os.Stderr, c.Sprint("|"))
+			_, _ = fmt.Fprintln(os.Stderr, c.Sprint("|"))
 		}
 	}
 
@@ -99,8 +100,8 @@ func printDetails(dst io.Writer, detail string, c *color.Color) {
 
 	line := strings.TrimSpace(utils.TrimIndent(detail))
 	parts := strings.Split(line, "\n")
-	fmt.Fprintln(dst, c.Sprint("|"))
+	_, _ = fmt.Fprintln(dst, c.Sprint("|"))
 	for _, line := range parts {
-		fmt.Fprintln(dst, c.Sprint("|"), white(line))
+		_, _ = fmt.Fprintln(dst, c.Sprint("|"), white(line))
 	}
 }
