@@ -47,12 +47,22 @@ func findUpdatesSerial(ctx context.Context, cfg *PartialConfig, filename string)
 	return &updates, nil
 }
 
+func determineNumWorkers() int {
+	var numWorkers = int(math.Ceil(float64(runtime.NumCPU() / 2)))
+
+	if numWorkers < 2 {
+		numWorkers = 2
+	}
+
+	return numWorkers
+}
+
 func findUpdatesParallel(ctx context.Context, cfg *PartialConfig, filename string) (*UpdateSet, error) {
 	numUpdates := len(cfg.Components)
 	resChan := make(chan *ChangeSet, numUpdates)
 	errChan := make(chan error, numUpdates)
 
-	var numWorkers = int(math.Ceil(float64(runtime.NumCPU() / 2)))
+	var numWorkers = determineNumWorkers()
 	var sem = semaphore.NewWeighted(int64(numWorkers))
 
 	log.Info().Msgf("Running on %d workers", numWorkers)
