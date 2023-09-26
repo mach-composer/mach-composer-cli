@@ -69,7 +69,6 @@ func OutputChanges(cs *ChangeSet) string {
 	}
 
 	for _, commit := range cs.Changes {
-		//Yuk, this is ugly
 		tagMsg := generateTagMessage(commit.Tags)
 
 		fmt.Fprintf(&b, "%s%s: %s (%s <%s> %s)\n",
