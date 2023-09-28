@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/mach-composer/mach-composer-cli/internal/state"
+	"path"
 	"strconv"
 	"strings"
 
@@ -21,7 +22,10 @@ import (
 var schemas embed.FS
 
 func GenerateSchema(ctx context.Context, filename string, pr *plugins.PluginRepository) (string, error) {
-	raw, err := loadConfig(ctx, filename, pr)
+	//Take the relative path of the config file as the working directory
+	cwd := path.Dir(filename)
+
+	raw, err := loadConfig(ctx, filename, cwd, pr)
 	if err != nil {
 		return "", err
 	}

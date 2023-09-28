@@ -30,7 +30,7 @@ func TestNewVariablesFromFile(t *testing.T) {
 	vars := NewVariables()
 	assert.NoError(t, err)
 
-	err = vars.Load(context.Background(), "variables.yaml")
+	err = vars.Load(context.Background(), "variables.yaml", ".")
 	assert.NoError(t, err)
 
 	expected := map[string]Value{
@@ -53,7 +53,7 @@ func TestEncryptedVariables(t *testing.T) {
 	err = utils.AFS.WriteFile("testdata/secrets.enc.yaml", content, 0600)
 	require.NoError(t, err)
 
-	err = vars.Load(context.Background(), "testdata/secrets.enc.yaml")
+	err = vars.Load(context.Background(), "testdata/secrets.enc.yaml", ".")
 	require.NoError(t, err)
 
 	expected := map[string]Value{
