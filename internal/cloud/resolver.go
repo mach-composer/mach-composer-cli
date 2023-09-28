@@ -16,7 +16,7 @@ func ResolveComponentsData(ctx context.Context, cfg *config.MachConfig) error {
 	return nil
 }
 
-func resolveComponentVersion(ctx context.Context, cfg *config.MachConfig, c *config.Component) error {
+func resolveComponentVersion(ctx context.Context, cfg *config.MachConfig, c *config.ComponentConfig) error {
 	if c.Version != "$LATEST" {
 		return nil
 	}

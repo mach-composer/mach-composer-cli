@@ -125,7 +125,7 @@ func findUpdatesParallel(ctx context.Context, cfg *PartialConfig, filename strin
 	return &updates, nil
 }
 
-func findSpecificUpdate(ctx context.Context, cfg *PartialConfig, filename string, component *config.Component) (*UpdateSet, error) {
+func findSpecificUpdate(ctx context.Context, cfg *PartialConfig, filename string, component *config.ComponentConfig) (*UpdateSet, error) {
 	changeSet, err := getLastVersion(ctx, cfg, component, filename)
 	if err != nil {
 		return nil, err
@@ -141,7 +141,7 @@ func findSpecificUpdate(ctx context.Context, cfg *PartialConfig, filename string
 	return &updates, nil
 }
 
-func getLastVersion(ctx context.Context, cfg *PartialConfig, c *config.Component, origin string) (*ChangeSet, error) {
+func getLastVersion(ctx context.Context, cfg *PartialConfig, c *config.ComponentConfig, origin string) (*ChangeSet, error) {
 	if c.Branch == "" {
 		c.Branch = "main"
 	}
@@ -162,7 +162,7 @@ func getLastVersion(ctx context.Context, cfg *PartialConfig, c *config.Component
 	return nil, err
 }
 
-func getLastVersionCloud(ctx context.Context, cfg *PartialConfig, c *config.Component, origin string) (*ChangeSet, error) {
+func getLastVersionCloud(ctx context.Context, cfg *PartialConfig, c *config.ComponentConfig, origin string) (*ChangeSet, error) {
 	organization := cfg.MachComposer.Cloud.Organization
 	project := cfg.MachComposer.Cloud.Project
 
@@ -229,7 +229,7 @@ func getLastVersionCloud(ctx context.Context, cfg *PartialConfig, c *config.Comp
 	return cs, nil
 }
 
-func getLastVersionGit(ctx context.Context, c *config.Component, origin string) (*ChangeSet, error) {
+func getLastVersionGit(ctx context.Context, c *config.ComponentConfig, origin string) (*ChangeSet, error) {
 	commits, err := gitutils.GetLastVersionGit(ctx, c, origin)
 	if err != nil {
 		return nil, err
