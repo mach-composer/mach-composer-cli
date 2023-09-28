@@ -7,6 +7,7 @@ import (
 	"math"
 	"runtime"
 	"strings"
+	"sync"
 
 	"github.com/mach-composer/mach-composer-cli/internal/config"
 
@@ -64,6 +65,7 @@ func findUpdatesParallel(ctx context.Context, cfg *PartialConfig, filename strin
 
 	var numWorkers = determineNumWorkers()
 	var sem = semaphore.NewWeighted(int64(numWorkers))
+	var wg sync.WaitGroup
 
 	log.Info().Msgf("Running on %d workers", numWorkers)
 
@@ -76,8 +78,11 @@ func findUpdatesParallel(ctx context.Context, cfg *PartialConfig, filename strin
 			break
 		}
 
+		wg.Add(1)
+
 		go func(c config.ComponentConfig) {
 			defer sem.Release(1)
+			defer wg.Done()
 
 			logger := log.With().Str("component", c.Name).Logger()
 			ctx = logger.WithContext(ctx)
@@ -98,6 +103,7 @@ func findUpdatesParallel(ctx context.Context, cfg *PartialConfig, filename strin
 		}(c)
 	}
 
+	wg.Wait()
 	close(errChan)
 	close(resChan)
 
