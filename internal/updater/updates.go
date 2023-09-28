@@ -76,7 +76,7 @@ func findUpdatesParallel(ctx context.Context, cfg *PartialConfig, filename strin
 			break
 		}
 
-		go func(c config.Component) {
+		go func(c config.ComponentConfig) {
 			defer sem.Release(1)
 
 			logger := log.With().Str("component", c.Name).Logger()
