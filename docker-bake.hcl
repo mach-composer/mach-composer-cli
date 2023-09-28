@@ -62,3 +62,11 @@ target "default-azure" {
   }
   dockerfile = "docker/azure.Dockerfile"
 }
+
+target "default-gcp" {
+  inherits = ["docker-metadata-action"]
+  contexts = {
+    base = "target:base"
+  }
+  dockerfile = "docker/gcp.Dockerfile"
+}
