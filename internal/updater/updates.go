@@ -3,13 +3,15 @@ package updater
 import (
 	"context"
 	"fmt"
-	"strings"
-	"sync"
-
 	"github.com/rs/zerolog/log"
+	"math"
+	"runtime"
+	"strings"
 
 	"github.com/mach-composer/mach-composer-cli/internal/config"
+
 	"github.com/mach-composer/mach-composer-cli/internal/gitutils"
+	"golang.org/x/sync/semaphore"
 )
 
 func findUpdates(ctx context.Context, cfg *PartialConfig, filename string) (*UpdateSet, error) {
@@ -45,56 +47,57 @@ func findUpdatesSerial(ctx context.Context, cfg *PartialConfig, filename string)
 	return &updates, nil
 }
 
+func determineNumWorkers() int {
+	var numWorkers = int(math.Ceil(float64(runtime.NumCPU() / 2)))
+
+	if numWorkers < 2 {
+		numWorkers = 2
+	}
+
+	return numWorkers
+}
+
 func findUpdatesParallel(ctx context.Context, cfg *PartialConfig, filename string) (*UpdateSet, error) {
 	numUpdates := len(cfg.Components)
-	jobChan := make(chan WorkerJob, numUpdates)
 	resChan := make(chan *ChangeSet, numUpdates)
 	errChan := make(chan error, numUpdates)
 
-	var wg sync.WaitGroup
-	var numWorkers = 4
+	var numWorkers = determineNumWorkers()
+	var sem = semaphore.NewWeighted(int64(numWorkers))
 
-	// Start 4 workers
-	for i := 0; i < numWorkers; i++ {
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
+	log.Info().Msgf("Running on %d workers", numWorkers)
 
-			for j := range jobChan {
-				c := j.component
-
-				logger := log.Ctx(ctx).With().Str("component", c.Name).Logger()
-
-				ctx = logger.WithContext(ctx)
-
-				cs, err := getLastVersion(ctx, cfg, c, cfg.filename)
-				if err != nil {
-					log.Ctx(ctx).Error().Msg(err.Error())
-					errChan <- err
-					continue
-				}
-
-				if cs == nil {
-					continue
-				}
-
-				resChan <- cs
-				continue
-			}
-		}()
-	}
-
-	// Send work
+	// Compute the output using up to maxWorkers goroutines at a time.
 	for _, c := range cfg.Components {
-		component := c
-		jobChan <- WorkerJob{
-			component: &component,
-			cfg:       cfg,
+		// When maxWorkers goroutines are in flight, Acquire blocks until one of the
+		// workers finishes.
+		if err := sem.Acquire(ctx, 1); err != nil {
+			log.Printf("Failed to acquire semaphore: %v", err)
+			break
 		}
-	}
-	close(jobChan)
 
-	wg.Wait()
+		go func(c config.ComponentConfig) {
+			defer sem.Release(1)
+
+			logger := log.With().Str("component", c.Name).Logger()
+			ctx = logger.WithContext(ctx)
+
+			cs, err := getLastVersion(ctx, cfg, &c, cfg.filename)
+			if err != nil {
+				logger.Error().Msg(err.Error())
+				errChan <- err
+				return
+			}
+
+			if cs == nil {
+				return
+			}
+
+			resChan <- cs
+			return
+		}(c)
+	}
+
 	close(errChan)
 	close(resChan)
 
@@ -250,6 +253,7 @@ func getLastVersionGit(ctx context.Context, c *config.ComponentConfig, origin st
 			Name:  c.Committer.Name,
 			Date:  c.Committer.Date,
 		}
+		cd[i].Tags = c.Tags
 	}
 
 	cs := &ChangeSet{
