@@ -41,6 +41,7 @@ func commitsBetween(ctx context.Context, repository *git.Repository, first, last
 	// Resolve the base commit in the repository. If it's not found, we'll
 	// start from the beginning of the repository.
 	var firstHash, lastHash *plumbing.Hash
+	var firstCommit *object.Commit
 	if first != nil {
 		if val, err := repository.ResolveRevision(*first); err != nil {
 			log.Ctx(ctx).Warn().Err(err).Msgf("failed to resolve %s in repository", first.String())
@@ -48,11 +49,12 @@ func commitsBetween(ctx context.Context, repository *git.Repository, first, last
 		} else {
 			firstHash = val
 		}
-	}
 
-	firstCommit, err := repository.CommitObject(*firstHash)
-	if err != nil {
-		return nil, err
+		if commit, err := repository.CommitObject(*firstHash); err != nil {
+			return nil, err
+		} else {
+			firstCommit = commit
+		}
 	}
 
 	if last == nil {
@@ -69,7 +71,6 @@ func commitsBetween(ctx context.Context, repository *git.Repository, first, last
 		Order:      git.LogOrderCommitterTime,
 		PathFilter: pathFilter(paths),
 		From:       *lastHash,
-		//Since:      &firstCommit.Committer.When,
 	})
 	if err != nil {
 		return nil, err
@@ -83,7 +84,7 @@ func commitsBetween(ctx context.Context, repository *git.Repository, first, last
 			found = true
 			return storer.ErrStop
 		}
-		if firstCommit.Committer.When.After(c.Committer.When) {
+		if firstCommit != nil && firstCommit.Committer.When.After(c.Committer.When) {
 			found = false
 			log.Ctx(ctx).Info().Msgf("Did not find commit %s in path but next older commit %s in paths %s", first, c.Hash, paths)
 			return storer.ErrStop
