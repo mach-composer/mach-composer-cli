@@ -188,7 +188,7 @@ func parseSiteComponentsNode(cfg *MachConfig, site string, node *yaml.Node) erro
 }
 
 func resolveSiteComponents(cfg *MachConfig) error {
-	components := make(map[string]*Component, len(cfg.Components))
+	components := make(map[string]*ComponentConfig, len(cfg.Components))
 	for i, c := range cfg.Components {
 		components[c.Name] = &cfg.Components[i]
 	}

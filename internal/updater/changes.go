@@ -16,7 +16,7 @@ type UpdateSet struct {
 type ChangeSet struct {
 	LastVersion string
 	Changes     []CommitData
-	Component   *config.Component
+	Component   *config.ComponentConfig
 	Forced      bool
 }
 

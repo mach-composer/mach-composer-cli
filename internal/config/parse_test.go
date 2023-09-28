@@ -65,7 +65,7 @@ func TestParseBasic(t *testing.T) {
 	config, err := resolveConfig(context.Background(), intermediate)
 	require.NoError(t, err)
 
-	component := Component{
+	component := ComponentConfig{
 		Name:         "your-component",
 		Source:       "git::https://github.com/<username>/<your-component>.git//terraform",
 		Version:      "0.1.0",
@@ -101,7 +101,7 @@ func TestParseBasic(t *testing.T) {
 				},
 			},
 		},
-		Components: []Component{component},
+		Components: []ComponentConfig{component},
 		extraFiles: map[string][]byte{},
 		Variables:  vars,
 	}
@@ -178,7 +178,7 @@ func TestParse(t *testing.T) {
 	config, err := resolveConfig(context.Background(), intermediate)
 	require.NoError(t, err)
 
-	component := Component{
+	component := ComponentConfig{
 		Name:         "your-component",
 		Source:       "git::https://github.com/<username>/<your-component>.git//terraform",
 		Version:      "0.1.0",
@@ -234,7 +234,7 @@ func TestParse(t *testing.T) {
 				},
 			},
 		},
-		Components: []Component{component},
+		Components: []ComponentConfig{component},
 		extraFiles: map[string][]byte{},
 		Variables:  vars,
 	}

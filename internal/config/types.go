@@ -1,9 +1,6 @@
 package config
 
 import (
-	"crypto/sha256"
-	"encoding/hex"
-	"encoding/json"
 	"fmt"
 	"log"
 	"strings"
@@ -48,32 +45,6 @@ func (r *rawConfig) validate() error {
 	return nil
 }
 
-func (r *rawConfig) computeHash() (string, error) {
-	hashConfig := struct {
-		MachComposer MachComposer         `json:"mach_composer"`
-		Global       yaml.Node            `json:"global"`
-		Sites        yaml.Node            `json:"sites"`
-		Components   yaml.Node            `json:"components"`
-		Filename     string               `json:"filename"`
-		Variables    *variables.Variables `json:"variables"`
-	}{
-		MachComposer: r.MachComposer,
-		Global:       r.Global,
-		Sites:        r.Sites,
-		Components:   r.Components,
-		Filename:     r.filename,
-		Variables:    r.variables,
-	}
-	data, err := json.Marshal(hashConfig)
-	if err != nil {
-		return "", err
-	}
-
-	h := sha256.New()
-	h.Write(data)
-	return hex.EncodeToString(h.Sum(nil)), nil
-}
-
 func newRawConfig(filename string, document *yaml.Node) (*rawConfig, error) {
 	r := &rawConfig{
 		filename:  filename,
@@ -87,11 +58,11 @@ func newRawConfig(filename string, document *yaml.Node) (*rawConfig, error) {
 }
 
 type MachConfig struct {
-	Filename     string       `yaml:"-"`
-	MachComposer MachComposer `yaml:"mach_composer"`
-	Global       GlobalConfig `yaml:"global"`
-	Sites        []SiteConfig `yaml:"sites"`
-	Components   []Component  `yaml:"components"`
+	Filename     string            `yaml:"-"`
+	MachComposer MachComposer      `yaml:"mach_composer"`
+	Global       GlobalConfig      `yaml:"global"`
+	Sites        []SiteConfig      `yaml:"sites"`
+	Components   []ComponentConfig `yaml:"components"`
 
 	StateRepository *state.Repository
 
@@ -171,10 +142,10 @@ type SiteComponent struct {
 	Variables map[string]any
 	Secrets   map[string]any
 
-	Definition *Component `yaml:"-"`
+	Definition *ComponentConfig `yaml:"-"`
 }
 
-type Component struct {
+type ComponentConfig struct {
 	Name         string
 	Source       string
 	Paths        []string `yaml:"paths"`
@@ -191,12 +162,12 @@ type TerraformConfig struct {
 
 func (sc SiteComponent) HasCloudIntegration(g *GlobalConfig) bool {
 	if sc.Definition == nil {
-		log.Fatalf("Component %s was not resolved properly (missing definition)", sc.Name)
+		log.Fatalf("ComponentConfig %s was not resolved properly (missing definition)", sc.Name)
 	}
 	return pie.Contains(sc.Definition.Integrations, g.Cloud)
 }
 
 // IsGitSource indicates if the source definition refers to Git.
-func (c *Component) IsGitSource() bool {
+func (c *ComponentConfig) IsGitSource() bool {
 	return strings.HasPrefix(c.Source, "git")
 }
