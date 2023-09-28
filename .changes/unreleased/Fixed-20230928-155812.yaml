@@ -1,3 +1,0 @@
-kind: Fixed
-body: Fixed iterating until beginning if commit not found in paths.
-time: 2023-09-28T15:58:12.046751+02:00
