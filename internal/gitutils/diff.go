@@ -50,6 +50,11 @@ func commitsBetween(ctx context.Context, repository *git.Repository, first, last
 		}
 	}
 
+	firstCommit, err := repository.CommitObject(*firstHash)
+	if err != nil {
+		return nil, err
+	}
+
 	if last == nil {
 		last = asRevision("HEAD")
 	}
@@ -64,6 +69,7 @@ func commitsBetween(ctx context.Context, repository *git.Repository, first, last
 		Order:      git.LogOrderCommitterTime,
 		PathFilter: pathFilter(paths),
 		From:       *lastHash,
+		//Since:      &firstCommit.Committer.When,
 	})
 	if err != nil {
 		return nil, err
@@ -75,6 +81,11 @@ func commitsBetween(ctx context.Context, repository *git.Repository, first, last
 	err = cIter.ForEach(func(c *object.Commit) error {
 		if first != nil && *firstHash == c.Hash {
 			found = true
+			return storer.ErrStop
+		}
+		if firstCommit.Committer.When.After(c.Committer.When) {
+			found = false
+			log.Ctx(ctx).Info().Msgf("Did not find commit %s in path but next older commit %s in paths %s", first, c.Hash, paths)
 			return storer.ErrStop
 		}
 
