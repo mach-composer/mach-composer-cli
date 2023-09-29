@@ -1,0 +1,3 @@
+kind: Fixed
+body: Fixed usage of root directory when loading referenced files
+time: 2023-09-29T08:58:34.77699101+02:00
