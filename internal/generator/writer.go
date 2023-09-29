@@ -84,6 +84,12 @@ func WriteFiles(ctx context.Context, cfg *config.MachConfig, options *GenerateOp
 		for _, fs := range cfg.Variables.GetEncryptedSources(site.Identifier) {
 			target := filepath.Join(path, fs.Filename)
 			log.Info().Msgf("Copying %s", target)
+
+			// This can refer to a file outside of the current directory, so we need to create the directory structure
+			if err := os.MkdirAll(filepath.Dir(target), 0700); err != nil {
+				return nil, fmt.Errorf("error creating directory structure for variables: %w", err)
+			}
+
 			if err := copyFile(fs.Filename, target); err != nil {
 				return nil, fmt.Errorf("error writing extra file: %w", err)
 			}
@@ -167,11 +173,6 @@ func copyFile(srcPath, dstPath string) error {
 	// Read the contents of the source file
 	srcContents, err := io.ReadAll(src)
 	if err != nil {
-		return err
-	}
-
-	// create directory if it does not exist
-	if err := os.MkdirAll(filepath.Dir(dstPath), 0700); err != nil {
 		return err
 	}
 
