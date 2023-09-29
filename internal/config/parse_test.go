@@ -59,7 +59,7 @@ func TestParseBasic(t *testing.T) {
 	intermediate.variables = vars
 	intermediate.plugins = plugins.NewPluginRepository()
 
-	err = resolveVariables(context.Background(), intermediate)
+	err = resolveVariables(context.Background(), intermediate, ".")
 	require.NoError(t, err)
 
 	config, err := resolveConfig(context.Background(), intermediate)
@@ -172,7 +172,7 @@ func TestParse(t *testing.T) {
 	intermediate.plugins = pluginRepo
 	intermediate.variables = vars
 
-	err = resolveVariables(context.Background(), intermediate)
+	err = resolveVariables(context.Background(), intermediate, ".")
 	require.NoError(t, err)
 
 	config, err := resolveConfig(context.Background(), intermediate)
@@ -293,7 +293,7 @@ func TestResolveMissingVar(t *testing.T) {
 	require.NoError(t, err)
 	intermediate.variables = &variables.Variables{}
 
-	err = resolveVariables(context.Background(), intermediate)
+	err = resolveVariables(context.Background(), intermediate, ".")
 	assert.Error(t, err)
 }
 
@@ -355,7 +355,7 @@ func TestParseComponentsNodeRef(t *testing.T) {
 
 	componentNode, fileName, err := LoadRefData(context.Background(), &intermediate.Components, "")
 	assert.NoError(t, err)
-	assert.Equal(t, "components.yml#/components", fileName)
+	assert.Equal(t, "components.yml", fileName)
 	intermediate.Components = *componentNode
 
 	cfg := &MachConfig{

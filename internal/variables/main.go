@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"path"
 	"regexp"
 	"strings"
 
@@ -181,13 +182,12 @@ func (v *Variables) interpolateValue(nc string, val string) (string, error) {
 	return val, nil
 }
 
-// newVariablesFromFile creates a new Variables struct based on the contents
-// of the given file.
-func (v *Variables) Load(ctx context.Context, filename string) error {
+// Load creates a new Variables struct based on the contents  of the given file.
+func (v *Variables) Load(_ context.Context, filename, cwd string) error {
 	if v.loadedFile {
 		panic("Only one external file is supported currently")
 	}
-	body, err := utils.AFS.ReadFile(filename)
+	body, err := utils.AFS.ReadFile(path.Join(cwd, filename))
 	if err != nil {
 		return err
 	}
