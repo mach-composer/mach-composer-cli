@@ -23,7 +23,7 @@ func nodeAsMap(n *yaml.Node) (map[string]any, error) {
 	return target, nil
 }
 
-// mapYamlNodes cretes a map[key]node from a slice of yaml.Node's. It assumes
+// mapYamlNodes creates a map[key]node from a slice of yaml.Node's. It assumes
 // that the nodes are pairs, e.g. [key, value, key, value]
 func mapYamlNodes(nodes []*yaml.Node) map[string]*yaml.Node {
 	result := map[string]*yaml.Node{}
@@ -136,13 +136,13 @@ func loadRefDocument(node *yaml.Node, cwd string) (*yaml.Node, string, error) {
 	return root, fileName, nil
 }
 
-func loadIncludeDocument(node *yaml.Node, path string) (*yaml.Node, string, error) {
+func loadIncludeDocument(node *yaml.Node, cwd string) (*yaml.Node, string, error) {
 	re := regexp.MustCompile(`\$\{include\(([^)]+)\)\}`)
 	data := re.FindStringSubmatch(node.Value)
 	if len(data) != 2 {
 		return nil, "", fmt.Errorf("failed to parse ${include()} tag")
 	}
-	filename := filepath.Join(path, data[1])
+	filename := filepath.Join(cwd, data[1])
 	body, err := utils.AFS.ReadFile(filename)
 	if err != nil {
 		return nil, "", err
