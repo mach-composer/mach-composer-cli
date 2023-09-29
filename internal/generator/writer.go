@@ -4,12 +4,13 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/mach-composer/mach-composer-cli/internal/state"
-	"io/ioutil"
+	"io"
 	"os"
 	"path/filepath"
 	"regexp"
 	"strings"
+
+	"github.com/mach-composer/mach-composer-cli/internal/state"
 
 	"github.com/hashicorp/hcl/v2/hclparse"
 	"github.com/hashicorp/hcl/v2/hclwrite"
@@ -83,6 +84,12 @@ func WriteFiles(ctx context.Context, cfg *config.MachConfig, options *GenerateOp
 		for _, fs := range cfg.Variables.GetEncryptedSources(site.Identifier) {
 			target := filepath.Join(path, fs.Filename)
 			log.Info().Msgf("Copying %s", target)
+
+			// This can refer to a file outside of the current directory, so we need to create the directory structure
+			if err := os.MkdirAll(filepath.Dir(target), 0700); err != nil {
+				return nil, fmt.Errorf("error creating directory structure for variables: %w", err)
+			}
+
 			if err := copyFile(fs.Filename, target); err != nil {
 				return nil, fmt.Errorf("error writing extra file: %w", err)
 			}
@@ -164,7 +171,7 @@ func copyFile(srcPath, dstPath string) error {
 	defer src.Close()
 
 	// Read the contents of the source file
-	srcContents, err := ioutil.ReadAll(src)
+	srcContents, err := io.ReadAll(src)
 	if err != nil {
 		return err
 	}
