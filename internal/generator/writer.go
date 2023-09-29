@@ -4,12 +4,13 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/mach-composer/mach-composer-cli/internal/state"
-	"io/ioutil"
+	"io"
 	"os"
 	"path/filepath"
 	"regexp"
 	"strings"
+
+	"github.com/mach-composer/mach-composer-cli/internal/state"
 
 	"github.com/hashicorp/hcl/v2/hclparse"
 	"github.com/hashicorp/hcl/v2/hclwrite"
@@ -164,8 +165,13 @@ func copyFile(srcPath, dstPath string) error {
 	defer src.Close()
 
 	// Read the contents of the source file
-	srcContents, err := ioutil.ReadAll(src)
+	srcContents, err := io.ReadAll(src)
 	if err != nil {
+		return err
+	}
+
+	// create directory if it does not exist
+	if err := os.MkdirAll(filepath.Dir(dstPath), 0700); err != nil {
 		return err
 	}
 
