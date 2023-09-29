@@ -1,6 +1,6 @@
 module github.com/mach-composer/mach-composer-cli
 
-go 1.21
+go 1.20
 
 require (
 	github.com/adrg/xdg v0.4.0
