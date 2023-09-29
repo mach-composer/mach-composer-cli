@@ -146,9 +146,13 @@ func getAvailableListener() (net.Listener, error) {
 }
 
 func generatePKCEParams() authhandler.PKCEParams {
+	verifier, err := pkce.NewCodeVerifier(-1)
+	if err != nil {
+		panic("source of randomness unavailable: " + err.Error())
+	}
 	pkceParams := authhandler.PKCEParams{
 		ChallengeMethod: "S256",
-		Verifier:        pkce.NewCodeVerifier(),
+		Verifier:        verifier,
 	}
 	pkceParams.Challenge = pkce.CodeChallengeS256(pkceParams.Verifier)
 	return pkceParams
