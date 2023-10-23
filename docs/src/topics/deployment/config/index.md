@@ -109,5 +109,5 @@ docker run --rm \
     For an example on how to set up the Terraform plugin cache, see the examples in the how-tos for:
 
     - [GitLab](../../../howto/ci/gitlab.md#terraform-plugin-cache)
-    - GitHub actions (todo)
+    - GitHub Actions (todo)
     - Azure DevOps (todo)

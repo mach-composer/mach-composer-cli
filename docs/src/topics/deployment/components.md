@@ -144,7 +144,7 @@ Refer to the CI/CD section for instructions on how to set up your Continuous
 Integration pipeline for component deployments:
 
 - [GitLab](../../howto/ci/gitlab.md#component-deployment)
-- [GitHub actions](../../howto/ci/github.md#component-deployment)
+- [GitHub Actions](../../howto/ci/github.md#component-deployment)
 - [Azure DevOps](../../howto/ci/devops.md#component-deployment)
 
 

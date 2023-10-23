@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"github.com/mach-composer/mach-composer-cli/internal/cloud"
 	"os"
 	"path/filepath"
 
@@ -93,7 +94,19 @@ func loadConfig(cmd *cobra.Command, resolveVars bool) *config.MachConfig {
 
 	cfg, err := config.Open(cmd.Context(), configFile, opts)
 	if err != nil {
-		cli.PrintExitError("An error occured while loading the config file", err.Error())
+		cli.PrintExitError("An error occurred while loading the config file", err.Error())
 	}
+
+	if cfg.MachComposer.CloudEnabled() {
+		if err := cloud.ResolveComponentsData(cmd.Context(), cfg); err != nil {
+			cli.PrintExitError("An error occurred while fetching cloud component info", err.Error())
+		}
+	}
+
+	cfg.ConfigHash, err = config.ComputeHash(cfg)
+	if err != nil {
+		cli.PrintExitError("An error occurred while computing hash", err.Error())
+	}
+
 	return cfg
 }

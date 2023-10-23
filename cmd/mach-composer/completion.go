@@ -25,7 +25,7 @@ func AutocompleteComponentName(cmd *cobra.Command, args []string, toComplete str
 	generateFlags.configFile = name
 	cfg := loadConfig(cmd, false)
 
-	identifiers := pie.Map(cfg.Components, func(s config.Component) string {
+	identifiers := pie.Map(cfg.Components, func(s config.ComponentConfig) string {
 		return s.Name
 
 	})

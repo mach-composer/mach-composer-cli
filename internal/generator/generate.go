@@ -3,9 +3,10 @@ package generator
 import (
 	"context"
 	"fmt"
+	"strings"
+
 	"github.com/elliotchance/pie/v2"
 	"github.com/mach-composer/mach-composer-cli/internal/utils"
-	"strings"
 
 	"github.com/mach-composer/mach-composer-cli/internal/config"
 )
@@ -259,7 +260,10 @@ func renderComponent(_ context.Context, cfg *config.MachConfig, site *config.Sit
 		tc.ComponentSecrets = val
 	}
 
-	if component.Definition.UseVersionReference() {
+	if component.Definition.IsGitSource() {
+		// When using Git, we will automatically add a reference to the string
+		// so that the given version is used when fetching the module itself
+		// from Git as well
 		tc.Source += fmt.Sprintf("?ref=%s", component.Definition.Version)
 	}
 

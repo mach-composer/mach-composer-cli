@@ -2,44 +2,15 @@ package config
 
 import (
 	"fmt"
-	"path/filepath"
-	"regexp"
-	"strings"
-
 	"github.com/elliotchance/pie/v2"
 	"github.com/mach-composer/mach-composer-plugin-sdk/schema"
 	"github.com/rs/zerolog/log"
 	"gopkg.in/yaml.v3"
-
-	"github.com/mach-composer/mach-composer-cli/internal/cli"
-	"github.com/mach-composer/mach-composer-cli/internal/utils"
+	"path/filepath"
+	"strings"
 )
 
-// parseComponentsNode parses the `components:` block in the config file. It
-// can also load the components from an external file using the ${include()}
-// syntax.
-func parseComponentsNode(cfg *MachConfig, node *yaml.Node, source string) error {
-	if node.Tag == "!!str" {
-		cli.DeprecationWarning(&cli.DeprecationOptions{
-			Message: "the '${include()}' syntax is deprecated and will be removed in version 3.0",
-			Details: `
-				For example instead of:
-					components: ${include(components.yml)}
-
-				You should use:
-					components:
-						$ref: "components.yml"
-			`,
-		})
-
-		path := filepath.Dir(source)
-		var err error
-		node, err = loadComponentsNode(node, path)
-		if err != nil {
-			return err
-		}
-	}
-
+func parseComponentsNode(cfg *MachConfig, node *yaml.Node) error {
 	if err := node.Decode(&cfg.Components); err != nil {
 		return fmt.Errorf("decoding error: %w", err)
 	}
@@ -98,7 +69,7 @@ func registerComponentEndpoints(cfg *MachConfig) error {
 
 // Verify the components config and set default values where needed.
 func verifyComponents(cfg *MachConfig) error {
-	seen := []string{}
+	var seen []string
 	for i := range cfg.Components {
 		c := &cfg.Components[i]
 
@@ -131,26 +102,4 @@ func verifyComponents(cfg *MachConfig) error {
 	}
 
 	return nil
-}
-
-func loadComponentsNode(node *yaml.Node, path string) (*yaml.Node, error) {
-	re := regexp.MustCompile(`\$\{include\(([^)]+)\)\}`)
-	data := re.FindStringSubmatch(node.Value)
-	if len(data) != 2 {
-		return nil, fmt.Errorf("failed to parse ${include()} tag")
-	}
-	filename := filepath.Join(path, data[1])
-	body, err := utils.AFS.ReadFile(filename)
-	if err != nil {
-		return nil, err
-	}
-
-	result := yaml.Node{}
-	if err = yaml.Unmarshal(body, &result); err != nil {
-		return nil, err
-	}
-	if len(result.Content) != 1 {
-		return nil, fmt.Errorf("Invalid yaml file")
-	}
-	return result.Content[0], nil
 }

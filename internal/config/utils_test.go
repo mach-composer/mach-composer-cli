@@ -128,7 +128,7 @@ func TestLoadRefData(t *testing.T) {
 				Kind: yaml.MappingNode,
 				Content: []*yaml.Node{
 					{Value: "$ref"},
-					{Value: "ref.yaml#/some-node/other-node"},
+					{Value: "ref.yaml"},
 				},
 			},
 			refContent: utils.TrimIndent(`
@@ -136,7 +136,7 @@ func TestLoadRefData(t *testing.T) {
 					other-node:
 						key: value
 			`),
-			refFilename: "ref.yaml#/some-node/other-node",
+			refFilename: "ref.yaml",
 			expected: &yaml.Node{
 				Kind: yaml.MappingNode,
 				Content: []*yaml.Node{
@@ -192,7 +192,7 @@ func TestLoadRefData(t *testing.T) {
 				require.NoError(t, err)
 			}
 
-			filename, err := LoadRefData(context.Background(), tc.node, "./")
+			_, filename, err := LoadRefData(context.Background(), tc.node, "./")
 			if tc.wantErr {
 				assert.Error(t, err)
 			} else {

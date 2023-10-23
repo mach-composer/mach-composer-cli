@@ -2,10 +2,12 @@ package config
 
 import (
 	"context"
+	"errors"
 	"fmt"
-	"github.com/mach-composer/mach-composer-cli/internal/state"
 	"path"
 	"path/filepath"
+
+	"github.com/mach-composer/mach-composer-cli/internal/state"
 
 	"github.com/rs/zerolog/log"
 	"gopkg.in/yaml.v3"
@@ -31,7 +33,10 @@ func Open(ctx context.Context, filename string, opts *ConfigOptions) (*MachConfi
 		pluginRepo = opts.Plugins
 	}
 
-	raw, err := loadConfig(ctx, filename, pluginRepo)
+	//Take the relative path of the config file as the working directory
+	cwd := path.Dir(filename)
+
+	raw, err := loadConfig(ctx, filename, cwd, pluginRepo)
 	if err != nil {
 		return nil, err
 	}
@@ -46,7 +51,7 @@ func Open(ctx context.Context, filename string, opts *ConfigOptions) (*MachConfi
 	}
 
 	for _, f := range opts.VarFilenames {
-		if err := raw.variables.Load(ctx, f); err != nil {
+		if err := raw.variables.Load(ctx, f, cwd); err != nil {
 			return nil, err
 		}
 	}
@@ -54,8 +59,9 @@ func Open(ctx context.Context, filename string, opts *ConfigOptions) (*MachConfi
 	// For some actions we don't want to resolve variables since they then need
 	// to be passed as argument.
 	if !opts.NoResolveVars {
-		if err := resolveVariables(ctx, raw); err != nil {
-			if notFoundErr, ok := err.(*NotFoundError); ok {
+		if err := resolveVariables(ctx, raw, cwd); err != nil {
+			var notFoundErr *NotFoundError
+			if errors.As(err, &notFoundErr) {
 				err = &SyntaxError{
 					message:  fmt.Sprintf("unable to resolve variable %#v", notFoundErr.Name),
 					line:     notFoundErr.Node.Line,
@@ -70,7 +76,7 @@ func Open(ctx context.Context, filename string, opts *ConfigOptions) (*MachConfi
 	return resolveConfig(ctx, raw)
 }
 
-func loadConfig(ctx context.Context, filename string, pr *plugins.PluginRepository) (*rawConfig, error) {
+func loadConfig(ctx context.Context, filename, cwd string, pr *plugins.PluginRepository) (*rawConfig, error) {
 	// Load the yaml file and do basic validation if the config file is valid
 	// based on a json schema
 	document, err := loadYamlFile(filename)
@@ -94,9 +100,11 @@ func loadConfig(ctx context.Context, filename string, pr *plugins.PluginReposito
 		return nil, err
 	}
 
-	if _, err := LoadRefData(ctx, &raw.Components, path.Dir(filename)); err != nil {
+	componentNode, _, err := LoadRefData(ctx, &raw.Components, cwd)
+	if err != nil {
 		return nil, err
 	}
+	raw.Components = *componentNode
 
 	// Load the plugins
 	raw.plugins = pr
@@ -156,18 +164,12 @@ func loadPlugins(ctx context.Context, raw *rawConfig) error {
 
 // parseConfig is responsible for parsing a mach composer yaml config file and
 // creating the resulting MachConfig struct.
-func resolveConfig(ctx context.Context, intermediate *rawConfig) (*MachConfig, error) {
+func resolveConfig(_ context.Context, intermediate *rawConfig) (*MachConfig, error) {
 	if err := intermediate.validate(); err != nil {
 		return nil, err
 	}
 
-	cfgHash, err := intermediate.computeHash()
-	if err != nil {
-		return nil, err
-	}
-
 	cfg := &MachConfig{
-		ConfigHash:      cfgHash,
 		StateRepository: state.NewRepository(),
 		extraFiles:      make(map[string][]byte),
 		Filename:        filepath.Base(intermediate.filename),
@@ -177,13 +179,14 @@ func resolveConfig(ctx context.Context, intermediate *rawConfig) (*MachConfig, e
 	}
 
 	if err := parseGlobalNode(cfg, &intermediate.Global); err != nil {
-		if _, ok := err.(*plugins.PluginNotFoundError); ok {
+		var pluginNotFoundError *plugins.PluginNotFoundError
+		if errors.As(err, &pluginNotFoundError) {
 			return nil, err
 		}
 		return nil, fmt.Errorf("failed to parse global node: %w", err)
 	}
 
-	if err := parseComponentsNode(cfg, &intermediate.Components, intermediate.filename); err != nil {
+	if err := parseComponentsNode(cfg, &intermediate.Components); err != nil {
 		return nil, fmt.Errorf("failed to parse components node: %w", err)
 	}
 
@@ -194,11 +197,11 @@ func resolveConfig(ctx context.Context, intermediate *rawConfig) (*MachConfig, e
 	return cfg, nil
 }
 
-func resolveVariables(ctx context.Context, rawConfig *rawConfig) error {
+func resolveVariables(ctx context.Context, rawConfig *rawConfig, cwd string) error {
 	vars := rawConfig.variables
 
 	if rawConfig.MachComposer.VariablesFile != "" {
-		if err := vars.Load(ctx, rawConfig.MachComposer.VariablesFile); err != nil {
+		if err := vars.Load(ctx, rawConfig.MachComposer.VariablesFile, cwd); err != nil {
 			return err
 		}
 	}

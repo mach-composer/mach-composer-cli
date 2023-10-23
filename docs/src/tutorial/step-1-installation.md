@@ -8,7 +8,7 @@ to perform a MACH composer deploy and make use of the
 
 ### MacOS and linux
 ```bash
-brew tap labd/mach-composer
+brew tap mach-composer/mach-composer
 brew install mach-composer
 ```
 

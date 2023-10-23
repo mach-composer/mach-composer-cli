@@ -37,6 +37,7 @@ type gitCommit struct {
 	Author    gitCommitAuthor
 	Committer gitCommitAuthor
 	Message   string
+	Tags      []string
 }
 
 type gitCommitAuthor struct {
@@ -107,7 +108,7 @@ func Commit(_ context.Context, fileNames []string, message string) error {
 	return nil
 }
 
-func GetLastVersionGit(ctx context.Context, c *config.Component, origin string) ([]gitCommit, error) {
+func GetLastVersionGit(ctx context.Context, c *config.ComponentConfig, origin string) ([]gitCommit, error) {
 	cacheDir, err := getGitCachePath(origin)
 	if err != nil {
 		return nil, err
@@ -200,6 +201,17 @@ func commitExists(ctx context.Context, gitPath, baseRevision, targetRevision str
 	return nil
 }
 
+func determineRevision(ctx context.Context, repository *git.Repository, revision string) *plumbing.Revision {
+	tagRef, err := repository.Tag(revision)
+	if err == nil {
+		log.Ctx(ctx).Debug().Msgf("Found tag %s. Using revision %s to determine updates", tagRef.Name().Short(),
+			tagRef.Hash().String())
+		return asRevision(tagRef.Hash().String())
+	}
+
+	return asRevision(revision)
+}
+
 // GetRecentCommits returns all commits in descending order (newest first)
 // baseRef is the commit to start from, if empty the current HEAD is used
 func GetRecentCommits(ctx context.Context, basePath string, baseRevision, targetRevision string, filterPaths []string) ([]gitCommit, error) {
@@ -213,7 +225,7 @@ func GetRecentCommits(ctx context.Context, basePath string, baseRevision, target
 		return nil, fmt.Errorf("failed to open repository: %w", err)
 	}
 
-	baseRev := asRevision(baseRevision)
+	baseRev := determineRevision(ctx, repository, baseRevision)
 	targetRev := asRevision(targetRevision)
 
 	if err = commitExists(ctx, gitPath, baseRevision, targetRevision); err != nil {
@@ -227,6 +239,21 @@ func GetRecentCommits(ctx context.Context, basePath string, baseRevision, target
 
 	result := make([]gitCommit, len(commits))
 	for i, c := range commits {
+		refIter, err := repository.References()
+		if err != nil {
+			return nil, err
+		}
+
+		var tags []string
+
+		_ = refIter.ForEach(func(ref *plumbing.Reference) error {
+			if ref.Hash() == c.Hash {
+				tags = append(tags, ref.Name().Short())
+			}
+
+			return nil
+		})
+
 		fields := strings.Split(c.Message, "\n")
 		subject := strings.TrimSpace(fields[0])
 		parents := make([]string, len(c.ParentHashes))
@@ -248,6 +275,7 @@ func GetRecentCommits(ctx context.Context, basePath string, baseRevision, target
 				Date:  c.Committer.When,
 			},
 			Message: subject,
+			Tags:    tags,
 		}
 	}
 	return result, nil

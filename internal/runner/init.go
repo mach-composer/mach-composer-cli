@@ -32,7 +32,7 @@ func TerraformInit(ctx context.Context, cfg *config.MachConfig, locations map[st
 }
 
 func terraformInitSite(ctx context.Context, cfg *config.MachConfig, site *config.SiteConfig, path string) error {
-	lockfile, err := lockfile.GetLockFile(cfg, path)
+	lockfile, err := lockfile.GetLock(cfg, path)
 	if err != nil {
 		return err
 	}

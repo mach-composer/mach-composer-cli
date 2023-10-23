@@ -34,7 +34,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v3
         with:
-          go-version: '1.21'
+          go-version: '1.21.1'
 
       - name: Run tests
         run: git checkout -- go.mod go.sum
@@ -58,11 +58,11 @@ jobs:
     needs: [goreleaser]
     name: Build and push docker image
     env:
-      DEFAULT_TERRAFORM: "1.3"
+      DEFAULT_TERRAFORM: "1.3.10"
     strategy:
       matrix:
-        terraform: ["0.14.11", "1.1.9", "1.2.9", "1.3.5"]
-        cloud: ["aws", "azure", "all"]
+        terraform: ["0.14.11", "1.1.9", "1.2.9", "1.3.10", "1.4.7", "1.5.7"]
+        cloud: ["gcp", "aws", "azure", "all"]
 
     runs-on: ubuntu-latest
     steps:

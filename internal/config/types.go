@@ -5,10 +5,11 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
-	"github.com/mach-composer/mach-composer-cli/internal/state"
 	"log"
 	"slices"
 	"strings"
+
+	"github.com/mach-composer/mach-composer-cli/internal/state"
 
 	"github.com/elliotchance/pie/v2"
 	"github.com/mach-composer/mcc-sdk-go/mccsdk"
@@ -86,11 +87,11 @@ func newRawConfig(filename string, document *yaml.Node) (*rawConfig, error) {
 }
 
 type MachConfig struct {
-	Filename     string       `yaml:"-"`
-	MachComposer MachComposer `yaml:"mach_composer"`
-	Global       GlobalConfig `yaml:"global"`
-	Sites        []SiteConfig `yaml:"sites"`
-	Components   []Component  `yaml:"components"`
+	Filename     string            `yaml:"-"`
+	MachComposer MachComposer      `yaml:"mach_composer"`
+	Global       GlobalConfig      `yaml:"global"`
+	Sites        []SiteConfig      `yaml:"sites"`
+	Components   []ComponentConfig `yaml:"components"`
 
 	StateRepository *state.Repository
 
@@ -167,7 +168,7 @@ type SiteConfig struct {
 
 type SiteComponentConfig struct {
 	Name       string            `yaml:"name"`
-	Definition *Component        `yaml:"-"`
+	Definition *ComponentConfig      `yaml:"-"`
 	Variables  SiteComponentVars `yaml:"variables"`
 	Secrets    SiteComponentVars `yaml:"secrets"`
 
@@ -217,7 +218,7 @@ func (s *SiteComponentVar) UnmarshalYAML(value *yaml.Node) error {
 	return nil
 }
 
-type Component struct {
+type ComponentConfig struct {
 	Name         string            `yaml:"name"`
 	Source       string            `yaml:"source"`
 	Paths        []string          `yaml:"paths"`
@@ -234,16 +235,12 @@ type TerraformConfig struct {
 
 func (sc *SiteComponentConfig) HasCloudIntegration(g *GlobalConfig) bool {
 	if sc.Definition == nil {
-		log.Fatalf("Component %s was not resolved properly (missing definition)", sc.Name)
+		log.Fatalf("ComponentConfig %s was not resolved properly (missing definition)", sc.Name)
 	}
 	return pie.Contains(sc.Definition.Integrations, g.Cloud)
 }
 
-// UseVersionReference indicates if the module should be referenced with the
-// version.
-// This will be mainly used for development purposes when referring to a local
-// directory; versioning is not possible, but we should still be able to define
-// a version in our component for the actual function deployment itself.
-func (c *Component) UseVersionReference() bool {
+// IsGitSource indicates if the source definition refers to Git.
+func (c *ComponentConfig) IsGitSource() bool {
 	return strings.HasPrefix(c.Source, "git")
 }

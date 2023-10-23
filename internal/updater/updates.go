@@ -3,13 +3,16 @@ package updater
 import (
 	"context"
 	"fmt"
+	"github.com/rs/zerolog/log"
+	"math"
+	"runtime"
 	"strings"
 	"sync"
 
-	"github.com/rs/zerolog/log"
-
 	"github.com/mach-composer/mach-composer-cli/internal/config"
+
 	"github.com/mach-composer/mach-composer-cli/internal/gitutils"
+	"golang.org/x/sync/semaphore"
 )
 
 func findUpdates(ctx context.Context, cfg *PartialConfig, filename string) (*UpdateSet, error) {
@@ -45,54 +48,60 @@ func findUpdatesSerial(ctx context.Context, cfg *PartialConfig, filename string)
 	return &updates, nil
 }
 
+func determineNumWorkers() int {
+	var numWorkers = int(math.Ceil(float64(runtime.NumCPU() / 2)))
+
+	if numWorkers < 2 {
+		numWorkers = 2
+	}
+
+	return numWorkers
+}
+
 func findUpdatesParallel(ctx context.Context, cfg *PartialConfig, filename string) (*UpdateSet, error) {
 	numUpdates := len(cfg.Components)
-	jobChan := make(chan WorkerJob, numUpdates)
 	resChan := make(chan *ChangeSet, numUpdates)
 	errChan := make(chan error, numUpdates)
 
+	var numWorkers = determineNumWorkers()
+	var sem = semaphore.NewWeighted(int64(numWorkers))
 	var wg sync.WaitGroup
-	var numWorkers = 4
 
-	// Start 4 workers
-	for i := 0; i < numWorkers; i++ {
+	log.Info().Msgf("Running on %d workers", numWorkers)
+
+	// Compute the output using up to maxWorkers goroutines at a time.
+	for _, c := range cfg.Components {
+		// When maxWorkers goroutines are in flight, Acquire blocks until one of the
+		// workers finishes.
+		if err := sem.Acquire(ctx, 1); err != nil {
+			log.Printf("Failed to acquire semaphore: %v", err)
+			break
+		}
+
 		wg.Add(1)
-		go func() {
+
+		go func(c config.ComponentConfig) {
+			defer sem.Release(1)
 			defer wg.Done()
 
-			for j := range jobChan {
-				c := j.component
+			logger := log.With().Str("component", c.Name).Logger()
+			ctx = logger.WithContext(ctx)
 
-				logger := log.Ctx(ctx).With().Str("component", c.Name).Logger()
-
-				ctx = logger.WithContext(ctx)
-
-				cs, err := getLastVersion(ctx, cfg, c, cfg.filename)
-				if err != nil {
-					log.Ctx(ctx).Error().Msg(err.Error())
-					errChan <- err
-					continue
-				}
-
-				if cs == nil {
-					continue
-				}
-
-				resChan <- cs
-				continue
+			cs, err := getLastVersion(ctx, cfg, &c, cfg.filename)
+			if err != nil {
+				logger.Error().Msg(err.Error())
+				errChan <- err
+				return
 			}
-		}()
-	}
 
-	// Send work
-	for _, c := range cfg.Components {
-		component := c
-		jobChan <- WorkerJob{
-			component: &component,
-			cfg:       cfg,
-		}
+			if cs == nil {
+				return
+			}
+
+			resChan <- cs
+			return
+		}(c)
 	}
-	close(jobChan)
 
 	wg.Wait()
 	close(errChan)
@@ -122,7 +131,7 @@ func findUpdatesParallel(ctx context.Context, cfg *PartialConfig, filename strin
 	return &updates, nil
 }
 
-func findSpecificUpdate(ctx context.Context, cfg *PartialConfig, filename string, component *config.Component) (*UpdateSet, error) {
+func findSpecificUpdate(ctx context.Context, cfg *PartialConfig, filename string, component *config.ComponentConfig) (*UpdateSet, error) {
 	changeSet, err := getLastVersion(ctx, cfg, component, filename)
 	if err != nil {
 		return nil, err
@@ -138,7 +147,7 @@ func findSpecificUpdate(ctx context.Context, cfg *PartialConfig, filename string
 	return &updates, nil
 }
 
-func getLastVersion(ctx context.Context, cfg *PartialConfig, c *config.Component, origin string) (*ChangeSet, error) {
+func getLastVersion(ctx context.Context, cfg *PartialConfig, c *config.ComponentConfig, origin string) (*ChangeSet, error) {
 	if c.Branch == "" {
 		c.Branch = "main"
 	}
@@ -159,7 +168,7 @@ func getLastVersion(ctx context.Context, cfg *PartialConfig, c *config.Component
 	return nil, err
 }
 
-func getLastVersionCloud(ctx context.Context, cfg *PartialConfig, c *config.Component, origin string) (*ChangeSet, error) {
+func getLastVersionCloud(ctx context.Context, cfg *PartialConfig, c *config.ComponentConfig, origin string) (*ChangeSet, error) {
 	organization := cfg.MachComposer.Cloud.Organization
 	project := cfg.MachComposer.Cloud.Project
 
@@ -226,7 +235,7 @@ func getLastVersionCloud(ctx context.Context, cfg *PartialConfig, c *config.Comp
 	return cs, nil
 }
 
-func getLastVersionGit(ctx context.Context, c *config.Component, origin string) (*ChangeSet, error) {
+func getLastVersionGit(ctx context.Context, c *config.ComponentConfig, origin string) (*ChangeSet, error) {
 	commits, err := gitutils.GetLastVersionGit(ctx, c, origin)
 	if err != nil {
 		return nil, err
@@ -250,6 +259,7 @@ func getLastVersionGit(ctx context.Context, c *config.Component, origin string) 
 			Name:  c.Committer.Name,
 			Date:  c.Committer.Date,
 		}
+		cd[i].Tags = c.Tags
 	}
 
 	cs := &ChangeSet{
