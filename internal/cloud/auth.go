@@ -43,7 +43,10 @@ func StartAuthentication(ctx context.Context, config oauth2.Config, options *Opt
 	setOptionDefaults(options)
 
 	state := generateStateParam()
-	pkceParams := generatePKCEParams()
+	pkceParams, err := generatePKCEParams()
+	if err != nil {
+		return nil, err
+	}
 	handler, redirectURL, err := createAuthHandler(ctx, options)
 	if err != nil {
 		return nil, err
@@ -145,13 +148,17 @@ func getAvailableListener() (net.Listener, error) {
 		"no free TCP port available in range %d-%d", LocalPortStart, LocalPortEnd)
 }
 
-func generatePKCEParams() authhandler.PKCEParams {
+func generatePKCEParams() (authhandler.PKCEParams, error) {
+	verifier, err := pkce.NewCodeVerifier(-1)
+	if err != nil {
+		return authhandler.PKCEParams{}, err
+	}
 	pkceParams := authhandler.PKCEParams{
 		ChallengeMethod: "S256",
-		Verifier:        pkce.NewCodeVerifier(),
+		Verifier:        verifier,
 	}
 	pkceParams.Challenge = pkce.CodeChallengeS256(pkceParams.Verifier)
-	return pkceParams
+	return pkceParams, nil
 }
 
 // If a state query param is not passed in, generate a random
