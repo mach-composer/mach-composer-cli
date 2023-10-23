@@ -199,7 +199,7 @@ func TestParse(t *testing.T) {
 			TerraformStateProvider: "my-plugin",
 			TerraformConfig: &TerraformConfig{
 				RemoteState: map[string]any{
-					"plugin": "my-plugin",
+					"backend": "aws",
 				},
 				Providers: map[string]string{
 					"aws": "3.0.0",
