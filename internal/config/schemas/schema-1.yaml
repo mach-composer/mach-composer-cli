@@ -160,6 +160,8 @@ definitions:
       health_check_path:
         type: string
       depends_on:
+        description: |
+          List of components that this component depends on. This will override any implicit links based on variables
         type: array
         items:
           type: string
