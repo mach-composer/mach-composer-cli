@@ -23,7 +23,7 @@ func TestFromConfigSimple(t *testing.T) {
 		},
 	}
 
-	g, r, err := FromConfig(cfg)
+	g, err := FromConfig(cfg)
 	assert.NoError(t, err)
 
 	o, _ := g.Order()
@@ -31,9 +31,6 @@ func TestFromConfigSimple(t *testing.T) {
 
 	e, _ := g.Edges()
 	assert.Len(t, e, 2)
-
-	assert.Equal(t, "main.yml", r.Path())
-	assert.IsType(t, &Project{}, r)
 
 	site, err := g.Vertex("main.yml/site-1")
 	assert.NoError(t, err)
@@ -88,7 +85,7 @@ func TestFromConfigExplicit(t *testing.T) {
 		},
 	}
 
-	g, _, err := FromConfig(cfg)
+	g, err := FromConfig(cfg)
 	assert.NoError(t, err)
 
 	am, _ := g.AdjacencyMap()
@@ -142,7 +139,7 @@ func TestFromConfigInferred(t *testing.T) {
 		},
 	}
 
-	g, _, err := FromConfig(cfg)
+	g, err := FromConfig(cfg)
 	assert.NoError(t, err)
 
 	am, _ := g.AdjacencyMap()
@@ -197,7 +194,7 @@ func TestFromConfigCycleErr(t *testing.T) {
 		},
 	}
 
-	_, _, err := FromConfig(cfg)
+	_, err := FromConfig(cfg)
 	assert.Error(t, err)
 	assert.IsType(t, &ValidationError{}, err)
 	assert.Len(t, err.(*ValidationError).Errors, 1)

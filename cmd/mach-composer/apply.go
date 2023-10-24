@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/mach-composer/mach-composer-cli/internal/dependency"
 	"github.com/spf13/cobra"
 
 	"github.com/mach-composer/mach-composer-cli/internal/generator"
@@ -41,10 +42,15 @@ func applyFunc(cmd *cobra.Command, args []string) error {
 
 	generateFlags.ValidateSite(cfg)
 
+	g, err := dependency.FromConfig(cfg)
+	if err != nil {
+		return err
+	}
+
 	// Note that we do this in multiple passes to minimize ending up with
 	// half broken runs. We could in the future also run some parts in parallel
 
-	paths, err := generator.WriteFiles(ctx, cfg, &generator.GenerateOptions{
+	err = generator.Write(ctx, cfg, g, &generator.GenerateOptions{
 		OutputPath: generateFlags.outputPath,
 		Site:       generateFlags.siteName,
 	})
@@ -52,7 +58,8 @@ func applyFunc(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	return runner.TerraformApply(ctx, cfg, paths, &runner.ApplyOptions{
+	//TODO: replace locations
+	return runner.TerraformApply(ctx, cfg, nil, &runner.ApplyOptions{
 		Destroy:     applyFlags.destroy,
 		Reuse:       applyFlags.reuse,
 		AutoApprove: applyFlags.autoApprove,

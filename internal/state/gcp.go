@@ -46,9 +46,11 @@ func (gr *GcpRenderer) Backend() (string, error) {
 
 func (gr *GcpRenderer) RemoteState() (string, error) {
 	templateContext := struct {
+		Key    string
 		Bucket string
 		Prefix string
 	}{
+		Key:    gr.key,
 		Bucket: gr.state.Bucket,
 		Prefix: gr.state.Key(gr.key),
 	}

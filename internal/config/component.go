@@ -74,7 +74,7 @@ func parseComponentVariable(raw string) (string, []string, error) {
 				match[1])
 		}
 
-		replacement := fmt.Sprintf("${module.%s.%s}", parts[1], parts[2])
+		replacement := fmt.Sprintf("${data.terraform_remote_state.%s.outputs.%s}", parts[1], parts[2])
 		val = strings.ReplaceAll(val, match[0], replacement)
 		refs = append(refs, parts[1])
 	}

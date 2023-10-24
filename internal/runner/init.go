@@ -32,12 +32,12 @@ func TerraformInit(ctx context.Context, cfg *config.MachConfig, locations map[st
 }
 
 func terraformInitSite(ctx context.Context, cfg *config.MachConfig, site *config.SiteConfig, path string) error {
-	lockfile, err := lockfile.GetLock(cfg, path)
+	lf, err := lockfile.GetLock(cfg.ConfigHash, path)
 	if err != nil {
 		return err
 	}
 
-	if !terraformIsInitialized(path) || lockfile.HasChanges(cfg) {
+	if !terraformIsInitialized(path) || lf.HasChanges(cfg.ConfigHash) {
 		log.Debug().Msgf("Running terraform init for site %s", site.Identifier)
 		if err := RunTerraform(ctx, path, "init"); err != nil {
 			return err

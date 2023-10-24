@@ -36,13 +36,13 @@ func graphFunc(cmd *cobra.Command, _ []string) error {
 	cfg := loadConfig(cmd, true)
 	defer cfg.Close()
 
-	t, _, err := dependency.FromConfig(cfg)
+	g, err := dependency.FromConfig(cfg)
 	if err != nil {
 		return err
 	}
 
 	var buff bytes.Buffer
-	err = draw.DOT(t, &buff, draw.GraphAttribute("label", cfg.Filename))
+	err = draw.DOT(g.Graph, &buff, draw.GraphAttribute("label", cfg.Filename))
 	if err != nil {
 		return err
 	}

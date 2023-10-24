@@ -4,8 +4,11 @@ import (
 	"fmt"
 	"github.com/dominikbraun/graph"
 	"github.com/mach-composer/mach-composer-cli/internal/config"
+	"github.com/rs/zerolog/log"
 	"path"
+	"path/filepath"
 	"slices"
+	"strings"
 )
 
 type edges map[string][]string
@@ -17,55 +20,77 @@ func (e *edges) Add(to, from string) {
 	(*e)[to] = append((*e)[to], from)
 }
 
-func FromConfig(cfg *config.MachConfig) (graph.Graph[string, Node], Node, error) {
+type Graph struct {
+	graph.Graph[string, Node]
+	StartNode Node
+}
+
+func (g *Graph) Walk(fn func(n Node) error) error {
+	return graph.DFS[string, Node](g, g.StartNode.Path(), func(k string) bool {
+		v, _ := g.Vertex(k)
+		err := fn(v)
+		if err != nil {
+			log.Error().Msgf("Could not process node %s: %s", k, err.Error())
+		}
+		return false
+	})
+}
+
+func FromConfig(cfg *config.MachConfig) (*Graph, error) {
 	var edges = edges{}
 	g := graph.New(func(n Node) string { return n.Path() }, graph.Directed(), graph.Tree(), graph.PreventCycles())
 
 	project := &Project{
 		nodeImpl: nodeImpl{
-			graph: g,
-			path:  cfg.Filename,
+			graph:      g,
+			path:       strings.TrimSuffix(cfg.Filename, filepath.Ext(cfg.Filename)),
+			identifier: cfg.Filename,
 		},
 		Config: cfg,
 	}
 
 	err := g.AddVertex(project)
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 
 	for _, siteConfig := range cfg.Sites {
 		site := &Site{
 			nodeImpl: nodeImpl{
-				graph: g,
-				path:  path.Join(project.Path(), siteConfig.Identifier),
+				graph:      g,
+				path:       path.Join(project.Path(), siteConfig.Identifier),
+				identifier: siteConfig.Identifier,
 			},
-			Config: &siteConfig,
+			ProjectConfig: cfg,
+			Config:        &siteConfig,
 		}
 
 		err = g.AddVertex(site)
 		if err != nil {
-			return nil, nil, err
+			return nil, err
 		}
 
 		err = g.AddEdge(project.Path(), site.Path())
 		if err != nil {
-			return nil, nil, err
+			return nil, err
 		}
 
 		for _, componentConfig := range siteConfig.Components {
 			var cc = componentConfig
 			component := &SiteComponent{
 				nodeImpl: nodeImpl{
-					graph: g,
-					path:  path.Join(site.Path(), componentConfig.Name),
+					graph:      g,
+					path:       path.Join(site.Path(), componentConfig.Name),
+					identifier: componentConfig.Name,
 				},
-				Config: &cc,
+				ProjectConfig: cfg,
+				SiteConfig:    &siteConfig,
+				Config:        &cc,
 			}
 
 			err = g.AddVertex(component)
 			if err != nil {
-				return nil, nil, err
+				return nil, err
 			}
 
 			// First parse the explicit references. These always take precedence
@@ -106,7 +131,7 @@ func FromConfig(cfg *config.MachConfig) (graph.Graph[string, Node], Node, error)
 	}
 
 	if len(errList) > 0 {
-		return nil, nil, &ValidationError{
+		return nil, &ValidationError{
 			Msg:    "validation failed",
 			Errors: errList,
 		}
@@ -114,8 +139,11 @@ func FromConfig(cfg *config.MachConfig) (graph.Graph[string, Node], Node, error)
 
 	g, err = graph.TransitiveReduction(g)
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 
-	return g, project, nil
+	return &Graph{
+		Graph:     g,
+		StartNode: project,
+	}, nil
 }

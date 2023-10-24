@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/mach-composer/mach-composer-cli/internal/dependency"
 	"github.com/spf13/cobra"
 
 	"github.com/mach-composer/mach-composer-cli/internal/generator"
@@ -32,7 +33,12 @@ func generateFunc(cmd *cobra.Command, args []string) error {
 		Site:       generateFlags.siteName,
 	}
 
-	_, err := generator.WriteFiles(cmd.Context(), cfg, genOptions)
+	g, err := dependency.FromConfig(cfg)
+	if err != nil {
+		return err
+	}
+
+	err = generator.Write(cmd.Context(), cfg, g, genOptions)
 	if err != nil {
 		return err
 	}
