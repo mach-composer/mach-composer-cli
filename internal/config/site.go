@@ -10,6 +10,26 @@ import (
 	"github.com/mach-composer/mach-composer-cli/internal/utils"
 )
 
+type SiteConfigs []SiteConfig
+
+func (s *SiteConfigs) Get(identifier string) (*SiteConfig, error) {
+	for _, site := range *s {
+		if site.Identifier == identifier {
+			return &site, nil
+		}
+	}
+	return nil, fmt.Errorf("site %s not found", identifier)
+}
+
+// SiteConfig contains all configuration needed for a site.
+type SiteConfig struct {
+	Name         string         `yaml:"name"`
+	Identifier   string         `yaml:"identifier"`
+	RawEndpoints map[string]any `yaml:"endpoints"`
+
+	Components SiteComponentConfigs `yaml:"components"`
+}
+
 func parseSitesNode(cfg *MachConfig, sitesNode *yaml.Node) error {
 	if err := sitesNode.Decode(&cfg.Sites); err != nil {
 		return fmt.Errorf("decoding error: %w", err)

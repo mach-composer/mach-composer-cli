@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/dominikbraun/graph"
 	"github.com/mach-composer/mach-composer-cli/internal/config"
-	"github.com/rs/zerolog/log"
+	"golang.org/x/exp/maps"
 	"path"
 	"path/filepath"
 	"slices"
@@ -25,28 +25,49 @@ type Graph struct {
 	StartNode Node
 }
 
-func (g *Graph) Walk(fn func(n Node) error) error {
-	return graph.DFS[string, Node](g, g.StartNode.Path(), func(k string) bool {
+func (g *Graph) Vertices() Vertices {
+	var vertices Vertices
+
+	m, _ := g.AdjacencyMap()
+
+	keys := maps.Keys(m)
+
+	for _, k := range keys {
 		v, _ := g.Vertex(k)
-		err := fn(v)
-		if err != nil {
-			log.Error().Msgf("Could not process node %s: %s", k, err.Error())
-		}
-		return false
-	})
+		vertices = append(vertices, v)
+	}
+
+	return vertices
+}
+
+// Routes determines all the possible paths between two nodes
+func (g *Graph) Routes(source, target string) ([]Path, error) {
+	var routes []Path
+
+	m, err := g.PredecessorMap()
+	if err != nil {
+		return routes, err
+	}
+
+	eg := m[source]
+
+	for _, pathElement := range eg {
+		p := []string{pathElement.Source}
+		newRoutes := fetchPathsToTarget(pathElement.Source, target, m, p)
+		routes = append(routes, newRoutes...)
+	}
+
+	return routes, nil
 }
 
 func FromConfig(cfg *config.MachConfig) (*Graph, error) {
-	var edges = edges{}
+	var e = edges{}
 	g := graph.New(func(n Node) string { return n.Path() }, graph.Directed(), graph.Tree(), graph.PreventCycles())
 
-	project := &Project{
-		nodeImpl: nodeImpl{
-			graph:      g,
-			path:       strings.TrimSuffix(cfg.Filename, filepath.Ext(cfg.Filename)),
-			identifier: cfg.Filename,
-		},
-		Config: cfg,
+	project := &node{
+		path:       strings.TrimSuffix(cfg.Filename, filepath.Ext(cfg.Filename)),
+		identifier: cfg.Filename,
+		typ:        ProjectType,
 	}
 
 	err := g.AddVertex(project)
@@ -55,14 +76,11 @@ func FromConfig(cfg *config.MachConfig) (*Graph, error) {
 	}
 
 	for _, siteConfig := range cfg.Sites {
-		site := &Site{
-			nodeImpl: nodeImpl{
-				graph:      g,
-				path:       path.Join(project.Path(), siteConfig.Identifier),
-				identifier: siteConfig.Identifier,
-			},
-			ProjectConfig: cfg,
-			Config:        &siteConfig,
+		site := &node{
+			path:       path.Join(project.Path(), siteConfig.Identifier),
+			identifier: siteConfig.Identifier,
+			typ:        SiteType,
+			parent:     project,
 		}
 
 		err = g.AddVertex(site)
@@ -76,16 +94,11 @@ func FromConfig(cfg *config.MachConfig) (*Graph, error) {
 		}
 
 		for _, componentConfig := range siteConfig.Components {
-			var cc = componentConfig
-			component := &SiteComponent{
-				nodeImpl: nodeImpl{
-					graph:      g,
-					path:       path.Join(site.Path(), componentConfig.Name),
-					identifier: componentConfig.Name,
-				},
-				ProjectConfig: cfg,
-				SiteConfig:    &siteConfig,
-				Config:        &cc,
+			component := &node{
+				path:       path.Join(site.Path(), componentConfig.Name),
+				identifier: componentConfig.Name,
+				typ:        SiteComponentType,
+				parent:     site,
 			}
 
 			err = g.AddVertex(component)
@@ -96,7 +109,7 @@ func FromConfig(cfg *config.MachConfig) (*Graph, error) {
 			// First parse the explicit references. These always take precedence
 			if dp := componentConfig.DependsOn; len(dp) > 0 {
 				for _, dependency := range componentConfig.DependsOn {
-					edges.Add(component.Path(), path.Join(site.Path(), dependency))
+					e.Add(component.Path(), path.Join(site.Path(), dependency))
 				}
 				continue
 			}
@@ -104,24 +117,24 @@ func FromConfig(cfg *config.MachConfig) (*Graph, error) {
 			// If there are no explicit references, we need to check if there are any implicit ones
 			if cp := componentConfig.Variables.ListComponents(); len(cp) > 0 {
 				for _, dependency := range cp {
-					edges.Add(component.Path(), path.Join(site.Path(), dependency))
+					e.Add(component.Path(), path.Join(site.Path(), dependency))
 				}
 			}
 			if cp := componentConfig.Secrets.ListComponents(); len(cp) > 0 {
 				for _, dependency := range cp {
-					edges.Add(component.Path(), path.Join(site.Path(), dependency))
+					e.Add(component.Path(), path.Join(site.Path(), dependency))
 				}
 				continue
 			}
 
 			// Otherwise add the default link to the parent site
-			edges.Add(component.Path(), site.Path())
+			e.Add(component.Path(), site.Path())
 		}
 	}
 
-	// Process edges
+	// Process e
 	var errList errorList
-	for t, s := range edges {
+	for t, s := range e {
 		for _, f := range s {
 			err = g.AddEdge(f, t)
 			if err != nil {

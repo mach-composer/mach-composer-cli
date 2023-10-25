@@ -40,6 +40,8 @@ definitions:
         type: string
       cloud:
         $ref: "#/definitions/MachComposerCloud"
+      deployment:
+        $ref: "#/definitions/MachComposerDeployment"
       plugins:
         type: object
         additionalProperties: false
@@ -202,3 +204,15 @@ definitions:
     patternProperties:
       "[a-zA-Z0-9]+":
         type: string
+
+  MachComposerDeployment:
+    type: object
+    additionalProperties: false
+    properties:
+      type:
+        type: string
+        enum:
+          - site
+          - site-component
+        description: "Determines how the state will be split. Defaults to site"
+        default: "site"

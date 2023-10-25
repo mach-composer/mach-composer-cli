@@ -2,10 +2,10 @@ package generator
 
 import (
 	"context"
+	"embed"
 	"errors"
 	"fmt"
 	"github.com/mach-composer/mach-composer-cli/internal/dependency"
-	"github.com/mach-composer/mach-composer-cli/internal/state"
 	"io"
 	"os"
 	"path/filepath"
@@ -24,84 +24,31 @@ type GenerateOptions struct {
 	Site       string
 }
 
+//go:embed templates/*.tmpl
+var templates embed.FS
+
+type WriterFunc func(ctx context.Context, cfg *config.MachConfig, g *dependency.Graph, options *GenerateOptions) error
+
+func NewWriterFunc(typ config.DeploymentType) (WriterFunc, error) {
+	switch typ {
+	case config.Site:
+		return sitesWriter, nil
+	case config.SiteComponent:
+		return componentWriter, nil
+	default:
+		return nil, fmt.Errorf("unknown deployment type %s", typ)
+	}
+}
+
 // Write is the main entrypoint for this module. It takes the given MachConfig and graph and iterates the nodes to generate
 // the required terraform files.
 func Write(ctx context.Context, cfg *config.MachConfig, g *dependency.Graph, options *GenerateOptions) error {
-	err := g.Walk(func(n dependency.Node) error {
-		sr, err := state.NewRenderer(
-			state.Type(cfg.Global.TerraformStateProvider),
-			n.Identifier(),
-			cfg.Global.TerraformConfig.RemoteState,
-		)
-
-		err = cfg.StateRepository.Add(sr.Key(), sr)
-		if err != nil {
-			return err
-		}
-		return nil
-	})
+	writer, err := NewWriterFunc(cfg.MachComposer.Deployment.Type)
 	if err != nil {
 		return err
 	}
 
-	// Second pass to generate files
-	return g.Walk(func(n dependency.Node) error {
-		outPath := fmt.Sprintf("%s/%s", options.OutputPath, n.Path())
-
-		switch n.(type) {
-		case *dependency.Project:
-			return nil
-		case *dependency.Site:
-			//TODO: load these from the config instead (so we have light nodes)
-			s := *n.(*dependency.Site).Config
-
-			if err = writeSecrets(cfg, s.Identifier, outPath); err != nil {
-				return err
-			}
-
-			log.Info().Msgf("Writing site %s", n.Path())
-			body, err := renderSite(cfg, &s)
-			if err != nil {
-				return err
-			}
-			return writeContent(cfg.ConfigHash, outPath, body)
-		case *dependency.SiteComponent:
-			//TODO: load these from the config instead (so we have light nodes)
-			s := n.(*dependency.SiteComponent).SiteConfig
-			sc := n.(*dependency.SiteComponent).Config
-
-			if err = writeSecrets(cfg, s.Identifier, outPath); err != nil {
-				return err
-			}
-
-			log.Info().Msgf("Writing site component %s", n.Path())
-			body, err := renderComponent(ctx, cfg, s, sc)
-			if err != nil {
-				return err
-			}
-			return writeContent(cfg.ConfigHash, outPath, body)
-		}
-
-		return fmt.Errorf("unknown node type %T", n)
-	})
-}
-
-func writeSecrets(cfg *config.MachConfig, identifier, outPath string) error {
-	for _, fs := range cfg.Variables.GetEncryptedSources(identifier) {
-		target := filepath.Join(outPath, fs.Filename)
-		log.Info().Msgf("Copying %s", target)
-
-		// This can refer to a file outside the current directory, so we need to create the directory structure
-		if err := os.MkdirAll(filepath.Dir(target), 0700); err != nil {
-			return fmt.Errorf("error creating directory structure for variables: %w", err)
-		}
-
-		if err := copyFile(fs.Filename, target); err != nil {
-			return fmt.Errorf("error writing extra file: %w", err)
-		}
-	}
-
-	return nil
+	return writer(ctx, cfg, g, options)
 }
 
 func writeContent(hash, path, content string) error {

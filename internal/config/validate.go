@@ -221,7 +221,7 @@ func createFullSchema(pr *plugins.PluginRepository, globalNode *yaml.Node) (map[
 	setAdditionalProperties(definitions["ComponentConfig"], false)
 	setAdditionalProperties(definitions["ComponentEndpointConfig"], false)
 
-	// Site config
+	// site config
 	for _, plugin := range pr.All() {
 		schema, err := pr.GetSchema(plugin.Name)
 		if err != nil {

@@ -3,16 +3,15 @@ package config
 import (
 	"context"
 	"fmt"
+	"github.com/elliotchance/pie/v2"
+	"gopkg.in/yaml.v3"
 	"os"
 	"path"
 	"regexp"
 	"strings"
 
-	"github.com/elliotchance/pie/v2"
-	"github.com/rs/zerolog/log"
-	"gopkg.in/yaml.v3"
-
 	"github.com/mach-composer/mach-composer-cli/internal/utils"
+	"github.com/rs/zerolog/log"
 )
 
 type NotFoundError struct {
@@ -221,7 +220,7 @@ func (v *Variables) Load(_ context.Context, filename, cwd string) error {
 }
 
 // serializeNestedVariables reads a map recursively building a list of variable
-// strings. It converst for example the following:
+// strings. It converts for example the following:
 //
 //	map[string]any{
 //		"foo": "bar",

@@ -12,7 +12,7 @@ func TestFromConfigSimple(t *testing.T) {
 		Filename: "main.yml",
 		Sites: []config.SiteConfig{
 			{
-				Name:       "Site 1",
+				Name:       "site 1",
 				Identifier: "site-1",
 				Components: []config.SiteComponentConfig{
 					{
@@ -68,7 +68,7 @@ func TestFromConfigExplicit(t *testing.T) {
 		Filename: "main.yml",
 		Sites: []config.SiteConfig{
 			{
-				Name:       "Site 1",
+				Name:       "site 1",
 				Identifier: "site-1",
 				Components: []config.SiteComponentConfig{
 					{
@@ -120,7 +120,7 @@ func TestFromConfigInferred(t *testing.T) {
 		Filename: "main.yml",
 		Sites: []config.SiteConfig{
 			{
-				Name:       "Site 1",
+				Name:       "site 1",
 				Identifier: "site-1",
 				Components: []config.SiteComponentConfig{
 					{
@@ -174,7 +174,7 @@ func TestFromConfigCycleErr(t *testing.T) {
 		Filename: "main.yml",
 		Sites: []config.SiteConfig{
 			{
-				Name:       "Site 1",
+				Name:       "site 1",
 				Identifier: "site-1",
 				Components: []config.SiteComponentConfig{
 					{

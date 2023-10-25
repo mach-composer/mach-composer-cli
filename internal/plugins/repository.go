@@ -57,6 +57,20 @@ func (p *PluginRepository) All() []Plugin {
 	return result
 }
 
+func (p *PluginRepository) Names(names ...string) []Plugin {
+	var result []Plugin
+
+	for _, key := range pie.Sort(pie.Keys(p.plugins)) {
+		if !pie.Contains(names, key) {
+			continue
+		}
+
+		result = append(result, *p.plugins[key])
+	}
+
+	return result
+}
+
 // Add an existing plugin to the repository. Only used for testing purposes
 func (p *PluginRepository) Add(name string, plugin schema.MachComposerPlugin) error {
 	p.plugins[name] = &Plugin{
