@@ -268,5 +268,8 @@ func renderComponent(_ context.Context, cfg *config.MachConfig, site *config.Sit
 		tc.Source += fmt.Sprintf("?ref=%s", component.Definition.Version)
 	}
 
+    // Escape backslashes in paths (Windows path separator)
+	tc.Source = strings.Replace(tc.Source, "\\", "\\\\", -1);
+
 	return utils.RenderGoTemplate(tpl, tc)
 }
