@@ -1,0 +1,3 @@
+kind: Fixed
+body: Escape backslashes in Terraform module source path
+time: 2023-10-31T15:24:49.3225035+01:00
