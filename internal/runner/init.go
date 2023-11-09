@@ -2,6 +2,7 @@ package runner
 
 import (
 	"context"
+	"github.com/mach-composer/mach-composer-cli/internal/dependency"
 	"os"
 	"path/filepath"
 
@@ -15,31 +16,28 @@ type InitOptions struct {
 	Site string
 }
 
-func TerraformInit(ctx context.Context, cfg *config.MachConfig, locations map[string]string, options *InitOptions) error {
-	for i := range cfg.Sites {
-		site := cfg.Sites[i]
+func TerraformInit(ctx context.Context, cfg *config.MachConfig, dg *dependency.Graph, options *InitOptions) error {
+	if err := batchRun(dg, dg.StartNode.Path(), func(n dependency.Node) error {
+		tfPath := "deployments/" + n.Path()
 
-		if options.Site != "" && site.Identifier != options.Site {
-			continue
-		}
+		log.Info().Msgf("Initializing %s", tfPath)
 
-		err := terraformInitSite(ctx, cfg, &site, locations[site.Identifier])
-		if err != nil {
-			return err
-		}
+		return terraformInit(ctx, cfg, tfPath)
+	}); err != nil {
+		return err
 	}
+
 	return nil
 }
 
-func terraformInitSite(ctx context.Context, cfg *config.MachConfig, site *config.SiteConfig, path string) error {
+func terraformInit(ctx context.Context, cfg *config.MachConfig, path string) error {
 	lf, err := lockfile.GetLock(cfg.ConfigHash, path)
 	if err != nil {
 		return err
 	}
 
 	if !terraformIsInitialized(path) || lf.HasChanges(cfg.ConfigHash) {
-		log.Debug().Msgf("Running terraform init for site %s", site.Identifier)
-		if err := RunTerraform(ctx, path, "init"); err != nil {
+		if err := runTerraform(ctx, path, "init"); err != nil {
 			return err
 		}
 	}

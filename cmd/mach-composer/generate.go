@@ -33,12 +33,7 @@ func generateFunc(cmd *cobra.Command) error {
 		Site:       generateFlags.siteName,
 	}
 
-	g, err := dependency.FromConfig(cfg)
-	if err != nil {
-		return err
-	}
-
-	gd, err := dependency.ToDeploymentGraph(g)
+	gd, err := dependency.ToDeploymentGraph(cfg)
 	if err != nil {
 		return err
 	}

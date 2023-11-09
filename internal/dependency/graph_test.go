@@ -23,7 +23,7 @@ func TestFromConfigSimple(t *testing.T) {
 		},
 	}
 
-	g, err := FromConfig(cfg)
+	g, err := ToDependencyGraph(cfg)
 	assert.NoError(t, err)
 
 	o, _ := g.Order()
@@ -85,7 +85,7 @@ func TestFromConfigExplicit(t *testing.T) {
 		},
 	}
 
-	g, err := FromConfig(cfg)
+	g, err := ToDependencyGraph(cfg)
 	assert.NoError(t, err)
 
 	am, _ := g.AdjacencyMap()
@@ -139,7 +139,7 @@ func TestFromConfigInferred(t *testing.T) {
 		},
 	}
 
-	g, err := FromConfig(cfg)
+	g, err := ToDependencyGraph(cfg)
 	assert.NoError(t, err)
 
 	am, _ := g.AdjacencyMap()
@@ -194,7 +194,7 @@ func TestFromConfigCycleErr(t *testing.T) {
 		},
 	}
 
-	_, err := FromConfig(cfg)
+	_, err := ToDependencyGraph(cfg)
 	assert.Error(t, err)
 	assert.IsType(t, &ValidationError{}, err)
 	assert.Len(t, err.(*ValidationError).Errors, 1)

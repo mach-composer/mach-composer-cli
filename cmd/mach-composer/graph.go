@@ -40,7 +40,7 @@ func graphFunc(cmd *cobra.Command, _ []string) error {
 	cfg := loadConfig(cmd, true)
 	defer cfg.Close()
 
-	g, err := dependency.FromConfig(cfg)
+	g, err := dependency.ToDependencyGraph(cfg)
 	if err != nil {
 		return err
 	}
@@ -60,7 +60,7 @@ func graphFunc(cmd *cobra.Command, _ []string) error {
 
 	log.Info().Msgf("Graph written to %s", graphFlags.output)
 
-	dg, err := dependency.ToDeploymentGraph(g)
+	dg, err := dependency.ToDeploymentGraph(cfg)
 	if err != nil {
 		return err
 	}

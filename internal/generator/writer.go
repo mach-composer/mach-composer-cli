@@ -146,10 +146,6 @@ func writeContent(hash, path, content string) error {
 	return nil
 }
 
-func FileLocations(_ *config.MachConfig, _ *GenerateOptions) map[string]string {
-	panic("implement me")
-}
-
 func formatFile(src []byte) []byte {
 	// Trim whitespaces prefix
 	regex := regexp.MustCompile(`(?m)^\s*`)

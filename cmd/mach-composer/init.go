@@ -35,12 +35,12 @@ func initFunc(cmd *cobra.Command, args []string) error {
 
 	generateFlags.ValidateSite(cfg)
 
-	g, err := dependency.FromConfig(cfg)
+	dg, err := dependency.ToDeploymentGraph(cfg)
 	if err != nil {
 		return err
 	}
 
-	err = generator.Write(ctx, cfg, g, &generator.GenerateOptions{
+	err = generator.Write(ctx, cfg, dg, &generator.GenerateOptions{
 		OutputPath: generateFlags.outputPath,
 		Site:       generateFlags.siteName,
 	})
@@ -48,8 +48,7 @@ func initFunc(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	//TODO: replace locations
-	return runner.TerraformInit(ctx, cfg, nil, &runner.InitOptions{
+	return runner.TerraformInit(ctx, cfg, dg, &runner.InitOptions{
 		Site: generateFlags.siteName,
 	})
 }

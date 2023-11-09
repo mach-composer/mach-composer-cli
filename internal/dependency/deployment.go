@@ -4,9 +4,15 @@ import (
 	"errors"
 	"fmt"
 	"github.com/dominikbraun/graph"
+	"github.com/mach-composer/mach-composer-cli/internal/config"
 )
 
-func ToDeploymentGraph(g *Graph) (*Graph, error) {
+func ToDeploymentGraph(cfg *config.MachConfig) (*Graph, error) {
+	g, err := ToDependencyGraph(cfg)
+	if err != nil {
+		return nil, err
+	}
+
 	if err := validateDeployment(g.NodeGraph, g.StartNode.Path()); err != nil {
 		return nil, err
 	}

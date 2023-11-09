@@ -2,7 +2,8 @@ package runner
 
 import (
 	"context"
-	"fmt"
+	"github.com/mach-composer/mach-composer-cli/internal/dependency"
+	"github.com/rs/zerolog/log"
 
 	"github.com/mach-composer/mach-composer-cli/internal/config"
 )
@@ -15,44 +16,22 @@ type ApplyOptions struct {
 	Site        string
 }
 
-func TerraformApply(ctx context.Context, cfg *config.MachConfig, locations map[string]string, options *ApplyOptions) error {
-	for i := range cfg.Sites {
-		site := cfg.Sites[i]
+func TerraformApply(ctx context.Context, cfg *config.MachConfig, dg *dependency.Graph, options *ApplyOptions) error {
+	if err := batchRun(dg, dg.StartNode.Path(), func(n dependency.Node) error {
+		tfPath := "deployments/" + n.Path()
 
-		if options.Site != "" && site.Identifier != options.Site {
-			continue
-		}
+		log.Info().Msgf("Applying %s", tfPath)
 
-		if err := TerraformApplySite(ctx, cfg, &site, locations[site.Identifier], options); err != nil {
-			return err
-		}
+		return terraformApply(ctx, cfg, tfPath, options)
+	}); err != nil {
+		return err
 	}
+
 	return nil
 }
 
-type ProxyOptions struct {
-	Site    string
-	Command []string
-}
-
-func TerraformProxy(ctx context.Context, cfg *config.MachConfig, locations map[string]string, options *ProxyOptions) error {
-	for i := range cfg.Sites {
-		site := cfg.Sites[i]
-
-		if options.Site != "" && site.Identifier != options.Site {
-			continue
-		}
-
-		err := RunTerraform(ctx, locations[site.Identifier], options.Command...)
-		if err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
-func TerraformApplySite(ctx context.Context, cfg *config.MachConfig, site *config.SiteConfig, path string, options *ApplyOptions) error {
-	if err := terraformInitSite(ctx, cfg, site, path); err != nil {
+func terraformApply(ctx context.Context, cfg *config.MachConfig, path string, options *ApplyOptions) error {
+	if err := terraformInit(ctx, cfg, path); err != nil {
 		return err
 	}
 
@@ -66,10 +45,6 @@ func TerraformApplySite(ctx context.Context, cfg *config.MachConfig, site *confi
 		cmd = append(cmd, "-auto-approve")
 	}
 
-	for _, component := range options.Components {
-		cmd = append(cmd, fmt.Sprintf("-target=module.%s", component))
-	}
-
 	// If there is a plan then we should use it.
 	planFilename, err := hasTerraformPlan(path)
 	if err != nil {
@@ -79,5 +54,5 @@ func TerraformApplySite(ctx context.Context, cfg *config.MachConfig, site *confi
 		cmd = append(cmd, planFilename)
 	}
 
-	return RunTerraform(ctx, path, cmd...)
+	return runTerraform(ctx, path, cmd...)
 }

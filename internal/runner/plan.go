@@ -2,11 +2,10 @@ package runner
 
 import (
 	"context"
-	"fmt"
+	"github.com/mach-composer/mach-composer-cli/internal/dependency"
+	"github.com/rs/zerolog/log"
 	"os"
 	"path/filepath"
-
-	"github.com/rs/zerolog/log"
 
 	"github.com/mach-composer/mach-composer-cli/internal/config"
 )
@@ -17,37 +16,30 @@ type PlanOptions struct {
 	Site       string
 }
 
-func TerraformPlan(ctx context.Context, cfg *config.MachConfig, locations map[string]string, options *PlanOptions) error {
-	for i := range cfg.Sites {
-		site := cfg.Sites[i]
+func TerraformPlan(ctx context.Context, cfg *config.MachConfig, dg *dependency.Graph, options *PlanOptions) error {
+	if err := batchRun(dg, dg.StartNode.Path(), func(n dependency.Node) error {
+		tfPath := "deployments/" + n.Path()
 
-		if options.Site != "" && site.Identifier != options.Site {
-			continue
-		}
+		log.Info().Msgf("Planning %s", tfPath)
 
-		path := locations[site.Identifier]
-
-		if err := TerraformPlanSite(ctx, cfg, &site, path, options); err != nil {
-			return err
-		}
+		return terraformPlan(ctx, cfg, tfPath)
+	}); err != nil {
+		return err
 	}
+
 	return nil
 }
 
-func TerraformPlanSite(ctx context.Context, cfg *config.MachConfig, site *config.SiteConfig, path string, options *PlanOptions) error {
-	log.Debug().Msgf("Running terraform plan for site %s", site.Identifier)
-
-	if err := terraformInitSite(ctx, cfg, site, path); err != nil {
+func terraformPlan(ctx context.Context, cfg *config.MachConfig, path string) error {
+	//TODO: deal with situation where a terraform file refers to a remote state that does not already exist
+	if err := terraformInit(ctx, cfg, path); err != nil {
 		return err
 	}
 
 	cmd := []string{"plan"}
-	for _, component := range options.Components {
-		cmd = append(cmd, fmt.Sprintf("-target=module.%s", component))
-	}
 
 	cmd = append(cmd, "-out=terraform.plan")
-	return RunTerraform(ctx, path, cmd...)
+	return runTerraform(ctx, path, cmd...)
 }
 
 func hasTerraformPlan(path string) (string, error) {

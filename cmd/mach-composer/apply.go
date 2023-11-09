@@ -13,6 +13,7 @@ var applyFlags struct {
 	autoApprove bool
 	destroy     bool
 	components  []string
+	numWorkers  int
 }
 
 var applyCmd = &cobra.Command{
@@ -29,10 +30,11 @@ var applyCmd = &cobra.Command{
 
 func init() {
 	registerGenerateFlags(applyCmd)
-	applyCmd.Flags().BoolVarP(&applyFlags.reuse, "reuse", "", false, "Supress a terraform init for improved speed (not recommended for production usage)")
-	applyCmd.Flags().BoolVarP(&applyFlags.autoApprove, "auto-approve", "", false, "Supress a terraform init for improved speed (not recommended for production usage)")
+	applyCmd.Flags().BoolVarP(&applyFlags.reuse, "reuse", "", false, "Suppress a terraform init for improved speed (not recommended for production usage)")
+	applyCmd.Flags().BoolVarP(&applyFlags.autoApprove, "auto-approve", "", false, "Suppress a terraform init for improved speed (not recommended for production usage)")
 	applyCmd.Flags().BoolVarP(&applyFlags.destroy, "destroy", "", false, "Destroy option is a convenient way to destroy all remote objects managed by this mach config")
 	applyCmd.Flags().StringArrayVarP(&applyFlags.components, "component", "c", []string{}, "")
+	applyCmd.Flags().IntVarP(&applyFlags.numWorkers, "workers", "w", 1, "The number of workers to use")
 }
 
 func applyFunc(cmd *cobra.Command, args []string) error {
@@ -42,7 +44,7 @@ func applyFunc(cmd *cobra.Command, args []string) error {
 
 	generateFlags.ValidateSite(cfg)
 
-	g, err := dependency.FromConfig(cfg)
+	dg, err := dependency.ToDeploymentGraph(cfg)
 	if err != nil {
 		return err
 	}
@@ -50,7 +52,7 @@ func applyFunc(cmd *cobra.Command, args []string) error {
 	// Note that we do this in multiple passes to minimize ending up with
 	// half broken runs. We could in the future also run some parts in parallel
 
-	err = generator.Write(ctx, cfg, g, &generator.GenerateOptions{
+	err = generator.Write(ctx, cfg, dg, &generator.GenerateOptions{
 		OutputPath: generateFlags.outputPath,
 		Site:       generateFlags.siteName,
 	})
@@ -58,8 +60,7 @@ func applyFunc(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	//TODO: replace locations
-	return runner.TerraformApply(ctx, cfg, nil, &runner.ApplyOptions{
+	return runner.TerraformApply(ctx, cfg, dg, &runner.ApplyOptions{
 		Destroy:     applyFlags.destroy,
 		Reuse:       applyFlags.reuse,
 		AutoApprove: applyFlags.autoApprove,

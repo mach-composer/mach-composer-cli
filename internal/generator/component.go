@@ -131,7 +131,6 @@ func renderSiteComponentResources(cfg *config.MachConfig, site *config.SiteConfi
 
 // renderComponentModule uses templates/component.tf to generate a terraform snippet for each component
 func renderComponentModule(_ context.Context, cfg *config.MachConfig, site *config.SiteConfig, siteComponent *config.SiteComponentConfig) (string, error) {
-	//TODO: render module outputs block
 	tc := componentContext{
 		ComponentName:    siteComponent.Name,
 		ComponentVersion: siteComponent.Definition.Version,

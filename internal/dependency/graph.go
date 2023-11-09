@@ -63,7 +63,7 @@ func (g *Graph) Routes(source, target string) ([]Path, error) {
 	return routes, nil
 }
 
-func FromConfig(cfg *config.MachConfig) (*Graph, error) {
+func ToDependencyGraph(cfg *config.MachConfig) (*Graph, error) {
 	var edges = edgeSets{}
 	g := graph.New(func(n Node) string { return n.Path() }, graph.Directed(), graph.Tree(), graph.PreventCycles())
 
