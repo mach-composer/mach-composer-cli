@@ -14,7 +14,7 @@ var generateCmd = &cobra.Command{
 		preprocessGenerateFlags()
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
-		return generateFunc(cmd, args)
+		return generateFunc(cmd)
 	},
 }
 
@@ -22,7 +22,7 @@ func init() {
 	registerGenerateFlags(generateCmd)
 }
 
-func generateFunc(cmd *cobra.Command, args []string) error {
+func generateFunc(cmd *cobra.Command) error {
 	cfg := loadConfig(cmd, true)
 	defer cfg.Close()
 
@@ -38,7 +38,12 @@ func generateFunc(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	err = generator.Write(cmd.Context(), cfg, g, genOptions)
+	gd, err := dependency.ToDeploymentGraph(g)
+	if err != nil {
+		return err
+	}
+
+	err = generator.Write(cmd.Context(), cfg, gd, genOptions)
 	if err != nil {
 		return err
 	}

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/dominikbraun/graph"
 	"github.com/mach-composer/mach-composer-cli/internal/config"
+	"github.com/rs/zerolog/log"
 	"golang.org/x/exp/maps"
 	"path"
 	"path/filepath"
@@ -11,17 +12,19 @@ import (
 	"strings"
 )
 
-type edges map[string][]string
+type edgeSets map[string][]string
 
-func (e *edges) Add(to, from string) {
+func (e *edgeSets) Add(to, from string) {
 	if slices.Contains((*e)[to], from) {
 		return
 	}
 	(*e)[to] = append((*e)[to], from)
 }
 
+type NodeGraph = graph.Graph[string, Node]
+
 type Graph struct {
-	graph.Graph[string, Node]
+	NodeGraph
 	StartNode Node
 }
 
@@ -61,13 +64,17 @@ func (g *Graph) Routes(source, target string) ([]Path, error) {
 }
 
 func FromConfig(cfg *config.MachConfig) (*Graph, error) {
-	var e = edges{}
+	var edges = edgeSets{}
 	g := graph.New(func(n Node) string { return n.Path() }, graph.Directed(), graph.Tree(), graph.PreventCycles())
 
-	project := &node{
-		path:       strings.TrimSuffix(cfg.Filename, filepath.Ext(cfg.Filename)),
-		identifier: cfg.Filename,
-		typ:        ProjectType,
+	project := &Project{
+		node: node{
+			path:           strings.TrimSuffix(cfg.Filename, filepath.Ext(cfg.Filename)),
+			identifier:     cfg.Filename,
+			typ:            ProjectType,
+			deploymentType: cfg.MachComposer.Deployment.Type,
+		},
+		ProjectConfig: cfg,
 	}
 
 	err := g.AddVertex(project)
@@ -76,11 +83,15 @@ func FromConfig(cfg *config.MachConfig) (*Graph, error) {
 	}
 
 	for _, siteConfig := range cfg.Sites {
-		site := &node{
-			path:       path.Join(project.Path(), siteConfig.Identifier),
-			identifier: siteConfig.Identifier,
-			typ:        SiteType,
-			parent:     project,
+		site := &Site{
+			node: node{
+				path:           path.Join(project.Path(), siteConfig.Identifier),
+				identifier:     siteConfig.Identifier,
+				typ:            SiteType,
+				parent:         project,
+				deploymentType: siteConfig.Deployment.Type,
+			},
+			SiteConfig: siteConfig,
 		}
 
 		err = g.AddVertex(site)
@@ -94,11 +105,19 @@ func FromConfig(cfg *config.MachConfig) (*Graph, error) {
 		}
 
 		for _, componentConfig := range siteConfig.Components {
-			component := &node{
-				path:       path.Join(site.Path(), componentConfig.Name),
-				identifier: componentConfig.Name,
-				typ:        SiteComponentType,
-				parent:     site,
+			var p = path.Join(site.Path(), componentConfig.Name)
+
+			log.Debug().Msgf("Deploying site component %s separately", componentConfig.Name)
+			component := &SiteComponent{
+				node: node{
+					path:           p,
+					identifier:     componentConfig.Name,
+					typ:            SiteComponentType,
+					parent:         site,
+					deploymentType: componentConfig.Deployment.Type,
+				},
+				SiteConfig:          siteConfig,
+				SiteComponentConfig: componentConfig,
 			}
 
 			err = g.AddVertex(component)
@@ -109,36 +128,36 @@ func FromConfig(cfg *config.MachConfig) (*Graph, error) {
 			// First parse the explicit references. These always take precedence
 			if dp := componentConfig.DependsOn; len(dp) > 0 {
 				for _, dependency := range componentConfig.DependsOn {
-					e.Add(component.Path(), path.Join(site.Path(), dependency))
+					edges.Add(component.Path(), path.Join(site.Path(), dependency))
 				}
 				continue
 			}
 
 			// If there are no explicit references, we need to check if there are any implicit ones
-			if cp := componentConfig.Variables.ListComponents(); len(cp) > 0 {
+			if cp := componentConfig.Variables.ListReferencedComponents(); len(cp) > 0 {
 				for _, dependency := range cp {
-					e.Add(component.Path(), path.Join(site.Path(), dependency))
+					edges.Add(component.Path(), path.Join(site.Path(), dependency))
 				}
 			}
-			if cp := componentConfig.Secrets.ListComponents(); len(cp) > 0 {
+			if cp := componentConfig.Secrets.ListReferencedComponents(); len(cp) > 0 {
 				for _, dependency := range cp {
-					e.Add(component.Path(), path.Join(site.Path(), dependency))
+					edges.Add(component.Path(), path.Join(site.Path(), dependency))
 				}
 				continue
 			}
 
 			// Otherwise add the default link to the parent site
-			e.Add(component.Path(), site.Path())
+			edges.Add(component.Path(), site.Path())
 		}
 	}
 
-	// Process e
+	// Process edges
 	var errList errorList
-	for t, s := range e {
-		for _, f := range s {
-			err = g.AddEdge(f, t)
+	for target, sources := range edges {
+		for _, source := range sources {
+			err = g.AddEdge(source, target)
 			if err != nil {
-				errList.AddError(fmt.Errorf("failed to add dependency from %v to %v: %w", f, t, err))
+				errList.AddError(fmt.Errorf("failed to add dependency from %v to %v: %w", source, target, err))
 			}
 		}
 	}
@@ -149,14 +168,41 @@ func FromConfig(cfg *config.MachConfig) (*Graph, error) {
 			Errors: errList,
 		}
 	}
-
 	g, err = graph.TransitiveReduction(g)
 	if err != nil {
 		return nil, err
 	}
 
-	return &Graph{
-		Graph:     g,
-		StartNode: project,
-	}, nil
+	return &Graph{NodeGraph: g, StartNode: project}, nil
+}
+
+func validateDeployment(g NodeGraph, start string) error {
+	var errList errorList
+	err := graph.DFS(g, start, func(p string) bool {
+		n, _ := g.Vertex(p)
+
+		am, _ := g.AdjacencyMap()
+		edges := am[p]
+
+		for _, edge := range edges {
+			child, _ := g.Vertex(edge.Target)
+			//TODO: this is a weird check, maybe we want to make it more agnostic of what type of node it is
+			if n.Type() == SiteComponentType && n.Independent() && !child.Independent() {
+				errList.AddError(fmt.Errorf("node %s is independent but has a dependent child %s", n.Path(), child.Path()))
+			}
+		}
+
+		return false
+	})
+	if err != nil {
+		return err
+	}
+	if len(errList) > 0 {
+		return &ValidationError{
+			Msg:    "validation failed",
+			Errors: errList,
+		}
+	}
+
+	return nil
 }

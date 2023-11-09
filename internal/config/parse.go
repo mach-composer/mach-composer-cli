@@ -101,9 +101,11 @@ func loadConfig(ctx context.Context, filename, cwd string, pr *plugins.PluginRep
 	}
 
 	// Set default deployment type if necessary
-	if raw.MachComposer.Deployment.Type == "" {
-		log.Info().Msg("No deployment type specified; defaulting to site")
-		raw.MachComposer.Deployment.Type = Site
+	if raw.MachComposer.Deployment == nil {
+		log.Debug().Msg("No global deployment type specified; defaulting to site")
+		raw.MachComposer.Deployment = &Deployment{
+			Type: DeploymentSite,
+		}
 	}
 
 	componentNode, _, err := LoadRefData(ctx, &raw.Components, cwd)
@@ -220,7 +222,7 @@ func resolveVariables(ctx context.Context, rawConfig *rawConfig, cwd string) err
 		return err
 	}
 
-	// Interpolate the variables per-site to keep track of which site uses which
+	// TransformValue the variables per-site to keep track of which site uses which
 	// variable.
 	for _, node := range rawConfig.Sites.Content {
 		mapping := mapYamlNodes(node.Content)

@@ -11,6 +11,7 @@ require (
 	github.com/go-git/go-billy/v5 v5.5.0
 	github.com/go-git/go-git/v5 v5.9.0
 	github.com/goccy/go-graphviz v0.1.1
+	github.com/google/martian v2.1.0+incompatible
 	github.com/grokify/go-pkce v0.2.3
 	github.com/hashicorp/go-getter v1.7.2
 	github.com/hashicorp/go-hclog v1.5.0

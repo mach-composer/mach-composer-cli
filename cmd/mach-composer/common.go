@@ -34,7 +34,7 @@ func (gf GenerateFlags) ValidateSite(cfg *config.MachConfig) {
 func registerGenerateFlags(cmd *cobra.Command) {
 	cmd.Flags().StringVarP(&generateFlags.configFile, "file", "f", "main.yml", "YAML file to parse.")
 	cmd.Flags().StringVarP(&generateFlags.varFile, "var-file", "", "", "Use a variable file to parse the configuration with.")
-	cmd.Flags().StringVarP(&generateFlags.siteName, "site", "s", "", "Site to parse. If not set parse all sites.")
+	cmd.Flags().StringVarP(&generateFlags.siteName, "site", "s", "", "DeploymentSite to parse. If not set parse all sites.")
 	cmd.Flags().BoolVarP(&generateFlags.ignoreVersion, "ignore-version", "", false, "Skip MACH composer version check")
 	cmd.Flags().StringVarP(&generateFlags.outputPath, "output-path", "", "", "Output path, defaults to `cwd`/deployments.")
 

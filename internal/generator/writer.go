@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/mach-composer/mach-composer-cli/internal/dependency"
+	"github.com/mach-composer/mach-composer-cli/internal/state"
 	"io"
 	"os"
 	"path/filepath"
@@ -27,28 +28,81 @@ type GenerateOptions struct {
 //go:embed templates/*.tmpl
 var templates embed.FS
 
-type WriterFunc func(ctx context.Context, cfg *config.MachConfig, g *dependency.Graph, options *GenerateOptions) error
-
-func NewWriterFunc(typ config.DeploymentType) (WriterFunc, error) {
-	switch typ {
-	case config.Site:
-		return sitesWriter, nil
-	case config.SiteComponent:
-		return componentWriter, nil
-	default:
-		return nil, fmt.Errorf("unknown deployment type %s", typ)
-	}
-}
-
 // Write is the main entrypoint for this module. It takes the given MachConfig and graph and iterates the nodes to generate
 // the required terraform files.
 func Write(ctx context.Context, cfg *config.MachConfig, g *dependency.Graph, options *GenerateOptions) error {
-	writer, err := NewWriterFunc(cfg.MachComposer.Deployment.Type)
-	if err != nil {
-		return err
+	for _, n := range g.Vertices() {
+		sr, err := state.NewRenderer(
+			state.Type(cfg.Global.TerraformStateProvider),
+			n.Identifier(),
+			cfg.Global.TerraformConfig.RemoteState,
+		)
+		if err != nil {
+			return err
+		}
+		err = cfg.StateRepository.Add(sr.Key(), sr)
+		if err != nil {
+			return err
+		}
+
+		if site, ok := n.(*dependency.Site); ok {
+			for _, c := range site.NestedSiteComponentConfigs {
+				cfg.StateRepository.Alias(n.Identifier(), c.Name)
+			}
+		}
 	}
 
-	return writer(ctx, cfg, g, options)
+	for _, n := range g.Vertices() {
+		outPath := fmt.Sprintf("%s/%s", options.OutputPath, n.Path())
+
+		switch n.(type) {
+		case *dependency.Project:
+			log.Debug().Msgf("No global files to generate for project %s", n.Path())
+			break
+		case *dependency.Site:
+			siteConfig := n.(*dependency.Site).SiteConfig
+			nestedComponents := n.(*dependency.Site).NestedSiteComponentConfigs
+
+			if err := copySecrets(cfg, siteConfig.Identifier, outPath); err != nil {
+				return err
+			}
+			body, err := renderSite(ctx, cfg, &siteConfig, nestedComponents)
+			if err != nil {
+				return err
+			}
+
+			if err = writeContent(cfg.ConfigHash, outPath, body); err != nil {
+				return err
+			}
+
+			log.Info().Msgf("Wrote site %s", siteConfig.Identifier)
+			break
+		case *dependency.SiteComponent:
+			s := n.(*dependency.SiteComponent).SiteConfig
+			sc := n.(*dependency.SiteComponent).SiteComponentConfig
+
+			if err := copySecrets(cfg, s.Identifier, outPath); err != nil {
+				return err
+			}
+
+			body, err := renderSiteComponent(ctx, cfg, &s, &sc)
+			if err != nil {
+				return err
+			}
+
+			if err = writeContent(cfg.ConfigHash, outPath, body); err != nil {
+				return err
+			}
+
+			log.Info().Msgf("Wrote site component %s", n.Path())
+			break
+		default:
+			return fmt.Errorf("unknown node type %T", n)
+		}
+
+	}
+
+	return nil
 }
 
 func writeContent(hash, path, content string) error {

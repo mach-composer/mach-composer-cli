@@ -41,3 +41,7 @@ module "{{ .ComponentName }}" {
     ]
 {{ end }}
 }
+
+output "{{ .ComponentName }}" {
+    value = module.{{ .ComponentName }}
+}

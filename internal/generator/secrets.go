@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 )
 
-func writeSecrets(cfg *config.MachConfig, identifier, outPath string) error {
+func copySecrets(cfg *config.MachConfig, identifier, outPath string) error {
 	for _, fs := range cfg.Variables.GetEncryptedSources(identifier) {
 		target := filepath.Join(outPath, fs.Filename)
 		log.Info().Msgf("Copying %s", target)

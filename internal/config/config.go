@@ -46,22 +46,11 @@ type MachComposer struct {
 	VariablesFile string                      `yaml:"variables_file"`
 	Plugins       map[string]MachPluginConfig `yaml:"plugins"`
 	Cloud         MachComposerCloud           `yaml:"cloud"`
-	Deployment    MachComposerDeployment      `yaml:"deployment"`
+	Deployment    *Deployment                 `yaml:"deployment"`
 }
 
 func (mc *MachComposer) CloudEnabled() bool {
 	return !mc.Cloud.Empty()
-}
-
-type DeploymentType string
-
-const (
-	Site          DeploymentType = "site"
-	SiteComponent DeploymentType = "site-component"
-)
-
-type MachComposerDeployment struct {
-	Type DeploymentType `yaml:"type"`
 }
 
 type MachComposerCloud struct {

@@ -35,7 +35,7 @@ func (ar *AwsRenderer) Backend() (string, error) {
 	tpl := `
 	backend "s3" {
 	  bucket         = "{{ .State.Bucket }}"
-	  key            = "{{ .State.KeyPrefix}}/{{ .Key }}"
+	  Key            = "{{ .State.KeyPrefix}}/{{ .Key }}"
 	  region         = "{{ .State.Region }}"
 	  {{ if .State.RoleARN }}
 	  role_arn       = "{{ .State.RoleARN }}"
@@ -64,7 +64,7 @@ func (ar *AwsRenderer) RemoteState() (string, error) {
 	
 	  config = {
 		  bucket         = "{{ .State.Bucket }}"
-		  key            = "{{ .State.KeyPrefix}}/{{ .Key }}"
+		  Key            = "{{ .State.KeyPrefix}}/{{ .Key }}"
 		  region         = "{{ .State.Region }}"
 		  {{ if .State.RoleARN }}
 		  role_arn       = "{{ .State.RoleARN }}"
