@@ -1,9 +1,9 @@
 package main
 
 import (
+	"github.com/mach-composer/mach-composer-cli/internal/dependency"
 	"github.com/spf13/cobra"
 
-	"github.com/mach-composer/mach-composer-cli/internal/generator"
 	"github.com/mach-composer/mach-composer-cli/internal/runner"
 )
 
@@ -28,12 +28,12 @@ func terraformFunc(cmd *cobra.Command, args []string) error {
 
 	generateFlags.ValidateSite(cfg)
 
-	paths := generator.FileLocations(cfg, &generator.GenerateOptions{
-		OutputPath: generateFlags.outputPath,
-		Site:       generateFlags.siteName,
-	})
+	dg, err := dependency.ToDeploymentGraph(cfg)
+	if err != nil {
+		return err
+	}
 
-	return runner.TerraformProxy(cmd.Context(), cfg, paths, &runner.ProxyOptions{
+	return runner.TerraformProxy(cmd.Context(), dg, &runner.ProxyOptions{
 		Site:    generateFlags.siteName,
 		Command: args,
 	})

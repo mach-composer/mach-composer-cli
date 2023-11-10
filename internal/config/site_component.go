@@ -3,12 +3,61 @@ package config
 import (
 	"fmt"
 	"github.com/elliotchance/pie/v2"
+	"github.com/mach-composer/mach-composer-cli/internal/config/variable"
 	"github.com/mach-composer/mach-composer-plugin-sdk/schema"
 	"github.com/rs/zerolog/log"
 	"gopkg.in/yaml.v3"
 	"path/filepath"
 	"strings"
 )
+
+type SiteComponentConfigs []SiteComponentConfig
+
+func (s *SiteComponentConfigs) Get(name string) (*SiteComponentConfig, error) {
+	for _, site := range *s {
+		if site.Name == name {
+			return &site, nil
+		}
+	}
+	return nil, fmt.Errorf("site component %s not found", name)
+}
+
+type SiteComponentConfig struct {
+	Name       string                `yaml:"name"`
+	Definition *ComponentConfig      `yaml:"-"`
+	Variables  variable.VariablesMap `yaml:"variables"`
+	Secrets    variable.VariablesMap `yaml:"secrets"`
+	Deployment *Deployment           `yaml:"deployment"`
+
+	DependsOn []string `yaml:"depends_on"`
+}
+
+type ComponentConfig struct {
+	Name         string            `yaml:"name"`
+	Source       string            `yaml:"source"`
+	Paths        []string          `yaml:"paths"`
+	Version      string            `yaml:"version"`
+	Branch       string            `yaml:"branch"`
+	Integrations []string          `yaml:"integrations"`
+	Endpoints    map[string]string `yaml:"endpoints"`
+}
+
+type TerraformConfig struct {
+	Providers   map[string]string `yaml:"providers"`
+	RemoteState map[string]any    `yaml:"remote_state"`
+}
+
+func (sc *SiteComponentConfig) HasCloudIntegration(g *GlobalConfig) bool {
+	if sc.Definition == nil {
+		log.Fatal().Msgf("ComponentConfig %s was not resolved properly (missing definition)", sc.Name)
+	}
+	return pie.Contains(sc.Definition.Integrations, g.Cloud)
+}
+
+// IsGitSource indicates if the source definition refers to Git.
+func (c *ComponentConfig) IsGitSource() bool {
+	return strings.HasPrefix(c.Source, "git")
+}
 
 func parseComponentsNode(cfg *MachConfig, node *yaml.Node) error {
 	if err := node.Decode(&cfg.Components); err != nil {

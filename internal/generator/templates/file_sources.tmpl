@@ -1,0 +1,11 @@
+# File sources
+{{ range $fs := . }}
+    data "local_file" "variables" {
+    filename = "{{ $fs.Filename }}"
+    }
+
+    data "sops_external" "variables" {
+    source     = data.local_file.variables.content
+    input_type = "yaml"
+    }
+{{ end }}

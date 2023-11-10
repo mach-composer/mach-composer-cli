@@ -1,0 +1,46 @@
+mach_composer:
+  version: 1.0.0
+  plugins:
+    aws:
+      source: mach-composer/aws
+      version: 0.1.0
+    my-plugin:
+      source: mach-composer/my-plugin
+      version: 0.1.0
+
+global:
+  cloud: aws
+  environment: test
+  terraform_config:
+    remote_state:
+      plugin: "aws"
+
+sites:
+  - identifier: my-site
+    endpoints:
+      main: api.my-site.nl
+      internal:
+        url: internal-api.my-site.nl
+        aws:
+          throttling_burst_limit: 5000
+          throttling_rate_limit: 10000
+    my-plugin:
+      some-key: 123456789
+      region: eu-central-1
+    components:
+      - name: your-component
+        variables:
+          FOO_VAR: my-value
+          BAR_VAR: ${var.foo}
+          MULTIPLE_VARS: ${var.foo.bar} ${var.bar.foo}
+        secrets:
+          MY_SECRET: secretvalue
+
+components:
+  - name: your-component
+    source: "git::https://github.com/<username>/<your-component>.git//terraform"
+    version: 0.1.0
+    endpoints:
+      internal: internal
+    integrations:
+      - my-plugin

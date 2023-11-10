@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/mach-composer/mach-composer-cli/internal/dependency"
 	"github.com/spf13/cobra"
 
 	"github.com/mach-composer/mach-composer-cli/internal/generator"
@@ -12,6 +13,7 @@ var applyFlags struct {
 	autoApprove bool
 	destroy     bool
 	components  []string
+	numWorkers  int
 }
 
 var applyCmd = &cobra.Command{
@@ -28,10 +30,11 @@ var applyCmd = &cobra.Command{
 
 func init() {
 	registerGenerateFlags(applyCmd)
-	applyCmd.Flags().BoolVarP(&applyFlags.reuse, "reuse", "", false, "Supress a terraform init for improved speed (not recommended for production usage)")
-	applyCmd.Flags().BoolVarP(&applyFlags.autoApprove, "auto-approve", "", false, "Supress a terraform init for improved speed (not recommended for production usage)")
+	applyCmd.Flags().BoolVarP(&applyFlags.reuse, "reuse", "", false, "Suppress a terraform init for improved speed (not recommended for production usage)")
+	applyCmd.Flags().BoolVarP(&applyFlags.autoApprove, "auto-approve", "", false, "Suppress a terraform init for improved speed (not recommended for production usage)")
 	applyCmd.Flags().BoolVarP(&applyFlags.destroy, "destroy", "", false, "Destroy option is a convenient way to destroy all remote objects managed by this mach config")
 	applyCmd.Flags().StringArrayVarP(&applyFlags.components, "component", "c", []string{}, "")
+	applyCmd.Flags().IntVarP(&applyFlags.numWorkers, "workers", "w", 1, "The number of workers to use")
 }
 
 func applyFunc(cmd *cobra.Command, args []string) error {
@@ -41,10 +44,15 @@ func applyFunc(cmd *cobra.Command, args []string) error {
 
 	generateFlags.ValidateSite(cfg)
 
+	dg, err := dependency.ToDeploymentGraph(cfg)
+	if err != nil {
+		return err
+	}
+
 	// Note that we do this in multiple passes to minimize ending up with
 	// half broken runs. We could in the future also run some parts in parallel
 
-	paths, err := generator.WriteFiles(ctx, cfg, &generator.GenerateOptions{
+	err = generator.Write(ctx, cfg, dg, &generator.GenerateOptions{
 		OutputPath: generateFlags.outputPath,
 		Site:       generateFlags.siteName,
 	})
@@ -52,7 +60,7 @@ func applyFunc(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	return runner.TerraformApply(ctx, cfg, paths, &runner.ApplyOptions{
+	return runner.TerraformApply(ctx, cfg, dg, &runner.ApplyOptions{
 		Destroy:     applyFlags.destroy,
 		Reuse:       applyFlags.reuse,
 		AutoApprove: applyFlags.autoApprove,

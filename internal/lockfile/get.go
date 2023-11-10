@@ -2,14 +2,13 @@ package lockfile
 
 import (
 	"github.com/mach-composer/mach-composer-cli/internal/cli"
-	"github.com/mach-composer/mach-composer-cli/internal/config"
 	"github.com/mach-composer/mach-composer-cli/internal/utils"
 	"gopkg.in/yaml.v3"
 	"os"
 	"path/filepath"
 )
 
-func GetLock(cfg *config.MachConfig, path string) (*LockFile, error) {
+func GetLock(hash, path string) (*LockFile, error) {
 	lockfile, exists, err := readLockFile(path, FileName)
 	if err != nil {
 		return nil, err
@@ -19,7 +18,7 @@ func GetLock(cfg *config.MachConfig, path string) (*LockFile, error) {
 		lockfile = &LockFile{
 			path:       path,
 			isNew:      true,
-			ConfigHash: cfg.ConfigHash,
+			ConfigHash: hash,
 			Version:    metadata.Version,
 		}
 	}

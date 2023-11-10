@@ -19,14 +19,26 @@ func (pc PluginConfig) name() string {
 }
 
 func (pc PluginConfig) executableName() string {
-	return fmt.Sprintf("mach-composer-plugin-%s_v%s", pc.name(), pc.Version)
+	executableName := fmt.Sprintf("mach-composer-plugin-%s_v%s", pc.name(), pc.Version)
+
+	if runtime.GOOS == "windows" {
+		executableName += ".exe"
+	}
+
+	return executableName
 }
 
 func (pc PluginConfig) path() string {
-	return path.Join(
+	path := path.Join(
 		xdg.ConfigHome, "mach-composer", "plugins", pc.Source, pc.Version,
 		fmt.Sprintf("%s_%s", runtime.GOOS, runtime.GOARCH),
 		pc.name())
+
+	if runtime.GOOS == "windows" {
+		path += ".exe"
+	}
+
+	return path
 }
 
 func NewDefaultPlugin(name string) PluginConfig {

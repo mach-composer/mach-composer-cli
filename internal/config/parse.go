@@ -20,6 +20,8 @@ type ConfigOptions struct {
 	VarFilenames []string
 	Plugins      *plugins.PluginRepository
 
+	Validate bool
+
 	NoResolveVars bool
 }
 
@@ -36,18 +38,20 @@ func Open(ctx context.Context, filename string, opts *ConfigOptions) (*MachConfi
 	//Take the relative path of the config file as the working directory
 	cwd := path.Dir(filename)
 
-	raw, err := loadConfig(ctx, filename, cwd, pluginRepo)
+	raw, err := loadConfig(ctx, filename, cwd, pluginRepo, opts.Validate)
 	if err != nil {
 		return nil, err
 	}
 
 	// Validate again
-	isValid, err := validateCompleteConfig(raw)
-	if err != nil {
-		return nil, err
-	}
-	if !isValid {
-		return nil, fmt.Errorf("failed to load config %s due to errors", filename)
+	if opts.Validate {
+		isValid, err := validateCompleteConfig(raw)
+		if err != nil {
+			return nil, err
+		}
+		if !isValid {
+			return nil, fmt.Errorf("failed to load config %s due to errors", filename)
+		}
 	}
 
 	for _, f := range opts.VarFilenames {
@@ -76,7 +80,7 @@ func Open(ctx context.Context, filename string, opts *ConfigOptions) (*MachConfi
 	return resolveConfig(ctx, raw)
 }
 
-func loadConfig(ctx context.Context, filename, cwd string, pr *plugins.PluginRepository) (*rawConfig, error) {
+func loadConfig(ctx context.Context, filename, cwd string, pr *plugins.PluginRepository, validate bool) (*rawConfig, error) {
 	// Load the yaml file and do basic validation if the config file is valid
 	// based on a json schema
 	document, err := loadYamlFile(filename)
@@ -86,18 +90,28 @@ func loadConfig(ctx context.Context, filename, cwd string, pr *plugins.PluginRep
 
 	// Initial validation. We validate the document twice, once only the
 	// structure and later again when we loaded the plugins
-	isValid, err := validateConfig(document)
-	if err != nil {
-		return nil, err
-	}
-	if !isValid {
-		return nil, fmt.Errorf("failed to load config %s due to errors", filename)
+	if validate {
+		isValid, err := validateConfig(document)
+		if err != nil {
+			return nil, err
+		}
+		if !isValid {
+			return nil, fmt.Errorf("failed to load config %s due to errors", filename)
+		}
 	}
 
 	// Decode the yaml in an intermediate config file
 	raw, err := newRawConfig(filename, document)
 	if err != nil {
 		return nil, err
+	}
+
+	// Set default deployment type if necessary
+	if raw.MachComposer.Deployment == nil {
+		log.Debug().Msg("No global deployment type specified; defaulting to site")
+		raw.MachComposer.Deployment = &Deployment{
+			Type: DeploymentSite,
+		}
 	}
 
 	componentNode, _, err := LoadRefData(ctx, &raw.Components, cwd)
@@ -214,7 +228,7 @@ func resolveVariables(ctx context.Context, rawConfig *rawConfig, cwd string) err
 		return err
 	}
 
-	// Interpolate the variables per-site to keep track of which site uses which
+	// TransformValue the variables per-site to keep track of which site uses which
 	// variable.
 	for _, node := range rawConfig.Sites.Content {
 		mapping := mapYamlNodes(node.Content)

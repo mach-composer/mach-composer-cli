@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/mach-composer/mach-composer-cli/internal/dependency"
 	"github.com/spf13/cobra"
 
 	"github.com/mach-composer/mach-composer-cli/internal/generator"
@@ -13,7 +14,7 @@ var generateCmd = &cobra.Command{
 		preprocessGenerateFlags()
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
-		return generateFunc(cmd, args)
+		return generateFunc(cmd)
 	},
 }
 
@@ -21,7 +22,7 @@ func init() {
 	registerGenerateFlags(generateCmd)
 }
 
-func generateFunc(cmd *cobra.Command, args []string) error {
+func generateFunc(cmd *cobra.Command) error {
 	cfg := loadConfig(cmd, true)
 	defer cfg.Close()
 
@@ -32,7 +33,12 @@ func generateFunc(cmd *cobra.Command, args []string) error {
 		Site:       generateFlags.siteName,
 	}
 
-	_, err := generator.WriteFiles(cmd.Context(), cfg, genOptions)
+	gd, err := dependency.ToDeploymentGraph(cfg)
+	if err != nil {
+		return err
+	}
+
+	err = generator.Write(cmd.Context(), cfg, gd, genOptions)
 	if err != nil {
 		return err
 	}

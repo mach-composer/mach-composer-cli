@@ -25,7 +25,7 @@ func GenerateSchema(ctx context.Context, filename string, pr *plugins.PluginRepo
 	//Take the relative path of the config file as the working directory
 	cwd := path.Dir(filename)
 
-	raw, err := loadConfig(ctx, filename, cwd, pr)
+	raw, err := loadConfig(ctx, filename, cwd, pr, true)
 	if err != nil {
 		return "", err
 	}
@@ -221,7 +221,7 @@ func createFullSchema(pr *plugins.PluginRepository, globalNode *yaml.Node) (map[
 	setAdditionalProperties(definitions["ComponentConfig"], false)
 	setAdditionalProperties(definitions["ComponentEndpointConfig"], false)
 
-	// Site config
+	// site config
 	for _, plugin := range pr.All() {
 		schema, err := pr.GetSchema(plugin.Name)
 		if err != nil {

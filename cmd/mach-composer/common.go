@@ -26,7 +26,7 @@ var generateFlags GenerateFlags
 
 func (gf GenerateFlags) ValidateSite(cfg *config.MachConfig) {
 	if gf.siteName != "" && !cfg.HasSite(gf.siteName) {
-		fmt.Fprintf(os.Stderr, "No site found with identifier: %s\n", gf.siteName)
+		_, _ = fmt.Fprintf(os.Stderr, "No site found with identifier: %s\n", gf.siteName)
 		os.Exit(1)
 	}
 }
@@ -34,14 +34,14 @@ func (gf GenerateFlags) ValidateSite(cfg *config.MachConfig) {
 func registerGenerateFlags(cmd *cobra.Command) {
 	cmd.Flags().StringVarP(&generateFlags.configFile, "file", "f", "main.yml", "YAML file to parse.")
 	cmd.Flags().StringVarP(&generateFlags.varFile, "var-file", "", "", "Use a variable file to parse the configuration with.")
-	cmd.Flags().StringVarP(&generateFlags.siteName, "site", "s", "", "Site to parse. If not set parse all sites.")
+	cmd.Flags().StringVarP(&generateFlags.siteName, "site", "s", "", "DeploymentSite to parse. If not set parse all sites.")
 	cmd.Flags().BoolVarP(&generateFlags.ignoreVersion, "ignore-version", "", false, "Skip MACH composer version check")
 	cmd.Flags().StringVarP(&generateFlags.outputPath, "output-path", "", "", "Output path, defaults to `cwd`/deployments.")
 
 	handleError(cmd.MarkFlagFilename("var-file", "yml", "yaml"))
 	handleError(cmd.MarkFlagFilename("file", "yml", "yaml"))
 
-	cmd.RegisterFlagCompletionFunc("site", AutocompleteSiteName)
+	_ = cmd.RegisterFlagCompletionFunc("site", AutocompleteSiteName)
 }
 
 func preprocessGenerateFlags() {
@@ -74,7 +74,7 @@ func preprocessGenerateFlags() {
 
 func handleError(err error) {
 	if err != nil {
-		cli.PrintExitError("An error occured:", err.Error())
+		cli.PrintExitError("An error occurred:", err.Error())
 	}
 }
 
@@ -82,6 +82,7 @@ func handleError(err error) {
 func loadConfig(cmd *cobra.Command, resolveVars bool) *config.MachConfig {
 	opts := &config.ConfigOptions{
 		NoResolveVars: !resolveVars,
+		Validate:      true,
 	}
 	if generateFlags.varFile != "" {
 		opts.VarFilenames = []string{generateFlags.varFile}

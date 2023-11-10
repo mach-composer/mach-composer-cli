@@ -1,9 +1,9 @@
 package main
 
 import (
+	"github.com/mach-composer/mach-composer-cli/internal/dependency"
 	"github.com/spf13/cobra"
 
-	"github.com/mach-composer/mach-composer-cli/internal/generator"
 	"github.com/mach-composer/mach-composer-cli/internal/runner"
 )
 
@@ -35,12 +35,12 @@ func showPlanFunc(cmd *cobra.Command, args []string) error {
 
 	generateFlags.ValidateSite(cfg)
 
-	paths := generator.FileLocations(cfg, &generator.GenerateOptions{
-		OutputPath: generateFlags.outputPath,
-		Site:       generateFlags.siteName,
-	})
+	dg, err := dependency.ToDeploymentGraph(cfg)
+	if err != nil {
+		return err
+	}
 
-	return runner.TerraformShow(ctx, cfg, paths, &runner.ShowPlanOptions{
+	return runner.TerraformShow(ctx, cfg, dg, &runner.ShowPlanOptions{
 		NoColor: showPlanFlags.noColor,
 		Site:    generateFlags.siteName,
 	})

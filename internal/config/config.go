@@ -3,8 +3,84 @@ package config
 import (
 	"fmt"
 	"github.com/mach-composer/mach-composer-cli/internal/cli"
+	"github.com/mach-composer/mach-composer-cli/internal/state"
 	"gopkg.in/yaml.v3"
+
+	"github.com/mach-composer/mach-composer-cli/internal/plugins"
+	"github.com/mach-composer/mcc-sdk-go/mccsdk"
 )
+
+type MachConfig struct {
+	Filename     string            `yaml:"-"`
+	MachComposer MachComposer      `yaml:"mach_composer"`
+	Global       GlobalConfig      `yaml:"global"`
+	Sites        SiteConfigs       `yaml:"sites"`
+	Components   []ComponentConfig `yaml:"components"`
+
+	StateRepository *state.Repository
+
+	extraFiles  map[string][]byte         `yaml:"-"`
+	ConfigHash  string                    `yaml:"-"`
+	Plugins     *plugins.PluginRepository `yaml:"-"`
+	Variables   *Variables                `yaml:"-"`
+	IsEncrypted bool                      `yaml:"-"`
+}
+
+func (c *MachConfig) Close() {
+	if c.Plugins != nil {
+		c.Plugins.Close()
+	}
+}
+
+func (c *MachConfig) HasSite(ident string) bool {
+	for i := range c.Sites {
+		if c.Sites[i].Identifier == ident {
+			return true
+		}
+	}
+	return false
+}
+
+type MachComposer struct {
+	Version       any                         `yaml:"version"`
+	VariablesFile string                      `yaml:"variables_file"`
+	Plugins       map[string]MachPluginConfig `yaml:"plugins"`
+	Cloud         MachComposerCloud           `yaml:"cloud"`
+	Deployment    *Deployment                 `yaml:"deployment"`
+}
+
+func (mc *MachComposer) CloudEnabled() bool {
+	return !mc.Cloud.Empty()
+}
+
+type MachComposerCloud struct {
+	Organization string `yaml:"organization"`
+	Project      string `yaml:"project"`
+
+	Client *mccsdk.APIClient
+}
+
+func (mcc *MachComposerCloud) Empty() bool {
+	if mcc.Organization == "" {
+		return true
+	}
+	if mcc.Project == "" {
+		return true
+	}
+	return false
+}
+
+type MachPluginConfig struct {
+	Source  string `yaml:"source"`
+	Version string `yaml:"version"`
+}
+
+type GlobalConfig struct {
+	Environment            string           `yaml:"environment"`
+	Cloud                  string           `yaml:"cloud"`
+	TerraformStateProvider string           `yaml:"-"`
+	TerraformConfig        *TerraformConfig `yaml:"terraform_config"`
+}
 
 func parseGlobalNode(cfg *MachConfig, globalNode *yaml.Node) error {
 	if err := globalNode.Decode(&cfg.Global); err != nil {

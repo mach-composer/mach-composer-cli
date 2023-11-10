@@ -25,9 +25,9 @@ func (lr *LocalRenderer) Backend() (string, error) {
 	}
 
 	tpl := `
-	backend "remote" {
+	backend "local" {
 		{{ if .State.Path }}
-		path = "{{ .State.Path }}"
+		path = "{{ .State.Path }}/{{ .Key }}.tfstate"
 		{{ end }}
 	}
 	`
@@ -43,15 +43,13 @@ func (lr *LocalRenderer) RemoteState() (string, error) {
 		Key:   lr.key,
 	}
 
-	//TODO: this needs fixing
-
 	tpl := `
 	data "terraform_remote_state" "{{ .Key }}" {
 	  backend = "local"
 	
 	  config = {
-		{{ if .State.Identifier }}
-		path = "{{ .State.Identifier }}"
+		{{ if .State.Path }}
+		path = "{{ .State.Path }}/{{ .Key }}.tfstate"
 		{{ end }}
 	  }
 	}

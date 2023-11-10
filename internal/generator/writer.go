@@ -2,15 +2,15 @@ package generator
 
 import (
 	"context"
+	"embed"
 	"errors"
 	"fmt"
+	"github.com/mach-composer/mach-composer-cli/internal/dependency"
+	"github.com/mach-composer/mach-composer-cli/internal/state"
 	"io"
 	"os"
 	"path/filepath"
 	"regexp"
-	"strings"
-
-	"github.com/mach-composer/mach-composer-cli/internal/state"
 
 	"github.com/hashicorp/hcl/v2/hclparse"
 	"github.com/hashicorp/hcl/v2/hclwrite"
@@ -25,100 +25,125 @@ type GenerateOptions struct {
 	Site       string
 }
 
-func WriteFiles(ctx context.Context, cfg *config.MachConfig, options *GenerateOptions) (map[string]string, error) {
-	locations := FileLocations(cfg, options)
+//go:embed templates/*.tmpl
+var templates embed.FS
 
-	for _, site := range cfg.Sites {
-		renderer, err := state.NewRenderer(
+// Write is the main entrypoint for this module. It takes the given MachConfig and graph and iterates the nodes to generate
+// the required terraform files.
+func Write(ctx context.Context, cfg *config.MachConfig, g *dependency.Graph, options *GenerateOptions) error {
+	for _, n := range g.Vertices() {
+		sr, err := state.NewRenderer(
 			state.Type(cfg.Global.TerraformStateProvider),
-			site.Identifier,
+			n.Identifier(),
 			cfg.Global.TerraformConfig.RemoteState,
 		)
 		if err != nil {
-			return nil, err
+			return err
 		}
-		err = cfg.StateRepository.Add(renderer.Key(), renderer)
+		err = cfg.StateRepository.Add(sr.Key(), sr)
 		if err != nil {
-			return nil, err
+			return err
 		}
 
-		if options.Site != "" && site.Identifier != options.Site {
-			continue
-		}
-
-		path := locations[site.Identifier]
-		lock, err := lockfile.GetLock(cfg, path)
-		if err != nil {
-			return nil, err
-		}
-
-		if !lock.HasChanges(cfg) {
-			log.Info().Msgf("Files for site %s are up-to-date", site.Identifier)
-			continue
-		}
-
-		filename := filepath.Join(path, "site.tf")
-
-		log.Info().Msgf("Writing %s", filename)
-		body, err := renderSite(ctx, cfg, &site)
-		if err != nil {
-			return nil, err
-		}
-
-		// Format and validate the file
-		formatted := formatFile([]byte(body))
-		if err := validateFile(formatted); err != nil {
-			log.Error().Msg("The generated terraform code is invalid. " +
-				"This is a bug in mach composer. Please report the issue at " +
-				"https://github.com/mach-composer/mach-composer-cli")
-		}
-
-		if err := os.MkdirAll(path, 0700); err != nil {
-			return nil, fmt.Errorf("error creating directory structure: %w", err)
-		}
-
-		if err := os.WriteFile(filename, formatted, 0700); err != nil {
-			return nil, fmt.Errorf("error writing file: %w", err)
-		}
-
-		for _, fs := range cfg.Variables.GetEncryptedSources(site.Identifier) {
-			target := filepath.Join(path, fs.Filename)
-			log.Info().Msgf("Copying %s", target)
-
-			// This can refer to a file outside of the current directory, so we need to create the directory structure
-			if err := os.MkdirAll(filepath.Dir(target), 0700); err != nil {
-				return nil, fmt.Errorf("error creating directory structure for variables: %w", err)
+		if site, ok := n.(*dependency.Site); ok {
+			for _, c := range site.NestedSiteComponentConfigs {
+				cfg.StateRepository.Alias(n.Identifier(), c.Name)
 			}
-
-			if err := copyFile(fs.Filename, target); err != nil {
-				return nil, fmt.Errorf("error writing extra file: %w", err)
-			}
-		}
-
-		if err := lock.Update(cfg); err != nil {
-			return nil, err
-		}
-		if err := lockfile.WriteLock(lock); err != nil {
-			return nil, err
 		}
 	}
-	return locations, nil
+
+	for _, n := range g.Vertices() {
+		outPath := fmt.Sprintf("%s/%s", options.OutputPath, n.Path())
+
+		switch n.(type) {
+		case *dependency.Project:
+			log.Debug().Msgf("No global files to generate for project %s", n.Path())
+			break
+		case *dependency.Site:
+			siteConfig := n.(*dependency.Site).SiteConfig
+			nestedComponents := n.(*dependency.Site).NestedSiteComponentConfigs
+
+			if err := copySecrets(cfg, siteConfig.Identifier, outPath); err != nil {
+				return err
+			}
+			body, err := renderSite(ctx, cfg, &siteConfig, nestedComponents)
+			if err != nil {
+				return err
+			}
+
+			if err = writeContent(cfg.ConfigHash, outPath, body); err != nil {
+				return err
+			}
+
+			log.Info().Msgf("Wrote site %s", siteConfig.Identifier)
+			break
+		case *dependency.SiteComponent:
+			s := n.(*dependency.SiteComponent).SiteConfig
+			sc := n.(*dependency.SiteComponent).SiteComponentConfig
+
+			if err := copySecrets(cfg, s.Identifier, outPath); err != nil {
+				return err
+			}
+
+			body, err := renderSiteComponent(ctx, cfg, &s, &sc)
+			if err != nil {
+				return err
+			}
+
+			if err = writeContent(cfg.ConfigHash, outPath, body); err != nil {
+				return err
+			}
+
+			log.Info().Msgf("Wrote site component %s", n.Path())
+			break
+		default:
+			return fmt.Errorf("unknown node type %T", n)
+		}
+
+	}
+
+	return nil
 }
 
-func FileLocations(cfg *config.MachConfig, options *GenerateOptions) map[string]string {
-	path := strings.TrimSuffix(filepath.Base(cfg.Filename), filepath.Ext(cfg.Filename))
-	sitesPath := filepath.Join(options.OutputPath, path)
-
-	locations := map[string]string{}
-
-	for i := range cfg.Sites {
-		site := cfg.Sites[i]
-		if options.Site != "" && site.Identifier != options.Site {
-			continue
-		}
-		locations[site.Identifier] = filepath.Join(sitesPath, site.Identifier)
+func writeContent(hash, path, content string) error {
+	lock, err := lockfile.GetLock(hash, path)
+	if err != nil {
+		return err
 	}
-	return locations
+
+	if !lock.HasChanges(hash) {
+		log.Info().Msgf("Files for path %s are up-to-date", path)
+		return nil
+	}
+
+	filename := filepath.Join(path, "main.tf")
+
+	log.Info().Msgf("Writing %s", filename)
+
+	// Format and validate the file
+	formatted := formatFile([]byte(content))
+	if err := validateFile(formatted); err != nil {
+		log.Error().Msg("The generated terraform code is invalid. " +
+			"This is a bug in mach composer. Please report the issue at " +
+			"https://github.com/mach-composer/mach-composer-cli")
+	}
+
+	if err := os.MkdirAll(path, 0700); err != nil {
+		return fmt.Errorf("error creating directory structure: %w", err)
+	}
+
+	if err := os.WriteFile(filename, formatted, 0700); err != nil {
+		return fmt.Errorf("error writing file: %w", err)
+	}
+
+	if err := lock.Update(hash); err != nil {
+		return err
+	}
+	if err := lockfile.WriteLock(lock); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func formatFile(src []byte) []byte {

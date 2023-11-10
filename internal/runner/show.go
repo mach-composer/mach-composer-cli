@@ -3,7 +3,7 @@ package runner
 import (
 	"context"
 	"fmt"
-
+	"github.com/mach-composer/mach-composer-cli/internal/dependency"
 	"github.com/rs/zerolog/log"
 
 	"github.com/mach-composer/mach-composer-cli/internal/config"
@@ -14,35 +14,32 @@ type ShowPlanOptions struct {
 	Site    string
 }
 
-func TerraformShow(ctx context.Context, cfg *config.MachConfig, locations map[string]string, options *ShowPlanOptions) error {
-	for i := range cfg.Sites {
-		site := cfg.Sites[i]
+func TerraformShow(ctx context.Context, cfg *config.MachConfig, dg *dependency.Graph, options *ShowPlanOptions) error {
+	if err := batchRun(dg, dg.StartNode.Path(), func(n dependency.Node) error {
+		tfPath := "deployments/" + n.Path()
 
-		if options.Site != "" && site.Identifier != options.Site {
-			continue
-		}
+		log.Info().Msgf("Showing %s", tfPath)
 
-		err := terraformShowSite(ctx, cfg, &site, locations[site.Identifier], options)
-		if err != nil {
-			return err
-		}
+		return terraformShow(ctx, tfPath, options)
+	}); err != nil {
+		return err
 	}
+
 	return nil
 }
 
-func terraformShowSite(ctx context.Context, cfg *config.MachConfig, site *config.SiteConfig, path string, options *ShowPlanOptions) error {
+func terraformShow(ctx context.Context, path string, options *ShowPlanOptions) error {
 	filename, err := hasTerraformPlan(path)
 	if err != nil {
 		return err
 	}
 	if filename == "" {
-		return fmt.Errorf("No plan found for site %s. Did you run `mach-composer plan`?", site.Identifier)
+		return fmt.Errorf("no plan found for path %s. Did you run `mach-composer plan`", path)
 	}
 
 	cmd := []string{"show", filename}
 	if options.NoColor {
 		cmd = append(cmd, "-no-color")
 	}
-	log.Info().Msgf("Showing terraform plan for site %s", site.Identifier)
-	return RunTerraform(ctx, path, cmd...)
+	return runTerraform(ctx, path, cmd...)
 }

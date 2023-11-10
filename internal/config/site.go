@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"github.com/rs/zerolog/log"
 
 	"github.com/elliotchance/pie/v2"
 	"gopkg.in/yaml.v3"
@@ -9,6 +10,27 @@ import (
 	"github.com/mach-composer/mach-composer-cli/internal/cli"
 	"github.com/mach-composer/mach-composer-cli/internal/utils"
 )
+
+type SiteConfigs []SiteConfig
+
+func (s *SiteConfigs) Get(identifier string) (*SiteConfig, error) {
+	for _, site := range *s {
+		if site.Identifier == identifier {
+			return &site, nil
+		}
+	}
+	return nil, fmt.Errorf("site %s not found", identifier)
+}
+
+// SiteConfig contains all configuration needed for a site.
+type SiteConfig struct {
+	Name         string         `yaml:"name"`
+	Identifier   string         `yaml:"identifier"`
+	Deployment   *Deployment    `yaml:"deployment"`
+	RawEndpoints map[string]any `yaml:"endpoints"`
+
+	Components SiteComponentConfigs `yaml:"components"`
+}
 
 func parseSitesNode(cfg *MachConfig, sitesNode *yaml.Node) error {
 	if err := sitesNode.Decode(&cfg.Sites); err != nil {
@@ -52,6 +74,14 @@ func parseSitesNode(cfg *MachConfig, sitesNode *yaml.Node) error {
 
 		if err := parseSiteComponentsNode(cfg, siteId, nodes["components"]); err != nil {
 			return err
+		}
+	}
+
+	for k, s := range cfg.Sites {
+		if s.Deployment == nil {
+			log.Debug().Msgf("No site deployment type specified for %s; defaulting to global setting", s.Identifier)
+			var siteComponentDeployment = *cfg.MachComposer.Deployment
+			cfg.Sites[k].Deployment = &siteComponentDeployment
 		}
 	}
 
@@ -199,6 +229,12 @@ func resolveSiteComponents(cfg *MachConfig) error {
 
 		for i := range site.Components {
 			c := &site.Components[i]
+
+			if c.Deployment == nil {
+				log.Debug().Msgf("No site component deployment type specified for %s; defaulting to global setting", c.Name)
+				var siteComponentDeployment = *site.Deployment
+				c.Deployment = &siteComponentDeployment
+			}
 
 			ref, ok := components[c.Name]
 			if !ok {

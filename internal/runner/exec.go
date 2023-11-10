@@ -9,7 +9,7 @@ import (
 	"github.com/mach-composer/mach-composer-cli/internal/utils"
 )
 
-func RunTerraform(ctx context.Context, cwd string, args ...string) error {
+func runTerraform(ctx context.Context, cwd string, args ...string) error {
 	if _, err := os.Stat(cwd); err != nil {
 		if os.IsNotExist(err) {
 			return fmt.Errorf("The generated files are not found: %w", err)

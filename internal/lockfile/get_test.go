@@ -1,7 +1,6 @@
 package lockfile
 
 import (
-	"github.com/mach-composer/mach-composer-cli/internal/config"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -34,10 +33,7 @@ func TestReadLockFileOk(t *testing.T) {
 }
 
 func TestGetNewLock(t *testing.T) {
-	cfg := &config.MachConfig{
-		ConfigHash: "hash",
-	}
-	lf, err := GetLock(cfg, "./testdata")
+	lf, err := GetLock("hash", "./testdata")
 	assert.NoError(t, err)
 	assert.True(t, lf.isNew)
 	assert.Equal(t, "hash", lf.ConfigHash)
