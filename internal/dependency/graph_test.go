@@ -10,14 +10,26 @@ import (
 
 func TestFromConfigSimple(t *testing.T) {
 	cfg := &config.MachConfig{
-		Filename: "main.yml",
+		Filename: "main",
+		MachComposer: config.MachComposer{
+			Deployment: &config.Deployment{
+				Type: config.DeploymentSiteComponent,
+			},
+		},
+
 		Sites: []config.SiteConfig{
 			{
-				Name:       "site 1",
+				Name: "site 1",
+				Deployment: &config.Deployment{
+					Type: config.DeploymentSiteComponent,
+				},
 				Identifier: "site-1",
 				Components: []config.SiteComponentConfig{
 					{
 						Name: "site-component-1",
+						Deployment: &config.Deployment{
+							Type: config.DeploymentSiteComponent,
+						},
 					},
 				},
 			},
@@ -33,50 +45,64 @@ func TestFromConfigSimple(t *testing.T) {
 	e, _ := g.Edges()
 	assert.Len(t, e, 2)
 
-	site, err := g.Vertex("main.yml/site-1")
+	site, err := g.Vertex("main/site-1")
 	assert.NoError(t, err)
-	assert.Equal(t, "main.yml/site-1", site.Path())
+	assert.Equal(t, "main/site-1", site.Path())
 	assert.IsType(t, &Site{}, site)
-	assert.Equal(t, &cfg.Sites[0], site.(*Site).SiteConfig)
+	assert.Equal(t, cfg.Sites[0], site.(*Site).SiteConfig)
 
-	sc, err := g.Vertex("main.yml/site-1/site-component-1")
+	sc, err := g.Vertex("main/site-1/site-component-1")
 	assert.NoError(t, err)
-	assert.Equal(t, "main.yml/site-1/site-component-1", sc.Path())
+	assert.Equal(t, "main/site-1/site-component-1", sc.Path())
 	assert.IsType(t, &SiteComponent{}, sc)
-	assert.Equal(t, &cfg.Sites[0].Components[0], sc.(*SiteComponent).SiteComponentConfig)
+	assert.Equal(t, cfg.Sites[0].Components[0], sc.(*SiteComponent).SiteComponentConfig)
 
 	am, _ := g.AdjacencyMap()
 	assert.Equal(t, map[string]map[string]graph.Edge[string]{
-		"main.yml": {
-			"main.yml/site-1": graph.Edge[string]{
-				Source:     "main.yml",
-				Target:     "main.yml/site-1",
+		"main": {
+			"main/site-1": graph.Edge[string]{
+				Source:     "main",
+				Target:     "main/site-1",
 				Properties: graph.EdgeProperties{Attributes: map[string]string{}, Weight: 0, Data: interface{}(nil)},
 			},
 		},
-		"main.yml/site-1": {
-			"main.yml/site-1/site-component-1": graph.Edge[string]{
-				Source:     "main.yml/site-1",
-				Target:     "main.yml/site-1/site-component-1",
+		"main/site-1": {
+			"main/site-1/site-component-1": graph.Edge[string]{
+				Source:     "main/site-1",
+				Target:     "main/site-1/site-component-1",
 				Properties: graph.EdgeProperties{Attributes: map[string]string{}, Weight: 0, Data: interface{}(nil)},
 			},
 		},
-		"main.yml/site-1/site-component-1": {}}, am)
+		"main/site-1/site-component-1": {}}, am)
 }
 
 func TestFromConfigExplicit(t *testing.T) {
 	cfg := &config.MachConfig{
-		Filename: "main.yml",
+		Filename: "main",
+		MachComposer: config.MachComposer{
+			Deployment: &config.Deployment{
+				Type: config.DeploymentSiteComponent,
+			},
+		},
 		Sites: []config.SiteConfig{
 			{
-				Name:       "site 1",
+				Name: "site 1",
+				Deployment: &config.Deployment{
+					Type: config.DeploymentSiteComponent,
+				},
 				Identifier: "site-1",
 				Components: []config.SiteComponentConfig{
 					{
 						Name: "site-component-1",
+						Deployment: &config.Deployment{
+							Type: config.DeploymentSiteComponent,
+						},
 					},
 					{
 						Name: "site-component-2",
+						Deployment: &config.Deployment{
+							Type: config.DeploymentSiteComponent,
+						},
 						DependsOn: []string{
 							"site-component-1",
 						},
@@ -91,46 +117,60 @@ func TestFromConfigExplicit(t *testing.T) {
 
 	am, _ := g.AdjacencyMap()
 	assert.Equal(t, map[string]map[string]graph.Edge[string]{
-		"main.yml": {
-			"main.yml/site-1": graph.Edge[string]{
-				Source:     "main.yml",
-				Target:     "main.yml/site-1",
+		"main": {
+			"main/site-1": graph.Edge[string]{
+				Source:     "main",
+				Target:     "main/site-1",
 				Properties: graph.EdgeProperties{Attributes: map[string]string{}, Weight: 0, Data: interface{}(nil)},
 			},
 		},
-		"main.yml/site-1": {
-			"main.yml/site-1/site-component-1": graph.Edge[string]{
-				Source:     "main.yml/site-1",
-				Target:     "main.yml/site-1/site-component-1",
+		"main/site-1": {
+			"main/site-1/site-component-1": graph.Edge[string]{
+				Source:     "main/site-1",
+				Target:     "main/site-1/site-component-1",
 				Properties: graph.EdgeProperties{Attributes: map[string]string{}, Weight: 0, Data: interface{}(nil)},
 			},
 		},
-		"main.yml/site-1/site-component-1": {
-			"main.yml/site-1/site-component-2": graph.Edge[string]{
-				Source:     "main.yml/site-1/site-component-1",
-				Target:     "main.yml/site-1/site-component-2",
+		"main/site-1/site-component-1": {
+			"main/site-1/site-component-2": graph.Edge[string]{
+				Source:     "main/site-1/site-component-1",
+				Target:     "main/site-1/site-component-2",
 				Properties: graph.EdgeProperties{Attributes: map[string]string{}, Weight: 0, Data: interface{}(nil)},
 			},
 		},
-		"main.yml/site-1/site-component-2": {},
+		"main/site-1/site-component-2": {},
 	}, am)
 }
 
 func TestFromConfigInferred(t *testing.T) {
 	cfg := &config.MachConfig{
-		Filename: "main.yml",
+		Filename: "main",
+		MachComposer: config.MachComposer{
+			Deployment: &config.Deployment{
+				Type: config.DeploymentSiteComponent,
+			},
+		},
 		Sites: []config.SiteConfig{
 			{
-				Name:       "site 1",
+				Name: "site 1",
+				Deployment: &config.Deployment{
+					Type: config.DeploymentSiteComponent,
+				},
 				Identifier: "site-1",
 				Components: []config.SiteComponentConfig{
 					{
 						Name: "site-component-1",
+						Deployment: &config.Deployment{
+							Type: config.DeploymentSiteComponent,
+						},
 					},
 					{
 						Name: "site-component-2",
+						Deployment: &config.Deployment{
+							Type: config.DeploymentSiteComponent,
+						},
 						Variables: variable.VariablesMap{
-							"value-1": variable.MustCreateNewScalarVariable(t, ""),
+							"value-1": variable.MustCreateNewScalarVariable(t, "${component.site-component-1.value-1}"),
 						},
 					},
 				},
@@ -143,47 +183,61 @@ func TestFromConfigInferred(t *testing.T) {
 
 	am, _ := g.AdjacencyMap()
 	assert.Equal(t, map[string]map[string]graph.Edge[string]{
-		"main.yml": {
-			"main.yml/site-1": graph.Edge[string]{
-				Source:     "main.yml",
-				Target:     "main.yml/site-1",
+		"main": {
+			"main/site-1": graph.Edge[string]{
+				Source:     "main",
+				Target:     "main/site-1",
 				Properties: graph.EdgeProperties{Attributes: map[string]string{}, Weight: 0, Data: interface{}(nil)},
 			},
 		},
-		"main.yml/site-1": {
-			"main.yml/site-1/site-component-1": graph.Edge[string]{
-				Source:     "main.yml/site-1",
-				Target:     "main.yml/site-1/site-component-1",
+		"main/site-1": {
+			"main/site-1/site-component-1": graph.Edge[string]{
+				Source:     "main/site-1",
+				Target:     "main/site-1/site-component-1",
 				Properties: graph.EdgeProperties{Attributes: map[string]string{}, Weight: 0, Data: interface{}(nil)},
 			},
 		},
-		"main.yml/site-1/site-component-1": {
-			"main.yml/site-1/site-component-2": graph.Edge[string]{
-				Source:     "main.yml/site-1/site-component-1",
-				Target:     "main.yml/site-1/site-component-2",
+		"main/site-1/site-component-1": {
+			"main/site-1/site-component-2": graph.Edge[string]{
+				Source:     "main/site-1/site-component-1",
+				Target:     "main/site-1/site-component-2",
 				Properties: graph.EdgeProperties{Attributes: map[string]string{}, Weight: 0, Data: interface{}(nil)},
 			},
 		},
-		"main.yml/site-1/site-component-2": {},
+		"main/site-1/site-component-2": {},
 	}, am)
 }
 
 func TestFromConfigCycleErr(t *testing.T) {
 	cfg := &config.MachConfig{
-		Filename: "main.yml",
+		Filename: "main",
+		MachComposer: config.MachComposer{
+			Deployment: &config.Deployment{
+				Type: config.DeploymentSiteComponent,
+			},
+		},
 		Sites: []config.SiteConfig{
 			{
 				Name:       "site 1",
 				Identifier: "site-1",
+				Deployment: &config.Deployment{
+					Type: config.DeploymentSiteComponent,
+				},
 				Components: []config.SiteComponentConfig{
 					{
 						Name: "site-component-1",
+						Deployment: &config.Deployment{
+							Type: config.DeploymentSiteComponent,
+						},
 						DependsOn: []string{
 							"site-component-2",
 						},
 					},
 					{
 						Name: "site-component-2",
+						Deployment: &config.Deployment{
+							Type: config.DeploymentSiteComponent,
+						},
 						DependsOn: []string{
 							"site-component-1",
 						},
@@ -198,7 +252,7 @@ func TestFromConfigCycleErr(t *testing.T) {
 	assert.IsType(t, &ValidationError{}, err)
 	assert.Len(t, err.(*ValidationError).Errors, 1)
 	assert.Equal(t,
-		"failed to add dependency from main.yml/site-1/site-component-1 to main.yml/site-1/site-component-2: "+
+		"failed to add dependency from main/site-1/site-component-1 to main/site-1/site-component-2: "+
 			"edge would create a cycle",
 		err.(*ValidationError).Errors[0].Error(),
 	)

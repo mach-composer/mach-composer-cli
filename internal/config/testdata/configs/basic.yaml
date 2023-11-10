@@ -1,0 +1,23 @@
+mach_composer:
+  version: "1.0.0"
+plugins: { }
+global:
+  environment: test
+sites:
+  - identifier: my-site
+    components:
+      - name: your-component
+        variables:
+          FOO_VAR: my-value
+          BAR_VAR: ${var.foo}
+          MULTIPLE_VARS: ${var.foo.bar} ${var.bar.foo}
+        secrets:
+          MY_SECRET: secretvalue
+        components:
+          - name: your-component
+            source: "git::https://github.com/<username>/<your-component>.git//terraform"
+            version: 0.1.0
+components:
+  - name: your-component
+    source: "git::https://github.com/<username>/<your-component>.git//terraform"
+    version: 0.1.0

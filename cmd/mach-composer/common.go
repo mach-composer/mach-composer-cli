@@ -26,7 +26,7 @@ var generateFlags GenerateFlags
 
 func (gf GenerateFlags) ValidateSite(cfg *config.MachConfig) {
 	if gf.siteName != "" && !cfg.HasSite(gf.siteName) {
-		fmt.Fprintf(os.Stderr, "No site found with identifier: %s\n", gf.siteName)
+		_, _ = fmt.Fprintf(os.Stderr, "No site found with identifier: %s\n", gf.siteName)
 		os.Exit(1)
 	}
 }
@@ -41,7 +41,7 @@ func registerGenerateFlags(cmd *cobra.Command) {
 	handleError(cmd.MarkFlagFilename("var-file", "yml", "yaml"))
 	handleError(cmd.MarkFlagFilename("file", "yml", "yaml"))
 
-	cmd.RegisterFlagCompletionFunc("site", AutocompleteSiteName)
+	_ = cmd.RegisterFlagCompletionFunc("site", AutocompleteSiteName)
 }
 
 func preprocessGenerateFlags() {
@@ -74,7 +74,7 @@ func preprocessGenerateFlags() {
 
 func handleError(err error) {
 	if err != nil {
-		cli.PrintExitError("An error occured:", err.Error())
+		cli.PrintExitError("An error occurred:", err.Error())
 	}
 }
 
@@ -82,6 +82,7 @@ func handleError(err error) {
 func loadConfig(cmd *cobra.Command, resolveVars bool) *config.MachConfig {
 	opts := &config.ConfigOptions{
 		NoResolveVars: !resolveVars,
+		Validate:      true,
 	}
 	if generateFlags.varFile != "" {
 		opts.VarFilenames = []string{generateFlags.varFile}

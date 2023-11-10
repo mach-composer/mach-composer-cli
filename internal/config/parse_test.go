@@ -2,6 +2,8 @@ package config
 
 import (
 	"context"
+	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
 	"github.com/mach-composer/mach-composer-cli/internal/config/variable"
 	"testing"
 
@@ -20,53 +22,17 @@ func TestMain(m *testing.M) {
 	m.Run()
 }
 
-func TestParseBasic(t *testing.T) {
-	data := []byte(utils.TrimIndent(`
-        ---
-        mach_composer:
-          version: 1.0.0
-		  plugins: {}
-        global:
-          environment: test
-        sites:
-        - identifier: my-site
-          components:
-          - name: your-component
-            variables:
-              FOO_VAR: my-value
-			  BAR_VAR: ${var.foo}
-			  MULTIPLE_VARS: ${var.foo.bar} ${var.bar.foo}
-            secrets:
-              MY_SECRET: secretvalue
-        components:
-        - name: your-component
-          source: "git::https://github.com/<username>/<your-component>.git//terraform"
-          version: 0.1.0
-    `))
+var ignoreOpts = []cmp.Option{
+	cmpopts.IgnoreUnexported(MachConfig{}, Variables{}, variable.ScalarVariable{}),
+	cmpopts.IgnoreFields(MachConfig{}, "StateRepository", "Plugins", "Variables"),
+}
 
-	document := &yaml.Node{}
-	err := yaml.Unmarshal(data, document)
-	require.NoError(t, err)
-
-	// Decode the yaml in an intermediate config file
-	intermediate, err := newRawConfig("test.yml", document)
-	require.NoError(t, err)
-
-	intermediate.MachComposer.Deployment = &Deployment{
-		Type: DeploymentSite,
-	}
-
-	vars := NewVariables()
-	vars.Set("foo", "foobar")
-	vars.Set("foo.bar", "1")
-	vars.Set("bar.foo", "2")
-	intermediate.variables = vars
-	intermediate.plugins = plugins.NewPluginRepository()
-
-	err = resolveVariables(context.Background(), intermediate, ".")
-	require.NoError(t, err)
-
-	config, err := resolveConfig(context.Background(), intermediate)
+func TestOpenBasic(t *testing.T) {
+	config, err := Open(context.Background(), "testdata/configs/basic.yaml", &ConfigOptions{
+		Validate:      false,
+		NoResolveVars: true,
+		Plugins:       plugins.NewPluginRepository(),
+	})
 	require.NoError(t, err)
 
 	component := ComponentConfig{
@@ -79,16 +45,23 @@ func TestParseBasic(t *testing.T) {
 	}
 
 	expected := &MachConfig{
+		Filename: "basic.yaml",
 		MachComposer: MachComposer{
-			Version: "1.0.0",
+			Version:    "1.0.0",
+			Deployment: &Deployment{Type: DeploymentSite},
+		},
+		Global: GlobalConfig{
+			Environment: "test",
 		},
 		Sites: []SiteConfig{
 			{
 				Name:       "",
+				Deployment: &Deployment{Type: DeploymentSite},
 				Identifier: "my-site",
 				Components: []SiteComponentConfig{
 					{
-						Name: "your-component",
+						Name:       "your-component",
+						Deployment: &Deployment{Type: DeploymentSite},
 						Variables: variable.VariablesMap{
 							"FOO_VAR":       variable.MustCreateNewScalarVariable(t, "my-value"),
 							"BAR_VAR":       variable.MustCreateNewScalarVariable(t, "foobar"),
@@ -103,80 +76,23 @@ func TestParseBasic(t *testing.T) {
 			},
 		},
 		Components: []ComponentConfig{component},
-		extraFiles: map[string][]byte{},
-		Variables:  vars,
 	}
-	assert.Equal(t, expected.Global, config.Global)
-	assert.Equal(t, expected.Sites, config.Sites)
-	assert.Equal(t, expected.Components, config.Components)
-	assert.Equal(t, expected.Variables, config.Variables)
+
+	assert.True(t, cmp.Equal(config, expected, ignoreOpts...), cmp.Diff(config, expected, ignoreOpts...))
 }
 
-func TestParse(t *testing.T) {
-	data := []byte(utils.TrimIndent(`
-        ---
-        mach_composer:
-          version: 1.0.0
-        global:
-          environment: test
-          terraform_config:
-			remote_state:
-				plugin: "my-plugin"
-			providers:
-				aws: 3.0.0
-          cloud: my-plugin
-        sites:
-        - identifier: my-site
-          endpoints:
-            main: api.my-site.nl
-            internal:
-              url: internal-api.my-site.nl
-              throttling_burst_limit: 5000
-              throttling_rate_limit: 10000
-          my-plugin:
-            some-key: 123456789
-            region: eu-central-1
-          components:
-          - name: your-component
-            variables:
-              FOO_VAR: my-value
-			  BAR_VAR: ${var.foo}
-			  MULTIPLE_VARS: ${var.foo.bar} ${var.bar.foo}
-            secrets:
-              MY_SECRET: secretvalue
-        components:
-        - name: your-component
-          source: "git::https://github.com/<username>/<your-component>.git//terraform"
-          version: 0.1.0
-          endpoints:
-            internal: internal
-          integrations:
-            - my-plugin
-    `))
-
-	vars := NewVariables()
-	vars.Set("foo", "foobar")
-	vars.Set("foo.bar", "1")
-	vars.Set("bar.foo", "2")
-
-	pluginRepo := plugins.NewPluginRepository()
-	err := pluginRepo.Add("my-plugin", plugins.NewMockPlugin())
+func TestParseComplex(t *testing.T) {
+	pr := plugins.NewPluginRepository()
+	err := pr.Add("my-plugin", plugins.NewMockPlugin())
+	require.NoError(t, err)
+	err = pr.Add("aws", plugins.NewMockPlugin())
 	require.NoError(t, err)
 
-	document := &yaml.Node{}
-	err = yaml.Unmarshal(data, document)
-	require.NoError(t, err)
-
-	intermediate, err := newRawConfig("main.yml", document)
-	require.NoError(t, err)
-
-	intermediate.plugins = pluginRepo
-	intermediate.variables = vars
-
-	err = resolveVariables(context.Background(), intermediate, ".")
-	require.NoError(t, err)
-
-	config, err := resolveConfig(context.Background(), intermediate)
+	config, err := Open(context.Background(), "testdata/configs/complex.yaml", &ConfigOptions{
+		Validate:      false,
+		NoResolveVars: true,
+		Plugins:       pr,
+	})
 	require.NoError(t, err)
 
 	component := ComponentConfig{
@@ -191,37 +107,43 @@ func TestParse(t *testing.T) {
 	}
 
 	expected := &MachConfig{
+		Filename: "complex.yaml",
 		MachComposer: MachComposer{
 			Version: "1.0.0",
+			Plugins: map[string]MachPluginConfig{
+				"aws":       {Source: "mach-composer/aws", Version: "0.1.0"},
+				"my-plugin": {Source: "mach-composer/my-plugin", Version: "0.1.0"},
+			},
+			Deployment: &Deployment{Type: DeploymentSite},
 		},
 		Global: GlobalConfig{
 			Environment:            "test",
-			Cloud:                  "my-plugin",
-			TerraformStateProvider: "my-plugin",
+			Cloud:                  "aws",
+			TerraformStateProvider: "aws",
 			TerraformConfig: &TerraformConfig{
-				RemoteState: map[string]any{
-					"plugin": "my-plugin",
-				},
-				Providers: map[string]string{
-					"aws": "3.0.0",
-				},
+				RemoteState: map[string]any{"plugin": "aws"},
+				Providers:   nil,
 			},
 		},
 		Sites: []SiteConfig{
 			{
 				Name:       "",
+				Deployment: &Deployment{Type: DeploymentSite},
 				Identifier: "my-site",
 				RawEndpoints: map[string]any{
 					"main": "api.my-site.nl",
 					"internal": map[string]any{
-						"throttling_burst_limit": 5000,
-						"throttling_rate_limit":  10000,
-						"url":                    "internal-api.my-site.nl",
+						"aws": map[string]any{
+							"throttling_burst_limit": 5000,
+							"throttling_rate_limit":  10000,
+						},
+						"url": "internal-api.my-site.nl",
 					},
 				},
 				Components: []SiteComponentConfig{
 					{
-						Name: "your-component",
+						Name:       "your-component",
+						Deployment: &Deployment{Type: DeploymentSite},
 						Variables: variable.VariablesMap{
 							"FOO_VAR":       variable.MustCreateNewScalarVariable(t, "my-value"),
 							"BAR_VAR":       variable.MustCreateNewScalarVariable(t, "foobar"),
@@ -236,66 +158,9 @@ func TestParse(t *testing.T) {
 			},
 		},
 		Components: []ComponentConfig{component},
-		extraFiles: map[string][]byte{},
-		Variables:  vars,
 	}
-	assert.Equal(t, expected.Global, config.Global)
-	assert.Equal(t, expected.Sites, config.Sites)
-	assert.Equal(t, expected.Components, config.Components)
-	assert.Equal(t, expected.Variables, config.Variables)
-}
 
-func TestResolveMissingVar(t *testing.T) {
-	data := []byte(utils.TrimIndent(`
-        ---
-        mach_composer:
-          version: 1.0.0
-        global:
-          environment: test
-          terraform_config:
-            aws_remote_state:
-              bucket: "your bucket"
-              key_prefix: mach
-          cloud: aws
-        sites:
-        - identifier: my-site
-          endpoints:
-            main: api.my-site.nl
-            internal:
-              url: internal-api.my-site.nl
-              throttling_burst_limit: 5000
-              throttling_rate_limit: 10000
-          aws:
-            account_id: 123456789
-            region: eu-central-1
-          components:
-          - name: your-component
-            variables:
-              FOO_VAR: my-value
-			  BAR_VAR: ${var.foo}
-			  MULTIPLE_VARS: ${var.foo.bar} ${var.bar.foo}
-            secrets:
-              MY_SECRET: secretvalue
-        components:
-        - name: your-component
-          source: "git::https://github.com/<username>/<your-component>.git//terraform"
-          version: 0.1.0
-          endpoints:
-            internal: internal
-          integrations:
-            - aws
-    `))
-
-	document := &yaml.Node{}
-	err := yaml.Unmarshal(data, document)
-	require.NoError(t, err)
-
-	intermediate, err := newRawConfig("main.yml", document)
-	require.NoError(t, err)
-	intermediate.variables = &Variables{}
-
-	err = resolveVariables(context.Background(), intermediate, ".")
-	assert.Error(t, err)
+	assert.True(t, cmp.Equal(config, expected, ignoreOpts...), cmp.Diff(config, expected, ignoreOpts...))
 }
 
 func TestParseComponentsNodeInline(t *testing.T) {

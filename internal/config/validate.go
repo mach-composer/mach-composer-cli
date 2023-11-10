@@ -25,7 +25,7 @@ func GenerateSchema(ctx context.Context, filename string, pr *plugins.PluginRepo
 	//Take the relative path of the config file as the working directory
 	cwd := path.Dir(filename)
 
-	raw, err := loadConfig(ctx, filename, cwd, pr)
+	raw, err := loadConfig(ctx, filename, cwd, pr, true)
 	if err != nil {
 		return "", err
 	}
