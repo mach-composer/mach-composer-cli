@@ -1,7 +1,6 @@
 package lockfile
 
 import (
-	"github.com/mach-composer/mach-composer-cli/internal/config"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -11,21 +10,14 @@ func TestHasChangesNew(t *testing.T) {
 		isNew: true,
 	}
 
-	cfg := &config.MachConfig{}
-
-	assert.True(t, lf.HasChanges(cfg))
+	assert.True(t, lf.HasChanges(""))
 }
 
 func TestHasChangesDifferentConfigHash(t *testing.T) {
 	lf := &LockFile{
 		ConfigHash: "hash",
 	}
-
-	cfg := &config.MachConfig{
-		ConfigHash: "different-hash",
-	}
-
-	assert.True(t, lf.HasChanges(cfg))
+	assert.True(t, lf.HasChanges("different-hash"))
 }
 
 func TestHasChangesDifferentVersion(t *testing.T) {
@@ -34,11 +26,7 @@ func TestHasChangesDifferentVersion(t *testing.T) {
 		Version:    "some-version",
 	}
 
-	cfg := &config.MachConfig{
-		ConfigHash: "hash",
-	}
-
-	assert.True(t, lf.HasChanges(cfg))
+	assert.True(t, lf.HasChanges("hash"))
 }
 
 func TestHasChangesNoChanges(t *testing.T) {
@@ -46,12 +34,7 @@ func TestHasChangesNoChanges(t *testing.T) {
 		ConfigHash: "hash",
 		Version:    "unknown",
 	}
-
-	cfg := &config.MachConfig{
-		ConfigHash: "hash",
-	}
-
-	assert.False(t, lf.HasChanges(cfg))
+	assert.False(t, lf.HasChanges("hash"))
 }
 
 func TestUpdate(t *testing.T) {
@@ -62,9 +45,7 @@ func TestUpdate(t *testing.T) {
 		Version:       "v1",
 	}
 
-	err := lf.Update(&config.MachConfig{
-		ConfigHash: "new-cfg-hash",
-	})
+	err := lf.Update("new-cfg-hash")
 	assert.NoError(t, err)
 
 	assert.Equal(t, "new-cfg-hash", lf.ConfigHash)

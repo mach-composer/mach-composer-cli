@@ -3,6 +3,7 @@ package dependency
 import (
 	"github.com/dominikbraun/graph"
 	"github.com/mach-composer/mach-composer-cli/internal/config"
+	"github.com/mach-composer/mach-composer-cli/internal/config/variable"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -36,13 +37,13 @@ func TestFromConfigSimple(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, "main.yml/site-1", site.Path())
 	assert.IsType(t, &Site{}, site)
-	assert.Equal(t, &cfg.Sites[0], site.(*Site).Config)
+	assert.Equal(t, &cfg.Sites[0], site.(*Site).SiteConfig)
 
 	sc, err := g.Vertex("main.yml/site-1/site-component-1")
 	assert.NoError(t, err)
 	assert.Equal(t, "main.yml/site-1/site-component-1", sc.Path())
 	assert.IsType(t, &SiteComponent{}, sc)
-	assert.Equal(t, &cfg.Sites[0].Components[0], sc.(*SiteComponent).Config)
+	assert.Equal(t, &cfg.Sites[0].Components[0], sc.(*SiteComponent).SiteComponentConfig)
 
 	am, _ := g.AdjacencyMap()
 	assert.Equal(t, map[string]map[string]graph.Edge[string]{
@@ -128,10 +129,8 @@ func TestFromConfigInferred(t *testing.T) {
 					},
 					{
 						Name: "site-component-2",
-						Variables: map[string]*config.SiteComponentVar{
-							"value-1": {
-								References: []string{"site-component-1"},
-							},
+						Variables: variable.VariablesMap{
+							"value-1": variable.MustCreateNewScalarVariable(t, ""),
 						},
 					},
 				},

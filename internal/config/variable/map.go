@@ -7,6 +7,10 @@ type MapVariable struct {
 	elements map[string]Variable
 }
 
+func NewMapVariable(elements map[string]Variable) *MapVariable {
+	return &MapVariable{baseVariable: baseVariable{typ: Map}, elements: elements}
+}
+
 func (v *MapVariable) Elements() map[string]Variable {
 	return v.elements
 }

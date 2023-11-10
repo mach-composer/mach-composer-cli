@@ -9,14 +9,14 @@ import (
 type Type string
 
 const (
-	String Type = "string"
+	Scalar Type = "scalar"
 	Map    Type = "map"
 	Slice  Type = "slice"
 )
 
 type VariablesMap map[string]Variable
 
-type TransformValueFunc func(value string) (any, error)
+type TransformValueFunc func(value any) (any, error)
 
 type Variable interface {
 	Type() Type
@@ -56,21 +56,7 @@ func (vl *VariablesMap) UnmarshalYAML(value *yaml.Node) error {
 func parseField(val *yaml.Node) (Variable, error) {
 	switch val.Kind {
 	case yaml.ScalarNode:
-		reference, hasReference, err := parseReference(val.Value)
-		if err != nil {
-			return nil, err
-		}
-
-		var references []string
-		if hasReference {
-			references = append(references, reference)
-		}
-
-		return &ScalarVariable{
-			baseVariable: baseVariable{typ: String},
-			content:      val.Value,
-			references:   references,
-		}, nil
+		return NewScalarVariable(val.Value)
 	case yaml.MappingNode:
 		var elements = make(map[string]Variable, len(val.Content)/2)
 		for i := 0; i < len(val.Content); i += 2 {
@@ -84,10 +70,7 @@ func parseField(val *yaml.Node) (Variable, error) {
 			elements[key.Value] = pVal
 		}
 
-		return &MapVariable{
-			baseVariable: baseVariable{typ: Map},
-			elements:     elements,
-		}, nil
+		return NewMapVariable(elements), nil
 	case yaml.SequenceNode:
 		var elements = make([]Variable, 0, len(val.Content))
 
@@ -98,10 +81,7 @@ func parseField(val *yaml.Node) (Variable, error) {
 			}
 			elements = append(elements, pVal)
 		}
-		return &SliceVariable{
-			baseVariable: baseVariable{typ: Slice},
-			elements:     elements,
-		}, nil
+		return NewSliceVariable(elements), nil
 	default:
 		return nil, fmt.Errorf("unsupported variable type: %s", val.ShortTag())
 	}

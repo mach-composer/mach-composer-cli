@@ -7,6 +7,10 @@ type SliceVariable struct {
 	elements []Variable
 }
 
+func NewSliceVariable(elements []Variable) *SliceVariable {
+	return &SliceVariable{baseVariable: baseVariable{typ: Slice}, elements: elements}
+}
+
 func (v *SliceVariable) Elements() []Variable {
 	return v.elements
 }

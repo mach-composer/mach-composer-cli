@@ -2,6 +2,7 @@ package config
 
 import (
 	"context"
+	"github.com/mach-composer/mach-composer-cli/internal/config/variable"
 	"testing"
 
 	"github.com/rs/zerolog"
@@ -51,6 +52,10 @@ func TestParseBasic(t *testing.T) {
 	intermediate, err := newRawConfig("test.yml", document)
 	require.NoError(t, err)
 
+	intermediate.MachComposer.Deployment = &Deployment{
+		Type: DeploymentSite,
+	}
+
 	vars := NewVariables()
 	vars.Set("foo", "foobar")
 	vars.Set("foo.bar", "1")
@@ -77,9 +82,6 @@ func TestParseBasic(t *testing.T) {
 		MachComposer: MachComposer{
 			Version: "1.0.0",
 		},
-		Global: GlobalConfig{
-			Environment: "test",
-		},
 		Sites: []SiteConfig{
 			{
 				Name:       "",
@@ -87,29 +89,13 @@ func TestParseBasic(t *testing.T) {
 				Components: []SiteComponentConfig{
 					{
 						Name: "your-component",
-						Variables: SiteComponentVars{
-							"FOO_VAR": &SiteComponentVar{
-								Value:        "my-value",
-								Interpolated: "my-value",
-								References:   nil,
-							},
-							"BAR_VAR": &SiteComponentVar{
-								Value:        "foobar",
-								Interpolated: "foobar",
-								References:   nil,
-							},
-							"MULTIPLE_VARS": &SiteComponentVar{
-								Value:        "1 2",
-								Interpolated: "1 2",
-								References:   nil,
-							},
+						Variables: variable.VariablesMap{
+							"FOO_VAR":       variable.MustCreateNewScalarVariable(t, "my-value"),
+							"BAR_VAR":       variable.MustCreateNewScalarVariable(t, "foobar"),
+							"MULTIPLE_VARS": variable.MustCreateNewScalarVariable(t, "1 2"),
 						},
-						Secrets: SiteComponentVars{
-							"MY_SECRET": &SiteComponentVar{
-								Value:        "secretvalue",
-								Interpolated: "secretvalue",
-								References:   nil,
-							},
+						Secrets: variable.VariablesMap{
+							"MY_SECRET": variable.MustCreateNewScalarVariable(t, "my-secretvalue"),
 						},
 						Definition: &component,
 					},
@@ -236,29 +222,13 @@ func TestParse(t *testing.T) {
 				Components: []SiteComponentConfig{
 					{
 						Name: "your-component",
-						Variables: SiteComponentVars{
-							"FOO_VAR": &SiteComponentVar{
-								Value:        "my-value",
-								Interpolated: "my-value",
-								References:   nil,
-							},
-							"BAR_VAR": &SiteComponentVar{
-								Value:        "foobar",
-								Interpolated: "foobar",
-								References:   nil,
-							},
-							"MULTIPLE_VARS": &SiteComponentVar{
-								Value:        "1 2",
-								Interpolated: "1 2",
-								References:   nil,
-							},
+						Variables: variable.VariablesMap{
+							"FOO_VAR":       variable.MustCreateNewScalarVariable(t, "my-value"),
+							"BAR_VAR":       variable.MustCreateNewScalarVariable(t, "foobar"),
+							"MULTIPLE_VARS": variable.MustCreateNewScalarVariable(t, "1 2"),
 						},
-						Secrets: SiteComponentVars{
-							"MY_SECRET": &SiteComponentVar{
-								Value:        "secretvalue",
-								Interpolated: "secretvalue",
-								References:   nil,
-							},
+						Secrets: variable.VariablesMap{
+							"MY_SECRET": variable.MustCreateNewScalarVariable(t, "my-secretvalue"),
 						},
 						Definition: &component,
 					},
