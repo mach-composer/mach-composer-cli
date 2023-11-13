@@ -15,67 +15,67 @@ jobs:
     strategy:
       max-parallel: 4
       matrix:
-        go-version: ['1.21.x']
+        go-version: [ '1.21.x' ]
 
     steps:
-    - name: Set up Go
-      uses: actions/setup-go@v3
-      with:
-        go-version: ${{ matrix.go-version }}
-      id: go
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: ${{ matrix.go-version }}
+        id: go
 
-    - name: Install Task
-      uses: arduino/setup-task@v1
-      with:
-        repo-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Install Task
+        uses: arduino/setup-task@v1
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Set up Go modules cache
-      uses: actions/cache@v3
-      env:
-        cache-name: cache-go-modules
-      with:
-        path: ~/go/pkg/mod
-        key: ${{ runner.os }}-go${{ matrix.go-version }}-build-${{ hashFiles('**/go.sum') }}
-        restore-keys: |
-          ${{ runner.os }}-go${{ matrix.go-version }}-build-${{ env.cache-name }}-
-          ${{ runner.os }}-go${{ matrix.go-version }}-build-
-          ${{ runner.os }}-go${{ matrix.go-version }}-
+      - name: Set up Go modules cache
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-go-modules
+        with:
+          path: ~/go/pkg/mod
+          key: ${{ runner.os }}-go${{ matrix.go-version }}-build-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go${{ matrix.go-version }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-go${{ matrix.go-version }}-build-
+            ${{ runner.os }}-go${{ matrix.go-version }}-
 
-    - name: Check out code
-      uses: actions/checkout@v3
-      with:
-        fetch-depth: 0
+      - name: Check out code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
-#    - name: golangci-lint
-#      uses: golangci/golangci-lint-action@v3
-#      with:
-#        args: --issues-exit-code=0 --timeout=5m
-#
-#    - name: Run tests
-#      run: |
-#        make cover
-#        make build
-#        mkdir -p output
-#        mv bin/mach-composer output/mach-composer
-#        cp coverage.out output/coverage.out
-#
-#    - name: Upload to codecov
-#      uses: codecov/codecov-action@v1.0.6
-#
-#    - name: Upload artifacts
-#      uses: actions/upload-artifact@v2
-#      with:
-#        name: output
-#        path: output/**/*
+      #    - name: golangci-lint
+      #      uses: golangci/golangci-lint-action@v3
+      #      with:
+      #        args: --issues-exit-code=0 --timeout=5m
+      #
+      #    - name: Run tests
+      #      run: |
+      #        make cover
+      #        make build
+      #        mkdir -p output
+      #        mv bin/mach-composer output/mach-composer
+      #        cp coverage.out output/coverage.out
+      #
+      #    - name: Upload to codecov
+      #      uses: codecov/codecov-action@v1.0.6
+      #
+      #    - name: Upload artifacts
+      #      uses: actions/upload-artifact@v2
+      #      with:
+      #        name: output
+      #        path: output/**/*
 
-    - name: Prepare release
-      if: github.ref == 'refs/heads/326-allow-for-beta-release' && github.event.type != 'pull_request'
-      uses: labd/changie-release-action@4ac62d64b3fb4e396ec632ebecb74626e1c25d46
-      with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-        release-workflow: 'release-beta.yaml'
-        prerelease: true
+      - name: Prepare release
+        if: github.ref == 'refs/heads/326-allow-for-beta-release' && github.event.type != 'pull_request'
+        uses: labd/changie-release-action@4ac62d64b3fb4e396ec632ebecb74626e1c25d46
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          release-workflow: 'release-beta.yaml'
+          prerelease: true
 
-    - name: Do release
-      if: github.ref == 'refs/heads/326-allow-for-beta-release' && github.event.type != 'pull_request'
-      uses: ./.github/actions/release
+      - name: Do release
+        if: github.ref == 'refs/heads/326-allow-for-beta-release' && github.event.type != 'pull_request'
+        uses: ./.github/workflows/release-beta.yaml
