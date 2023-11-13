@@ -4,6 +4,9 @@ before:
   hooks:
     - make tidy
 
+changelog:
+  skip: false
+
 # Build step
 builds:
   - id: mach-composer
