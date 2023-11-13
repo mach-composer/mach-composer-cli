@@ -42,7 +42,47 @@ jobs:
           version: latest
           args: next -p ${{ env.HASH }} auto
 
+      - name: Output changes
+        uses: miniscruff/changie-action@v2
+        id: changelog
+        with:
+          version: latest
+          args: batch --dry-run -p ${{ env.HASH }} auto
+
+      - name: Create tag
+        uses: actions/github-script@v6
+        env:
+          VERSION: ${{ steps.next-tag.outputs.output }}
+        with:
+          github-token: ${{ inputs.github-token }}
+          script: |
+            github.rest.git.createRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: `refs/tags/${process.env.VERSION}`,
+              sha: context.sha
+            })
+
       - name: Create release
+        uses: actions/github-script@v6
+        env:
+          VERSION: ${{ steps.next-tag.outputs.output }}
+          GITHUB_RELEASE_BODY: ${{ steps.changelog.outputs.output }}
+        with:
+          github-token: ${{ inputs.github-token }}
+          retries: 3
+          script: |
+            github.rest.repos.createRelease({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              name: process.env.VERSION,
+              body: process.env.GITHUB_RELEASE_BODY,
+              tag_name: process.env.VERSION,
+              prerelease: true,
+              draft: false,
+            })
+
+      - name: GoReleaser
         uses: goreleaser/goreleaser-action@v5
         with:
           args: release --clean -f .goreleaser-beta.yml --skip=validate
