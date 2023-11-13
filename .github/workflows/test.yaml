@@ -9,7 +9,7 @@ permissions:
 
 jobs:
 
-  linux:
+  test:
     runs-on: ubuntu-latest
 
     strategy:
@@ -18,6 +18,11 @@ jobs:
         go-version: [ '1.21.x' ]
 
     steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
       - name: Set up Go
         uses: actions/setup-go@v3
         with:
@@ -41,11 +46,6 @@ jobs:
             ${{ runner.os }}-go${{ matrix.go-version }}-build-
             ${{ runner.os }}-go${{ matrix.go-version }}-
 
-      - name: Check out code
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-
       #    - name: golangci-lint
       #      uses: golangci/golangci-lint-action@v3
       #      with:
@@ -68,14 +68,7 @@ jobs:
       #        name: output
       #        path: output/**/*
 
-      - name: Prepare release
-        if: github.ref == 'refs/heads/326-allow-for-beta-release' && github.event.type != 'pull_request'
-        uses: labd/changie-release-action@4ac62d64b3fb4e396ec632ebecb74626e1c25d46
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          release-workflow: 'release-beta.yaml'
-          prerelease: true
 
-      - name: Do release
-        if: github.ref == 'refs/heads/326-allow-for-beta-release' && github.event.type != 'pull_request'
-        uses: ./.github/workflows/release-beta.yaml
+  release:
+    if: github.ref == 'refs/heads/326-allow-for-beta-release' && github.event.type != 'pull_request'
+    uses: ./.github/workflows/release-beta.yaml

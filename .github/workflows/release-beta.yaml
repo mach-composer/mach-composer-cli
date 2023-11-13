@@ -1,4 +1,4 @@
-name: Create release
+name: Create beta release
 
 on:
   workflow_call:
@@ -9,6 +9,12 @@ jobs:
     steps:
       - name: Check out code
         uses: actions/checkout@v3
+
+      - name: Prepare release
+        uses: labd/changie-release-action@4ac62d64b3fb4e396ec632ebecb74626e1c25d46
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          prerelease: true
 
       - name: Get goreleaser app token
         id: get-app-token
