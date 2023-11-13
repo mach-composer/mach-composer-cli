@@ -70,6 +70,7 @@ jobs:
 
     - name: Prepare release
       if: github.ref == 'refs/heads/main' && github.event.type != 'pull_request'
-      uses: labd/changie-release-action@v0.1.0
+      uses: labd/changie-release-action@v0.3.0
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
+        release-workflow: 'release.yaml'

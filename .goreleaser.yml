@@ -4,6 +4,7 @@ before:
   hooks:
     - make tidy
 
+# Build step
 builds:
   - id: mach-composer
     main: ./cmd/mach-composer
@@ -38,6 +39,7 @@ checksum:
   name_template: '{{ .ProjectName }}_{{ .Version }}_SHA256SUMS'
   algorithm: sha256
 
+# Publish step
 changelog:
   sort: asc
   filters:
@@ -45,9 +47,19 @@ changelog:
       - "^docs:"
       - "^test:"
 
+archives:
+  - id: mach-composer
+    name_template: "mach-composer-{{.Version}}-{{.Os}}-{{.Arch}}{{ if .Arm }}v{{.Arm }}{{ end }}"
+    format: tar.gz
+    files:
+      - LICENSE
+
+    format_overrides:
+      - goos: windows
+        format: zip
 brews:
   - name: "{{ .ProjectName }}"
-    tap:
+    repository:
       owner: mach-composer
       name: homebrew-{{ .ProjectName }}
     url_template: https://github.com/mach-composer/mach-composer-cli/releases/download/v{{ .Version }}/{{ .ArtifactName }}
@@ -110,17 +122,7 @@ chocolateys:
     api_key: '{{ .Env.CHOCOLATEY_API_KEY }}'
     skip_publish: true
 
-archives:
-  - id: mach-composer
-    name_template: "mach-composer-{{.Version}}-{{.Os}}-{{.Arch}}{{ if .Arm }}v{{.Arm }}{{ end }}"
-    format: tar.gz
-    files:
-      - LICENSE
-
-    format_overrides:
-      - goos: windows
-        format: zip
-
+# Announce step
 milestones:
   - repo:
       owner: mach-composer
