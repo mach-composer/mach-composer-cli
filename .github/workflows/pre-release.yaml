@@ -54,7 +54,6 @@ jobs:
         env:
           VERSION: ${{ steps.next-tag.outputs.output }}
         with:
-          github-token: ${{ inputs.github-token }}
           script: |
             github.rest.git.createRef({
               owner: context.repo.owner,
@@ -69,7 +68,6 @@ jobs:
           VERSION: ${{ steps.next-tag.outputs.output }}
           GITHUB_RELEASE_BODY: ${{ steps.changelog.outputs.output }}
         with:
-          github-token: ${{ inputs.github-token }}
           retries: 3
           script: |
             github.rest.repos.createRelease({
