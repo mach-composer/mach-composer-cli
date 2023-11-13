@@ -8,7 +8,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Prepare release
         uses: labd/changie-release-action@4ac62d64b3fb4e396ec632ebecb74626e1c25d46
