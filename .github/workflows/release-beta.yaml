@@ -33,7 +33,7 @@ jobs:
         run: git checkout -- go.mod go.sum
 
       - name: Create release
-        uses: goreleaser/goreleaser-action@v3
+        uses: goreleaser/goreleaser-action@v5
         with:
           args: release --clean -f .goreleaser-beta.yml
         env:
