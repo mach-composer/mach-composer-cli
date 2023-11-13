@@ -70,8 +70,12 @@ jobs:
 
     - name: Prepare release
       if: github.ref == 'refs/heads/326-allow-for-beta-release' && github.event.type != 'pull_request'
-      uses: labd/changie-release-action@b72ab86ca0b4b701c03feb72a5861b0da3b08209
+      uses: labd/changie-release-action@4ac62d64b3fb4e396ec632ebecb74626e1c25d46
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         release-workflow: 'release-beta.yaml'
         prerelease: true
+
+    - name: Do release
+      if: github.ref == 'refs/heads/326-allow-for-beta-release' && github.event.type != 'pull_request'
+      uses: mach-composer/mach-composer-cli/.github/workflows/release-beta.yaml
