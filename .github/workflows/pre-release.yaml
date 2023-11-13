@@ -1,10 +1,10 @@
-name: Create beta release
+name: Create pre release
 
-on:
-  workflow_call:
+on: [ pull_request ]
 
 jobs:
   goreleaser:
+    if: ${{ github.event.label.name == 'prerelease' }}
     runs-on: ubuntu-latest
     steps:
       - name: Check out code
@@ -12,11 +12,8 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Prepare release
-        uses: labd/changie-release-action@4ac62d64b3fb4e396ec632ebecb74626e1c25d46
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          prerelease: true
+      - name: Fetch tags
+        run: git fetch --force --tags
 
       - name: Get goreleaser app token
         id: get-app-token
@@ -31,14 +28,19 @@ jobs:
         with:
           go-version: '1.21.1'
 
-      - name: Run tests
-        run: git checkout -- go.mod go.sum
+      - name: Get the next version
+        id: next-tag
+        uses: miniscruff/changie-action@v2
+        with:
+          version: latest
+          args: next --p $(git rev-parse --short "$GITHUB_SHA")
 
       - name: Create release
         uses: goreleaser/goreleaser-action@v5
         with:
           args: release --clean -f .goreleaser-beta.yml
         env:
+          GORELEASER_CURRENT_TAG: ${{ steps.next-tag.outputs.output }}
           GITHUB_TOKEN: ${{ steps.get-app-token.outputs.app-token }}
           GOPATH: ${{ env.GOPATH }}
           CHOCOLATEY_API_KEY: ${{ secrets.CHOCOLATEY_API_KEY }}

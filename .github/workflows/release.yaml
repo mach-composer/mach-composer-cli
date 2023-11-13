@@ -1,7 +1,9 @@
 name: Create release
 
 on:
-  workflow_dispatch:
+  push:
+    branches:
+      - main
 
 env:
   IMAGE_NAME: ghcr.io/mach-composer/mach-composer

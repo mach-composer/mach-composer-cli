@@ -1,6 +1,6 @@
 name: Run tests
 
-on: [ push, pull_request ]
+on: [ pull_request ]
 
 permissions:
   contents: write
@@ -69,10 +69,3 @@ jobs:
       #      with:
       #        name: output
       #        path: output/**/*
-
-
-  release:
-    needs: [ test ]
-    if: github.ref == 'refs/heads/326-allow-for-beta-release' && github.event.type != 'pull_request'
-    uses: ./.github/workflows/release-beta.yaml
-    secrets: inherit
