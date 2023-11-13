@@ -8,7 +8,9 @@ permissions:
   actions: write
 
 jobs:
-
+  # TODO: add build step to test if all binaries can be built
+  # TODO: add check if changie file is set
+  # TODO: split linting to separate check
   test:
     runs-on: ubuntu-latest
 
