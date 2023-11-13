@@ -1,0 +1,53 @@
+project_name: mach-composer
+
+before:
+  hooks:
+    - make tidy
+
+# Build step
+builds:
+  - id: mach-composer
+    main: ./cmd/mach-composer
+    binary: bin/mach-composer
+    flags:
+      - -trimpath
+      - -tags=netgo
+    env:
+      - CGO_ENABLED=0
+    asmflags:
+      - all=-trimpath={{.Env.GOPATH}}
+    gcflags:
+      - all=-trimpath={{.Env.GOPATH}}
+    ldflags: |
+      -s -w
+        -X github.com/mach-composer/mach-composer-cli/internal/cli.version={{.Version}}
+        -X github.com/mach-composer/mach-composer-cli/internal/cli.commit={{.Commit}}
+        -X github.com/mach-composer/mach-composer-cli/internal/cli.date={{.CommitDate}}
+        -extldflags '-static'
+    goos:
+      - freebsd
+      - windows
+      - linux
+      - darwin
+    goarch:
+      - amd64
+      - arm64
+      - arm
+    mod_timestamp: '{{ .CommitTimestamp }}'
+
+checksum:
+  name_template: '{{ .ProjectName }}_{{ .Version }}_SHA256SUMS'
+  algorithm: sha256
+
+# Publish step
+
+archives:
+  - id: mach-composer
+    name_template: "mach-composer-{{.Version}}-{{.Os}}-{{.Arch}}{{ if .Arm }}v{{.Arm }}{{ end }}"
+    format: tar.gz
+    files:
+      - LICENSE
+
+    format_overrides:
+      - goos: windows
+        format: zip
