@@ -70,7 +70,7 @@ jobs:
 
     - name: Prepare release
       if: github.ref == 'refs/heads/326-allow-for-beta-release' && github.event.type != 'pull_request'
-      uses: labd/changie-release-action@a2fe269419e049e6cddf79f92c50f1abd9e94857
+      uses: labd/changie-release-action@660198325c09cff9f6df0af6eb6a77835739b6b9
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         release-workflow: 'release-beta.yaml'
