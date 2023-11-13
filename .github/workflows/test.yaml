@@ -74,3 +74,4 @@ jobs:
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         release-workflow: 'release-beta.yaml'
+        prerelease: true
