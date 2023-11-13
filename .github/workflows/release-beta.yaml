@@ -35,7 +35,7 @@ jobs:
       - name: Create release
         uses: goreleaser/goreleaser-action@v3
         with:
-          args: release --rm-dist -f .goreleaser-beta.yml
+          args: release --clean -f .goreleaser-beta.yml
         env:
           GITHUB_TOKEN: ${{ steps.get-app-token.outputs.app-token }}
           GOPATH: ${{ env.GOPATH }}
