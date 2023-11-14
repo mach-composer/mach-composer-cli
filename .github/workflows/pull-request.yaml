@@ -140,4 +140,4 @@ jobs:
       - name: build binaries
         uses: goreleaser/goreleaser-action@v3
         with:
-          args: build --clean
+          args: build --clean --skip=validate
