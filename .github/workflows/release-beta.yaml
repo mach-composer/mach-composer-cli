@@ -37,6 +37,11 @@ jobs:
           private-key: ${{ secrets.MCI_APP_PRIVATE_KEY }}
           installation-id: ${{ secrets.MCI_APP_INSTALLATION_ID }}
 
+      - name: Install Task
+        uses: arduino/setup-task@v1
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Get hash
         shell: bash
         run: |
