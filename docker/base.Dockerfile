@@ -1,11 +1,10 @@
 #syntax=docker/dockerfile:1.4.0
 
-FROM goreleaser/goreleaser:v1.15.2 AS builder
-ARG GORELEASER_ARGS
+FROM goreleaser/goreleaser:v1.22.1 AS builder
 
 COPY . /code/
 WORKDIR /code/
-RUN goreleaser build --single-target --output /code/dist/mach-composer --skip-validate ${GORELEASER_ARGS}
+RUN goreleaser build --single-target --output /code/dist/mach-composer --skip=before --skip=validate
 
 
 FROM alpine:3.14 AS base
