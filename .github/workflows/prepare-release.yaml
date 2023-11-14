@@ -1,0 +1,20 @@
+name: Generate release pull request
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  generate-pr:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Prepare release
+        uses: labd/changie-release-action@f262f3ec102bf6b3810d07a246b2d34369dca21c
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          release-workflow: ./.github/workflows/release.yaml

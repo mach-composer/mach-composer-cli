@@ -1,0 +1,109 @@
+name: Run tests
+
+on: [ pull_request ]
+
+permissions:
+  contents: write
+  pull-requests: write
+  actions: write
+
+# TODO: add check if changie file is set
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      max-parallel: 4
+      matrix:
+        go-version: [ '1.21.x' ]
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: ${{ matrix.go-version }}
+        id: go
+
+      - name: Install Task
+        uses: arduino/setup-task@v1
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Run tests
+        run: |
+          task cover
+          task build
+          mkdir -p output
+          mv bin/mach-composer output/mach-composer
+          cp coverage.out output/coverage.out
+
+      - name: Upload to codecov
+        uses: codecov/codecov-action@v1.0.6
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: output
+          path: output/**/*
+
+  lint:
+    runs-on: ubuntu-latest
+
+    strategy:
+      max-parallel: 4
+      matrix:
+        go-version: [ '1.21.x' ]
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: ${{ matrix.go-version }}
+        id: go
+
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v3
+        with:
+          args: --issues-exit-code=0 --timeout=5m
+
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      max-parallel: 4
+      matrix:
+        go-version: [ '1.21.x' ]
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: ${{ matrix.go-version }}
+        id: go
+
+      - name: Install Task
+        uses: arduino/setup-task@v1
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: build binaries
+        uses: goreleaser/goreleaser-action@v3
+        with:
+          args: build --clean --skip=validate --debug
+        env:
+          GOPATH: ${{ env.GOPATH }}
