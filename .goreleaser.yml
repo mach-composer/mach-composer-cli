@@ -1,9 +1,13 @@
 project_name: mach-composer
 
+env:
+  - SKIP_UPLOAD={{ if index .Env "SKIP_UPLOAD"  }}{{ .Env.SKIP_UPLOAD }}{{ else }}false{{ end }}
+
 before:
   hooks:
-    - make tidy
+    - task tidy
 
+# Build step
 builds:
   - id: mach-composer
     main: ./cmd/mach-composer
@@ -38,16 +42,29 @@ checksum:
   name_template: '{{ .ProjectName }}_{{ .Version }}_SHA256SUMS'
   algorithm: sha256
 
+# Publish step
 changelog:
+  skip: false
   sort: asc
   filters:
     exclude:
       - "^docs:"
       - "^test:"
 
+archives:
+  - id: mach-composer
+    name_template: "mach-composer-{{.Version}}-{{.Os}}-{{.Arch}}{{ if .Arm }}v{{.Arm }}{{ end }}"
+    format: tar.gz
+    files:
+      - LICENSE
+
+    format_overrides:
+      - goos: windows
+        format: zip
 brews:
   - name: "{{ .ProjectName }}"
-    tap:
+    skip_upload: "{{ .Env.SKIP_UPLOAD }}"
+    repository:
       owner: mach-composer
       name: homebrew-{{ .ProjectName }}
     url_template: https://github.com/mach-composer/mach-composer-cli/releases/download/v{{ .Version }}/{{ .ArtifactName }}
@@ -69,62 +86,23 @@ chocolateys:
   - title: MACH composer
     owners: Lab
     authors: Lab Digital
-
     project_url: https://machcomposer.io/
     license_url: https://github.com/mach-composer/mach-composer-cli/blob/main/LICENSE
     project_source_url: https://github.com/mach-composer/mach-composer-cli
     docs_url: https://docs.machcomposer.io
     bug_tracker_url: https://github.com/mach-composer/mach-composer-cli/issues
-
-    # Template for the url which is determined by the given Token (github,
-    # gitlab or gitea)
-    # Default depends on the client.
     url_template: "https://github.com/mach-composer/mach-composer-cli/releases/download/{{ .Tag }}/{{ .ArtifactName }}"
-
-    # App's icon.
-    # Default is empty.
     icon_url: 'https://avatars.githubusercontent.com/u/82937813?s=200&v=4'
-
-    # Your app's copyright details.
-    # Default is empty.
     copyright: 2020-2022 Lab Digital
-
-    # Your app's tag list.
-    # Default is empty.
     tags: "mach terraform"
-
     summary: A framework to orchestrate MACH platforms
     description: |
       MACH composer is a framework that you use to orchestrate and extend
       modern digital commerce & experience platforms, based on MACH
       technologies and cloud native services..
-
-    # Your app's release notes.
-    # A description of the changes made in this release of the package.
-    # Supports markdown. To prevent the need to continually update this field,
-    # providing a URL to an external list of Release Notes is perfectly
-    # acceptable.
-    # Default is empty.
     release_notes: "https://github.com/mach-composer/mach-composer-cli/releases/tag/v{{ .Version }}"
-
     api_key: '{{ .Env.CHOCOLATEY_API_KEY }}'
+
+    #TODO: Re-enable this when we have a working chocolaty registry
+    #    skip_publish: "{{ .Env.SKIP_UPLOAD }}"
     skip_publish: true
-
-archives:
-  - id: mach-composer
-    name_template: "mach-composer-{{.Version}}-{{.Os}}-{{.Arch}}{{ if .Arm }}v{{.Arm }}{{ end }}"
-    format: tar.gz
-    files:
-      - LICENSE
-
-    format_overrides:
-      - goos: windows
-        format: zip
-
-milestones:
-  - repo:
-      owner: mach-composer
-      name: mach-composer-cli
-    close: true
-    fail_on_error: false
-    name_template: "{{ .Major }}.{{ .Minor }}.{{ .Patch }}"

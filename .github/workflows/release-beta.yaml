@@ -1,0 +1,113 @@
+name: Create beta release
+
+on:
+  workflow_dispatch:
+    inputs:
+      next:
+        description: 'The next increment to create the release for'
+        required: true
+        default: 'minor'
+        type: choice
+        options:
+          - minor
+          - major
+
+jobs:
+  goreleaser:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Fetch tags
+        run: git fetch --force --tags
+
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: '1.21.1'
+
+      - name: Get goreleaser app token
+        id: get-app-token
+        uses: labd/action-gh-app-token@main
+        with:
+          app-id: ${{ secrets.MCI_APP_ID }}
+          private-key: ${{ secrets.MCI_APP_PRIVATE_KEY }}
+          installation-id: ${{ secrets.MCI_APP_INSTALLATION_ID }}
+
+      - name: Get hash
+        shell: bash
+        run: |
+          HASH=$(git rev-parse --short "$GITHUB_SHA")
+          echo "HASH=$HASH" >> $GITHUB_ENV
+
+      - name: Get the next potential version
+        id: next-tag
+        uses: miniscruff/changie-action@v2
+        with:
+          version: latest
+          args: next -p beta-${{ env.HASH }} ${{ github.event.inputs.next }}
+
+      - name: Output changes
+        uses: miniscruff/changie-action@v2
+        id: changelog
+        with:
+          version: latest
+          args: batch --dry-run -p beta-${{ env.HASH }} ${{ github.event.inputs.next }}
+
+      - name: Create prerelease tag
+        uses: actions/github-script@v6
+        env:
+          VERSION: ${{ steps.next-tag.outputs.output }}
+        with:
+          script: |
+            github.rest.git.createRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: `refs/tags/${process.env.VERSION}`,
+              sha: context.sha
+            })
+
+      - name: Create prerelease
+        uses: actions/github-script@v6
+        env:
+          VERSION: ${{ steps.next-tag.outputs.output }}
+          GITHUB_RELEASE_BODY: ${{ steps.changelog.outputs.output }}
+        with:
+          retries: 3
+          script: |
+            github.rest.repos.createRelease({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              name: process.env.VERSION,
+              body: process.env.GITHUB_RELEASE_BODY,
+              tag_name: process.env.VERSION,
+              prerelease: true,
+              draft: false,
+            })
+
+      - name: Save ChangeLog to file
+        id: save_changes
+        run: |
+          echo ::set-output name=changesfile::$(mktemp)
+          echo "${{ steps.changelog.outputs.output }}" ${{ steps.save_changes.outputs.changesfile }}
+        shell: bash
+
+      - name: GoReleaser
+        uses: goreleaser/goreleaser-action@v5
+        with:
+          args: release --clean --skip=validate --release-notes ${{ steps.save_changes.outputs.changesfile }}
+        env:
+          GORELEASER_CURRENT_TAG: ${{ steps.next-tag.outputs.output }}
+          GITHUB_TOKEN: ${{ steps.get-app-token.outputs.app-token }}
+          GOPATH: ${{ env.GOPATH }}
+          CHOCOLATEY_API_KEY: ${{ secrets.CHOCOLATEY_API_KEY }}
+          SKIP_UPLOAD: true
+
+      - name: Upload release
+        uses: actions/upload-artifact@v3
+        with:
+          name: mach-composer
+          path: dist/*

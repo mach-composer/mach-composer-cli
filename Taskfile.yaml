@@ -11,9 +11,26 @@ tasks:
         " \
         -o bin/ ./cmd/...
       - cmd: codesign --deep --force -s - bin/mach-composer
-        platforms: [darwin]
+        platforms: [ darwin ]
     vars:
       version:
         sh: git describe --tags --always
       date:
         sh: date -Iseconds
+
+  tidy:
+    cmd: go mod tidy -v
+
+  test:
+    cmd: go test -race ./...
+
+  cover:
+    cmd: go test -race -coverprofile=coverage.out -covermode=atomic ./...
+
+  cover-html:
+    cmds:
+      - task cover
+      - go tool cover -html=coverage.out -o coverage.html
+
+  docker:
+    cmd: docker build -t docker.pkg.github.com/mach-composer/mach-composer-cli/mach:latest . --progress=plain
