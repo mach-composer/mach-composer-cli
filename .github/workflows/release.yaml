@@ -57,7 +57,7 @@ jobs:
       - name: Create release
         uses: goreleaser/goreleaser-action@v3
         with:
-          args: --clean --release-notes=${{ env.RELEASE_NOTES_PATH }} --skip=validate --verbose
+          args: --clean --release-notes=${{ env.RELEASE_NOTES_PATH }} --skip=validate
         env:
           GORELEASER_CURRENT_TAG: ${{ env.GORELEASER_CURRENT_TAG }}
           GITHUB_TOKEN: ${{ steps.get-app-token.outputs.app-token }}
@@ -130,7 +130,6 @@ jobs:
             ${{ steps.meta.outputs.bake-file }}
           targets: default-${{ matrix.cloud }}
           set: |
-            base.args.GORELEASER_ARGS=--snapshot
             base.args.TERRAFORM_VERSION=${{ matrix.terraform }}
           push: true
 

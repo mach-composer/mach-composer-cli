@@ -2,8 +2,6 @@ project_name: mach-composer
 
 env:
   - SKIP_UPLOAD={{ if index .Env "SKIP_UPLOAD"  }}{{ .Env.SKIP_UPLOAD }}{{ else }}false{{ end }}
-  - RELEASE_MAKE_LATEST={{ if index .Env "RELEASE_MAKE_LATEST"  }}{{ .Env.RELEASE_MAKE_LATEST }}{{ else }}true{{ end }}
-  - RELEASE_PRERELEASE={{ if index .Env "RELEASE_PRERELEASE"  }}{{ .Env.RELEASE_PRERELEASE }}{{ else }}false{{ end }}
 
 before:
   hooks:
@@ -48,10 +46,10 @@ checksum:
 # Publish step
 release:
   mode: replace
-  make_latest: "{{ Env.RELEASE_MAKE_LATEST }}"
-  prerelease: "{{ Env.RELEASE_PRERELEASE }}"
+  prerelease: auto
 
 changelog:
+  use: github
   skip: false
 
 archives:

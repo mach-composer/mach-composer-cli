@@ -17,4 +17,4 @@ jobs:
         uses: labd/changie-release-action@v0.3.1
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          release-workflow: ./.github/workflows/release.yaml
+          release-workflow: release.yaml
