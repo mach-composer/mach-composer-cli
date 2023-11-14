@@ -90,8 +90,6 @@ jobs:
           GOPATH: ${{ env.GOPATH }}
           CHOCOLATEY_API_KEY: ${{ secrets.CHOCOLATEY_API_KEY }}
           SKIP_UPLOAD: true
-          RELEASE_MAKE_LATEST: false
-          RELEASE_PRERELEASE: true
 
       - name: Upload release
         uses: actions/upload-artifact@v3
