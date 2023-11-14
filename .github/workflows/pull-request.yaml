@@ -141,3 +141,5 @@ jobs:
         uses: goreleaser/goreleaser-action@v3
         with:
           args: build --clean --skip=validate
+        env:
+          GOPATH: ${{ env.GOPATH }}
