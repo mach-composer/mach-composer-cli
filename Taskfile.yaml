@@ -2,21 +2,7 @@ version: '3'
 
 tasks:
   build:
-    cmds:
-      - |
-        go build \
-        -ldflags " \
-          -X github.com/mach-composer/mach-composer-cli/internal/cli.version={{ .version }}-dev \
-          -X github.com/mach-composer/mach-composer-cli/internal/cli.date={{ .date }} \
-        " \
-        -o bin/ ./cmd/...
-      - cmd: codesign --deep --force -s - bin/mach-composer
-        platforms: [ darwin ]
-    vars:
-      version:
-        sh: git describe --tags --always
-      date:
-        sh: date -Iseconds
+    cmd: goreleaser build --snapshot --clean --single-target --output mach-composer
 
   download:
     cmd: go mod download
