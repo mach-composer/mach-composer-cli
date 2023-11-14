@@ -9,8 +9,8 @@ on:
         default: 'minor'
         type: choice
         options:
-          - minor
           - major
+          - minor
 
 jobs:
   goreleaser:
