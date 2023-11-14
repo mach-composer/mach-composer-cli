@@ -57,10 +57,10 @@ archives:
     format: tar.gz
     files:
       - LICENSE
-
     format_overrides:
       - goos: windows
         format: zip
+
 brews:
   - name: "{{ .ProjectName }}"
     skip_upload: "{{ .Env.SKIP_UPLOAD }}"
