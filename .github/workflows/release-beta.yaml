@@ -72,37 +72,6 @@ jobs:
           version: latest
           args: batch --dry-run -p beta-${{ env.HASH }} ${{ github.event.inputs.next }}
 
-      - name: Create prerelease tag
-        uses: actions/github-script@v6
-        env:
-          VERSION: ${{ steps.next-tag.outputs.output }}
-        with:
-          script: |
-            github.rest.git.createRef({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              ref: `refs/tags/${process.env.VERSION}`,
-              sha: context.sha
-            })
-
-      - name: Create prerelease
-        uses: actions/github-script@v6
-        env:
-          VERSION: ${{ steps.next-tag.outputs.output }}
-          GITHUB_RELEASE_BODY: ${{ steps.changelog.outputs.output }}
-        with:
-          retries: 3
-          script: |
-            github.rest.repos.createRelease({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              name: process.env.VERSION,
-              body: process.env.GITHUB_RELEASE_BODY,
-              tag_name: process.env.VERSION,
-              prerelease: true,
-              draft: false,
-            })
-
       - name: Save ChangeLog to file
         id: save_changes
         run: |
@@ -120,6 +89,8 @@ jobs:
           GOPATH: ${{ env.GOPATH }}
           CHOCOLATEY_API_KEY: ${{ secrets.CHOCOLATEY_API_KEY }}
           SKIP_UPLOAD: true
+          RELEASE_MAKE_LATEST: false
+          RELEASE_PRERELEASE: true
 
       - name: Upload release
         uses: actions/upload-artifact@v3
