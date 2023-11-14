@@ -52,6 +52,7 @@ release:
   prerelease: "{{ Env.RELEASE_PRERELEASE }}"
 
 changelog:
+  use: github
   skip: false
 
 archives:
@@ -109,3 +110,5 @@ chocolateys:
     #TODO: Re-enable this when we have a working chocolaty registry
     #    skip_publish: "{{ .Env.SKIP_UPLOAD }}"
     skip_publish: true
+
+#TODO: add docker build

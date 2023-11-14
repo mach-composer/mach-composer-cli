@@ -75,8 +75,8 @@ jobs:
       - name: Save ChangeLog to file
         id: save_changes
         run: |
-          echo ::set-output name=changesfile::$(mktemp)
-          echo "${{ steps.changelog.outputs.output }}" ${{ steps.save_changes.outputs.changesfile }}
+          echo  "changesfile=$(mktemp)"  >> $GITHUB_OUTPUT
+          echo "${{ steps.changelog.outputs.output }}" > ${{ steps.save_changes.outputs.changesfile }}
         shell: bash
 
       - name: GoReleaser
