@@ -101,9 +101,9 @@ jobs:
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: build binaries
+      - name: build binary
         uses: goreleaser/goreleaser-action@v3
         with:
-          args: build --clean --skip=validate --debug
+          args: build --snapshot --clean --single-target
         env:
           GOPATH: ${{ env.GOPATH }}
