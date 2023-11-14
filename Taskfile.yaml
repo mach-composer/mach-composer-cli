@@ -18,6 +18,9 @@ tasks:
       date:
         sh: date -Iseconds
 
+  download:
+    cmd: go mod download
+
   tidy:
     cmd: go mod tidy -v
 

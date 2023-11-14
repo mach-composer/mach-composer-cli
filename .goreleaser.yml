@@ -6,6 +6,7 @@ env:
 before:
   hooks:
     - task tidy
+    - task download
 
 # Build step
 builds:
