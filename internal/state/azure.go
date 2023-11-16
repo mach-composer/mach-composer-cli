@@ -40,7 +40,7 @@ func (ar *AzureRenderer) Backend() (string, error) {
 	  resource_group_name  = "{{ .State.ResourceGroup }}"
 	  storage_account_name = "{{ .State.StorageAccount }}"
 	  container_name       = "{{ .State.ContainerName }}"
-	  Key                  = "{{ .Key }}"
+	  key                  = "{{ .Key }}"
 	}
 	`
 	return utils.RenderGoTemplate(tpl, templateContext)
@@ -69,7 +69,7 @@ func (ar *AzureRenderer) RemoteState() (string, error) {
 		  resource_group_name  = "{{ .State.ResourceGroup }}"
 		  storage_account_name = "{{ .State.StorageAccount }}"
 		  container_name       = "{{ .State.ContainerName }}"
-		  Key                  = "{{ .Key }}"
+		  key                  = "{{ .Key }}"
 	  }
 	}
 	`
