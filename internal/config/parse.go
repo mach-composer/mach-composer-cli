@@ -106,14 +106,6 @@ func loadConfig(ctx context.Context, filename, cwd string, pr *plugins.PluginRep
 		return nil, err
 	}
 
-	// Set default deployment type if necessary
-	if raw.MachComposer.Deployment == nil {
-		log.Debug().Msg("No global deployment type specified; defaulting to site")
-		raw.MachComposer.Deployment = &Deployment{
-			Type: DeploymentSite,
-		}
-	}
-
 	componentNode, _, err := LoadRefData(ctx, &raw.Components, cwd)
 	if err != nil {
 		return nil, err

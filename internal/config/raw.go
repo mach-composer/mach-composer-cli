@@ -5,6 +5,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"github.com/creasty/defaults"
 	"github.com/mach-composer/mach-composer-cli/internal/plugins"
 	"gopkg.in/yaml.v3"
 )
@@ -71,6 +72,11 @@ func newRawConfig(filename string, document *yaml.Node) (*rawConfig, error) {
 		variables: NewVariables(),
 		document:  document,
 	}
+
+	if err := defaults.Set(r); err != nil {
+		return nil, err
+	}
+
 	if err := document.Decode(r); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal yaml: %w", err)
 	}

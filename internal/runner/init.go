@@ -16,32 +16,34 @@ type InitOptions struct {
 	Site string
 }
 
-func TerraformInit(ctx context.Context, cfg *config.MachConfig, dg *dependency.Graph, options *InitOptions) error {
-	if err := batchRun(dg, dg.StartNode.Path(), func(n dependency.Node) error {
-		tfPath := "deployments/" + n.Path()
+func TerraformInit(ctx context.Context, cfg *config.MachConfig, dg *dependency.Graph, _ *InitOptions) error {
+	if err := batchRun(ctx, dg, dg.StartNode.Path(), cfg.MachComposer.Deployment.Runners,
+		func(ctx context.Context, n dependency.Node) (string, error) {
+			tfPath := "deployments/" + n.Path()
 
-		log.Info().Msgf("Initializing %s", tfPath)
+			log.Info().Msgf("Initializing %s", tfPath)
 
-		return terraformInit(ctx, cfg, tfPath)
-	}); err != nil {
+			return terraformInit(ctx, cfg, tfPath)
+		}); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func terraformInit(ctx context.Context, cfg *config.MachConfig, path string) error {
+func terraformInit(ctx context.Context, cfg *config.MachConfig, path string) (string, error) {
 	lf, err := lockfile.GetLock(cfg.ConfigHash, path)
 	if err != nil {
-		return err
+		return "", err
 	}
 
+	var out string
 	if !terraformIsInitialized(path) || lf.HasChanges(cfg.ConfigHash) {
-		if err := runTerraform(ctx, path, "init"); err != nil {
-			return err
+		if out, err = runTerraform(ctx, path, "init"); err != nil {
+			return "", err
 		}
 	}
-	return nil
+	return out, nil
 }
 
 func terraformIsInitialized(path string) bool {

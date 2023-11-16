@@ -33,7 +33,7 @@ func terraformFunc(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	return runner.TerraformProxy(cmd.Context(), dg, &runner.ProxyOptions{
+	return runner.TerraformProxy(cmd.Context(), cfg, dg, &runner.ProxyOptions{
 		Site:    generateFlags.siteName,
 		Command: args,
 	})
