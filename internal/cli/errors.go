@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"fmt"
 	"os"
 	"strings"
 
@@ -83,7 +84,7 @@ func HandleErr(err error) {
 			details = append(details, e.Error())
 		}
 
-		PrintExitError(groupedErr.Error(), details...)
+		PrintExitError(fmt.Sprintf("A grouped error occured: %s", groupedErr.Error()), details...)
 	}
 
 	PrintExitError("An error occurred:", err.Error())

@@ -43,9 +43,6 @@ func batchRun(ctx context.Context, g *dependency.Graph, start string, workers in
 	for i, k := range keys[1:] {
 		log.Info().Msgf("Running batch %d with %d nodes", i, len(batches[k]))
 
-		//Channel to collect execution results
-		outChan := make(chan string, len(batches[k]))
-
 		//Channel to collect errors
 		errChan := make(chan error, len(batches[k]))
 
@@ -67,13 +64,13 @@ func batchRun(ctx context.Context, g *dependency.Graph, start string, workers in
 				out, err := f(ctx, n)
 				if err != nil {
 					errChan <- err
+					return
 				}
-				outChan <- out
+				log.Debug().Msg(out)
 			}(ctx, n)
 		}
 		wg.Wait()
 		close(errChan)
-		close(outChan)
 
 		if len(errChan) > 0 {
 			var errors []error
@@ -82,10 +79,6 @@ func batchRun(ctx context.Context, g *dependency.Graph, start string, workers in
 			}
 
 			return cli.NewGroupedError(fmt.Sprintf("batch run %d failed (%d errors)", i, len(errors)), errors)
-		}
-
-		for out := range outChan {
-			log.Debug().Msg(out)
 		}
 
 		log.Info().Msgf("Finished batch %d", i)
