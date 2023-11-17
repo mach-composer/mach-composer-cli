@@ -2,6 +2,8 @@ package runner
 
 import (
 	"context"
+	"fmt"
+	"github.com/mach-composer/mach-composer-cli/internal/cli"
 	"github.com/mach-composer/mach-composer-cli/internal/dependency"
 	"github.com/rs/zerolog/log"
 	"golang.org/x/exp/maps"
@@ -11,19 +13,6 @@ import (
 )
 
 type ExecutorFunc func(ctx context.Context, node dependency.Node) (string, error)
-
-type BatchError struct {
-	msg    string
-	Errors []error
-}
-
-func NewBatchError(msg string, errors []error) *BatchError {
-	return &BatchError{msg: msg, Errors: errors}
-}
-
-func (b *BatchError) Error() string {
-	return b.msg
-}
 
 // batchRun will batch the nodes for the given graph, so they can be run in parallel. A batch in this sense is a list of nodes
 // that have no dependencies with each other. This currently happens with a very naive algorithm, where the batch number is
@@ -71,7 +60,7 @@ func batchRun(ctx context.Context, g *dependency.Graph, start string, workers in
 				return err
 			}
 			wg.Add(1)
-			go func(n dependency.Node) {
+			go func(ctx context.Context, n dependency.Node) {
 				defer wg.Done()
 				defer sem.Release(1)
 
@@ -80,7 +69,7 @@ func batchRun(ctx context.Context, g *dependency.Graph, start string, workers in
 					errChan <- err
 				}
 				outChan <- out
-			}(n)
+			}(ctx, n)
 		}
 		wg.Wait()
 		close(errChan)
@@ -92,7 +81,7 @@ func batchRun(ctx context.Context, g *dependency.Graph, start string, workers in
 				errors = append(errors, err)
 			}
 
-			return NewBatchError("batch run failed", errors)
+			return cli.NewGroupedError(fmt.Sprintf("batch run %d failed (%d errors)", i, len(errors)), errors)
 		}
 
 		for out := range outChan {

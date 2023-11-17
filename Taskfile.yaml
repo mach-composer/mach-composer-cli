@@ -2,6 +2,8 @@ version: '3'
 
 tasks:
   build:
+    env:
+      GORELEASER_CURRENT_TAG: "v0.0.0"
     cmd: goreleaser build --snapshot --clean --single-target --output mach-composer
 
   download:

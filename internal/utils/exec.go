@@ -23,11 +23,12 @@ func RunInteractive(ctx context.Context, command string, cwd string, args ...str
 	cmd.Dir = cwd
 	cmd.Env = os.Environ()
 
-	out := new(bytes.Buffer)
+	stdOut := new(bytes.Buffer)
+	stdErr := new(bytes.Buffer)
 
 	cmd.Stdin = os.Stdin
-	cmd.Stderr = out
-	cmd.Stdout = out
+	cmd.Stderr = stdErr
+	cmd.Stdout = stdOut
 
 	err := cmd.Start()
 	if err != nil {
@@ -46,11 +47,12 @@ func RunInteractive(ctx context.Context, command string, cwd string, args ...str
 
 	case err := <-done:
 		if err != nil {
-			return "", fmt.Errorf("command (%s) failed: %w (args: %s , cwd: %s)", command, err, strings.Join(args, " "), cwd)
+			return "", fmt.Errorf("command (%s) failed: %w (args: %s , cwd: %s): %s", command, err, strings.Join(args, " "),
+				cwd, stdErr.String())
 		}
 	}
 
-	return out.String(), nil
+	return stdOut.String(), nil
 }
 
 func StopProcess(cmd *exec.Cmd) error {

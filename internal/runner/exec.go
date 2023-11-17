@@ -12,7 +12,7 @@ import (
 func runTerraform(ctx context.Context, cwd string, args ...string) (string, error) {
 	if _, err := os.Stat(cwd); err != nil {
 		if os.IsNotExist(err) {
-			return "", fmt.Errorf("The generated files are not found: %w", err)
+			return "", fmt.Errorf("the generated files are not found: %w", err)
 		}
 	}
 
