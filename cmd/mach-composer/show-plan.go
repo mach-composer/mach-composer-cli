@@ -18,8 +18,8 @@ var showPlanCmd = &cobra.Command{
 		preprocessGenerateFlags()
 	},
 
-	Run: func(cmd *cobra.Command, args []string) {
-		handleError(showPlanFunc(cmd, args))
+	RunE: func(cmd *cobra.Command, args []string) error {
+		return showPlanFunc(cmd, args)
 	},
 }
 

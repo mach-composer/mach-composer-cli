@@ -37,8 +37,8 @@ var updateCmd = &cobra.Command{
 			os.Exit(1)
 		}
 	},
-	Run: func(cmd *cobra.Command, args []string) {
-		handleError(updateFunc(cmd.Context(), args))
+	RunE: func(cmd *cobra.Command, args []string) error {
+		return updateFunc(cmd.Context(), args)
 	},
 	ValidArgsFunction: AutocompleteComponentName,
 }

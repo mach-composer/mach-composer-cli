@@ -12,8 +12,10 @@ func TestFromConfigSimple(t *testing.T) {
 	cfg := &config.MachConfig{
 		Filename: "main",
 		MachComposer: config.MachComposer{
-			Deployment: &config.Deployment{
-				Type: config.DeploymentSiteComponent,
+			Deployment: config.GlobalDeployment{
+				Deployment: config.Deployment{
+					Type: config.DeploymentSiteComponent,
+				},
 			},
 		},
 
@@ -80,8 +82,10 @@ func TestFromConfigExplicit(t *testing.T) {
 	cfg := &config.MachConfig{
 		Filename: "main",
 		MachComposer: config.MachComposer{
-			Deployment: &config.Deployment{
-				Type: config.DeploymentSiteComponent,
+			Deployment: config.GlobalDeployment{
+				Deployment: config.Deployment{
+					Type: config.DeploymentSiteComponent,
+				},
 			},
 		},
 		Sites: []config.SiteConfig{
@@ -146,8 +150,10 @@ func TestFromConfigInferred(t *testing.T) {
 	cfg := &config.MachConfig{
 		Filename: "main",
 		MachComposer: config.MachComposer{
-			Deployment: &config.Deployment{
-				Type: config.DeploymentSiteComponent,
+			Deployment: config.GlobalDeployment{
+				Deployment: config.Deployment{
+					Type: config.DeploymentSiteComponent,
+				},
 			},
 		},
 		Sites: []config.SiteConfig{
@@ -212,8 +218,10 @@ func TestFromConfigCycleErr(t *testing.T) {
 	cfg := &config.MachConfig{
 		Filename: "main",
 		MachComposer: config.MachComposer{
-			Deployment: &config.Deployment{
-				Type: config.DeploymentSiteComponent,
+			Deployment: config.GlobalDeployment{
+				Deployment: config.Deployment{
+					Type: config.DeploymentSiteComponent,
+				},
 			},
 		},
 		Sites: []config.SiteConfig{

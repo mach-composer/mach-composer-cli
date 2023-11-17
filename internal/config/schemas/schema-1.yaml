@@ -41,7 +41,16 @@ definitions:
       cloud:
         $ref: "#/definitions/MachComposerCloud"
       deployment:
-        $ref: "#/definitions/MachComposerDeployment"
+        allOf:
+          - $ref: "#/definitions/MachComposerDeployment"
+          - type: object
+            properties:
+              runners:
+                type: integer
+                description: |
+                  The number of runners to use for a deployment. Note that this number is constrained by the 
+                  batch size of the deployment. Defaults to 1.
+                default: 1
       plugins:
         type: object
         additionalProperties: false
@@ -222,7 +231,6 @@ definitions:
       excepting the ones that have a specific deployment configuration). The other way around is not supported.
       
       The default is site.
-    additionalProperties: false
     properties:
       type:
         type: string

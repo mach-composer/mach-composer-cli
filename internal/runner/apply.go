@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/mach-composer/mach-composer-cli/internal/dependency"
 	"github.com/rs/zerolog/log"
+	"strings"
 
 	"github.com/mach-composer/mach-composer-cli/internal/config"
 )
@@ -17,22 +18,24 @@ type ApplyOptions struct {
 }
 
 func TerraformApply(ctx context.Context, cfg *config.MachConfig, dg *dependency.Graph, options *ApplyOptions) error {
-	if err := batchRun(dg, dg.StartNode.Path(), func(n dependency.Node) error {
-		tfPath := "deployments/" + n.Path()
+	if err := batchRun(ctx, dg, dg.StartNode.Path(), cfg.MachComposer.Deployment.Runners,
+		func(ctx context.Context, n dependency.Node) (string, error) {
+			tfPath := "deployments/" + n.Path()
 
-		log.Info().Msgf("Applying %s", tfPath)
+			log.Info().Msgf("Applying %s", tfPath)
 
-		return terraformApply(ctx, cfg, tfPath, options)
-	}); err != nil {
+			return terraformApply(ctx, cfg, tfPath, options)
+		}); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func terraformApply(ctx context.Context, cfg *config.MachConfig, path string, options *ApplyOptions) error {
-	if err := terraformInit(ctx, cfg, path); err != nil {
-		return err
+func terraformApply(ctx context.Context, cfg *config.MachConfig, path string, options *ApplyOptions) (string, error) {
+	iOut, err := terraformInit(ctx, cfg, path)
+	if err != nil {
+		return "", err
 	}
 
 	cmd := []string{"apply"}
@@ -48,11 +51,16 @@ func terraformApply(ctx context.Context, cfg *config.MachConfig, path string, op
 	// If there is a plan then we should use it.
 	planFilename, err := hasTerraformPlan(path)
 	if err != nil {
-		return err
+		return "", err
 	}
 	if planFilename != "" {
 		cmd = append(cmd, planFilename)
 	}
 
-	return runTerraform(ctx, path, cmd...)
+	pOut, err := runTerraform(ctx, path, cmd...)
+	if err != nil {
+		return "", err
+	}
+
+	return strings.Join([]string{iOut, pOut}, "\n"), nil
 }

@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"os"
@@ -11,7 +12,7 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-func RunInteractive(ctx context.Context, command string, cwd string, args ...string) error {
+func RunInteractive(ctx context.Context, command string, cwd string, args ...string) (string, error) {
 	log.Debug().Msgf("Running: %s %s\n", command, strings.Join(args, " "))
 
 	cmd := exec.CommandContext(
@@ -22,13 +23,16 @@ func RunInteractive(ctx context.Context, command string, cwd string, args ...str
 	cmd.Dir = cwd
 	cmd.Env = os.Environ()
 
-	cmd.Stderr = os.Stderr
+	stdOut := new(bytes.Buffer)
+	stdErr := new(bytes.Buffer)
+
 	cmd.Stdin = os.Stdin
-	cmd.Stdout = os.Stdout
+	cmd.Stderr = stdErr
+	cmd.Stdout = stdOut
 
 	err := cmd.Start()
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	// Wait for the command to complete or the context to be cancelled
@@ -39,15 +43,16 @@ func RunInteractive(ctx context.Context, command string, cwd string, args ...str
 
 	select {
 	case <-ctx.Done():
-		return StopProcess(cmd)
+		return "", StopProcess(cmd)
 
 	case err := <-done:
 		if err != nil {
-			return fmt.Errorf("command (%s) failed: %w (args: %s , cwd: %s)", command, err, strings.Join(args, " "), cwd)
+			return "", fmt.Errorf("command (%s) failed: %w (args: %s , cwd: %s): %s", command, err, strings.Join(args, " "),
+				cwd, stdErr.String())
 		}
 	}
 
-	return nil
+	return stdOut.String(), nil
 }
 
 func StopProcess(cmd *exec.Cmd) error {

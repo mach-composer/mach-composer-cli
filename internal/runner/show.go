@@ -15,26 +15,27 @@ type ShowPlanOptions struct {
 }
 
 func TerraformShow(ctx context.Context, cfg *config.MachConfig, dg *dependency.Graph, options *ShowPlanOptions) error {
-	if err := batchRun(dg, dg.StartNode.Path(), func(n dependency.Node) error {
-		tfPath := "deployments/" + n.Path()
+	if err := batchRun(ctx, dg, dg.StartNode.Path(), cfg.MachComposer.Deployment.Runners,
+		func(ctx context.Context, n dependency.Node) (string, error) {
+			tfPath := "deployments/" + n.Path()
 
-		log.Info().Msgf("Showing %s", tfPath)
+			log.Info().Msgf("Showing %s", tfPath)
 
-		return terraformShow(ctx, tfPath, options)
-	}); err != nil {
+			return terraformShow(ctx, tfPath, options)
+		}); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func terraformShow(ctx context.Context, path string, options *ShowPlanOptions) error {
+func terraformShow(ctx context.Context, path string, options *ShowPlanOptions) (string, error) {
 	filename, err := hasTerraformPlan(path)
 	if err != nil {
-		return err
+		return "", err
 	}
 	if filename == "" {
-		return fmt.Errorf("no plan found for path %s. Did you run `mach-composer plan`", path)
+		return "", fmt.Errorf("no plan found for path %s. Did you run `mach-composer plan`", path)
 	}
 
 	cmd := []string{"show", filename}
