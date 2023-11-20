@@ -3,10 +3,12 @@ package runner
 import (
 	"context"
 	"fmt"
+	"github.com/mach-composer/mach-composer-cli/internal/cli"
 	"github.com/mach-composer/mach-composer-cli/internal/dependency"
 	"github.com/mach-composer/mach-composer-cli/internal/utils"
 	"os"
 	"path/filepath"
+	"sync"
 
 	"github.com/rs/zerolog/log"
 
@@ -18,34 +20,53 @@ type InitOptions struct {
 	Site string
 }
 
-func TerraformInit(ctx context.Context, cfg *config.MachConfig, dg *dependency.Graph, _ *InitOptions) error {
-	if err := batchRun(ctx, dg, cfg.MachComposer.Deployment.Runners, func(ctx context.Context, n dependency.Node, tfPath string) (string, error) {
-		hash, err := n.Hash()
-		if err != nil {
-			return "", err
-		}
-		return terraformInit(ctx, hash, tfPath)
-	}); err != nil {
+func TerraformInit(ctx context.Context, _ *config.MachConfig, dg *dependency.Graph, _ *InitOptions) error {
+	out, err := terraformInitAll(ctx, dg)
+	if err != nil {
 		return err
 	}
-
+	log.Info().Msg(out)
 	return nil
 }
 
 func terraformInitAll(ctx context.Context, g *dependency.Graph) (string, error) {
 	var out string
-	for _, v := range g.Vertices() {
-		tfPath := "deployments/" + v.Path()
-		hash, err := v.Hash()
-		if err != nil {
-			return "", err
+	var errChan = make(chan error, len(g.Vertices()))
+	var wg = &sync.WaitGroup{}
+	var mu = &sync.Mutex{}
+
+	for _, n := range g.Vertices() {
+		wg.Add(1)
+		go func(n dependency.Node) {
+			defer wg.Done()
+			tfPath := "deployments/" + n.Path()
+			hash, err := n.Hash()
+			if err != nil {
+				errChan <- err
+				return
+			}
+
+			iOut, err := terraformInit(ctx, hash, tfPath)
+			if err != nil {
+				errChan <- err
+				return
+			}
+			mu.Lock()
+			out += fmt.Sprintf("%s\n", iOut)
+			mu.Unlock()
+		}(n)
+	}
+	wg.Wait()
+
+	if len(errChan) > 0 {
+		var errors []error
+		for err := range errChan {
+			errors = append(errors, err)
 		}
 
-		iOut, err := terraformInit(ctx, hash, tfPath)
-		if err != nil {
-			return "", err
-		}
-		out += fmt.Sprintf("%s\n", iOut)
+		return "", cli.NewGroupedError(
+			fmt.Sprintf("failed initializing terraform projects (%d errors)", len(errors)), errors,
+		)
 	}
 
 	return out, nil
