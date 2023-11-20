@@ -11,6 +11,10 @@ import (
 
 type componentContext struct {
 	ComponentName       string
+	ComponentVersion    string
+	ComponentHash       string
+	ComponentVariables  string
+	ComponentSecrets    string
 	SiteName            string
 	Environment         string
 	Source              string
@@ -18,9 +22,6 @@ type componentContext struct {
 	PluginProviders     []string
 	PluginDependsOn     []string
 	PluginVariables     []string
-	ComponentVariables  string
-	ComponentSecrets    string
-	ComponentVersion    string
 	HasCloudIntegration bool
 }
 
@@ -131,9 +132,15 @@ func renderSiteComponentResources(cfg *config.MachConfig, site *config.SiteConfi
 
 // renderComponentModule uses templates/component.tf to generate a terraform snippet for each component
 func renderComponentModule(_ context.Context, cfg *config.MachConfig, site *config.SiteConfig, siteComponent *config.SiteComponentConfig) (string, error) {
+	hash, err := siteComponent.Hash()
+	if err != nil {
+		return "", err
+	}
+
 	tc := componentContext{
 		ComponentName:    siteComponent.Name,
 		ComponentVersion: siteComponent.Definition.Version,
+		ComponentHash:    hash,
 		SiteName:         site.Identifier,
 		Environment:      cfg.Global.Environment,
 		Source:           siteComponent.Definition.Source,

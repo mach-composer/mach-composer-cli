@@ -20,7 +20,6 @@ type MachConfig struct {
 	StateRepository *state.Repository
 
 	extraFiles  map[string][]byte         `yaml:"-"`
-	ConfigHash  string                    `yaml:"-"`
 	Plugins     *plugins.PluginRepository `yaml:"-"`
 	Variables   *Variables                `yaml:"-"`
 	IsEncrypted bool                      `yaml:"-"`

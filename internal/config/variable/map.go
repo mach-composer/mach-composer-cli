@@ -4,21 +4,17 @@ import "slices"
 
 type MapVariable struct {
 	baseVariable
-	elements map[string]Variable
+	Elements map[string]Variable
 }
 
 func NewMapVariable(elements map[string]Variable) *MapVariable {
-	return &MapVariable{baseVariable: baseVariable{typ: Map}, elements: elements}
-}
-
-func (v *MapVariable) Elements() map[string]Variable {
-	return v.elements
+	return &MapVariable{baseVariable: baseVariable{typ: Map}, Elements: elements}
 }
 
 func (v *MapVariable) ReferencedComponents() []string {
 	var references []string
 
-	for _, element := range v.elements {
+	for _, element := range v.Elements {
 		references = append(references, element.ReferencedComponents()...)
 	}
 
@@ -26,10 +22,10 @@ func (v *MapVariable) ReferencedComponents() []string {
 }
 
 func (v *MapVariable) TransformValue(f TransformValueFunc) (any, error) {
-	var data = make(map[string]any, len(v.elements))
+	var data = make(map[string]any, len(v.Elements))
 	var err error
 
-	for key, element := range v.elements {
+	for key, element := range v.Elements {
 		data[key], err = element.TransformValue(f)
 		if err != nil {
 			return nil, err

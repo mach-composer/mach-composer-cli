@@ -61,9 +61,17 @@ func TestRemoteStateTransformFunc(t *testing.T) {
 	}
 
 	tests := []test{
-		{input: "${component.foo.endpoint}", output: "${data.terraform_remote_state.my_state.outputs.foo.endpoint}"},
-		{input: "foo ${component.foo.endpoint} bar", output: "foo ${data.terraform_remote_state.my_state.outputs.foo.endpoint} bar"},
-		{input: "  ${component.foo.endpoint} ", output: "${data.terraform_remote_state.my_state.outputs.foo.endpoint}"},
+		{
+			input:  "${component.foo.endpoint}",
+			output: "${data.terraform_remote_state.my_state.outputs.foo.variables.endpoint}"},
+		{
+			input:  "foo ${component.foo.endpoint} bar",
+			output: "foo ${data.terraform_remote_state.my_state.outputs.foo.variables.endpoint} bar",
+		},
+		{
+			input:  "  ${component.foo.endpoint} ",
+			output: "${data.terraform_remote_state.my_state.outputs.foo.variables.endpoint}",
+		},
 		{
 			input:  "${data.terraform_remote_state.my_state.outputs.foo.endpoint}${data.terraform_remote_state.my_state.outputs.bar.other}",
 			output: "${data.terraform_remote_state.my_state.outputs.foo.endpoint}${data.terraform_remote_state.my_state.outputs.bar.other}",
@@ -134,7 +142,7 @@ func TestInterpolateComponentVarsSuccess(t *testing.T) {
 			Description: "Nested map test case",
 			Input: &VariablesMap{
 				"key": &MapVariable{
-					elements: map[string]Variable{
+					Elements: map[string]Variable{
 						"key-1": MustCreateNewScalarVariable(t, "${component.foobar.var}"),
 						"key-2": MustCreateNewScalarVariable(t, "-> ${component.foobar.var} - ${component.foobar.bar}<-"),
 					},
@@ -152,7 +160,7 @@ func TestInterpolateComponentVarsSuccess(t *testing.T) {
 			Description: "Nested slice test case",
 			Input: &VariablesMap{
 				"key": &SliceVariable{
-					elements: []Variable{
+					Elements: []Variable{
 						MustCreateNewScalarVariable(t, `${component.site-topgeschenken.service_link_map["topbloemen-nl"]}`),
 						MustCreateNewScalarVariable(t, `${component.site-topgeschenken.service_link_map["topbloemen-be"]}`),
 					},
@@ -169,14 +177,14 @@ func TestInterpolateComponentVarsSuccess(t *testing.T) {
 			Description: "Slice with nested map test case",
 			Input: &VariablesMap{
 				"key": &SliceVariable{
-					elements: []Variable{
+					Elements: []Variable{
 						&MapVariable{
-							elements: map[string]Variable{
+							Elements: map[string]Variable{
 								"key": MustCreateNewScalarVariable(t, `${component.site-topgeschenken.service_link_map["topbloemen-nl"]}`),
 							},
 						},
 						&MapVariable{
-							elements: map[string]Variable{
+							Elements: map[string]Variable{
 								"key": MustCreateNewScalarVariable(t, `${component.site-topgeschenken.service_link_map["topbloemen-be"]}`),
 							},
 						},

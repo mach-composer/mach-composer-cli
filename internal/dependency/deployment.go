@@ -13,21 +13,21 @@ func ToDeploymentGraph(cfg *config.MachConfig) (*Graph, error) {
 		return nil, err
 	}
 
-	if err := validateDeployment(g.NodeGraph, g.StartNode.Path()); err != nil {
+	if err := validateDeployment(g); err != nil {
 		return nil, err
 	}
 
-	dg, err := reduceNodes(g.NodeGraph, g.StartNode.Path())
-	if err != nil {
+	// Reduce all nodes that are not independent to site node
+	if err = reduceNodes(g); err != nil {
 		return nil, err
 	}
 
-	return &Graph{NodeGraph: dg, StartNode: g.StartNode}, nil
+	return g, nil
 }
 
-func reduceNodes(g NodeGraph, start string) (NodeGraph, error) {
+func reduceNodes(g *Graph) error {
 	var pErr error
-	if err := graph.BFS(g, start, func(p string) bool {
+	if err := graph.BFS(g.NodeGraph, g.StartNode.Path(), func(p string) bool {
 		n, _ := g.Vertex(p)
 
 		if !n.Independent() {
@@ -93,12 +93,8 @@ func reduceNodes(g NodeGraph, start string) (NodeGraph, error) {
 
 		return false
 	}); err != nil {
-		return nil, err
+		return err
 	}
 
-	if pErr != nil {
-		return nil, pErr
-	}
-
-	return g, nil
+	return pErr
 }
