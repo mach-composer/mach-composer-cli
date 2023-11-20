@@ -3,10 +3,10 @@ package runner
 import (
 	"context"
 	"fmt"
-	"github.com/mach-composer/mach-composer-cli/internal/dependency"
-	"github.com/rs/zerolog/log"
-
 	"github.com/mach-composer/mach-composer-cli/internal/config"
+	"github.com/mach-composer/mach-composer-cli/internal/dependency"
+	"github.com/mach-composer/mach-composer-cli/internal/utils"
+	"github.com/rs/zerolog/log"
 )
 
 type ShowPlanOptions struct {
@@ -15,14 +15,15 @@ type ShowPlanOptions struct {
 }
 
 func TerraformShow(ctx context.Context, cfg *config.MachConfig, dg *dependency.Graph, options *ShowPlanOptions) error {
-	if err := batchRun(ctx, dg, dg.StartNode.Path(), cfg.MachComposer.Deployment.Runners,
-		func(ctx context.Context, n dependency.Node) (string, error) {
-			tfPath := "deployments/" + n.Path()
+	out, err := terraformInitAll(ctx, dg)
+	if err != nil {
+		return err
+	}
+	log.Debug().Msg(out)
 
-			log.Info().Msgf("Showing %s", tfPath)
-
-			return terraformShow(ctx, tfPath, options)
-		}); err != nil {
+	if err := batchRun(ctx, dg, cfg.MachComposer.Deployment.Runners, func(ctx context.Context, n dependency.Node, tfPath string) (string, error) {
+		return terraformShow(ctx, tfPath, options)
+	}); err != nil {
 		return err
 	}
 
@@ -42,5 +43,5 @@ func terraformShow(ctx context.Context, path string, options *ShowPlanOptions) (
 	if options.NoColor {
 		cmd = append(cmd, "-no-color")
 	}
-	return runTerraform(ctx, path, cmd...)
+	return utils.RunTerraform(ctx, path, cmd...)
 }

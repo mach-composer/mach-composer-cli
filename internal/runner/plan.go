@@ -2,13 +2,12 @@ package runner
 
 import (
 	"context"
+	"github.com/mach-composer/mach-composer-cli/internal/config"
 	"github.com/mach-composer/mach-composer-cli/internal/dependency"
+	"github.com/mach-composer/mach-composer-cli/internal/utils"
 	"github.com/rs/zerolog/log"
 	"os"
 	"path/filepath"
-	"strings"
-
-	"github.com/mach-composer/mach-composer-cli/internal/config"
 )
 
 type PlanOptions struct {
@@ -18,36 +17,26 @@ type PlanOptions struct {
 }
 
 func TerraformPlan(ctx context.Context, cfg *config.MachConfig, dg *dependency.Graph, _ *PlanOptions) error {
-	if err := batchRun(ctx, dg, dg.StartNode.Path(), cfg.MachComposer.Deployment.Runners,
-		func(ctx context.Context, n dependency.Node) (string, error) {
-			tfPath := "deployments/" + n.Path()
+	out, err := terraformInitAll(ctx, dg)
+	if err != nil {
+		return err
+	}
+	log.Debug().Msg(out)
 
-			log.Info().Msgf("Planning %s", tfPath)
-
-			return terraformPlan(ctx, cfg, tfPath)
-		}); err != nil {
+	if err := batchRun(ctx, dg, cfg.MachComposer.Deployment.Runners, func(ctx context.Context, n dependency.Node, tfPath string) (string, error) {
+		return terraformPlan(ctx, tfPath)
+	}); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func terraformPlan(ctx context.Context, cfg *config.MachConfig, path string) (string, error) {
-	//TODO: deal with situation where a terraform file refers to a remote state that does not already exist
-	iOut, err := terraformInit(ctx, cfg, path)
-	if err != nil {
-		return "", err
-	}
-
+func terraformPlan(ctx context.Context, path string) (string, error) {
 	cmd := []string{"plan"}
 
 	cmd = append(cmd, "-out=terraform.plan")
-	rOut, err := runTerraform(ctx, path, cmd...)
-	if err != nil {
-		return "", err
-	}
-
-	return strings.Join([]string{iOut, rOut}, "\n"), nil
+	return utils.RunTerraform(ctx, path, cmd...)
 }
 
 func hasTerraformPlan(path string) (string, error) {

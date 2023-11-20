@@ -17,10 +17,10 @@ type LockFile struct {
 	isNew bool   `yaml:"-"`
 	path  string `yaml:"-"`
 
-	// Hash of all terraform files, alphabetically ordered
+	// hash of all terraform files, alphabetically ordered
 	TerraformHash string `yaml:"tf-hash"`
 
-	// Hash of the mach-composer config file
+	// hash of the config element
 	ConfigHash string `yaml:"cfg-hash"`
 
 	Version string `yaml:"version"`

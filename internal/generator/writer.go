@@ -71,11 +71,13 @@ func Write(ctx context.Context, cfg *config.MachConfig, g *dependency.Graph, opt
 				return err
 			}
 
-			if err = writeContent(cfg.ConfigHash, outPath, body); err != nil {
+			hash, err := n.Hash()
+			if err != nil {
 				return err
 			}
-
-			log.Info().Msgf("Wrote site %s", siteConfig.Identifier)
+			if err = writeContent(hash, outPath, body); err != nil {
+				return err
+			}
 			break
 		case *dependency.SiteComponent:
 			s := n.(*dependency.SiteComponent).SiteConfig
@@ -90,11 +92,13 @@ func Write(ctx context.Context, cfg *config.MachConfig, g *dependency.Graph, opt
 				return err
 			}
 
-			if err = writeContent(cfg.ConfigHash, outPath, body); err != nil {
+			hash, err := n.Hash()
+			if err != nil {
 				return err
 			}
-
-			log.Info().Msgf("Wrote site component %s", n.Path())
+			if err = writeContent(hash, outPath, body); err != nil {
+				return err
+			}
 			break
 		default:
 			return fmt.Errorf("unknown node type %T", n)
@@ -142,6 +146,8 @@ func writeContent(hash, path, content string) error {
 	if err := lockfile.WriteLock(lock); err != nil {
 		return err
 	}
+
+	log.Info().Msgf("Wrote files for path %s", path)
 
 	return nil
 }

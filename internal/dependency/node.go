@@ -1,6 +1,9 @@
 package dependency
 
-import "github.com/mach-composer/mach-composer-cli/internal/config"
+import (
+	"context"
+	"github.com/mach-composer/mach-composer-cli/internal/config"
+)
 
 const (
 	ProjectType       Type = "project"
@@ -16,6 +19,10 @@ type Node interface {
 	Type() Type
 	Parent() Node
 	Independent() bool
+	HasConfigChanges(ctx context.Context) (bool, error)
+	Tainted() bool
+	SetTainted(tainted bool)
+	Hash() (string, error)
 }
 
 type node struct {
@@ -24,6 +31,15 @@ type node struct {
 	typ            Type
 	parent         Node
 	deploymentType config.DeploymentType
+	tainted        bool
+}
+
+func (n *node) SetTainted(tainted bool) {
+	n.tainted = tainted
+}
+
+func (n *node) Tainted() bool {
+	return n.tainted
 }
 
 func (n *node) Path() string {

@@ -13,7 +13,7 @@ var varComponentRegex = regexp.MustCompile(`\${(component(?:\.[^}]+)+)}`)
 
 type ScalarVariable struct {
 	baseVariable
-	content    any
+	Content    any
 	references []string
 }
 
@@ -28,15 +28,11 @@ func NewScalarVariable(content any) (*ScalarVariable, error) {
 		references = append(references, parsedReferences...)
 	}
 
-	return &ScalarVariable{baseVariable: baseVariable{typ: Scalar}, content: content, references: references}, nil
+	return &ScalarVariable{baseVariable: baseVariable{typ: Scalar}, Content: content, references: references}, nil
 }
 
 func (v *ScalarVariable) TransformValue(f TransformValueFunc) (any, error) {
-	return f(v.content)
-}
-
-func (v *ScalarVariable) Content() any {
-	return v.content
+	return f(v.Content)
 }
 
 func (v *ScalarVariable) ReferencedComponents() []string {
@@ -131,7 +127,7 @@ func RemoteStateTransformFunc(repository *state.Repository) TransformValueFunc {
 				return nil, fmt.Errorf("state key '%s' not found", part[1])
 			}
 
-			replacement := fmt.Sprintf(`data.terraform_remote_state.%s.outputs.%s.%s`, stateKey, part[1], part[2])
+			replacement := fmt.Sprintf(`data.terraform_remote_state.%s.outputs.%s.variables.%s`, stateKey, part[1], part[2])
 			val = strings.ReplaceAll(val, strings.Join(part, "."), replacement)
 		}
 		return strings.TrimSpace(val), nil

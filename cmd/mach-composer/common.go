@@ -36,7 +36,7 @@ func registerGenerateFlags(cmd *cobra.Command) {
 	cmd.Flags().StringVarP(&generateFlags.varFile, "var-file", "", "", "Use a variable file to parse the configuration with.")
 	cmd.Flags().StringVarP(&generateFlags.siteName, "site", "s", "", "DeploymentSite to parse. If not set parse all sites.")
 	cmd.Flags().BoolVarP(&generateFlags.ignoreVersion, "ignore-version", "", false, "Skip MACH composer version check")
-	cmd.Flags().StringVarP(&generateFlags.outputPath, "output-path", "", "", "Output path, defaults to `cwd`/deployments.")
+	cmd.Flags().StringVarP(&generateFlags.outputPath, "output-path", "", "", "Variables path, defaults to `cwd`/deployments.")
 
 	handleError(cmd.MarkFlagFilename("var-file", "yml", "yaml"))
 	handleError(cmd.MarkFlagFilename("file", "yml", "yaml"))
@@ -102,11 +102,6 @@ func loadConfig(cmd *cobra.Command, resolveVars bool) *config.MachConfig {
 		if err := cloud.ResolveComponentsData(cmd.Context(), cfg); err != nil {
 			cli.PrintExitError("An error occurred while fetching cloud component info", err.Error())
 		}
-	}
-
-	cfg.ConfigHash, err = config.ComputeHash(cfg)
-	if err != nil {
-		cli.PrintExitError("An error occurred while computing hash", err.Error())
 	}
 
 	return cfg

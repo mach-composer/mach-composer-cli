@@ -2,7 +2,9 @@ package runner
 
 import (
 	"context"
+	"fmt"
 	"github.com/mach-composer/mach-composer-cli/internal/dependency"
+	"github.com/mach-composer/mach-composer-cli/internal/utils"
 	"os"
 	"path/filepath"
 
@@ -17,29 +19,47 @@ type InitOptions struct {
 }
 
 func TerraformInit(ctx context.Context, cfg *config.MachConfig, dg *dependency.Graph, _ *InitOptions) error {
-	if err := batchRun(ctx, dg, dg.StartNode.Path(), cfg.MachComposer.Deployment.Runners,
-		func(ctx context.Context, n dependency.Node) (string, error) {
-			tfPath := "deployments/" + n.Path()
-
-			log.Info().Msgf("Initializing %s", tfPath)
-
-			return terraformInit(ctx, cfg, tfPath)
-		}); err != nil {
+	if err := batchRun(ctx, dg, cfg.MachComposer.Deployment.Runners, func(ctx context.Context, n dependency.Node, tfPath string) (string, error) {
+		hash, err := n.Hash()
+		if err != nil {
+			return "", err
+		}
+		return terraformInit(ctx, hash, tfPath)
+	}); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func terraformInit(ctx context.Context, cfg *config.MachConfig, path string) (string, error) {
-	lf, err := lockfile.GetLock(cfg.ConfigHash, path)
+func terraformInitAll(ctx context.Context, g *dependency.Graph) (string, error) {
+	var out string
+	for _, v := range g.Vertices() {
+		tfPath := "deployments/" + v.Path()
+		hash, err := v.Hash()
+		if err != nil {
+			return "", err
+		}
+
+		iOut, err := terraformInit(ctx, hash, tfPath)
+		if err != nil {
+			return "", err
+		}
+		out += fmt.Sprintf("%s\n", iOut)
+	}
+
+	return out, nil
+}
+
+func terraformInit(ctx context.Context, hash, path string) (string, error) {
+	lf, err := lockfile.GetLock(hash, path)
 	if err != nil {
 		return "", err
 	}
 
 	var out string
-	if !terraformIsInitialized(path) || lf.HasChanges(cfg.ConfigHash) {
-		if out, err = runTerraform(ctx, path, "init"); err != nil {
+	if !terraformIsInitialized(path) || lf.HasChanges(hash) {
+		if out, err = utils.RunTerraform(ctx, path, "init"); err != nil {
 			return "", err
 		}
 	}

@@ -12,18 +12,23 @@ import (
 	"sync"
 )
 
-type ExecutorFunc func(ctx context.Context, node dependency.Node) (string, error)
+type ExecutorFunc func(ctx context.Context, node dependency.Node, tfPath string) (string, error)
 
 // batchRun will batch the nodes for the given graph, so they can be run in parallel. A batch in this sense is a list of nodes
 // that have no dependencies with each other. This currently happens with a very naive algorithm, where the batch number is
 // determined by the longest Path from the root Node to the Node in question.
-func batchRun(ctx context.Context, g *dependency.Graph, start string, workers int, f ExecutorFunc) error {
+func batchRun(ctx context.Context, g *dependency.Graph, workers int, f ExecutorFunc) error {
+	// Check node hashes and parents and determine which nodes are tainted
+	if err := dependency.TaintNodes(ctx, g); err != nil {
+		return err
+	}
+
 	batches := map[int][]dependency.Node{}
 
 	var sets = map[string][]dependency.Path{}
 
 	for _, n := range g.Vertices() {
-		var route, _ = g.Routes(n.Path(), start)
+		var route, _ = g.Routes(n.Path(), g.StartNode.Path())
 		sets[n.Path()] = route
 	}
 
@@ -61,12 +66,22 @@ func batchRun(ctx context.Context, g *dependency.Graph, start string, workers in
 				defer wg.Done()
 				defer sem.Release(1)
 
-				out, err := f(ctx, n)
+				tfPath := "deployments/" + n.Path()
+
+				if n.Tainted() == false {
+					log.Info().Msgf("Skipping %s because it has no changes", tfPath)
+					return
+				}
+
+				log.Info().Msgf("Running %s", tfPath)
+
+				out, err := f(ctx, n, tfPath)
+				//We allow the other elements of the batch to complete
 				if err != nil {
 					errChan <- err
 					return
 				}
-				log.Debug().Msg(out)
+				log.Info().Msg(out)
 			}(ctx, n)
 		}
 		wg.Wait()
@@ -83,6 +98,8 @@ func batchRun(ctx context.Context, g *dependency.Graph, start string, workers in
 
 		log.Info().Msgf("Finished batch %d", i)
 	}
+
+	log.Info().Msgf("Finished all batches")
 
 	return nil
 }

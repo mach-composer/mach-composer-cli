@@ -12,6 +12,8 @@ import (
 	"strings"
 )
 
+type Vertices []Node
+
 type edgeSets map[string][]string
 
 func (e *edgeSets) Add(to, from string) {
@@ -176,9 +178,9 @@ func ToDependencyGraph(cfg *config.MachConfig) (*Graph, error) {
 	return &Graph{NodeGraph: g, StartNode: project}, nil
 }
 
-func validateDeployment(g NodeGraph, start string) error {
+func validateDeployment(g *Graph) error {
 	var errList errorList
-	err := graph.DFS(g, start, func(p string) bool {
+	err := graph.DFS(g.NodeGraph, g.StartNode.Path(), func(p string) bool {
 		n, _ := g.Vertex(p)
 
 		am, _ := g.AdjacencyMap()
