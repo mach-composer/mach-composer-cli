@@ -5,6 +5,7 @@ import (
 	"github.com/mach-composer/mach-composer-cli/internal/config"
 	"github.com/mach-composer/mach-composer-cli/internal/dependency"
 	"github.com/mach-composer/mach-composer-cli/internal/utils"
+	"strings"
 )
 
 type ApplyOptions struct {
@@ -47,7 +48,7 @@ func terraformApply(ctx context.Context, path string, options *ApplyOptions) (st
 		return "", err
 	}
 	if planFilename != "" {
-		cmd = append(cmd, planFilename)
+		cmd = append(cmd, strings.TrimPrefix(planFilename, path+"/"))
 	}
 
 	return utils.RunTerraform(ctx, false, path, cmd...)
