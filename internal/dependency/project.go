@@ -6,7 +6,7 @@ import (
 )
 
 type Project struct {
-	node
+	baseNode
 	ProjectConfig *config.MachConfig
 }
 
@@ -14,6 +14,6 @@ func (p *Project) Hash() (string, error) {
 	return "", nil
 }
 
-func (p *Project) HasConfigChanges(context.Context) (bool, error) {
+func (p *Project) HasChanges(context.Context) (bool, error) {
 	return false, nil
 }

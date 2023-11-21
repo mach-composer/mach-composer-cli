@@ -2,33 +2,24 @@ package utils
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
+	"github.com/zclconf/go-cty/cty"
+	"github.com/zclconf/go-cty/cty/gocty"
+	"github.com/zclconf/go-cty/cty/json"
 	"os"
 	"os/exec"
 )
 
-type TerraformOutput map[string]SiteComponentOutput
-
-func (t *TerraformOutput) GetSiteComponentOutput(key string) (*SiteComponentOutput, bool) {
-	if t == nil {
-		return nil, false
-	}
-
-	if output, ok := (*t)[key]; ok {
-		return &output, true
-	}
-
-	return nil, false
-}
-
 type SiteComponentOutput struct {
-	Value struct {
-		Hash      string      `json:"hash"`
-		Variables interface{} `json:"variables"`
-	} `json:"value"`
+	Sensitive bool `cty:"sensitive"`
+	Value     struct {
+		Hash      string    `cty:"hash"`
+		Variables cty.Value `cty:"variables"`
+	} `cty:"value"`
+	Type cty.Value `cty:"type"`
 }
 
+// RunTerraform will execute a terraform command with the given arguments in the given directory.
 func RunTerraform(ctx context.Context, cwd string, args ...string) (string, error) {
 	if _, err := os.Stat(cwd); err != nil {
 		if os.IsNotExist(err) {
@@ -44,21 +35,31 @@ func RunTerraform(ctx context.Context, cwd string, args ...string) (string, erro
 	return RunInteractive(ctx, execPath, cwd, args...)
 }
 
-func GetTerraformOutput(ctx context.Context, path string) (*TerraformOutput, error) {
-	var data TerraformOutput
+// GetTerraformOutputByKey returns the output of a terraform command for the given key at the given path.
+// If no output is found nil is returned.
+func GetTerraformOutputByKey(ctx context.Context, path string, key string) (*SiteComponentOutput, error) {
+	var data json.SimpleJSONValue
 
 	output, err := RunTerraform(ctx, path, "output", "-json")
 	if err != nil {
 		return nil, err
 	}
 
-	if err = json.Unmarshal([]byte(output), &data); err != nil {
+	if err = data.UnmarshalJSON([]byte(output)); err != nil {
 		return nil, err
 	}
 
-	if len(data) == 0 {
+	if !data.Type().HasAttribute(key) {
 		return nil, nil
 	}
 
-	return &data, nil
+	val := data.GetAttr(key)
+
+	var scOut SiteComponentOutput
+	err = gocty.FromCtyValue(val, &scOut)
+	if err != nil {
+		return nil, err
+	}
+
+	return &scOut, nil
 }

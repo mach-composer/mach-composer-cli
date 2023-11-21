@@ -19,13 +19,13 @@ type Node interface {
 	Type() Type
 	Parent() Node
 	Independent() bool
-	HasConfigChanges(ctx context.Context) (bool, error)
+	HasChanges(ctx context.Context) (bool, error)
 	Tainted() bool
 	SetTainted(tainted bool)
 	Hash() (string, error)
 }
 
-type node struct {
+type baseNode struct {
 	path           string
 	identifier     string
 	typ            Type
@@ -34,31 +34,31 @@ type node struct {
 	tainted        bool
 }
 
-func (n *node) SetTainted(tainted bool) {
+func (n *baseNode) SetTainted(tainted bool) {
 	n.tainted = tainted
 }
 
-func (n *node) Tainted() bool {
+func (n *baseNode) Tainted() bool {
 	return n.tainted
 }
 
-func (n *node) Path() string {
+func (n *baseNode) Path() string {
 	return n.path
 }
 
-func (n *node) Identifier() string {
+func (n *baseNode) Identifier() string {
 	return n.identifier
 }
 
-func (n *node) Type() Type {
+func (n *baseNode) Type() Type {
 	return n.typ
 }
 
-func (n *node) Parent() Node {
+func (n *baseNode) Parent() Node {
 	return n.parent
 }
 
-func (n *node) Independent() bool {
+func (n *baseNode) Independent() bool {
 	// Projects and sites are always independent elements
 	if n.typ == ProjectType || n.typ == SiteType {
 		return true

@@ -70,7 +70,7 @@ func ToDependencyGraph(cfg *config.MachConfig) (*Graph, error) {
 	g := graph.New(func(n Node) string { return n.Path() }, graph.Directed(), graph.Tree(), graph.PreventCycles())
 
 	project := &Project{
-		node: node{
+		baseNode: baseNode{
 			path:           strings.TrimSuffix(cfg.Filename, filepath.Ext(cfg.Filename)),
 			identifier:     cfg.Filename,
 			typ:            ProjectType,
@@ -86,7 +86,7 @@ func ToDependencyGraph(cfg *config.MachConfig) (*Graph, error) {
 
 	for _, siteConfig := range cfg.Sites {
 		site := &Site{
-			node: node{
+			baseNode: baseNode{
 				path:           path.Join(project.Path(), siteConfig.Identifier),
 				identifier:     siteConfig.Identifier,
 				typ:            SiteType,
@@ -111,7 +111,7 @@ func ToDependencyGraph(cfg *config.MachConfig) (*Graph, error) {
 
 			log.Debug().Msgf("Deploying site component %s separately", componentConfig.Name)
 			component := &SiteComponent{
-				node: node{
+				baseNode: baseNode{
 					path:           p,
 					identifier:     componentConfig.Name,
 					typ:            SiteComponentType,
@@ -188,9 +188,9 @@ func validateDeployment(g *Graph) error {
 
 		for _, edge := range edges {
 			child, _ := g.Vertex(edge.Target)
-			//TODO: this is a weird check, maybe we want to make it more agnostic of what type of node it is
+			//TODO: this is a weird check, maybe we want to make it more agnostic of what type of baseNode it is
 			if n.Type() == SiteComponentType && n.Independent() && !child.Independent() {
-				errList.AddError(fmt.Errorf("node %s is independent but has a dependent child %s", n.Path(), child.Path()))
+				errList.AddError(fmt.Errorf("baseNode %s is independent but has a dependent child %s", n.Path(), child.Path()))
 			}
 		}
 

@@ -9,7 +9,7 @@ func determineTainted(ctx context.Context, n Node, parentTainted bool) (bool, er
 		return true, nil
 	}
 
-	isTainted, err := n.HasConfigChanges(ctx)
+	isTainted, err := n.HasChanges(ctx)
 	if err != nil {
 		return false, err
 	}

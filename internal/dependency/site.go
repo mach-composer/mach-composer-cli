@@ -5,11 +5,10 @@ import (
 	"fmt"
 	"github.com/mach-composer/mach-composer-cli/internal/config"
 	"github.com/mach-composer/mach-composer-cli/internal/utils"
-	"github.com/rs/zerolog/log"
 )
 
 type Site struct {
-	node
+	baseNode
 	NestedSiteComponentConfigs []config.SiteComponentConfig
 	SiteConfig                 config.SiteConfig
 }
@@ -27,7 +26,7 @@ func (s *Site) Hash() (string, error) {
 	return utils.ComputeHash(componentHashes)
 }
 
-func (s *Site) HasConfigChanges(ctx context.Context) (bool, error) {
+func (s *Site) HasChanges(ctx context.Context) (bool, error) {
 	hash, err := s.Hash()
 	if err != nil {
 		return true, err
@@ -35,20 +34,18 @@ func (s *Site) HasConfigChanges(ctx context.Context) (bool, error) {
 
 	path := fmt.Sprintf("deployments/%s", s.Path())
 
-	tfOutput, err := utils.GetTerraformOutput(ctx, path)
-	if err != nil {
-		return false, err
-	}
-
 	var componentHashes []string
 	for _, component := range s.NestedSiteComponentConfigs {
-		out, exists := tfOutput.GetSiteComponentOutput(component.Name)
-		if !exists {
-			log.Info().Msgf("Component %s does not exist in terraform output. Assuming update is required", component.Name)
+		tfOutput, err := utils.GetTerraformOutputByKey(ctx, path, component.Name)
+		if err != nil {
+			return false, err
+		}
+
+		if tfOutput == nil {
 			return true, nil
 		}
 
-		componentHashes = append(componentHashes, out.Value.Hash)
+		componentHashes = append(componentHashes, tfOutput.Value.Hash)
 	}
 
 	tfHash, err := utils.ComputeHash(componentHashes)

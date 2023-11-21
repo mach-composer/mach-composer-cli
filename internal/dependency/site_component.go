@@ -8,7 +8,7 @@ import (
 )
 
 type SiteComponent struct {
-	node
+	baseNode
 	SiteConfig          config.SiteConfig
 	SiteComponentConfig config.SiteComponentConfig
 }
@@ -17,7 +17,7 @@ func (sc *SiteComponent) Hash() (string, error) {
 	return sc.SiteComponentConfig.Hash()
 }
 
-func (sc *SiteComponent) HasConfigChanges(ctx context.Context) (bool, error) {
+func (sc *SiteComponent) HasChanges(ctx context.Context) (bool, error) {
 	hash, err := sc.Hash()
 	if err != nil {
 		return true, err
@@ -25,15 +25,14 @@ func (sc *SiteComponent) HasConfigChanges(ctx context.Context) (bool, error) {
 
 	path := fmt.Sprintf("deployments/%s", sc.Path())
 
-	tfOutput, err := utils.GetTerraformOutput(ctx, path)
+	tfOutput, err := utils.GetTerraformOutputByKey(ctx, path, sc.identifier)
 	if err != nil {
 		return false, err
 	}
 
-	tfHash, exists := tfOutput.GetSiteComponentOutput(sc.SiteComponentConfig.Name)
-	if !exists {
+	if tfOutput == nil {
 		return true, nil
 	}
 
-	return hash != tfHash.Value.Hash, nil
+	return hash != tfOutput.Value.Hash, nil
 }
