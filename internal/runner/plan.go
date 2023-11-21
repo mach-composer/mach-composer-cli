@@ -5,6 +5,7 @@ import (
 	"github.com/mach-composer/mach-composer-cli/internal/config"
 	"github.com/mach-composer/mach-composer-cli/internal/dependency"
 	"github.com/mach-composer/mach-composer-cli/internal/utils"
+	"github.com/rs/zerolog/log"
 	"os"
 	"path/filepath"
 )
@@ -15,7 +16,17 @@ type PlanOptions struct {
 	Site       string
 }
 
-func TerraformPlan(ctx context.Context, cfg *config.MachConfig, dg *dependency.Graph, _ *PlanOptions) error {
+func TerraformPlan(ctx context.Context, cfg *config.MachConfig, dg *dependency.Graph, opt *PlanOptions) error {
+	if opt.Reuse {
+		log.Warn().Msgf("Reuse option not implemented")
+	}
+	if len(opt.Components) > 0 {
+		log.Warn().Msgf("Components option not implemented")
+	}
+	if opt.Site != "" {
+		log.Warn().Msgf("Site option not implemented")
+	}
+
 	if err := terraformInitAll(ctx, dg); err != nil {
 		return err
 	}

@@ -6,6 +6,7 @@ import (
 	"github.com/mach-composer/mach-composer-cli/internal/config"
 	"github.com/mach-composer/mach-composer-cli/internal/dependency"
 	"github.com/mach-composer/mach-composer-cli/internal/utils"
+	"github.com/rs/zerolog/log"
 )
 
 type ShowPlanOptions struct {
@@ -13,13 +14,17 @@ type ShowPlanOptions struct {
 	Site    string
 }
 
-func TerraformShow(ctx context.Context, cfg *config.MachConfig, dg *dependency.Graph, options *ShowPlanOptions) error {
+func TerraformShow(ctx context.Context, cfg *config.MachConfig, dg *dependency.Graph, opt *ShowPlanOptions) error {
+	if opt.Site != "" {
+		log.Warn().Msgf("Site option not implemented")
+	}
+
 	if err := terraformInitAll(ctx, dg); err != nil {
 		return err
 	}
 
 	if err := batchRun(ctx, dg, cfg.MachComposer.Deployment.Runners, func(ctx context.Context, n dependency.Node, tfPath string) (string, error) {
-		return terraformShow(ctx, tfPath, options)
+		return terraformShow(ctx, tfPath, opt)
 	}); err != nil {
 		return err
 	}

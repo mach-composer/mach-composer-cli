@@ -20,7 +20,10 @@ type InitOptions struct {
 	Site string
 }
 
-func TerraformInit(ctx context.Context, _ *config.MachConfig, dg *dependency.Graph, _ *InitOptions) error {
+func TerraformInit(ctx context.Context, _ *config.MachConfig, dg *dependency.Graph, opt *InitOptions) error {
+	if opt.Site != "" {
+		log.Warn().Msgf("Site option not implemented")
+	}
 	return terraformInitAll(ctx, dg)
 }
 
