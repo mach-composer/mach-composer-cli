@@ -45,7 +45,12 @@ func (s *Site) HasChanges(ctx context.Context) (bool, error) {
 			return true, nil
 		}
 
-		componentHashes = append(componentHashes, tfOutput.Value.Hash)
+		tfHash := tfOutput.Value.Hash
+		if tfHash == nil {
+			return true, nil
+		}
+
+		componentHashes = append(componentHashes, *tfHash)
 	}
 
 	tfHash, err := utils.ComputeHash(componentHashes)

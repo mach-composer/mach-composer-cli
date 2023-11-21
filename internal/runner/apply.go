@@ -52,5 +52,5 @@ func terraformApply(ctx context.Context, path string, options *ApplyOptions) (st
 		cmd = append(cmd, planFilename)
 	}
 
-	return utils.RunTerraform(ctx, path, cmd...)
+	return utils.RunTerraform(ctx, false, path, cmd...)
 }

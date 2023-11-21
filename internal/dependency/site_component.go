@@ -34,5 +34,10 @@ func (sc *SiteComponent) HasChanges(ctx context.Context) (bool, error) {
 		return true, nil
 	}
 
-	return hash != tfOutput.Value.Hash, nil
+	tfHash := tfOutput.Value.Hash
+	if tfHash == nil {
+		return true, nil
+	}
+
+	return hash != *tfHash, nil
 }

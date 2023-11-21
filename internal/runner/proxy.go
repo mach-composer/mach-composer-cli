@@ -21,7 +21,7 @@ func TerraformProxy(ctx context.Context, cfg *config.MachConfig, dg *dependency.
 	log.Debug().Msg(out)
 
 	if err := batchRun(ctx, dg, cfg.MachComposer.Deployment.Runners, func(ctx context.Context, n dependency.Node, tfPath string) (string, error) {
-		return utils.RunTerraform(ctx, tfPath, options.Command...)
+		return utils.RunTerraform(ctx, false, tfPath, options.Command...)
 	}); err != nil {
 		return err
 	}

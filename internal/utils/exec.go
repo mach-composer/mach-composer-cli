@@ -12,7 +12,7 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-func RunInteractive(ctx context.Context, command string, cwd string, args ...string) (string, error) {
+func RunInteractive(ctx context.Context, returnOutput bool, command string, cwd string, args ...string) (string, error) {
 	log.Debug().Msgf("Running: %s %s\n", command, strings.Join(args, " "))
 
 	cmd := exec.CommandContext(
@@ -23,12 +23,14 @@ func RunInteractive(ctx context.Context, command string, cwd string, args ...str
 	cmd.Dir = cwd
 	cmd.Env = os.Environ()
 
-	stdOut := new(bytes.Buffer)
-	stdErr := new(bytes.Buffer)
-
 	cmd.Stdin = os.Stdin
-	cmd.Stderr = stdErr
-	cmd.Stdout = stdOut
+	cmd.Stderr = os.Stderr
+	cmd.Stdout = os.Stdout
+
+	stdOut := new(bytes.Buffer)
+	if returnOutput {
+		cmd.Stdout = stdOut
+	}
 
 	err := cmd.Start()
 	if err != nil {
@@ -47,10 +49,11 @@ func RunInteractive(ctx context.Context, command string, cwd string, args ...str
 
 	case err := <-done:
 		if err != nil {
-			return "", fmt.Errorf("command (%s) failed: %w (args: %s , cwd: %s): %s", command, err, strings.Join(args, " "),
-				cwd, stdErr.String())
+			return "", fmt.Errorf("command (%s) failed: %w (args: %s , cwd: %s)", command, err, strings.Join(args, " "), cwd)
 		}
 	}
+
+	log.Debug().Msgf("Finished running: %s %s\n", command, strings.Join(args, " "))
 
 	return stdOut.String(), nil
 }

@@ -13,14 +13,14 @@ import (
 type SiteComponentOutput struct {
 	Sensitive bool `cty:"sensitive"`
 	Value     struct {
-		Hash      string    `cty:"hash"`
-		Variables cty.Value `cty:"variables"`
+		Hash      *string    `cty:"hash"`
+		Variables *cty.Value `cty:"variables"`
 	} `cty:"value"`
 	Type cty.Value `cty:"type"`
 }
 
 // RunTerraform will execute a terraform command with the given arguments in the given directory.
-func RunTerraform(ctx context.Context, cwd string, args ...string) (string, error) {
+func RunTerraform(ctx context.Context, returnOutput bool, cwd string, args ...string) (string, error) {
 	if _, err := os.Stat(cwd); err != nil {
 		if os.IsNotExist(err) {
 			return "", fmt.Errorf("the generated files are not found: %w", err)
@@ -32,7 +32,7 @@ func RunTerraform(ctx context.Context, cwd string, args ...string) (string, erro
 		return "", err
 	}
 
-	return RunInteractive(ctx, execPath, cwd, args...)
+	return RunInteractive(ctx, returnOutput, execPath, cwd, args...)
 }
 
 // GetTerraformOutputByKey returns the output of a terraform command for the given key at the given path.
@@ -40,7 +40,7 @@ func RunTerraform(ctx context.Context, cwd string, args ...string) (string, erro
 func GetTerraformOutputByKey(ctx context.Context, path string, key string) (*SiteComponentOutput, error) {
 	var data json.SimpleJSONValue
 
-	output, err := RunTerraform(ctx, path, "output", "-json")
+	output, err := RunTerraform(ctx, true, path, "output", "-json")
 	if err != nil {
 		return nil, err
 	}

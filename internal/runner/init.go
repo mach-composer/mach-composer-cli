@@ -57,6 +57,7 @@ func terraformInitAll(ctx context.Context, g *dependency.Graph) (string, error) 
 		}(n)
 	}
 	wg.Wait()
+	close(errChan)
 
 	if len(errChan) > 0 {
 		var errors []error
@@ -80,7 +81,7 @@ func terraformInit(ctx context.Context, hash, path string) (string, error) {
 
 	var out string
 	if !terraformIsInitialized(path) || lf.HasChanges(hash) {
-		if out, err = utils.RunTerraform(ctx, path, "init"); err != nil {
+		if out, err = utils.RunTerraform(ctx, false, path, "init"); err != nil {
 			return "", err
 		}
 	}

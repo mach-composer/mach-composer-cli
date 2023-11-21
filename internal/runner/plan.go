@@ -36,7 +36,7 @@ func terraformPlan(ctx context.Context, path string) (string, error) {
 	cmd := []string{"plan"}
 
 	cmd = append(cmd, "-out=terraform.plan")
-	return utils.RunTerraform(ctx, path, cmd...)
+	return utils.RunTerraform(ctx, false, path, cmd...)
 }
 
 func hasTerraformPlan(path string) (string, error) {

@@ -43,5 +43,5 @@ func terraformShow(ctx context.Context, path string, options *ShowPlanOptions) (
 	if options.NoColor {
 		cmd = append(cmd, "-no-color")
 	}
-	return utils.RunTerraform(ctx, path, cmd...)
+	return utils.RunTerraform(ctx, false, path, cmd...)
 }
