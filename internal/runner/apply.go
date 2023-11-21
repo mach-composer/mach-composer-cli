@@ -5,7 +5,6 @@ import (
 	"github.com/mach-composer/mach-composer-cli/internal/config"
 	"github.com/mach-composer/mach-composer-cli/internal/dependency"
 	"github.com/mach-composer/mach-composer-cli/internal/utils"
-	"github.com/rs/zerolog/log"
 )
 
 type ApplyOptions struct {
@@ -17,13 +16,12 @@ type ApplyOptions struct {
 }
 
 func TerraformApply(ctx context.Context, cfg *config.MachConfig, dg *dependency.Graph, options *ApplyOptions) error {
-	out, err := terraformInitAll(ctx, dg)
-	if err != nil {
+	if err := terraformInitAll(ctx, dg); err != nil {
 		return err
 	}
-	log.Debug().Msg(out)
 
-	if err = batchRun(ctx, dg, cfg.MachComposer.Deployment.Runners, func(ctx context.Context, _ dependency.Node, tfPath string) (string, error) {
+	if err := batchRun(ctx, dg, cfg.MachComposer.Deployment.Runners, func(ctx context.Context, _ dependency.Node,
+		tfPath string) (string, error) {
 		return terraformApply(ctx, tfPath, options)
 	}); err != nil {
 		return err

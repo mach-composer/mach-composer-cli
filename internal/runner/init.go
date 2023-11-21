@@ -21,19 +21,12 @@ type InitOptions struct {
 }
 
 func TerraformInit(ctx context.Context, _ *config.MachConfig, dg *dependency.Graph, _ *InitOptions) error {
-	out, err := terraformInitAll(ctx, dg)
-	if err != nil {
-		return err
-	}
-	log.Info().Msg(out)
-	return nil
+	return terraformInitAll(ctx, dg)
 }
 
-func terraformInitAll(ctx context.Context, g *dependency.Graph) (string, error) {
-	var out string
+func terraformInitAll(ctx context.Context, g *dependency.Graph) error {
 	var errChan = make(chan error, len(g.Vertices()))
 	var wg = &sync.WaitGroup{}
-	var mu = &sync.Mutex{}
 
 	for _, n := range g.Vertices() {
 		wg.Add(1)
@@ -46,14 +39,11 @@ func terraformInitAll(ctx context.Context, g *dependency.Graph) (string, error) 
 				return
 			}
 
-			iOut, err := terraformInit(ctx, hash, tfPath)
+			err = terraformInit(ctx, hash, tfPath)
 			if err != nil {
 				errChan <- err
 				return
 			}
-			mu.Lock()
-			out += fmt.Sprintf("%s\n", iOut)
-			mu.Unlock()
 		}(n)
 	}
 	wg.Wait()
@@ -65,27 +55,26 @@ func terraformInitAll(ctx context.Context, g *dependency.Graph) (string, error) 
 			errors = append(errors, err)
 		}
 
-		return "", cli.NewGroupedError(
+		return cli.NewGroupedError(
 			fmt.Sprintf("failed initializing terraform projects (%d errors)", len(errors)), errors,
 		)
 	}
 
-	return out, nil
+	return nil
 }
 
-func terraformInit(ctx context.Context, hash, path string) (string, error) {
+func terraformInit(ctx context.Context, hash, path string) error {
 	lf, err := lockfile.GetLock(hash, path)
 	if err != nil {
-		return "", err
+		return err
 	}
 
-	var out string
 	if !terraformIsInitialized(path) || lf.HasChanges(hash) {
-		if out, err = utils.RunTerraform(ctx, false, path, "init"); err != nil {
-			return "", err
+		if _, err = utils.RunTerraform(ctx, false, path, "init"); err != nil {
+			return err
 		}
 	}
-	return out, nil
+	return nil
 }
 
 func terraformIsInitialized(path string) bool {

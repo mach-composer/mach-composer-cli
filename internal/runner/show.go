@@ -6,7 +6,6 @@ import (
 	"github.com/mach-composer/mach-composer-cli/internal/config"
 	"github.com/mach-composer/mach-composer-cli/internal/dependency"
 	"github.com/mach-composer/mach-composer-cli/internal/utils"
-	"github.com/rs/zerolog/log"
 )
 
 type ShowPlanOptions struct {
@@ -15,11 +14,9 @@ type ShowPlanOptions struct {
 }
 
 func TerraformShow(ctx context.Context, cfg *config.MachConfig, dg *dependency.Graph, options *ShowPlanOptions) error {
-	out, err := terraformInitAll(ctx, dg)
-	if err != nil {
+	if err := terraformInitAll(ctx, dg); err != nil {
 		return err
 	}
-	log.Debug().Msg(out)
 
 	if err := batchRun(ctx, dg, cfg.MachComposer.Deployment.Runners, func(ctx context.Context, n dependency.Node, tfPath string) (string, error) {
 		return terraformShow(ctx, tfPath, options)
