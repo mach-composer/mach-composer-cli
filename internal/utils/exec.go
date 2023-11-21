@@ -13,7 +13,12 @@ import (
 )
 
 func RunInteractive(ctx context.Context, returnOutput bool, command string, cwd string, args ...string) (string, error) {
-	log.Debug().Msgf("Running: %s %s\n", command, strings.Join(args, " "))
+	logger := log.Ctx(ctx).With().
+		Str("command", command).
+		Strs("args", args).
+		Str("cwd", cwd).Logger()
+
+	logger.Debug().Msgf("Running: %s", command)
 
 	cmd := exec.CommandContext(
 		ctx,
@@ -53,13 +58,13 @@ func RunInteractive(ctx context.Context, returnOutput bool, command string, cwd 
 		}
 	}
 
-	log.Debug().Msgf("Finished running: %s %s\n", command, strings.Join(args, " "))
+	logger.Debug().Msgf("Finished running: %s", command)
 
 	return stdOut.String(), nil
 }
 
 func StopProcess(cmd *exec.Cmd) error {
-	fmt.Println("Context cancelled, waiting for the command to exit...")
+	log.Info().Msg("Context cancelled, waiting for the command to exit...")
 	err := cmd.Process.Signal(os.Interrupt)
 	if err != nil {
 		return fmt.Errorf("failed to send interrupt signal: %w\n", err)
@@ -74,10 +79,10 @@ func StopProcess(cmd *exec.Cmd) error {
 	for {
 		select {
 		case <-ticker.C:
-			fmt.Println("Waiting...")
-			fmt.Println(cmd.ProcessState)
+			log.Info().Msg("Waiting...")
+			log.Info().Msg(cmd.ProcessState.String())
 			if cmd.ProcessState != nil && cmd.ProcessState.Exited() {
-				fmt.Println("Command exited.")
+				log.Info().Msg("Command exited.")
 				return nil
 			}
 			if current.Add(10 * time.Second).After(time.Now()) {

@@ -40,18 +40,20 @@ func (w ConsoleWriter) Write(p []byte) (n int, err error) {
 
 	var extraFields strings.Builder
 	for key, value := range event {
-		extraFields.WriteString(fmt.Sprintf("%s=%s ", key, value))
+		extraFields.WriteString(fmt.Sprintf("  %s=%s\n", key, value))
 	}
 
 	if level, ok := event["level"].(string); ok {
 		switch level {
 		case zerolog.LevelTraceValue:
 			c := color.New(color.FgWhite, color.Faint)
-			_, _ = c.Println(message.String(), extraFields.String())
+			_, _ = c.Println(message.String())
+			_, _ = c.Println(extraFields.String())
 
 		case zerolog.LevelDebugValue:
 			c := color.New(color.FgWhite, color.Faint)
-			_, _ = c.Println(message.String(), extraFields.String())
+			_, _ = c.Println(message.String())
+			_, _ = c.Println(extraFields.String())
 
 		case zerolog.LevelInfoValue:
 			c := color.New(color.Bold)

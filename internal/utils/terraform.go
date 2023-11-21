@@ -41,21 +41,23 @@ func RunTerraform(ctx context.Context, returnOutput bool, cwd string, args ...st
 func GetTerraformOutputByKey(ctx context.Context, path string, key string) (*SiteComponentOutput, error) {
 	var data json.SimpleJSONValue
 
+	logger := log.Ctx(ctx).With().Str("path", path).Str("key", key).Logger()
+
 	output, err := RunTerraform(ctx, true, path, "output", "-json")
 	if err != nil {
-		log.Error().Err(err).Msgf("failed to get terraform output: %s", err.Error())
+		logger.Error().Err(err).Msgf("failed to get terraform output: %s", err.Error())
 		return nil, err
 	}
 
-	log.Debug().Msgf("Terraform output: %s", output)
+	logger.Debug().Str("output", output).Msgf("Fetched terraform output")
 
 	if err = data.UnmarshalJSON([]byte(output)); err != nil {
-		log.Error().Err(err).Msgf("failed to unmarshal terraform output: %s", err.Error())
+		logger.Error().Err(err).Str("output", output).Msgf("failed to unmarshal terraform output: %s", err.Error())
 		return nil, err
 	}
 
 	if !data.Type().HasAttribute(key) {
-		log.Debug().Msgf("no attribute found for key %s", key)
+		logger.Debug().Msgf("no attribute found for key %s", key)
 		return nil, nil
 	}
 
@@ -64,7 +66,7 @@ func GetTerraformOutputByKey(ctx context.Context, path string, key string) (*Sit
 	var scOut SiteComponentOutput
 	err = gocty.FromCtyValue(val, &scOut)
 	if err != nil {
-		log.Error().Err(err).Msgf("failed to convert terraform output to SiteComponentOutput: %s", err.Error())
+		logger.Err(err).Msgf("failed to convert terraform output to SiteComponentOutput: %s", err.Error())
 		return nil, err
 	}
 
