@@ -1,15 +1,11 @@
 package dependency
 
-import (
-	"context"
-)
-
-func determineTainted(ctx context.Context, n Node, parentTainted bool) (bool, error) {
+func determineTainted(n Node, parentTainted bool) (bool, error) {
 	if parentTainted {
 		return true, nil
 	}
 
-	isTainted, err := n.HasChanges(ctx)
+	isTainted, err := n.HasChanges()
 	if err != nil {
 		return false, err
 	}
@@ -25,18 +21,18 @@ func determineTainted(ctx context.Context, n Node, parentTainted bool) (bool, er
 	return false, nil
 }
 
-func taintNode(ctx context.Context, g *Graph, path string, parentTainted bool) error {
+func taintNode(g *Graph, path string, parentTainted bool) error {
 	v, _ := g.Vertex(path)
 	am, _ := g.AdjacencyMap()
 
-	isTainted, err := determineTainted(ctx, v, parentTainted)
+	isTainted, err := determineTainted(v, parentTainted)
 	if err != nil {
 		return err
 	}
 	v.SetTainted(isTainted)
 
 	for _, child := range am[path] {
-		if err = taintNode(ctx, g, child.Target, isTainted); err != nil {
+		if err = taintNode(g, child.Target, isTainted); err != nil {
 			return err
 		}
 	}
@@ -44,6 +40,7 @@ func taintNode(ctx context.Context, g *Graph, path string, parentTainted bool) e
 	return nil
 }
 
-func TaintNodes(ctx context.Context, g *Graph) error {
-	return taintNode(ctx, g, g.StartNode.Path(), false)
+// TaintNodes will mark all nodes as tainted that have changes or are dependent on a node with changes
+func TaintNodes(g *Graph) error {
+	return taintNode(g, g.StartNode.Path(), false)
 }

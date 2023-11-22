@@ -1,7 +1,6 @@
 package dependency
 
 import (
-	"context"
 	"github.com/mach-composer/mach-composer-cli/internal/config"
 )
 
@@ -14,6 +13,6 @@ func (p *Project) Hash() (string, error) {
 	return "", nil
 }
 
-func (p *Project) HasChanges(context.Context) (bool, error) {
+func (p *Project) HasChanges() (bool, error) {
 	return false, nil
 }

@@ -1,8 +1,6 @@
 package dependency
 
 import (
-	"context"
-	"fmt"
 	"github.com/mach-composer/mach-composer-cli/internal/config"
 	"github.com/mach-composer/mach-composer-cli/internal/utils"
 )
@@ -26,17 +24,15 @@ func (s *Site) Hash() (string, error) {
 	return utils.ComputeHash(componentHashes)
 }
 
-func (s *Site) HasChanges(ctx context.Context) (bool, error) {
+func (s *Site) HasChanges() (bool, error) {
 	hash, err := s.Hash()
 	if err != nil {
 		return true, err
 	}
 
-	path := fmt.Sprintf("deployments/%s", s.Path())
-
 	var componentHashes []string
 	for _, component := range s.NestedSiteComponentConfigs {
-		tfOutput, err := utils.GetTerraformOutputByKey(ctx, path, component.Name)
+		tfOutput, err := utils.ParseSiteComponentOutputByKey(s.outputs, component.Name)
 		if err != nil {
 			return false, err
 		}

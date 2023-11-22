@@ -2,7 +2,10 @@ package dependency
 
 import (
 	"context"
+	"fmt"
 	"github.com/mach-composer/mach-composer-cli/internal/config"
+	"github.com/mach-composer/mach-composer-cli/internal/utils"
+	"github.com/zclconf/go-cty/cty"
 )
 
 const (
@@ -19,10 +22,12 @@ type Node interface {
 	Type() Type
 	Parent() Node
 	Independent() bool
-	HasChanges(ctx context.Context) (bool, error)
+	HasChanges() (bool, error)
 	Tainted() bool
 	SetTainted(tainted bool)
 	Hash() (string, error)
+	LoadOutputs(ctx context.Context) error
+	Outputs() cty.Value
 }
 
 type baseNode struct {
@@ -32,6 +37,23 @@ type baseNode struct {
 	parent         Node
 	deploymentType config.DeploymentType
 	tainted        bool
+	outputs        cty.Value
+}
+
+// LoadOutputs fetches all the outputs for the given state file. It will return a cty.NilVal if no outputs are present.
+// The outputs are cached in the node.
+func (n *baseNode) LoadOutputs(ctx context.Context) error {
+	tfPath := fmt.Sprintf("deployments/%s", n.Path())
+	val, err := utils.GetTerraformOutputs(ctx, tfPath)
+	if err != nil {
+		return err
+	}
+	n.outputs = val
+	return nil
+}
+
+func (n *baseNode) Outputs() cty.Value {
+	return n.outputs
 }
 
 func (n *baseNode) SetTainted(tainted bool) {

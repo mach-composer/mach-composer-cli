@@ -18,8 +18,13 @@ type ExecutorFunc func(ctx context.Context, node dependency.Node, tfPath string)
 // that have no dependencies with each other. This currently happens with a very naive algorithm, where the batch number is
 // determined by the longest Path from the root Node to the Node in question.
 func batchRun(ctx context.Context, g *dependency.Graph, workers int, f ExecutorFunc) error {
+	//	Load all the outputs for the nodes
+	if err := dependency.LoadOutputs(ctx, g); err != nil {
+		return err
+	}
+
 	// Check node hashes and parents and determine which nodes are tainted
-	if err := dependency.TaintNodes(ctx, g); err != nil {
+	if err := dependency.TaintNodes(g); err != nil {
 		return err
 	}
 

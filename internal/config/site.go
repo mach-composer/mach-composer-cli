@@ -80,8 +80,8 @@ func parseSitesNode(cfg *MachConfig, sitesNode *yaml.Node) error {
 	for k, s := range cfg.Sites {
 		if s.Deployment == nil {
 			log.Debug().Msgf("No site deployment type specified for %s; defaulting to global setting", s.Identifier)
-			var siteComponentDeployment = cfg.MachComposer.Deployment.Deployment
-			cfg.Sites[k].Deployment = &siteComponentDeployment
+			var siteDeployment = cfg.MachComposer.Deployment.Deployment
+			cfg.Sites[k].Deployment = &siteDeployment
 		}
 	}
 

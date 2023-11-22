@@ -11,15 +11,6 @@ import (
 	"os/exec"
 )
 
-type SiteComponentOutput struct {
-	Sensitive bool `cty:"sensitive"`
-	Value     struct {
-		Hash      *string    `cty:"hash"`
-		Variables *cty.Value `cty:"variables"`
-	} `cty:"value"`
-	Type cty.Value `cty:"type"`
-}
-
 // RunTerraform will execute a terraform command with the given arguments in the given directory.
 func RunTerraform(ctx context.Context, returnOutput bool, cwd string, args ...string) (string, error) {
 	if _, err := os.Stat(cwd); err != nil {
@@ -36,37 +27,50 @@ func RunTerraform(ctx context.Context, returnOutput bool, cwd string, args ...st
 	return RunInteractive(ctx, returnOutput, execPath, cwd, args...)
 }
 
-// GetTerraformOutputByKey returns the output of a terraform command for the given key at the given path.
-// If no output is found nil is returned.
-func GetTerraformOutputByKey(ctx context.Context, path string, key string) (*SiteComponentOutput, error) {
+func GetTerraformOutputs(ctx context.Context, path string) (cty.Value, error) {
 	var data json.SimpleJSONValue
 
-	logger := log.Ctx(ctx).With().Str("path", path).Str("key", key).Logger()
+	logger := log.Ctx(ctx).With().Str("path", path).Logger()
 
 	output, err := RunTerraform(ctx, true, path, "output", "-json")
 	if err != nil {
 		logger.Error().Err(err).Msgf("failed to get terraform output: %s", err.Error())
-		return nil, err
+		return cty.NilVal, err
 	}
 
 	logger.Debug().Str("output", output).Msgf("Fetched terraform output")
 
 	if err = data.UnmarshalJSON([]byte(output)); err != nil {
 		logger.Error().Err(err).Str("output", output).Msgf("failed to unmarshal terraform output: %s", err.Error())
-		return nil, err
+		return cty.NilVal, err
 	}
 
-	if !data.Type().HasAttribute(key) {
-		logger.Debug().Msgf("no attribute found for key %s", key)
+	return data.Value, nil
+}
+
+type SiteComponentOutput struct {
+	Sensitive bool `cty:"sensitive"`
+	Value     struct {
+		Hash      *string    `cty:"hash"`
+		Variables *cty.Value `cty:"variables"`
+	} `cty:"value"`
+	Type cty.Value `cty:"type"`
+}
+
+// ParseSiteComponentOutputByKey returns the output of a terraform command for the given key at the given path.
+// If no output is found nil is returned.
+func ParseSiteComponentOutputByKey(val cty.Value, key string) (*SiteComponentOutput, error) {
+	if !val.Type().HasAttribute(key) {
+		log.Debug().Msgf("no attribute found for key %s", key)
 		return nil, nil
 	}
 
-	val := data.GetAttr(key)
+	componentVal := val.GetAttr(key)
 
 	var scOut SiteComponentOutput
-	err = gocty.FromCtyValue(val, &scOut)
+	err := gocty.FromCtyValue(componentVal, &scOut)
 	if err != nil {
-		logger.Err(err).Msgf("failed to convert terraform output to SiteComponentOutput: %s", err.Error())
+		log.Err(err).Msgf("failed to convert terraform output to SiteComponentOutput: %s", err.Error())
 		return nil, err
 	}
 
