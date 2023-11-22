@@ -55,22 +55,22 @@ jobs:
       - name: Get hash
         shell: bash
         run: |
-          BRANCH=${GITHUB_REF##*/}
-          echo "BRANCH=$BRANCH" >> $GITHUB_ENV
+          HASH=$(git rev-parse --short "$GITHUB_SHA")
+          echo "HASH=$HASH" >> $GITHUB_ENV
 
       - name: Get the next potential version
         id: next-tag
         uses: miniscruff/changie-action@v2
         with:
           version: latest
-          args: next -p beta-${{ env.BRANCH }} ${{ github.event.inputs.next }}
+          args: next -p beta-${{ env.HASH }} ${{ github.event.inputs.next }}
 
       - name: Output changes
         uses: miniscruff/changie-action@v2
         id: changelog
         with:
           version: latest
-          args: batch --dry-run -p beta-${{ env.BRANCH }} ${{ github.event.inputs.next }}
+          args: batch --dry-run -p beta-${{ env.HASH }} ${{ github.event.inputs.next }}
 
       - name: Save ChangeLog to file
         id: save_changes
