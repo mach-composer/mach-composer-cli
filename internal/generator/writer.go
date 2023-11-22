@@ -60,13 +60,10 @@ func Write(ctx context.Context, cfg *config.MachConfig, g *dependency.Graph, opt
 			log.Debug().Msgf("No global files to generate for project %s", n.Path())
 			break
 		case *dependency.Site:
-			siteConfig := n.(*dependency.Site).SiteConfig
-			nestedComponents := n.(*dependency.Site).NestedSiteComponentConfigs
-
-			if err := copySecrets(cfg, siteConfig.Identifier, outPath); err != nil {
+			if err := copySecrets(cfg, n.Identifier(), outPath); err != nil {
 				return err
 			}
-			body, err := renderSite(ctx, cfg, &siteConfig, nestedComponents)
+			body, err := renderSite(ctx, cfg, n)
 			if err != nil {
 				return err
 			}
@@ -80,14 +77,11 @@ func Write(ctx context.Context, cfg *config.MachConfig, g *dependency.Graph, opt
 			}
 			break
 		case *dependency.SiteComponent:
-			s := n.(*dependency.SiteComponent).SiteConfig
-			sc := n.(*dependency.SiteComponent).SiteComponentConfig
-
-			if err := copySecrets(cfg, s.Identifier, outPath); err != nil {
+			if err := copySecrets(cfg, n.Identifier(), outPath); err != nil {
 				return err
 			}
 
-			body, err := renderSiteComponent(ctx, cfg, &s, &sc)
+			body, err := renderSiteComponent(ctx, cfg, n)
 			if err != nil {
 				return err
 			}
@@ -218,6 +212,24 @@ func copyFile(srcPath, dstPath string) error {
 	_, err = dst.Write(srcContents)
 	if err != nil {
 		return err
+	}
+
+	return nil
+}
+
+func copySecrets(cfg *config.MachConfig, identifier, outPath string) error {
+	for _, fs := range cfg.Variables.GetEncryptedSources(identifier) {
+		target := filepath.Join(outPath, fs.Filename)
+		log.Info().Msgf("Copying %s", target)
+
+		// This can refer to a file outside the current directory, so we need to create the directory structure
+		if err := os.MkdirAll(filepath.Dir(target), 0700); err != nil {
+			return fmt.Errorf("error creating directory structure for variables: %w", err)
+		}
+
+		if err := copyFile(fs.Filename, target); err != nil {
+			return fmt.Errorf("error writing extra file: %w", err)
+		}
 	}
 
 	return nil
