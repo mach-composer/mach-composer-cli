@@ -1,6 +1,7 @@
 package dependency
 
 import (
+	"github.com/dominikbraun/graph"
 	"github.com/mach-composer/mach-composer-cli/internal/config"
 	"github.com/mach-composer/mach-composer-cli/internal/utils"
 )
@@ -9,6 +10,21 @@ type Site struct {
 	baseNode
 	NestedSiteComponentConfigs []config.SiteComponentConfig
 	SiteConfig                 config.SiteConfig
+}
+
+func NewSite(g graph.Graph[string, Node], path, identifier string, deploymentType config.DeploymentType, ancestor Node,
+	siteConfig config.SiteConfig) *Site {
+	return &Site{
+		baseNode: baseNode{
+			graph:          g,
+			path:           path,
+			identifier:     identifier,
+			deploymentType: deploymentType,
+			ancestor:       ancestor,
+			typ:            SiteType,
+		},
+		SiteConfig: siteConfig,
+	}
 }
 
 func (s *Site) Hash() (string, error) {

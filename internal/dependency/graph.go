@@ -100,16 +100,8 @@ func ToDependencyGraph(cfg *config.MachConfig) (*Graph, error) {
 	var edges = edgeSets{}
 	g := graph.New(func(n Node) string { return n.Path() }, graph.Directed(), graph.Tree(), graph.PreventCycles())
 
-	project := &Project{
-		baseNode: baseNode{
-			graph:          g,
-			path:           strings.TrimSuffix(cfg.Filename, filepath.Ext(cfg.Filename)),
-			identifier:     cfg.Filename,
-			typ:            ProjectType,
-			deploymentType: cfg.MachComposer.Deployment.Type,
-		},
-		ProjectConfig: cfg,
-	}
+	p := strings.TrimSuffix(cfg.Filename, filepath.Ext(cfg.Filename))
+	project := NewProject(g, p, cfg.Filename, cfg.MachComposer.Deployment.Type, cfg)
 
 	err := g.AddVertex(project)
 	if err != nil {
@@ -117,17 +109,8 @@ func ToDependencyGraph(cfg *config.MachConfig) (*Graph, error) {
 	}
 
 	for _, siteConfig := range cfg.Sites {
-		site := &Site{
-			baseNode: baseNode{
-				graph:          g,
-				path:           path.Join(project.Path(), siteConfig.Identifier),
-				identifier:     siteConfig.Identifier,
-				typ:            SiteType,
-				ancestor:       project,
-				deploymentType: siteConfig.Deployment.Type,
-			},
-			SiteConfig: siteConfig,
-		}
+		p = path.Join(project.Path(), siteConfig.Identifier)
+		site := NewSite(g, p, siteConfig.Identifier, siteConfig.Deployment.Type, project, siteConfig)
 
 		err = g.AddVertex(site)
 		if err != nil {
@@ -140,21 +123,11 @@ func ToDependencyGraph(cfg *config.MachConfig) (*Graph, error) {
 		}
 
 		for _, componentConfig := range siteConfig.Components {
-			var p = path.Join(site.Path(), componentConfig.Name)
-
 			log.Debug().Msgf("Deploying site component %s separately", componentConfig.Name)
-			component := &SiteComponent{
-				baseNode: baseNode{
-					graph:          g,
-					path:           p,
-					identifier:     componentConfig.Name,
-					typ:            SiteComponentType,
-					ancestor:       site,
-					deploymentType: componentConfig.Deployment.Type,
-				},
-				SiteConfig:          siteConfig,
-				SiteComponentConfig: componentConfig,
-			}
+
+			p = path.Join(site.Path(), componentConfig.Name)
+			component := NewSiteComponent(g, p, componentConfig.Name, componentConfig.Deployment.Type, site,
+				siteConfig, componentConfig)
 
 			err = g.AddVertex(component)
 			if err != nil {
@@ -222,7 +195,6 @@ func validateDeployment(g *Graph) error {
 
 		for _, edge := range edges {
 			child, _ := g.Vertex(edge.Target)
-			//TODO: this is a weird check, maybe we want to make it more agnostic of what type of baseNode it is
 			if n.Type() == SiteComponentType && n.Independent() && !child.Independent() {
 				errList.AddError(fmt.Errorf("baseNode %s is independent but has a dependent child %s", n.Path(), child.Path()))
 			}
