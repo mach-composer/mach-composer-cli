@@ -138,12 +138,12 @@ func renderSiteComponentResources(cfg *config.MachConfig, site *config.SiteConfi
 
 // renderComponentModule uses templates/component.tmpl to generate a terraform snippet for each component
 func renderComponentModule(_ context.Context, cfg *config.MachConfig, site *config.SiteConfig, siteComponent *config.SiteComponentConfig) (string, error) {
-	hash, err := siteComponent.Hash()
+	tpl, err := templates.ReadFile("templates/site_component.tmpl")
 	if err != nil {
 		return "", err
 	}
 
-	tpl, err := templates.ReadFile("templates/site_component.tmpl")
+	hash, err := siteComponent.Hash()
 	if err != nil {
 		return "", err
 	}

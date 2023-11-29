@@ -57,6 +57,11 @@ func renderSite(ctx context.Context, cfg *config.MachConfig, n dependency.Node) 
 }
 
 func renderSiteTerraformConfig(cfg *config.MachConfig, site *config.SiteConfig) (string, error) {
+	tpl, err := templates.ReadFile("templates/terraform.tmpl")
+	if err != nil {
+		return "", err
+	}
+
 	var providers []string
 	for _, plugin := range cfg.Plugins.All() {
 		content, err := plugin.RenderTerraformProviders(site.Identifier)
@@ -76,11 +81,6 @@ func renderSiteTerraformConfig(cfg *config.MachConfig, site *config.SiteConfig) 
 		return "", err
 	}
 
-	tpl, err := templates.ReadFile("templates/terraform.tmpl")
-	if err != nil {
-		return "", err
-	}
-
 	templateContext := struct {
 		Providers     []string
 		BackendConfig string
@@ -94,6 +94,11 @@ func renderSiteTerraformConfig(cfg *config.MachConfig, site *config.SiteConfig) 
 }
 
 func renderSiteResources(cfg *config.MachConfig, site *config.SiteConfig) (string, error) {
+	tpl, err := templates.ReadFile("templates/resources.tmpl")
+	if err != nil {
+		return "", err
+	}
+
 	var resources []string
 	for _, plugin := range cfg.Plugins.All() {
 		content, err := plugin.RenderTerraformResources(site.Identifier)
@@ -104,11 +109,6 @@ func renderSiteResources(cfg *config.MachConfig, site *config.SiteConfig) (strin
 		if content != "" {
 			resources = append(resources, content)
 		}
-	}
-
-	tpl, err := templates.ReadFile("templates/resources.tmpl")
-	if err != nil {
-		return "", err
 	}
 
 	return utils.RenderGoTemplate(string(tpl), resources)
