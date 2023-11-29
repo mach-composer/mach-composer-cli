@@ -61,7 +61,7 @@ func graphFunc(cmd *cobra.Command, _ []string) error {
 	}
 
 	var buff bytes.Buffer
-	err = draw.DOT(g.NodeGraph, &buff)
+	err = draw.DOT(g.Graph, &buff)
 	if err != nil {
 		return err
 	}

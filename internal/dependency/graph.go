@@ -1,8 +1,10 @@
 package dependency
 
 import (
+	"context"
 	"fmt"
 	"github.com/dominikbraun/graph"
+	"github.com/mach-composer/mach-composer-cli/internal/cli"
 	"github.com/mach-composer/mach-composer-cli/internal/config"
 	"github.com/rs/zerolog/log"
 	"golang.org/x/exp/maps"
@@ -10,6 +12,7 @@ import (
 	"path/filepath"
 	"slices"
 	"strings"
+	"sync"
 )
 
 type Vertices []Node
@@ -23,11 +26,39 @@ func (e *edgeSets) Add(to, from string) {
 	(*e)[to] = append((*e)[to], from)
 }
 
-type NodeGraph = graph.Graph[string, Node]
-
 type Graph struct {
-	NodeGraph
+	graph.Graph[string, Node]
 	StartNode Node
+}
+
+// LoadOutputs loads the outputs for all nodes in the graph in parallel
+func (g *Graph) LoadOutputs(ctx context.Context) error {
+	wg := &sync.WaitGroup{}
+	errChan := make(chan error, len(g.Vertices()))
+
+	for _, n := range g.Vertices() {
+		wg.Add(1)
+
+		go func(ctx context.Context, n Node) {
+			defer wg.Done()
+			if err := n.LoadOutputs(ctx); err != nil {
+				errChan <- err
+			}
+		}(ctx, n)
+	}
+	wg.Wait()
+	close(errChan)
+
+	if len(errChan) > 0 {
+		var errors []error
+		for err := range errChan {
+			errors = append(errors, err)
+		}
+
+		return cli.NewGroupedError(fmt.Sprintf("failed loading outputs (%d errors)", len(errors)), errors)
+	}
+
+	return nil
 }
 
 func (g *Graph) Vertices() Vertices {
@@ -71,6 +102,7 @@ func ToDependencyGraph(cfg *config.MachConfig) (*Graph, error) {
 
 	project := &Project{
 		baseNode: baseNode{
+			graph:          g,
 			path:           strings.TrimSuffix(cfg.Filename, filepath.Ext(cfg.Filename)),
 			identifier:     cfg.Filename,
 			typ:            ProjectType,
@@ -87,10 +119,11 @@ func ToDependencyGraph(cfg *config.MachConfig) (*Graph, error) {
 	for _, siteConfig := range cfg.Sites {
 		site := &Site{
 			baseNode: baseNode{
+				graph:          g,
 				path:           path.Join(project.Path(), siteConfig.Identifier),
 				identifier:     siteConfig.Identifier,
 				typ:            SiteType,
-				parent:         project,
+				ancestor:       project,
 				deploymentType: siteConfig.Deployment.Type,
 			},
 			SiteConfig: siteConfig,
@@ -112,10 +145,11 @@ func ToDependencyGraph(cfg *config.MachConfig) (*Graph, error) {
 			log.Debug().Msgf("Deploying site component %s separately", componentConfig.Name)
 			component := &SiteComponent{
 				baseNode: baseNode{
+					graph:          g,
 					path:           p,
 					identifier:     componentConfig.Name,
 					typ:            SiteComponentType,
-					parent:         site,
+					ancestor:       site,
 					deploymentType: componentConfig.Deployment.Type,
 				},
 				SiteConfig:          siteConfig,
@@ -148,7 +182,7 @@ func ToDependencyGraph(cfg *config.MachConfig) (*Graph, error) {
 				continue
 			}
 
-			// Otherwise add the default link to the parent site
+			// Otherwise add the default link to the ancestor site
 			edges.Add(component.Path(), site.Path())
 		}
 	}
@@ -175,12 +209,12 @@ func ToDependencyGraph(cfg *config.MachConfig) (*Graph, error) {
 		return nil, err
 	}
 
-	return &Graph{NodeGraph: g, StartNode: project}, nil
+	return &Graph{Graph: g, StartNode: project}, nil
 }
 
 func validateDeployment(g *Graph) error {
 	var errList errorList
-	err := graph.DFS(g.NodeGraph, g.StartNode.Path(), func(p string) bool {
+	err := graph.DFS(g.Graph, g.StartNode.Path(), func(p string) bool {
 		n, _ := g.Vertex(p)
 
 		am, _ := g.AdjacencyMap()

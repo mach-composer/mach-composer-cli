@@ -19,7 +19,7 @@ type ExecutorFunc func(ctx context.Context, node dependency.Node, tfPath string)
 // determined by the longest Path from the root Node to the Node in question.
 func batchRun(ctx context.Context, g *dependency.Graph, workers int, f ExecutorFunc) error {
 	//	Load all the outputs for the nodes
-	if err := dependency.LoadOutputs(ctx, g); err != nil {
+	if err := g.LoadOutputs(ctx); err != nil {
 		return err
 	}
 

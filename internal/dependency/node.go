@@ -3,6 +3,7 @@ package dependency
 import (
 	"context"
 	"fmt"
+	"github.com/dominikbraun/graph"
 	"github.com/mach-composer/mach-composer-cli/internal/config"
 	"github.com/mach-composer/mach-composer-cli/internal/utils"
 	"github.com/zclconf/go-cty/cty"
@@ -20,7 +21,8 @@ type Node interface {
 	Path() string
 	Identifier() string
 	Type() Type
-	Parent() Node
+	Ancestor() Node
+	Parents() ([]Node, error)
 	Independent() bool
 	HasChanges() (bool, error)
 	Tainted() bool
@@ -28,13 +30,15 @@ type Node interface {
 	Hash() (string, error)
 	LoadOutputs(ctx context.Context) error
 	Outputs() cty.Value
+	resetGraph(graph.Graph[string, Node])
 }
 
 type baseNode struct {
+	graph          graph.Graph[string, Node]
 	path           string
 	identifier     string
 	typ            Type
-	parent         Node
+	ancestor       Node
 	deploymentType config.DeploymentType
 	tainted        bool
 	outputs        cty.Value
@@ -50,6 +54,10 @@ func (n *baseNode) LoadOutputs(ctx context.Context) error {
 	}
 	n.outputs = val
 	return nil
+}
+
+func (n *baseNode) resetGraph(ng graph.Graph[string, Node]) {
+	n.graph = ng
 }
 
 func (n *baseNode) Outputs() cty.Value {
@@ -76,8 +84,28 @@ func (n *baseNode) Type() Type {
 	return n.typ
 }
 
-func (n *baseNode) Parent() Node {
-	return n.parent
+func (n *baseNode) Ancestor() Node {
+	return n.ancestor
+}
+
+func (n *baseNode) Parents() ([]Node, error) {
+	pm, err := n.graph.PredecessorMap()
+	if err != nil {
+		return nil, err
+	}
+
+	eg := pm[n.Path()]
+
+	var parents []Node
+	for _, pathElement := range eg {
+		p, err := n.graph.Vertex(pathElement.Source)
+		if err != nil {
+			return nil, err
+		}
+		parents = append(parents, p)
+	}
+
+	return parents, nil
 }
 
 func (n *baseNode) Independent() bool {
