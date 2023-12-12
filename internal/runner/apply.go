@@ -23,35 +23,14 @@ func TerraformApply(ctx context.Context, cfg *config.MachConfig, locations map[s
 			continue
 		}
 
-		if err := TerraformApplySite(ctx, cfg, &site, locations[site.Identifier], options); err != nil {
+		if err := terraformApplySite(ctx, cfg, &site, locations[site.Identifier], options); err != nil {
 			return err
 		}
 	}
 	return nil
 }
 
-type ProxyOptions struct {
-	Site    string
-	Command []string
-}
-
-func TerraformProxy(ctx context.Context, cfg *config.MachConfig, locations map[string]string, options *ProxyOptions) error {
-	for i := range cfg.Sites {
-		site := cfg.Sites[i]
-
-		if options.Site != "" && site.Identifier != options.Site {
-			continue
-		}
-
-		err := RunTerraform(ctx, locations[site.Identifier], options.Command...)
-		if err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
-func TerraformApplySite(ctx context.Context, cfg *config.MachConfig, site *config.SiteConfig, path string, options *ApplyOptions) error {
+func terraformApplySite(ctx context.Context, cfg *config.MachConfig, site *config.SiteConfig, path string, options *ApplyOptions) error {
 	if err := terraformInitSite(ctx, cfg, site, path); err != nil {
 		return err
 	}
@@ -79,5 +58,5 @@ func TerraformApplySite(ctx context.Context, cfg *config.MachConfig, site *confi
 		cmd = append(cmd, planFilename)
 	}
 
-	return RunTerraform(ctx, path, cmd...)
+	return defaultRunTerraform(ctx, path, cmd...)
 }
