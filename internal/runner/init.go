@@ -73,20 +73,9 @@ func terraformInit(ctx context.Context, hash, path string) error {
 	}
 
 	if !terraformIsInitialized(path) || lf.HasChanges(hash) {
-		if _, err = utils.RunTerraform(ctx, false, path, "init"); err != nil {
+		if _, err = defaultRunTerraform(ctx, false, path, "init"); err != nil {
 			return err
 		}
 	}
 	return nil
-}
-
-func terraformIsInitialized(path string) bool {
-	tfLockFile := filepath.Join(path, ".terraform.lock.hcl")
-	if _, err := os.Stat(tfLockFile); err != nil {
-		if os.IsNotExist(err) {
-			return false
-		}
-		log.Fatal().Err(err)
-	}
-	return true
 }

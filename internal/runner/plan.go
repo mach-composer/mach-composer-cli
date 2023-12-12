@@ -13,6 +13,7 @@ import (
 
 type PlanOptions struct {
 	Reuse      bool
+	Lock       bool
 	Components []string
 	Site       string
 }
@@ -43,6 +44,16 @@ func TerraformPlan(ctx context.Context, cfg *config.MachConfig, dg *dependency.G
 }
 
 func terraformPlan(ctx context.Context, n dependency.Node, path string) (string, error) {
+	log.Debug().Msgf("Running terraform plan for site %s", site.Identifier)
+
+	if options.Reuse == false {
+		if err := terraformInitSite(ctx, cfg, site, path); err != nil {
+			return err
+		}
+	} else {
+		log.Warn().Msgf("Skipping terraform init for site %s", site.Identifier)
+	}
+
 	cmd := []string{"plan"}
 
 	if n.Type() == dependency.SiteComponentType {
@@ -65,14 +76,10 @@ func terraformPlan(ctx context.Context, n dependency.Node, path string) (string,
 		}
 	}
 
-	cmd = append(cmd, "-out=terraform.plan")
-	return utils.RunTerraform(ctx, false, path, cmd...)
-}
-
-func hasTerraformPlan(path string) (string, error) {
-	filename := filepath.Join(path, "terraform.plan")
-	if _, err := os.Stat(filename); err == nil {
-		return filename, nil
+	if options.Lock == false {
+		cmd = append(cmd, "-lock=false")
 	}
-	return "", nil
+
+	cmd = append(cmd, "-out=terraform.plan")
+	return defaultRunTerraform(ctx, path, cmd...)
 }

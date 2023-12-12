@@ -11,6 +11,7 @@ import (
 var planFlags struct {
 	reuse      bool
 	components []string
+	lock       bool
 }
 
 var planCmd = &cobra.Command{
@@ -27,11 +28,14 @@ var planCmd = &cobra.Command{
 
 func init() {
 	registerGenerateFlags(planCmd)
-	planCmd.Flags().BoolVarP(&planFlags.reuse, "reuse", "", false, "Suppress a terraform init for improved speed (not recommended for production usage)")
+	planCmd.Flags().BoolVarP(&planFlags.reuse, "reuse", "", false,
+		"Suppress a terraform init for improved speed (not recommended for production usage)")
 	planCmd.Flags().StringArrayVarP(&planFlags.components, "component", "c", []string{}, "")
+	planCmd.Flags().BoolVarP(&planFlags.lock, "lock", "", true,
+		"Acquire a lock on the state file before running terraform plan")
 }
 
-func planFunc(cmd *cobra.Command, args []string) error {
+func planFunc(cmd *cobra.Command, _ []string) error {
 	cfg := loadConfig(cmd, true)
 	defer cfg.Close()
 	ctx := cmd.Context()
@@ -52,7 +56,9 @@ func planFunc(cmd *cobra.Command, args []string) error {
 	}
 
 	return runner.TerraformPlan(ctx, cfg, dg, &runner.PlanOptions{
-		Reuse: planFlags.reuse,
-		Site:  generateFlags.siteName,
+		Reuse:      planFlags.reuse,
+		Lock:       planFlags.lock,
+		Components: planFlags.components,
+		Site:       generateFlags.siteName,
 	})
 }
