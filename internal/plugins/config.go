@@ -22,10 +22,10 @@ func (pc PluginConfig) executableName() string {
 	executableName := fmt.Sprintf("mach-composer-plugin-%s_v%s", pc.name(), pc.Version)
 
 	if runtime.GOOS == "windows" {
-        executableName += ".exe"
-    }
+		executableName += ".exe"
+	}
 
-    return executableName
+	return executableName
 }
 
 func (pc PluginConfig) path() string {
@@ -34,11 +34,11 @@ func (pc PluginConfig) path() string {
 		fmt.Sprintf("%s_%s", runtime.GOOS, runtime.GOARCH),
 		pc.name())
 
-    if runtime.GOOS == "windows" {
-        path += ".exe"
-    }
+	if runtime.GOOS == "windows" {
+		path += ".exe"
+	}
 
-    return path
+	return path
 }
 
 func NewDefaultPlugin(name string) PluginConfig {
