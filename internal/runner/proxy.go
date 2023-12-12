@@ -3,6 +3,8 @@ package runner
 import (
 	"context"
 	"github.com/mach-composer/mach-composer-cli/internal/config"
+	"github.com/mach-composer/mach-composer-cli/internal/dependency"
+	"github.com/rs/zerolog/log"
 )
 
 type ProxyOptions struct {

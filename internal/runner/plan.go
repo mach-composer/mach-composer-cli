@@ -5,10 +5,7 @@ import (
 	"fmt"
 	"github.com/mach-composer/mach-composer-cli/internal/config"
 	"github.com/mach-composer/mach-composer-cli/internal/dependency"
-	"github.com/mach-composer/mach-composer-cli/internal/utils"
 	"github.com/rs/zerolog/log"
-	"os"
-	"path/filepath"
 )
 
 type PlanOptions struct {
@@ -18,14 +15,14 @@ type PlanOptions struct {
 	Site       string
 }
 
-func TerraformPlan(ctx context.Context, cfg *config.MachConfig, dg *dependency.Graph, opt *PlanOptions) error {
-	if opt.Reuse {
+func TerraformPlan(ctx context.Context, cfg *config.MachConfig, dg *dependency.Graph, opts *PlanOptions) error {
+	if opts.Reuse {
 		log.Warn().Msgf("Reuse option not implemented")
 	}
-	if len(opt.Components) > 0 {
+	if len(opts.Components) > 0 {
 		log.Warn().Msgf("Components option not implemented")
 	}
-	if opt.Site != "" {
+	if opts.Site != "" {
 		log.Warn().Msgf("Site option not implemented")
 	}
 
@@ -35,7 +32,7 @@ func TerraformPlan(ctx context.Context, cfg *config.MachConfig, dg *dependency.G
 
 	if err := batchRun(ctx, dg, cfg.MachComposer.Deployment.Runners,
 		func(ctx context.Context, n dependency.Node, tfPath string) (string, error) {
-			return terraformPlan(ctx, n, tfPath)
+			return terraformPlan(ctx, n, tfPath, opts)
 		}); err != nil {
 		return err
 	}
@@ -43,17 +40,7 @@ func TerraformPlan(ctx context.Context, cfg *config.MachConfig, dg *dependency.G
 	return nil
 }
 
-func terraformPlan(ctx context.Context, n dependency.Node, path string) (string, error) {
-	log.Debug().Msgf("Running terraform plan for site %s", site.Identifier)
-
-	if options.Reuse == false {
-		if err := terraformInitSite(ctx, cfg, site, path); err != nil {
-			return err
-		}
-	} else {
-		log.Warn().Msgf("Skipping terraform init for site %s", site.Identifier)
-	}
-
+func terraformPlan(ctx context.Context, n dependency.Node, path string, opts *PlanOptions) (string, error) {
 	cmd := []string{"plan"}
 
 	if n.Type() == dependency.SiteComponentType {
@@ -76,10 +63,10 @@ func terraformPlan(ctx context.Context, n dependency.Node, path string) (string,
 		}
 	}
 
-	if options.Lock == false {
+	if opts.Lock == false {
 		cmd = append(cmd, "-lock=false")
 	}
 
 	cmd = append(cmd, "-out=terraform.plan")
-	return defaultRunTerraform(ctx, path, cmd...)
+	return defaultRunTerraform(ctx, false, path, cmd...)
 }

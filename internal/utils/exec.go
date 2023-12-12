@@ -12,7 +12,7 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-func RunInteractive(ctx context.Context, returnOutput bool, command string, cwd string, args ...string) (string, error) {
+func RunInteractive(ctx context.Context, catchOutputs bool, command string, cwd string, args ...string) (string, error) {
 	logger := log.Ctx(ctx).With().
 		Str("command", command).
 		Strs("args", args).
@@ -33,7 +33,7 @@ func RunInteractive(ctx context.Context, returnOutput bool, command string, cwd 
 	cmd.Stdout = os.Stdout
 
 	stdOut := new(bytes.Buffer)
-	if returnOutput {
+	if catchOutputs {
 		cmd.Stdout = stdOut
 	}
 

@@ -12,7 +12,7 @@ import (
 )
 
 // RunTerraform will execute a terraform command with the given arguments in the given directory.
-func RunTerraform(ctx context.Context, returnOutput bool, cwd string, args ...string) (string, error) {
+func RunTerraform(ctx context.Context, catchOutputs bool, cwd string, args ...string) (string, error) {
 	if _, err := os.Stat(cwd); err != nil {
 		if os.IsNotExist(err) {
 			return "", fmt.Errorf("the generated files are not found: %w", err)
@@ -24,7 +24,7 @@ func RunTerraform(ctx context.Context, returnOutput bool, cwd string, args ...st
 		return "", err
 	}
 
-	return RunInteractive(ctx, returnOutput, execPath, cwd, args...)
+	return RunInteractive(ctx, catchOutputs, execPath, cwd, args...)
 }
 
 func GetTerraformOutputs(ctx context.Context, path string) (cty.Value, error) {

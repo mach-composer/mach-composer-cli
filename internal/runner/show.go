@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/mach-composer/mach-composer-cli/internal/config"
 	"github.com/mach-composer/mach-composer-cli/internal/dependency"
-	"github.com/mach-composer/mach-composer-cli/internal/utils"
 	"github.com/rs/zerolog/log"
 )
 

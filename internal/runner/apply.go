@@ -4,7 +4,6 @@ import (
 	"context"
 	"github.com/mach-composer/mach-composer-cli/internal/config"
 	"github.com/mach-composer/mach-composer-cli/internal/dependency"
-	"github.com/mach-composer/mach-composer-cli/internal/utils"
 	"github.com/rs/zerolog/log"
 	"strings"
 )
@@ -17,14 +16,14 @@ type ApplyOptions struct {
 	Site        string
 }
 
-func TerraformApply(ctx context.Context, cfg *config.MachConfig, dg *dependency.Graph, opt *ApplyOptions) error {
-	if opt.Reuse {
+func TerraformApply(ctx context.Context, cfg *config.MachConfig, dg *dependency.Graph, opts *ApplyOptions) error {
+	if opts.Reuse {
 		log.Warn().Msgf("Reuse option not implemented")
 	}
-	if len(opt.Components) > 0 {
+	if len(opts.Components) > 0 {
 		log.Warn().Msgf("Components option not implemented")
 	}
-	if opt.Site != "" {
+	if opts.Site != "" {
 		log.Warn().Msgf("Site option not implemented")
 	}
 
@@ -32,9 +31,8 @@ func TerraformApply(ctx context.Context, cfg *config.MachConfig, dg *dependency.
 		return err
 	}
 
-	if err := batchRun(ctx, dg, cfg.MachComposer.Deployment.Runners, func(ctx context.Context, _ dependency.Node,
-		tfPath string) (string, error) {
-		return terraformApply(ctx, tfPath, opt)
+	if err := batchRun(ctx, dg, cfg.MachComposer.Deployment.Runners, func(ctx context.Context, _ dependency.Node, tfPath string) (string, error) {
+		return terraformApply(ctx, tfPath, opts)
 	}); err != nil {
 		return err
 	}
@@ -62,5 +60,5 @@ func terraformApply(ctx context.Context, path string, opt *ApplyOptions) (string
 		cmd = append(cmd, strings.TrimPrefix(planFilename, path+"/"))
 	}
 
-	return utils.RunTerraform(ctx, false, path, cmd...)
+	return defaultRunTerraform(ctx, false, path, cmd...)
 }
