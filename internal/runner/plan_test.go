@@ -21,9 +21,11 @@ func TestTerraformPlanWithLock(t *testing.T) {
 
 	mockedRunner := new(TerraformRunnerMock)
 	mockedRunner.
-		On("runTerraform", mock.Anything, cwd, []string{"init"}).Return(nil).Once()
+		On("RunTerraform", mock.Anything, cwd, []string{"init"}).
+		Return(nil).Once()
 	mockedRunner.
-		On("runTerraform", mock.Anything, cwd, []string{"plan", "-out=terraform.plan"}).Return(nil).Once()
+		On("RunTerraform", mock.Anything, cwd, []string{"plan", "-out=terraform.plan"}).
+		Return(nil).Once()
 
 	defaultRunTerraform = mockedRunner.RunTerraform
 
@@ -44,10 +46,10 @@ func TestTerraformPlanWithoutLock(t *testing.T) {
 
 	mockedRunner := new(TerraformRunnerMock)
 	mockedRunner.
-		On("runTerraform", mock.Anything, cwd, []string{"init"}).
+		On("RunTerraform", mock.Anything, cwd, []string{"init"}).
 		Return(nil).Once()
 	mockedRunner.
-		On("runTerraform", mock.Anything, cwd, []string{"plan", "-lock=false", "-out=terraform.plan"}).
+		On("RunTerraform", mock.Anything, cwd, []string{"plan", "-lock=false", "-out=terraform.plan"}).
 		Return(nil).Once()
 
 	defaultRunTerraform = mockedRunner.RunTerraform
@@ -69,7 +71,7 @@ func TestTerraformPlanWithReuse(t *testing.T) {
 
 	mockedRunner := new(TerraformRunnerMock)
 	mockedRunner.
-		On("runTerraform", mock.Anything, cwd, []string{"plan", "-out=terraform.plan"}).
+		On("RunTerraform", mock.Anything, cwd, []string{"plan", "-out=terraform.plan"}).
 		Return(nil).Once()
 
 	defaultRunTerraform = mockedRunner.RunTerraform
@@ -93,10 +95,10 @@ func TestTerraformPlanWithComponents(t *testing.T) {
 
 	mockedRunner := new(TerraformRunnerMock)
 	mockedRunner.
-		On("runTerraform", mock.Anything, cwd, []string{"init"}).
+		On("RunTerraform", mock.Anything, cwd, []string{"init"}).
 		Return(nil).Once()
 	mockedRunner.
-		On("runTerraform", mock.Anything, cwd, []string{"plan", "-target=module.my-component", "-out=terraform.plan"}).
+		On("RunTerraform", mock.Anything, cwd, []string{"plan", "-target=module.my-component", "-out=terraform.plan"}).
 		Return(nil).Once()
 
 	defaultRunTerraform = mockedRunner.RunTerraform
@@ -118,10 +120,10 @@ func TestTerraformPlanWithSingleSite(t *testing.T) {
 
 	mockedRunner := new(TerraformRunnerMock)
 	mockedRunner.
-		On("runTerraform", mock.Anything, sitePath, []string{"init"}).
+		On("RunTerraform", mock.Anything, sitePath, []string{"init"}).
 		Return(nil).Once()
 	mockedRunner.
-		On("runTerraform", mock.Anything, sitePath, []string{"plan", "-out=terraform.plan"}).
+		On("RunTerraform", mock.Anything, sitePath, []string{"plan", "-out=terraform.plan"}).
 		Return(nil).Once()
 
 	defaultRunTerraform = mockedRunner.RunTerraform
