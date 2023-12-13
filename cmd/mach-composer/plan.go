@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/mach-composer/mach-composer-cli/internal/dependency"
+	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 
 	"github.com/mach-composer/mach-composer-cli/internal/generator"
@@ -55,10 +56,15 @@ func planFunc(cmd *cobra.Command, _ []string) error {
 		return err
 	}
 
+	if len(planFlags.components) > 0 {
+		log.Warn().Msgf("Components option not implemented")
+	}
+	if generateFlags.siteName != "" {
+		log.Warn().Msgf("Site option not implemented")
+	}
+
 	return runner.TerraformPlan(ctx, cfg, dg, &runner.PlanOptions{
-		Reuse:      planFlags.reuse,
-		Lock:       planFlags.lock,
-		Components: planFlags.components,
-		Site:       generateFlags.siteName,
+		Reuse: planFlags.reuse,
+		Lock:  planFlags.lock,
 	})
 }

@@ -28,7 +28,7 @@ func init() {
 	registerGenerateFlags(initCmd)
 }
 
-func initFunc(cmd *cobra.Command, args []string) error {
+func initFunc(cmd *cobra.Command, _ []string) error {
 	cfg := loadConfig(cmd, true)
 	defer cfg.Close()
 	ctx := cmd.Context()

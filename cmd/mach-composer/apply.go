@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/mach-composer/mach-composer-cli/internal/dependency"
+	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 
 	"github.com/mach-composer/mach-composer-cli/internal/generator"
@@ -37,7 +38,7 @@ func init() {
 	applyCmd.Flags().IntVarP(&applyFlags.numWorkers, "workers", "w", 1, "The number of workers to use")
 }
 
-func applyFunc(cmd *cobra.Command, args []string) error {
+func applyFunc(cmd *cobra.Command, _ []string) error {
 	cfg := loadConfig(cmd, true)
 	defer cfg.Close()
 	ctx := cmd.Context()
@@ -60,11 +61,16 @@ func applyFunc(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
+	if len(applyFlags.components) > 0 {
+		log.Warn().Msgf("Components option not implemented")
+	}
+	if generateFlags.siteName != "" {
+		log.Warn().Msgf("Site option not implemented")
+	}
+
 	return runner.TerraformApply(ctx, cfg, dg, &runner.ApplyOptions{
 		Destroy:     applyFlags.destroy,
 		Reuse:       applyFlags.reuse,
 		AutoApprove: applyFlags.autoApprove,
-		Site:        generateFlags.siteName,
-		Components:  applyFlags.components,
 	})
 }

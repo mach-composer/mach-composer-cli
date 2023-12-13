@@ -5,29 +5,22 @@ import (
 	"fmt"
 	"github.com/mach-composer/mach-composer-cli/internal/config"
 	"github.com/mach-composer/mach-composer-cli/internal/dependency"
+	"github.com/mach-composer/mach-composer-cli/internal/utils"
 	"github.com/rs/zerolog/log"
 )
 
 type PlanOptions struct {
-	Reuse      bool
-	Lock       bool
-	Components []string
-	Site       string
+	Reuse bool
+	Lock  bool
 }
 
 func TerraformPlan(ctx context.Context, cfg *config.MachConfig, dg *dependency.Graph, opts *PlanOptions) error {
-	if opts.Reuse {
-		log.Warn().Msgf("Reuse option not implemented")
-	}
-	if len(opts.Components) > 0 {
-		log.Warn().Msgf("Components option not implemented")
-	}
-	if opts.Site != "" {
-		log.Warn().Msgf("Site option not implemented")
-	}
-
-	if err := terraformInitAll(ctx, dg); err != nil {
-		return err
+	if opts.Reuse == false {
+		if err := terraformInitAll(ctx, dg); err != nil {
+			return err
+		}
+	} else {
+		log.Info().Msgf("Reusing existing terraform state")
 	}
 
 	if err := batchRun(ctx, dg, cfg.MachComposer.Deployment.Runners,
@@ -68,5 +61,5 @@ func terraformPlan(ctx context.Context, n dependency.Node, path string, opts *Pl
 	}
 
 	cmd = append(cmd, "-out=terraform.plan")
-	return defaultRunTerraform(ctx, false, path, cmd...)
+	return utils.RunTerraform(ctx, false, path, cmd...)
 }

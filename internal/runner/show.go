@@ -5,19 +5,14 @@ import (
 	"fmt"
 	"github.com/mach-composer/mach-composer-cli/internal/config"
 	"github.com/mach-composer/mach-composer-cli/internal/dependency"
-	"github.com/rs/zerolog/log"
+	"github.com/mach-composer/mach-composer-cli/internal/utils"
 )
 
 type ShowPlanOptions struct {
 	NoColor bool
-	Site    string
 }
 
 func TerraformShow(ctx context.Context, cfg *config.MachConfig, dg *dependency.Graph, opt *ShowPlanOptions) error {
-	if opt.Site != "" {
-		log.Warn().Msgf("Site option not implemented")
-	}
-
 	if err := terraformInitAll(ctx, dg); err != nil {
 		return err
 	}
@@ -44,5 +39,5 @@ func terraformShow(ctx context.Context, path string, options *ShowPlanOptions) (
 	if options.NoColor {
 		cmd = append(cmd, "-no-color")
 	}
-	return defaultRunTerraform(ctx, false, path, cmd...)
+	return utils.RunTerraform(ctx, false, path, cmd...)
 }

@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/mach-composer/mach-composer-cli/internal/dependency"
+	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 
 	"github.com/mach-composer/mach-composer-cli/internal/runner"
@@ -28,7 +29,7 @@ func init() {
 	showPlanCmd.Flags().BoolVarP(&showPlanFlags.noColor, "no-color", "", false, "Disable color output")
 }
 
-func showPlanFunc(cmd *cobra.Command, args []string) error {
+func showPlanFunc(cmd *cobra.Command, _ []string) error {
 	cfg := loadConfig(cmd, true)
 	defer cfg.Close()
 	ctx := cmd.Context()
@@ -40,8 +41,11 @@ func showPlanFunc(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
+	if generateFlags.siteName != "" {
+		log.Warn().Msgf("Site option not implemented")
+	}
+
 	return runner.TerraformShow(ctx, cfg, dg, &runner.ShowPlanOptions{
 		NoColor: showPlanFlags.noColor,
-		Site:    generateFlags.siteName,
 	})
 }

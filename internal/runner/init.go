@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/mach-composer/mach-composer-cli/internal/cli"
 	"github.com/mach-composer/mach-composer-cli/internal/dependency"
+	"github.com/mach-composer/mach-composer-cli/internal/utils"
 	"sync"
 
 	"github.com/rs/zerolog/log"
@@ -70,7 +71,7 @@ func terraformInit(ctx context.Context, hash, path string) error {
 	}
 
 	if !terraformIsInitialized(path) || lf.HasChanges(hash) {
-		if _, err = defaultRunTerraform(ctx, false, path, "init"); err != nil {
+		if _, err = utils.RunTerraform(ctx, false, path, "init"); err != nil {
 			return err
 		}
 	}
