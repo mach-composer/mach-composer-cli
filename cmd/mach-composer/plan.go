@@ -19,7 +19,7 @@ var planCmd = &cobra.Command{
 	Use:   "plan",
 	Short: "Plan the configuration.",
 	PreRun: func(cmd *cobra.Command, args []string) {
-		preprocessCommonFlags()
+		preprocessCommonFlags(cmd)
 	},
 
 	RunE: func(cmd *cobra.Command, args []string) error {

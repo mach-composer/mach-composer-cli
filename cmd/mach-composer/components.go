@@ -10,7 +10,7 @@ var componentsCmd = &cobra.Command{
 	Use:   "components",
 	Short: "List all components.",
 	PreRun: func(cmd *cobra.Command, args []string) {
-		preprocessCommonFlags()
+		preprocessCommonFlags(cmd)
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		cfg := loadConfig(cmd, false)

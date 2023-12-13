@@ -35,16 +35,16 @@ func registerCommonFlags(cmd *cobra.Command) {
 		"Outputs path to store the generated files.")
 	cmd.Flags().IntVarP(&commonFlags.workers, "workers", "w", 1, "The number of workers to use")
 
-	handleError(cmd.MarkFlagFilename("var-file", "yml", "yaml"))
-	handleError(cmd.MarkFlagFilename("file", "yml", "yaml"))
-
 	_ = cmd.RegisterFlagCompletionFunc("site", AutocompleteSiteName)
 }
 
-func preprocessCommonFlags() {
+func preprocessCommonFlags(cmd *cobra.Command) {
 	if commonFlags.siteName != "" {
 		log.Warn().Msgf("Site option not implemented")
 	}
+
+	handleError(cmd.MarkFlagFilename("var-file", "yml", "yaml"))
+	handleError(cmd.MarkFlagFilename("file", "yml", "yaml"))
 
 	if _, err := os.Stat(commonFlags.configFile); err != nil {
 		if errors.Is(err, os.ErrNotExist) {

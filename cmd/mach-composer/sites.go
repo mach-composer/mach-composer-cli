@@ -10,7 +10,7 @@ var sitesCmd = &cobra.Command{
 	Use:   "sites",
 	Short: "List all sites.",
 	PreRun: func(cmd *cobra.Command, args []string) {
-		preprocessCommonFlags()
+		preprocessCommonFlags(cmd)
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
 		cfg := loadConfig(cmd, false)

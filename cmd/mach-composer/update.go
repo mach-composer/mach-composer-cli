@@ -50,7 +50,7 @@ func init() {
 	updateCmd.Flags().BoolVarP(&updateFlags.commit, "commit", "c", false, "Automatically commits the change.")
 	updateCmd.Flags().StringVarP(&updateFlags.commitMessage, "commit-message", "m", "", "Use a custom message for the commit.")
 	updateCmd.Flags().BoolVar(&updateFlags.cloud, "cloud", false, "Use MACH composer cloud to check for updates.")
-	updateCmd.Flags().StringArrayVarP(&updateFlags.components, "component", "c", nil, "")
+	updateCmd.Flags().StringArrayVarP(&updateFlags.components, "component", "", nil, "")
 
 	handleError(updateCmd.MarkFlagFilename("file", "yml", "yaml"))
 }

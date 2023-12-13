@@ -16,7 +16,7 @@ var terraformCmd = &cobra.Command{
 	Use:   "terraform",
 	Short: "Execute terraform commands directly",
 	PreRun: func(cmd *cobra.Command, args []string) {
-		preprocessCommonFlags()
+		preprocessCommonFlags(cmd)
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
 		return terraformFunc(cmd, args)

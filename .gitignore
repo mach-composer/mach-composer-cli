@@ -1,7 +1,7 @@
-deployments/
-dist/
-local/
-vendor/
+/deployments/
+/dist/
+/local/
+/vendor/
 /output
 /coverage.html
 /coverage.out
@@ -24,4 +24,4 @@ __pycache__
 /.python-version
 
 # binaries
-mach-composer
+/mach-composer

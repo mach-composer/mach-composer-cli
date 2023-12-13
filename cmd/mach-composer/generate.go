@@ -11,7 +11,7 @@ var generateCmd = &cobra.Command{
 	Use:   "generate",
 	Short: "Generate the Terraform files.",
 	PreRun: func(cmd *cobra.Command, args []string) {
-		preprocessCommonFlags()
+		preprocessCommonFlags(cmd)
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
 		return generateFunc(cmd)

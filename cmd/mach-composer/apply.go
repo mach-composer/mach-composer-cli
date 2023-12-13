@@ -21,7 +21,7 @@ var applyCmd = &cobra.Command{
 	Use:   "apply",
 	Short: "Apply the configuration.",
 	PreRun: func(cmd *cobra.Command, args []string) {
-		preprocessCommonFlags()
+		preprocessCommonFlags(cmd)
 	},
 
 	RunE: func(cmd *cobra.Command, args []string) error {

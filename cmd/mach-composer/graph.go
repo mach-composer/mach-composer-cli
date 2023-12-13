@@ -26,7 +26,7 @@ A tool like graphviz can be used to make this transformation:
 	
 	`,
 	PreRun: func(cmd *cobra.Command, args []string) {
-		preprocessCommonFlags()
+		preprocessCommonFlags(cmd)
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
 		return graphFunc(cmd, args)
