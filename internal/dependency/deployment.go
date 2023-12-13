@@ -7,8 +7,10 @@ import (
 	"github.com/mach-composer/mach-composer-cli/internal/config"
 )
 
-func ToDeploymentGraph(cfg *config.MachConfig) (*Graph, error) {
-	g, err := ToDependencyGraph(cfg)
+// ToDeploymentGraph converts a MachConfig to a Graph ready for deployment.
+// This means that all nodes that are not independently deployable are pruned from the graph.
+func ToDeploymentGraph(cfg *config.MachConfig, outPath string) (*Graph, error) {
+	g, err := ToDependencyGraph(cfg, outPath)
 	if err != nil {
 		return nil, err
 	}
@@ -17,7 +19,7 @@ func ToDeploymentGraph(cfg *config.MachConfig) (*Graph, error) {
 		return nil, err
 	}
 
-	// Reduce all nodes that are not independent to site node
+	// Remove all nodes that are not independent to site node
 	if err = reduceNodes(g); err != nil {
 		return nil, err
 	}
@@ -25,6 +27,7 @@ func ToDeploymentGraph(cfg *config.MachConfig) (*Graph, error) {
 	return g, nil
 }
 
+// TODO: write tests
 func reduceNodes(g *Graph) error {
 	var pErr error
 	if err := graph.BFS(g.Graph, g.StartNode.Path(), func(p string) bool {

@@ -2,30 +2,20 @@ package runner
 
 import (
 	"context"
-	"github.com/mach-composer/mach-composer-cli/internal/config"
 	"github.com/mach-composer/mach-composer-cli/internal/dependency"
 	"github.com/mach-composer/mach-composer-cli/internal/utils"
-	"github.com/rs/zerolog/log"
 	"strings"
 )
 
 type ApplyOptions struct {
-	Reuse       bool
 	Destroy     bool
 	AutoApprove bool
+	Workers     int
 }
 
-func TerraformApply(ctx context.Context, cfg *config.MachConfig, dg *dependency.Graph, opts *ApplyOptions) error {
-	if opts.Reuse == false {
-		if err := terraformInitAll(ctx, dg); err != nil {
-			return err
-		}
-	} else {
-		log.Info().Msgf("Reusing existing terraform state")
-	}
-
-	if err := batchRun(ctx, dg, cfg.MachComposer.Deployment.Runners, func(ctx context.Context, _ dependency.Node, tfPath string) (string, error) {
-		return terraformApply(ctx, tfPath, opts)
+func TerraformApply(ctx context.Context, dg *dependency.Graph, opts *ApplyOptions) error {
+	if err := batchRun(ctx, dg, opts.Workers, func(ctx context.Context, n dependency.Node) (string, error) {
+		return terraformApply(ctx, n.Path(), opts.Destroy, opts.AutoApprove)
 	}); err != nil {
 		return err
 	}
@@ -33,14 +23,14 @@ func TerraformApply(ctx context.Context, cfg *config.MachConfig, dg *dependency.
 	return nil
 }
 
-func terraformApply(ctx context.Context, path string, opt *ApplyOptions) (string, error) {
+func terraformApply(ctx context.Context, path string, destroy, autoApprove bool) (string, error) {
 	cmd := []string{"apply"}
 
-	if opt.Destroy {
+	if destroy {
 		cmd = append(cmd, "-destroy")
 	}
 
-	if opt.AutoApprove {
+	if autoApprove {
 		cmd = append(cmd, "-auto-approve")
 	}
 

@@ -9,6 +9,7 @@ import (
 )
 
 var showPlanFlags struct {
+	reuse   bool
 	noColor bool
 }
 
@@ -16,7 +17,7 @@ var showPlanCmd = &cobra.Command{
 	Use:   "show-plan",
 	Short: "Show the planned configuration.",
 	PreRun: func(cmd *cobra.Command, args []string) {
-		preprocessGenerateFlags()
+		preprocessCommonFlags()
 	},
 
 	RunE: func(cmd *cobra.Command, args []string) error {
@@ -25,8 +26,10 @@ var showPlanCmd = &cobra.Command{
 }
 
 func init() {
-	registerGenerateFlags(showPlanCmd)
+	registerCommonFlags(showPlanCmd)
 	showPlanCmd.Flags().BoolVarP(&showPlanFlags.noColor, "no-color", "", false, "Disable color output")
+	showPlanCmd.Flags().BoolVarP(&showPlanFlags.reuse, "reuse", "", false,
+		"Suppress a terraform init for improved speed (not recommended for production usage)")
 }
 
 func showPlanFunc(cmd *cobra.Command, _ []string) error {
@@ -34,18 +37,21 @@ func showPlanFunc(cmd *cobra.Command, _ []string) error {
 	defer cfg.Close()
 	ctx := cmd.Context()
 
-	generateFlags.ValidateSite(cfg)
-
-	dg, err := dependency.ToDeploymentGraph(cfg)
+	dg, err := dependency.ToDeploymentGraph(cfg, commonFlags.outputPath)
 	if err != nil {
 		return err
 	}
 
-	if generateFlags.siteName != "" {
-		log.Warn().Msgf("Site option not implemented")
+	if showPlanFlags.reuse == false {
+		if err = runner.TerraformInit(ctx, cfg, dg, nil); err != nil {
+			return err
+		}
+	} else {
+		log.Info().Msgf("Reusing existing terraform state")
 	}
 
-	return runner.TerraformShow(ctx, cfg, dg, &runner.ShowPlanOptions{
+	return runner.TerraformShow(ctx, dg, &runner.ShowPlanOptions{
 		NoColor: showPlanFlags.noColor,
+		Workers: commonFlags.workers,
 	})
 }

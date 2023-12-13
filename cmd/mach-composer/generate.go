@@ -11,7 +11,7 @@ var generateCmd = &cobra.Command{
 	Use:   "generate",
 	Short: "Generate the Terraform files.",
 	PreRun: func(cmd *cobra.Command, args []string) {
-		preprocessGenerateFlags()
+		preprocessCommonFlags()
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
 		return generateFunc(cmd)
@@ -19,29 +19,17 @@ var generateCmd = &cobra.Command{
 }
 
 func init() {
-	registerGenerateFlags(generateCmd)
+	registerCommonFlags(generateCmd)
 }
 
 func generateFunc(cmd *cobra.Command) error {
 	cfg := loadConfig(cmd, true)
 	defer cfg.Close()
 
-	generateFlags.ValidateSite(cfg)
-
-	genOptions := &generator.GenerateOptions{
-		OutputPath: generateFlags.outputPath,
-		Site:       generateFlags.siteName,
-	}
-
-	gd, err := dependency.ToDeploymentGraph(cfg)
+	gd, err := dependency.ToDeploymentGraph(cfg, commonFlags.outputPath)
 	if err != nil {
 		return err
 	}
 
-	err = generator.Write(cmd.Context(), cfg, gd, genOptions)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return generator.Write(cmd.Context(), cfg, gd, nil)
 }

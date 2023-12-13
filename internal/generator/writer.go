@@ -20,17 +20,14 @@ import (
 	"github.com/mach-composer/mach-composer-cli/internal/lockfile"
 )
 
-type GenerateOptions struct {
-	OutputPath string
-	Site       string
-}
+type GenerateOptions struct{}
 
 //go:embed templates/*.tmpl
 var templates embed.FS
 
 // Write is the main entrypoint for this module. It takes the given MachConfig and graph and iterates the nodes to generate
 // the required terraform files.
-func Write(ctx context.Context, cfg *config.MachConfig, g *dependency.Graph, options *GenerateOptions) error {
+func Write(ctx context.Context, cfg *config.MachConfig, g *dependency.Graph, _ *GenerateOptions) error {
 	for _, n := range g.Vertices() {
 		sr, err := state.NewRenderer(
 			state.Type(cfg.Global.TerraformStateProvider),
@@ -53,14 +50,12 @@ func Write(ctx context.Context, cfg *config.MachConfig, g *dependency.Graph, opt
 	}
 
 	for _, n := range g.Vertices() {
-		outPath := fmt.Sprintf("%s/%s", options.OutputPath, n.Path())
-
 		switch n.(type) {
 		case *dependency.Project:
 			log.Debug().Msgf("No global files to generate for project %s", n.Path())
 			break
 		case *dependency.Site:
-			if err := copySecrets(cfg, n.Identifier(), outPath); err != nil {
+			if err := copySecrets(cfg, n.Identifier(), n.Path()); err != nil {
 				return err
 			}
 			body, err := renderSite(ctx, cfg, n)
@@ -72,12 +67,12 @@ func Write(ctx context.Context, cfg *config.MachConfig, g *dependency.Graph, opt
 			if err != nil {
 				return err
 			}
-			if err = writeContent(hash, outPath, body); err != nil {
+			if err = writeContent(hash, n.Path(), body); err != nil {
 				return err
 			}
 			break
 		case *dependency.SiteComponent:
-			if err := copySecrets(cfg, n.Identifier(), outPath); err != nil {
+			if err := copySecrets(cfg, n.Identifier(), n.Path()); err != nil {
 				return err
 			}
 
@@ -90,7 +85,7 @@ func Write(ctx context.Context, cfg *config.MachConfig, g *dependency.Graph, opt
 			if err != nil {
 				return err
 			}
-			if err = writeContent(hash, outPath, body); err != nil {
+			if err = writeContent(hash, n.Path(), body); err != nil {
 				return err
 			}
 			break

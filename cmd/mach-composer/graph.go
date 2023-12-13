@@ -26,7 +26,7 @@ A tool like graphviz can be used to make this transformation:
 	
 	`,
 	PreRun: func(cmd *cobra.Command, args []string) {
-		preprocessGenerateFlags()
+		preprocessCommonFlags()
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
 		return graphFunc(cmd, args)
@@ -34,26 +34,23 @@ A tool like graphviz can be used to make this transformation:
 }
 
 func init() {
-	registerGenerateFlags(graphCmd)
+	registerCommonFlags(graphCmd)
 	graphCmd.Flags().StringVarP(&graphFlags.output, "output", "", "./graph.png", "output file for the deployment image")
 	graphCmd.Flags().BoolVarP(&graphFlags.deployment, "deployment", "d", false,
 		"print the deployment graph instead of the dependency graph")
 }
 
-// TODO: turn both into single graph, where nested site components are also visible within the site terraform as a whole.
-//
-//	This should more clearly show the dependencies between the different sites and components.
 func graphFunc(cmd *cobra.Command, _ []string) error {
 	cfg := loadConfig(cmd, true)
 	defer cfg.Close()
 
-	g, err := dependency.ToDependencyGraph(cfg)
+	g, err := dependency.ToDependencyGraph(cfg, commonFlags.outputPath)
 	if err != nil {
 		return err
 	}
 
 	if graphFlags.deployment {
-		dg, err := dependency.ToDeploymentGraph(cfg)
+		dg, err := dependency.ToDeploymentGraph(cfg, commonFlags.outputPath)
 		if err != nil {
 			return err
 		}

@@ -15,14 +15,7 @@ type Site struct {
 func NewSite(g graph.Graph[string, Node], path, identifier string, deploymentType config.DeploymentType, ancestor Node,
 	siteConfig config.SiteConfig) *Site {
 	return &Site{
-		baseNode: baseNode{
-			graph:          g,
-			path:           path,
-			identifier:     identifier,
-			deploymentType: deploymentType,
-			ancestor:       ancestor,
-			typ:            SiteType,
-		},
+		baseNode:   newBaseNode(g, path, identifier, SiteType, ancestor, deploymentType),
 		SiteConfig: siteConfig,
 	}
 }
@@ -40,6 +33,7 @@ func (s *Site) Hash() (string, error) {
 	return utils.ComputeHash(componentHashes)
 }
 
+// TODO: write tests
 func (s *Site) HasChanges() (bool, error) {
 	hash, err := s.Hash()
 	if err != nil {

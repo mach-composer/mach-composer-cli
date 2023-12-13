@@ -1,10 +1,8 @@
 package dependency
 
 import (
-	"context"
 	"fmt"
 	"github.com/dominikbraun/graph"
-	"github.com/mach-composer/mach-composer-cli/internal/cli"
 	"github.com/mach-composer/mach-composer-cli/internal/config"
 	"github.com/rs/zerolog/log"
 	"golang.org/x/exp/maps"
@@ -12,7 +10,6 @@ import (
 	"path/filepath"
 	"slices"
 	"strings"
-	"sync"
 )
 
 type Vertices []Node
@@ -29,36 +26,6 @@ func (e *edgeSets) Add(to, from string) {
 type Graph struct {
 	graph.Graph[string, Node]
 	StartNode Node
-}
-
-// LoadOutputs loads the outputs for all nodes in the graph in parallel
-func (g *Graph) LoadOutputs(ctx context.Context) error {
-	wg := &sync.WaitGroup{}
-	errChan := make(chan error, len(g.Vertices()))
-
-	for _, n := range g.Vertices() {
-		wg.Add(1)
-
-		go func(ctx context.Context, n Node) {
-			defer wg.Done()
-			if err := n.LoadOutputs(ctx); err != nil {
-				errChan <- err
-			}
-		}(ctx, n)
-	}
-	wg.Wait()
-	close(errChan)
-
-	if len(errChan) > 0 {
-		var errors []error
-		for err := range errChan {
-			errors = append(errors, err)
-		}
-
-		return cli.NewGroupedError(fmt.Sprintf("failed loading outputs (%d errors)", len(errors)), errors)
-	}
-
-	return nil
 }
 
 func (g *Graph) Vertices() Vertices {
@@ -96,12 +63,15 @@ func (g *Graph) Routes(source, target string) ([]Path, error) {
 	return routes, nil
 }
 
-func ToDependencyGraph(cfg *config.MachConfig) (*Graph, error) {
+func ToDependencyGraph(cfg *config.MachConfig, outPath string) (*Graph, error) {
 	var edges = edgeSets{}
 	g := graph.New(func(n Node) string { return n.Path() }, graph.Directed(), graph.Tree(), graph.PreventCycles())
 
-	p := strings.TrimSuffix(cfg.Filename, filepath.Ext(cfg.Filename))
-	project := NewProject(g, p, cfg.Filename, cfg.MachComposer.Deployment.Type, cfg)
+	projectIdentifier := strings.TrimSuffix(cfg.Filename, filepath.Ext(cfg.Filename))
+
+	p := path.Join(outPath, projectIdentifier)
+
+	project := NewProject(g, p, projectIdentifier, cfg.MachComposer.Deployment.Type, cfg)
 
 	err := g.AddVertex(project)
 	if err != nil {

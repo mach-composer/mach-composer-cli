@@ -13,7 +13,7 @@ var initCmd = &cobra.Command{
 	Use:   "init",
 	Short: "Initialize site directories Terraform files.",
 	PreRun: func(cmd *cobra.Command, args []string) {
-		preprocessGenerateFlags()
+		preprocessCommonFlags()
 	},
 
 	RunE: func(cmd *cobra.Command, args []string) error {
@@ -25,7 +25,7 @@ var initCmd = &cobra.Command{
 }
 
 func init() {
-	registerGenerateFlags(initCmd)
+	registerCommonFlags(initCmd)
 }
 
 func initFunc(cmd *cobra.Command, _ []string) error {
@@ -33,22 +33,15 @@ func initFunc(cmd *cobra.Command, _ []string) error {
 	defer cfg.Close()
 	ctx := cmd.Context()
 
-	generateFlags.ValidateSite(cfg)
-
-	dg, err := dependency.ToDeploymentGraph(cfg)
+	dg, err := dependency.ToDeploymentGraph(cfg, commonFlags.outputPath)
 	if err != nil {
 		return err
 	}
 
-	err = generator.Write(ctx, cfg, dg, &generator.GenerateOptions{
-		OutputPath: generateFlags.outputPath,
-		Site:       generateFlags.siteName,
-	})
+	err = generator.Write(ctx, cfg, dg, nil)
 	if err != nil {
 		return err
 	}
 
-	return runner.TerraformInit(ctx, cfg, dg, &runner.InitOptions{
-		Site: generateFlags.siteName,
-	})
+	return runner.TerraformInit(ctx, cfg, dg, nil)
 }

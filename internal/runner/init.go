@@ -8,39 +8,27 @@ import (
 	"github.com/mach-composer/mach-composer-cli/internal/utils"
 	"sync"
 
-	"github.com/rs/zerolog/log"
-
 	"github.com/mach-composer/mach-composer-cli/internal/config"
 	"github.com/mach-composer/mach-composer-cli/internal/lockfile"
 )
 
-type InitOptions struct {
-	Site string
-}
+type InitOptions struct{}
 
-func TerraformInit(ctx context.Context, _ *config.MachConfig, dg *dependency.Graph, opt *InitOptions) error {
-	if opt.Site != "" {
-		log.Warn().Msgf("Site option not implemented")
-	}
-	return terraformInitAll(ctx, dg)
-}
-
-func terraformInitAll(ctx context.Context, g *dependency.Graph) error {
-	var errChan = make(chan error, len(g.Vertices()))
+func TerraformInit(ctx context.Context, _ *config.MachConfig, dg *dependency.Graph, _ *InitOptions) error {
+	var errChan = make(chan error, len(dg.Vertices()))
 	var wg = &sync.WaitGroup{}
 
-	for _, n := range g.Vertices() {
+	for _, n := range dg.Vertices() {
 		wg.Add(1)
 		go func(n dependency.Node) {
 			defer wg.Done()
-			tfPath := "deployments/" + n.Path()
 			hash, err := n.Hash()
 			if err != nil {
 				errChan <- err
 				return
 			}
 
-			err = terraformInit(ctx, hash, tfPath)
+			err = terraformInit(ctx, hash, n.Path())
 			if err != nil {
 				errChan <- err
 				return

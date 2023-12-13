@@ -41,6 +41,7 @@ func taintNode(g *Graph, path string, parentTainted bool) error {
 }
 
 // TaintNodes will mark all nodes as tainted that have changes or are dependent on a node with changes
+// TODO: write tests
 func TaintNodes(g *Graph) error {
 	return taintNode(g, g.StartNode.Path(), false)
 }

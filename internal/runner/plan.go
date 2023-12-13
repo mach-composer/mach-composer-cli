@@ -3,37 +3,27 @@ package runner
 import (
 	"context"
 	"fmt"
-	"github.com/mach-composer/mach-composer-cli/internal/config"
 	"github.com/mach-composer/mach-composer-cli/internal/dependency"
 	"github.com/mach-composer/mach-composer-cli/internal/utils"
 	"github.com/rs/zerolog/log"
 )
 
 type PlanOptions struct {
-	Reuse bool
-	Lock  bool
+	Lock    bool
+	Workers int
 }
 
-func TerraformPlan(ctx context.Context, cfg *config.MachConfig, dg *dependency.Graph, opts *PlanOptions) error {
-	if opts.Reuse == false {
-		if err := terraformInitAll(ctx, dg); err != nil {
-			return err
-		}
-	} else {
-		log.Info().Msgf("Reusing existing terraform state")
-	}
-
-	if err := batchRun(ctx, dg, cfg.MachComposer.Deployment.Runners,
-		func(ctx context.Context, n dependency.Node, tfPath string) (string, error) {
-			return terraformPlan(ctx, n, tfPath, opts)
-		}); err != nil {
+func TerraformPlan(ctx context.Context, dg *dependency.Graph, opts *PlanOptions) error {
+	if err := batchRun(ctx, dg, opts.Workers, func(ctx context.Context, n dependency.Node) (string, error) {
+		return terraformPlan(ctx, n, n.Path(), opts.Lock)
+	}); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func terraformPlan(ctx context.Context, n dependency.Node, path string, opts *PlanOptions) (string, error) {
+func terraformPlan(ctx context.Context, n dependency.Node, path string, lock bool) (string, error) {
 	cmd := []string{"plan"}
 
 	if n.Type() == dependency.SiteComponentType {
@@ -56,10 +46,10 @@ func terraformPlan(ctx context.Context, n dependency.Node, path string, opts *Pl
 		}
 	}
 
-	if opts.Lock == false {
+	if lock == false {
 		cmd = append(cmd, "-lock=false")
 	}
 
-	cmd = append(cmd, "-out=terraform.plan")
+	cmd = append(cmd, fmt.Sprintf("-out=%s", PlanFile))
 	return utils.RunTerraform(ctx, false, path, cmd...)
 }

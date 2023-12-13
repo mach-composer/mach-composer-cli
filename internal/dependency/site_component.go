@@ -14,20 +14,17 @@ type SiteComponent struct {
 
 func NewSiteComponent(g graph.Graph[string, Node], path, identifier string, deploymentType config.DeploymentType,
 	ancestor Node, siteConfig config.SiteConfig, siteComponentConfig config.SiteComponentConfig) *SiteComponent {
-	return &SiteComponent{baseNode: baseNode{
-		graph:          g,
-		path:           path,
-		identifier:     identifier,
-		deploymentType: deploymentType,
-		ancestor:       ancestor,
-		typ:            SiteComponentType,
-	}, SiteConfig: siteConfig, SiteComponentConfig: siteComponentConfig}
+	return &SiteComponent{
+		baseNode:   newBaseNode(g, path, identifier, SiteComponentType, ancestor, deploymentType),
+		SiteConfig: siteConfig, SiteComponentConfig: siteComponentConfig,
+	}
 }
 
 func (sc *SiteComponent) Hash() (string, error) {
 	return sc.SiteComponentConfig.Hash()
 }
 
+// TODO: write tests
 func (sc *SiteComponent) HasChanges() (bool, error) {
 	hash, err := sc.Hash()
 	if err != nil {

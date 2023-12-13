@@ -45,7 +45,7 @@ type MachComposer struct {
 	VariablesFile string                      `yaml:"variables_file"`
 	Plugins       map[string]MachPluginConfig `yaml:"plugins"`
 	Cloud         MachComposerCloud           `yaml:"cloud"`
-	Deployment    GlobalDeployment            `yaml:"deployment"`
+	Deployment    Deployment                  `yaml:"deployment"`
 }
 
 func (mc *MachComposer) CloudEnabled() bool {

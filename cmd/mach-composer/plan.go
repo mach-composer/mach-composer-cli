@@ -19,7 +19,7 @@ var planCmd = &cobra.Command{
 	Use:   "plan",
 	Short: "Plan the configuration.",
 	PreRun: func(cmd *cobra.Command, args []string) {
-		preprocessGenerateFlags()
+		preprocessCommonFlags()
 	},
 
 	RunE: func(cmd *cobra.Command, args []string) error {
@@ -28,7 +28,7 @@ var planCmd = &cobra.Command{
 }
 
 func init() {
-	registerGenerateFlags(planCmd)
+	registerCommonFlags(planCmd)
 	planCmd.Flags().BoolVarP(&planFlags.reuse, "reuse", "", false,
 		"Suppress a terraform init for improved speed (not recommended for production usage)")
 	planCmd.Flags().StringArrayVarP(&planFlags.components, "component", "c", []string{}, "")
@@ -37,34 +37,34 @@ func init() {
 }
 
 func planFunc(cmd *cobra.Command, _ []string) error {
+	if len(planFlags.components) > 0 {
+		log.Warn().Msgf("Components option not implemented")
+	}
+
 	cfg := loadConfig(cmd, true)
 	defer cfg.Close()
 	ctx := cmd.Context()
 
-	generateFlags.ValidateSite(cfg)
-
-	dg, err := dependency.ToDeploymentGraph(cfg)
+	dg, err := dependency.ToDeploymentGraph(cfg, commonFlags.outputPath)
 	if err != nil {
 		return err
 	}
 
-	err = generator.Write(ctx, cfg, dg, &generator.GenerateOptions{
-		OutputPath: generateFlags.outputPath,
-		Site:       generateFlags.siteName,
-	})
+	err = generator.Write(ctx, cfg, dg, nil)
 	if err != nil {
 		return err
 	}
 
-	if len(planFlags.components) > 0 {
-		log.Warn().Msgf("Components option not implemented")
-	}
-	if generateFlags.siteName != "" {
-		log.Warn().Msgf("Site option not implemented")
+	if planFlags.reuse == false {
+		if err = runner.TerraformInit(ctx, cfg, dg, nil); err != nil {
+			return err
+		}
+	} else {
+		log.Info().Msgf("Reusing existing terraform state")
 	}
 
-	return runner.TerraformPlan(ctx, cfg, dg, &runner.PlanOptions{
-		Reuse: planFlags.reuse,
-		Lock:  planFlags.lock,
+	return runner.TerraformPlan(ctx, dg, &runner.PlanOptions{
+		Lock:    planFlags.lock,
+		Workers: commonFlags.workers,
 	})
 }

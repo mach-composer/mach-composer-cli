@@ -1,11 +1,8 @@
 package dependency
 
 import (
-	"context"
-	"fmt"
 	"github.com/dominikbraun/graph"
 	"github.com/mach-composer/mach-composer-cli/internal/config"
-	"github.com/mach-composer/mach-composer-cli/internal/utils"
 	"github.com/zclconf/go-cty/cty"
 )
 
@@ -18,18 +15,47 @@ const (
 type Type string
 
 type Node interface {
+	//Path returns the directory path of the node, relative to the global output directory
 	Path() string
+
+	//Identifier returns the identifier of the node as set in the configurations
 	Identifier() string
+
+	//Type returns the type of the node
 	Type() Type
+
+	//Ancestor returns the ancestor of the node. The ancestor is specific to the type of the node. For example,
+	//a site will have the project as ancestor, a site component will have the site as ancestor,
+	//and project will have no ancestor
 	Ancestor() Node
+
+	//Parents returns the direct parents of the node
 	Parents() ([]Node, error)
+
+	//Independent returns true if the node can be deployed independently, false otherwise
 	Independent() bool
-	HasChanges() (bool, error)
+
+	//Tainted indicates if.
 	Tainted() bool
-	SetTainted(tainted bool)
+
+	//Hash returns the hash of the node. The hash is based on the node's configuration as well as the configuration of any
+	//related components. This can be compared to other hashes to determine whether a node has changed
 	Hash() (string, error)
-	LoadOutputs(ctx context.Context) error
+
+	//Outputs returns the outputs of the node
 	Outputs() cty.Value
+
+	//SetOutputs sets the outputs of the node
+	SetOutputs(cty.Value)
+
+	//SetTainted sets the tainted status of the node
+	SetTainted(tainted bool)
+
+	//HasChanges returns true if the node has changes, false otherwise
+	HasChanges() (bool, error)
+
+	//ResetGraph resets the graph of the node. If the graph the node belongs to the node graphs must also be reset,
+	//as these are used to determine the parents of the node
 	resetGraph(graph.Graph[string, Node])
 }
 
@@ -44,16 +70,16 @@ type baseNode struct {
 	outputs        cty.Value
 }
 
-// LoadOutputs fetches all the outputs for the given state file. It will return a cty.NilVal if no outputs are present.
-// The outputs are cached in the node.
-func (n *baseNode) LoadOutputs(ctx context.Context) error {
-	tfPath := fmt.Sprintf("deployments/%s", n.Path())
-	val, err := utils.GetTerraformOutputs(ctx, tfPath)
-	if err != nil {
-		return err
+func newBaseNode(graph graph.Graph[string, Node], path string, identifier string, typ Type, ancestor Node, deploymentType config.DeploymentType) baseNode {
+	return baseNode{graph: graph,
+		path:           path,
+		identifier:     identifier,
+		typ:            typ,
+		ancestor:       ancestor,
+		deploymentType: deploymentType,
+		tainted:        false,
+		outputs:        cty.NilVal,
 	}
-	n.outputs = val
-	return nil
 }
 
 func (n *baseNode) resetGraph(ng graph.Graph[string, Node]) {
@@ -62,6 +88,10 @@ func (n *baseNode) resetGraph(ng graph.Graph[string, Node]) {
 
 func (n *baseNode) Outputs() cty.Value {
 	return n.outputs
+}
+
+func (n *baseNode) SetOutputs(val cty.Value) {
+	n.outputs = val
 }
 
 func (n *baseNode) SetTainted(tainted bool) {

@@ -8,11 +8,15 @@ import (
 	"github.com/mach-composer/mach-composer-cli/internal/runner"
 )
 
+var terraformFlags struct {
+	reuse bool
+}
+
 var terraformCmd = &cobra.Command{
 	Use:   "terraform",
 	Short: "Execute terraform commands directly",
 	PreRun: func(cmd *cobra.Command, args []string) {
-		preprocessGenerateFlags()
+		preprocessCommonFlags()
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
 		return terraformFunc(cmd, args)
@@ -20,25 +24,31 @@ var terraformCmd = &cobra.Command{
 }
 
 func init() {
-	registerGenerateFlags(terraformCmd)
+	registerCommonFlags(terraformCmd)
+	terraformCmd.Flags().BoolVarP(&terraformFlags.reuse, "reuse", "", false,
+		"Suppress a terraform init for improved speed (not recommended for production usage)")
 }
 
 func terraformFunc(cmd *cobra.Command, args []string) error {
 	cfg := loadConfig(cmd, true)
+	ctx := cmd.Context()
 	defer cfg.Close()
 
-	generateFlags.ValidateSite(cfg)
-
-	dg, err := dependency.ToDeploymentGraph(cfg)
+	dg, err := dependency.ToDeploymentGraph(cfg, commonFlags.outputPath)
 	if err != nil {
 		return err
 	}
 
-	if generateFlags.siteName != "" {
-		log.Warn().Msgf("Site option not implemented")
+	if terraformFlags.reuse == false {
+		if err = runner.TerraformInit(ctx, cfg, dg, nil); err != nil {
+			return err
+		}
+	} else {
+		log.Info().Msgf("Reusing existing terraform state")
 	}
 
-	return runner.TerraformProxy(cmd.Context(), cfg, dg, &runner.ProxyOptions{
+	return runner.TerraformProxy(cmd.Context(), dg, &runner.ProxyOptions{
 		Command: args,
+		Workers: commonFlags.workers,
 	})
 }

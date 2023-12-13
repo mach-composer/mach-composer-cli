@@ -14,29 +14,24 @@ import (
 	"github.com/mach-composer/mach-composer-cli/internal/config"
 )
 
-type GenerateFlags struct {
+type CommonFlags struct {
 	configFile    string
 	siteName      string
 	ignoreVersion bool
 	outputPath    string
 	varFile       string
+	workers       int
 }
 
-var generateFlags GenerateFlags
+var commonFlags CommonFlags
 
-func (gf GenerateFlags) ValidateSite(cfg *config.MachConfig) {
-	if gf.siteName != "" && !cfg.HasSite(gf.siteName) {
-		_, _ = fmt.Fprintf(os.Stderr, "No site found with identifier: %s\n", gf.siteName)
-		os.Exit(1)
-	}
-}
-
-func registerGenerateFlags(cmd *cobra.Command) {
-	cmd.Flags().StringVarP(&generateFlags.configFile, "file", "f", "main.yml", "YAML file to parse.")
-	cmd.Flags().StringVarP(&generateFlags.varFile, "var-file", "", "", "Use a variable file to parse the configuration with.")
-	cmd.Flags().StringVarP(&generateFlags.siteName, "site", "s", "", "DeploymentSite to parse. If not set parse all sites.")
-	cmd.Flags().BoolVarP(&generateFlags.ignoreVersion, "ignore-version", "", false, "Skip MACH composer version check")
-	cmd.Flags().StringVarP(&generateFlags.outputPath, "output-path", "", "", "Variables path, defaults to `cwd`/deployments.")
+func registerCommonFlags(cmd *cobra.Command) {
+	cmd.Flags().StringVarP(&commonFlags.configFile, "file", "f", "main.yml", "YAML file to parse.")
+	cmd.Flags().StringVarP(&commonFlags.varFile, "var-file", "", "", "Use a variable file to parse the configuration with.")
+	cmd.Flags().StringVarP(&commonFlags.siteName, "site", "s", "", "DeploymentSite to parse. If not set parse all sites.")
+	cmd.Flags().BoolVarP(&commonFlags.ignoreVersion, "ignore-version", "", false, "Skip MACH composer version check")
+	cmd.Flags().StringVarP(&commonFlags.outputPath, "output-path", "", "", "Variables path, defaults to `cwd`/deployments.")
+	cmd.Flags().IntVarP(&commonFlags.workers, "workers", "w", 1, "The number of workers to use")
 
 	handleError(cmd.MarkFlagFilename("var-file", "yml", "yaml"))
 	handleError(cmd.MarkFlagFilename("file", "yml", "yaml"))
@@ -44,30 +39,34 @@ func registerGenerateFlags(cmd *cobra.Command) {
 	_ = cmd.RegisterFlagCompletionFunc("site", AutocompleteSiteName)
 }
 
-func preprocessGenerateFlags() {
-	if _, err := os.Stat(generateFlags.configFile); err != nil {
+func preprocessCommonFlags() {
+	if commonFlags.siteName != "" {
+		log.Warn().Msgf("Site option not implemented")
+	}
+
+	if _, err := os.Stat(commonFlags.configFile); err != nil {
 		if errors.Is(err, os.ErrNotExist) {
-			cli.PrintExitError(fmt.Sprintf("Config file %s does not exist", generateFlags.configFile))
+			cli.PrintExitError(fmt.Sprintf("Config file %s does not exist", commonFlags.configFile))
 		}
 		cli.PrintExitError(err.Error())
 	}
-	if generateFlags.varFile != "" {
-		if _, err := os.Stat(generateFlags.varFile); err != nil {
+	if commonFlags.varFile != "" {
+		if _, err := os.Stat(commonFlags.varFile); err != nil {
 			if errors.Is(err, os.ErrNotExist) {
-				cli.PrintExitError(fmt.Sprintf("Variable file %s does not exist", generateFlags.varFile))
+				cli.PrintExitError(fmt.Sprintf("Variable file %s does not exist", commonFlags.varFile))
 			}
 			log.Error().Msgf("error: %s\n", err.Error())
 			os.Exit(1)
 		}
 	}
-	if generateFlags.outputPath == "" {
+	if commonFlags.outputPath == "" {
 		var err error
 		value, err := os.Getwd()
 		if err != nil {
 			fmt.Println(err)
 			os.Exit(1)
 		} else {
-			generateFlags.outputPath = filepath.Join(value, "deployments")
+			commonFlags.outputPath = filepath.Join(value, "deployments")
 		}
 	}
 }
@@ -84,8 +83,8 @@ func loadConfig(cmd *cobra.Command, resolveVars bool) *config.MachConfig {
 		NoResolveVars: !resolveVars,
 		Validate:      true,
 	}
-	if generateFlags.varFile != "" {
-		opts.VarFilenames = []string{generateFlags.varFile}
+	if commonFlags.varFile != "" {
+		opts.VarFilenames = []string{commonFlags.varFile}
 	}
 
 	configFile, err := cmd.Flags().GetString("file")

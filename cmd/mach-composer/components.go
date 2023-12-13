@@ -10,14 +10,13 @@ var componentsCmd = &cobra.Command{
 	Use:   "components",
 	Short: "List all components.",
 	PreRun: func(cmd *cobra.Command, args []string) {
-		preprocessGenerateFlags()
+		preprocessCommonFlags()
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		cfg := loadConfig(cmd, false)
 		defer cfg.Close()
-		generateFlags.ValidateSite(cfg)
 
-		fmt.Printf("%s:\n", generateFlags.configFile)
+		fmt.Printf("%s:\n", commonFlags.configFile)
 		for _, component := range cfg.Components {
 			fmt.Printf(" - %s\n", component.Name)
 			fmt.Printf("   version: %s\n", component.Version)
@@ -28,5 +27,5 @@ var componentsCmd = &cobra.Command{
 }
 
 func init() {
-	registerGenerateFlags(componentsCmd)
+	registerCommonFlags(componentsCmd)
 }
