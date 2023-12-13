@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/mach-composer/mach-composer-cli/internal/cloud"
 	"os"
+	"path"
 	"path/filepath"
 
 	"github.com/rs/zerolog/log"
@@ -28,9 +29,10 @@ var commonFlags CommonFlags
 func registerCommonFlags(cmd *cobra.Command) {
 	cmd.Flags().StringVarP(&commonFlags.configFile, "file", "f", "main.yml", "YAML file to parse.")
 	cmd.Flags().StringVarP(&commonFlags.varFile, "var-file", "", "", "Use a variable file to parse the configuration with.")
-	cmd.Flags().StringVarP(&commonFlags.siteName, "site", "s", "", "DeploymentSite to parse. If not set parse all sites.")
+	cmd.Flags().StringVarP(&commonFlags.siteName, "site", "s", "", "Site to parse. If not set parse all sites.")
 	cmd.Flags().BoolVarP(&commonFlags.ignoreVersion, "ignore-version", "", false, "Skip MACH composer version check")
-	cmd.Flags().StringVarP(&commonFlags.outputPath, "output-path", "", "", "Variables path, defaults to `cwd`/deployments.")
+	cmd.Flags().StringVarP(&commonFlags.outputPath, "output-path", "", "deployments",
+		"Outputs path to store the generated files.")
 	cmd.Flags().IntVarP(&commonFlags.workers, "workers", "w", 1, "The number of workers to use")
 
 	handleError(cmd.MarkFlagFilename("var-file", "yml", "yaml"))
@@ -59,14 +61,14 @@ func preprocessCommonFlags() {
 			os.Exit(1)
 		}
 	}
-	if commonFlags.outputPath == "" {
+	if path.IsAbs(commonFlags.outputPath) == false {
 		var err error
 		value, err := os.Getwd()
 		if err != nil {
 			fmt.Println(err)
 			os.Exit(1)
 		} else {
-			commonFlags.outputPath = filepath.Join(value, "deployments")
+			commonFlags.outputPath = filepath.Join(value, commonFlags.outputPath)
 		}
 	}
 }
