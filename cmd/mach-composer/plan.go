@@ -31,7 +31,7 @@ func init() {
 	registerCommonFlags(planCmd)
 	planCmd.Flags().BoolVarP(&planFlags.reuse, "reuse", "", false,
 		"Suppress a terraform init for improved speed (not recommended for production usage)")
-	planCmd.Flags().StringArrayVarP(&planFlags.components, "component", "c", []string{}, "")
+	planCmd.Flags().StringArrayVarP(&planFlags.components, "component", "c", nil, "")
 	planCmd.Flags().BoolVarP(&planFlags.lock, "lock", "", true,
 		"Acquire a lock on the state file before running terraform plan")
 }

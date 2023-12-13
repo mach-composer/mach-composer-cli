@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/rs/zerolog/log"
 	"os"
 	"strings"
 
@@ -49,11 +50,16 @@ func init() {
 	updateCmd.Flags().BoolVarP(&updateFlags.commit, "commit", "c", false, "Automatically commits the change.")
 	updateCmd.Flags().StringVarP(&updateFlags.commitMessage, "commit-message", "m", "", "Use a custom message for the commit.")
 	updateCmd.Flags().BoolVar(&updateFlags.cloud, "cloud", false, "Use MACH composer cloud to check for updates.")
+	updateCmd.Flags().StringArrayVarP(&updateFlags.components, "component", "c", nil, "")
 
 	handleError(updateCmd.MarkFlagFilename("file", "yml", "yaml"))
 }
 
 func updateFunc(ctx context.Context, args []string) error {
+	if len(updateFlags.components) > 0 {
+		log.Warn().Msgf("Components option not implemented")
+	}
+
 	componentName := ""
 	componentVersion := ""
 
