@@ -27,7 +27,6 @@ func ToDeploymentGraph(cfg *config.MachConfig, outPath string) (*Graph, error) {
 	return g, nil
 }
 
-// TODO: write tests
 func reduceNodes(g *Graph) error {
 	var pErr error
 	if err := graph.BFS(g.Graph, g.StartNode.Path(), func(p string) bool {
@@ -46,9 +45,10 @@ func reduceNodes(g *Graph) error {
 				return true
 			}
 
-			var siteComponentConfig = siteComponentNode.SiteComponentConfig
-
-			siteNode.NestedSiteComponentConfigs = append(siteNode.NestedSiteComponentConfigs, siteComponentConfig)
+			siteNode.NestedSiteComponentConfigs = append(
+				siteNode.NestedSiteComponentConfigs,
+				siteComponentNode.SiteComponentConfig,
+			)
 
 			am, _ := g.Graph.AdjacencyMap()
 			pm, _ := g.Graph.PredecessorMap()

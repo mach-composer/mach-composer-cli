@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/elliotchance/pie/v2"
 	"github.com/mach-composer/mach-composer-cli/internal/config/variable"
-	"github.com/mach-composer/mach-composer-cli/internal/utils"
 	"github.com/mach-composer/mach-composer-plugin-sdk/schema"
 	"github.com/rs/zerolog/log"
 	"gopkg.in/yaml.v3"
@@ -31,20 +30,6 @@ type SiteComponentConfig struct {
 	Deployment *Deployment           `yaml:"deployment"`
 
 	DependsOn []string `yaml:"depends_on"`
-}
-
-func (sc *SiteComponentConfig) Hash() (string, error) {
-	return utils.ComputeHash(struct {
-		Name      string                `json:"name"`
-		Version   string                `json:"version"`
-		Variables variable.VariablesMap `json:"variables"`
-		Secrets   variable.VariablesMap `json:"secrets"`
-	}{
-		Name:      sc.Name,
-		Version:   sc.Definition.Version,
-		Variables: sc.Variables,
-		Secrets:   sc.Secrets,
-	})
 }
 
 type ComponentConfig struct {

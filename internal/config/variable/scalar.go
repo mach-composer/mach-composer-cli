@@ -127,7 +127,7 @@ func RemoteStateTransformFunc(repository *state.Repository) TransformValueFunc {
 				return nil, fmt.Errorf("state key '%s' not found", part[1])
 			}
 
-			replacement := fmt.Sprintf(`data.terraform_remote_state.%s.outputs.%s.variables.%s`, stateKey, part[1], part[2])
+			replacement := fmt.Sprintf(`data.terraform_remote_state.%s.outputs.%s.%s`, stateKey, part[1], part[2])
 			val = strings.ReplaceAll(val, strings.Join(part, "."), replacement)
 		}
 		return strings.TrimSpace(val), nil

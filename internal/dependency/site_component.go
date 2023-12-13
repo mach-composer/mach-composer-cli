@@ -21,29 +21,19 @@ func NewSiteComponent(g graph.Graph[string, Node], path, identifier string, depl
 }
 
 func (sc *SiteComponent) Hash() (string, error) {
-	return sc.SiteComponentConfig.Hash()
+	return hashSiteComponentConfig(sc.SiteComponentConfig)
 }
 
-// TODO: write tests
 func (sc *SiteComponent) HasChanges() (bool, error) {
 	hash, err := sc.Hash()
 	if err != nil {
 		return true, err
 	}
 
-	tfOutput, err := utils.ParseSiteComponentOutputByKey(sc.outputs, sc.identifier)
+	tfHash, err := utils.ParseHashOutput(sc.outputs)
 	if err != nil {
 		return false, err
 	}
 
-	if tfOutput == nil {
-		return true, nil
-	}
-
-	tfHash := tfOutput.Value.Hash
-	if tfHash == nil {
-		return true, nil
-	}
-
-	return hash != *tfHash, nil
+	return hash != tfHash, nil
 }

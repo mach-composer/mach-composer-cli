@@ -4,6 +4,7 @@ import (
 	"github.com/dominikbraun/graph"
 	"github.com/mach-composer/mach-composer-cli/internal/config"
 	"github.com/mach-composer/mach-composer-cli/internal/utils"
+	"sort"
 )
 
 type Site struct {
@@ -22,8 +23,13 @@ func NewSite(g graph.Graph[string, Node], path, identifier string, deploymentTyp
 
 func (s *Site) Hash() (string, error) {
 	var componentHashes []string
+
+	sort.Slice(s.NestedSiteComponentConfigs, func(i, j int) bool {
+		return s.NestedSiteComponentConfigs[i].Name < s.NestedSiteComponentConfigs[j].Name
+	})
+
 	for _, component := range s.NestedSiteComponentConfigs {
-		hash, err := component.Hash()
+		hash, err := hashSiteComponentConfig(component)
 		if err != nil {
 			return "", err
 		}
@@ -33,33 +39,13 @@ func (s *Site) Hash() (string, error) {
 	return utils.ComputeHash(componentHashes)
 }
 
-// TODO: write tests
 func (s *Site) HasChanges() (bool, error) {
 	hash, err := s.Hash()
 	if err != nil {
 		return true, err
 	}
 
-	var componentHashes []string
-	for _, component := range s.NestedSiteComponentConfigs {
-		tfOutput, err := utils.ParseSiteComponentOutputByKey(s.outputs, component.Name)
-		if err != nil {
-			return false, err
-		}
-
-		if tfOutput == nil {
-			return true, nil
-		}
-
-		tfHash := tfOutput.Value.Hash
-		if tfHash == nil {
-			return true, nil
-		}
-
-		componentHashes = append(componentHashes, *tfHash)
-	}
-
-	tfHash, err := utils.ComputeHash(componentHashes)
+	tfHash, err := utils.ParseHashOutput(s.outputs)
 	if err != nil {
 		return false, err
 	}

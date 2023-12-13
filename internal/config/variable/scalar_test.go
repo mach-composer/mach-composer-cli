@@ -63,14 +63,14 @@ func TestRemoteStateTransformFunc(t *testing.T) {
 	tests := []test{
 		{
 			input:  "${component.foo.endpoint}",
-			output: "${data.terraform_remote_state.my_state.outputs.foo.variables.endpoint}"},
+			output: "${data.terraform_remote_state.my_state.outputs.foo.endpoint}"},
 		{
 			input:  "foo ${component.foo.endpoint} bar",
-			output: "foo ${data.terraform_remote_state.my_state.outputs.foo.variables.endpoint} bar",
+			output: "foo ${data.terraform_remote_state.my_state.outputs.foo.endpoint} bar",
 		},
 		{
 			input:  "  ${component.foo.endpoint} ",
-			output: "${data.terraform_remote_state.my_state.outputs.foo.variables.endpoint}",
+			output: "${data.terraform_remote_state.my_state.outputs.foo.endpoint}",
 		},
 		{
 			input:  "${data.terraform_remote_state.my_state.outputs.foo.endpoint}${data.terraform_remote_state.my_state.outputs.bar.other}",

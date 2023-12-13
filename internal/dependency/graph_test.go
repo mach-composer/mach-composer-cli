@@ -12,10 +12,8 @@ func TestFromConfigSimple(t *testing.T) {
 	cfg := &config.MachConfig{
 		Filename: "main",
 		MachComposer: config.MachComposer{
-			Deployment: config.GlobalDeployment{
-				Deployment: config.Deployment{
-					Type: config.DeploymentSiteComponent,
-				},
+			Deployment: config.Deployment{
+				Type: config.DeploymentSiteComponent,
 			},
 		},
 
@@ -38,7 +36,7 @@ func TestFromConfigSimple(t *testing.T) {
 		},
 	}
 
-	g, err := ToDependencyGraph(cfg)
+	g, err := ToDependencyGraph(cfg, "")
 	assert.NoError(t, err)
 
 	o, _ := g.Order()
@@ -82,10 +80,8 @@ func TestFromConfigExplicit(t *testing.T) {
 	cfg := &config.MachConfig{
 		Filename: "main",
 		MachComposer: config.MachComposer{
-			Deployment: config.GlobalDeployment{
-				Deployment: config.Deployment{
-					Type: config.DeploymentSiteComponent,
-				},
+			Deployment: config.Deployment{
+				Type: config.DeploymentSiteComponent,
 			},
 		},
 		Sites: []config.SiteConfig{
@@ -116,7 +112,7 @@ func TestFromConfigExplicit(t *testing.T) {
 		},
 	}
 
-	g, err := ToDependencyGraph(cfg)
+	g, err := ToDependencyGraph(cfg, "")
 	assert.NoError(t, err)
 
 	am, _ := g.AdjacencyMap()
@@ -150,10 +146,8 @@ func TestFromConfigInferred(t *testing.T) {
 	cfg := &config.MachConfig{
 		Filename: "main",
 		MachComposer: config.MachComposer{
-			Deployment: config.GlobalDeployment{
-				Deployment: config.Deployment{
-					Type: config.DeploymentSiteComponent,
-				},
+			Deployment: config.Deployment{
+				Type: config.DeploymentSiteComponent,
 			},
 		},
 		Sites: []config.SiteConfig{
@@ -184,7 +178,7 @@ func TestFromConfigInferred(t *testing.T) {
 		},
 	}
 
-	g, err := ToDependencyGraph(cfg)
+	g, err := ToDependencyGraph(cfg, "")
 	assert.NoError(t, err)
 
 	am, _ := g.AdjacencyMap()
@@ -218,10 +212,8 @@ func TestFromConfigCycleErr(t *testing.T) {
 	cfg := &config.MachConfig{
 		Filename: "main",
 		MachComposer: config.MachComposer{
-			Deployment: config.GlobalDeployment{
-				Deployment: config.Deployment{
-					Type: config.DeploymentSiteComponent,
-				},
+			Deployment: config.Deployment{
+				Type: config.DeploymentSiteComponent,
 			},
 		},
 		Sites: []config.SiteConfig{
@@ -255,7 +247,7 @@ func TestFromConfigCycleErr(t *testing.T) {
 		},
 	}
 
-	_, err := ToDependencyGraph(cfg)
+	_, err := ToDependencyGraph(cfg, "")
 	assert.Error(t, err)
 	assert.IsType(t, &ValidationError{}, err)
 	assert.Len(t, err.(*ValidationError).Errors, 1)

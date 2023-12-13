@@ -52,6 +52,13 @@ func renderSite(ctx context.Context, cfg *config.MachConfig, n dependency.Node) 
 		result = append(result, val)
 	}
 
+	// Render hash output
+	val, err = renderHashOutput(n)
+	if err != nil {
+		return "", fmt.Errorf("failed to render hash output: %w", err)
+	}
+	result = append(result, val)
+
 	content := strings.Join(result, "\n")
 	return content, nil
 }

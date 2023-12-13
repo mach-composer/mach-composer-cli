@@ -48,31 +48,30 @@ func GetTerraformOutputs(ctx context.Context, path string) (cty.Value, error) {
 	return data.Value, nil
 }
 
-type SiteComponentOutput struct {
-	Sensitive bool `cty:"sensitive"`
-	Value     struct {
-		Hash      *string    `cty:"hash"`
-		Variables *cty.Value `cty:"variables"`
-	} `cty:"value"`
-	Type cty.Value `cty:"type"`
+type HashOutput struct {
+	Sensitive bool    `cty:"sensitive"`
+	Type      string  `cty:"type"`
+	Value     *string `cty:"value"`
 }
 
-// ParseSiteComponentOutputByKey returns the output of a terraform command for the given key at the given path.
-// If no output is found nil is returned.
-func ParseSiteComponentOutputByKey(val cty.Value, key string) (*SiteComponentOutput, error) {
-	if !val.Type().HasAttribute(key) {
-		log.Debug().Msgf("no attribute found for key %s", key)
-		return nil, nil
+// ParseHashOutput returns the hash output by the given key.
+func ParseHashOutput(val cty.Value) (string, error) {
+	if !val.Type().HasAttribute("hash") {
+		return "", fmt.Errorf("no attribute with key hash found in terraform output")
 	}
 
-	componentVal := val.GetAttr(key)
+	componentVal := val.GetAttr("hash")
 
-	var scOut SiteComponentOutput
-	err := gocty.FromCtyValue(componentVal, &scOut)
+	var hashOutput HashOutput
+	err := gocty.FromCtyValue(componentVal, &hashOutput)
 	if err != nil {
-		log.Err(err).Msgf("failed to convert terraform output to SiteComponentOutput: %s", err.Error())
-		return nil, err
+		log.Err(err).Msgf("failed to convert terraform output to HashOutput: %s", err.Error())
+		return "", err
 	}
 
-	return &scOut, nil
+	if hashOutput.Value == nil {
+		return "", fmt.Errorf("no value set for hash in terraform output")
+	}
+
+	return *hashOutput.Value, nil
 }

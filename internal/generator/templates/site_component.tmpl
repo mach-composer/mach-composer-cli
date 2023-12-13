@@ -43,8 +43,5 @@ module "{{ .ComponentName }}" {
 }
 
 output "{{ .ComponentName }}" {
-    value = {
-        hash = "{{ .ComponentHash }}"
-        variables = module.{{ .ComponentName }}
-    }
+    value =  module.{{ .ComponentName }}
 }

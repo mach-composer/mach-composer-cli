@@ -48,11 +48,8 @@ func TestOpenBasic(t *testing.T) {
 		Filename: "basic.yaml",
 		MachComposer: MachComposer{
 			Version: "1.0.0",
-			Deployment: GlobalDeployment{
-				Deployment: Deployment{
-					Type: DeploymentSite,
-				},
-				Runners: 1,
+			Deployment: Deployment{
+				Type: DeploymentSite,
 			},
 		},
 		Global: GlobalConfig{
@@ -119,11 +116,8 @@ func TestParseComplex(t *testing.T) {
 				"aws":       {Source: "mach-composer/aws", Version: "0.1.0"},
 				"my-plugin": {Source: "mach-composer/my-plugin", Version: "0.1.0"},
 			},
-			Deployment: GlobalDeployment{
-				Deployment: Deployment{
-					Type: DeploymentSite,
-				},
-				Runners: 1,
+			Deployment: Deployment{
+				Type: DeploymentSite,
 			},
 		},
 		Global: GlobalConfig{

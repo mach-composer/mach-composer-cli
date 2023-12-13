@@ -70,6 +70,13 @@ func renderSiteComponent(ctx context.Context, cfg *config.MachConfig, n dependen
 	}
 	result = append(result, val)
 
+	// Render hash output
+	val, err = renderHashOutput(n)
+	if err != nil {
+		return "", fmt.Errorf("failed to render hash output: %w", err)
+	}
+	result = append(result, val)
+
 	content := strings.Join(result, "\n")
 
 	return content, nil
@@ -143,15 +150,9 @@ func renderComponentModule(_ context.Context, cfg *config.MachConfig, site *conf
 		return "", err
 	}
 
-	hash, err := siteComponent.Hash()
-	if err != nil {
-		return "", err
-	}
-
 	tc := componentContext{
 		ComponentName:    siteComponent.Name,
 		ComponentVersion: siteComponent.Definition.Version,
-		ComponentHash:    hash,
 		SiteName:         site.Identifier,
 		Environment:      cfg.Global.Environment,
 		Source:           siteComponent.Definition.Source,
@@ -212,7 +213,7 @@ func renderComponentModule(_ context.Context, cfg *config.MachConfig, site *conf
 
 	val, err := utils.RenderGoTemplate(string(tpl), tc)
 	if err != nil {
-		return "", fmt.Errorf("renderSiteTerraformConfig: %w", err)
+		return "", fmt.Errorf("failed rendering site component: %w", err)
 	}
 	return val, nil
 }
