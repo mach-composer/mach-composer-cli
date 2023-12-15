@@ -20,11 +20,7 @@ func RunInteractive(ctx context.Context, catchOutputs bool, command string, cwd 
 
 	logger.Debug().Msgf("Running: %s", command)
 
-	cmd := exec.CommandContext(
-		ctx,
-		command,
-		args...,
-	)
+	cmd := exec.CommandContext(ctx, command, args...)
 	cmd.Dir = cwd
 	cmd.Env = os.Environ()
 

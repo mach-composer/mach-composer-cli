@@ -5,7 +5,7 @@ import (
 	"embed"
 	"errors"
 	"fmt"
-	"github.com/mach-composer/mach-composer-cli/internal/dependency"
+	"github.com/mach-composer/mach-composer-cli/internal/graph"
 	"github.com/mach-composer/mach-composer-cli/internal/state"
 	"io"
 	"os"
@@ -27,7 +27,7 @@ var templates embed.FS
 
 // Write is the main entrypoint for this module. It takes the given MachConfig and graph and iterates the nodes to generate
 // the required terraform files.
-func Write(ctx context.Context, cfg *config.MachConfig, g *dependency.Graph, _ *GenerateOptions) error {
+func Write(ctx context.Context, cfg *config.MachConfig, g *graph.Graph, _ *GenerateOptions) error {
 	for _, n := range g.Vertices() {
 		sr, err := state.NewRenderer(
 			state.Type(cfg.Global.TerraformStateProvider),
@@ -42,7 +42,7 @@ func Write(ctx context.Context, cfg *config.MachConfig, g *dependency.Graph, _ *
 			return err
 		}
 
-		if site, ok := n.(*dependency.Site); ok {
+		if site, ok := n.(*graph.Site); ok {
 			for _, c := range site.NestedSiteComponentConfigs {
 				cfg.StateRepository.Alias(n.Identifier(), c.Name)
 			}
@@ -51,10 +51,10 @@ func Write(ctx context.Context, cfg *config.MachConfig, g *dependency.Graph, _ *
 
 	for _, n := range g.Vertices() {
 		switch n.(type) {
-		case *dependency.Project:
+		case *graph.Project:
 			log.Debug().Msgf("No global files to generate for project %s", n.Path())
 			break
-		case *dependency.Site:
+		case *graph.Site:
 			if err := copySecrets(cfg, n.Identifier(), n.Path()); err != nil {
 				return err
 			}
@@ -71,7 +71,7 @@ func Write(ctx context.Context, cfg *config.MachConfig, g *dependency.Graph, _ *
 				return err
 			}
 			break
-		case *dependency.SiteComponent:
+		case *graph.SiteComponent:
 			if err := copySecrets(cfg, n.Identifier(), n.Path()); err != nil {
 				return err
 			}

@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/mach-composer/mach-composer-cli/internal/dependency"
+	"github.com/mach-composer/mach-composer-cli/internal/graph"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 
@@ -46,7 +46,7 @@ func applyFunc(cmd *cobra.Command, _ []string) error {
 	defer cfg.Close()
 	ctx := cmd.Context()
 
-	dg, err := dependency.ToDeploymentGraph(cfg, commonFlags.outputPath)
+	dg, err := graph.ToDeploymentGraph(cfg, commonFlags.outputPath)
 	if err != nil {
 		return err
 	}
@@ -59,17 +59,14 @@ func applyFunc(cmd *cobra.Command, _ []string) error {
 		return err
 	}
 
-	if planFlags.reuse == false {
-		if err = runner.TerraformInit(ctx, cfg, dg, nil); err != nil {
-			return err
-		}
-	} else {
-		log.Info().Msgf("Reusing existing terraform state")
+	b := runner.NewGraphRunner(commonFlags.workers)
+
+	if err = checkReuse(ctx, dg, b, applyFlags.reuse); err != nil {
+		return err
 	}
 
-	return runner.TerraformApply(ctx, dg, &runner.ApplyOptions{
+	return b.TerraformApply(ctx, dg, &runner.ApplyOptions{
 		Destroy:     applyFlags.destroy,
 		AutoApprove: applyFlags.autoApprove,
-		Workers:     commonFlags.workers,
 	})
 }

@@ -1,4 +1,4 @@
-package dependency
+package graph
 
 import (
 	"github.com/mach-composer/mach-composer-cli/internal/config"

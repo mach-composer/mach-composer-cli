@@ -1,24 +1,18 @@
-package dependency
+package graph
 
 func determineTainted(n Node, parentTainted bool) (bool, error) {
-	if parentTainted {
-		return true, nil
-	}
-
-	isTainted, err := n.HasChanges()
-	if err != nil {
-		return false, err
-	}
-
-	if isTainted {
-		return true, nil
-	}
-
+	// If a node has already been marked as tainted in a previous iteration, we don't need to check it again
 	if n.Tainted() {
 		return true, nil
 	}
 
-	return false, nil
+	// If a parent has been marked as tainted the current node is also tainted
+	if parentTainted {
+		return true, nil
+	}
+
+	// If a node has changes it is tainted
+	return n.HasChanges()
 }
 
 func taintNode(g *Graph, path string, parentTainted bool) error {

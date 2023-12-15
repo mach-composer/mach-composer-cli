@@ -1,9 +1,12 @@
 package main
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"github.com/mach-composer/mach-composer-cli/internal/cloud"
+	"github.com/mach-composer/mach-composer-cli/internal/graph"
+	"github.com/mach-composer/mach-composer-cli/internal/runner"
 	"os"
 	"path"
 	"path/filepath"
@@ -106,4 +109,13 @@ func loadConfig(cmd *cobra.Command, resolveVars bool) *config.MachConfig {
 	}
 
 	return cfg
+}
+
+func checkReuse(ctx context.Context, dg *graph.Graph, b *runner.GraphRunner, reuse bool) error {
+	if reuse {
+		log.Info().Msgf("Reusing existing terraform state")
+		return nil
+
+	}
+	return b.TerraformInit(ctx, dg)
 }

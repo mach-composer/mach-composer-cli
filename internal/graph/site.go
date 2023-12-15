@@ -1,9 +1,10 @@
-package dependency
+package graph
 
 import (
 	"github.com/dominikbraun/graph"
 	"github.com/mach-composer/mach-composer-cli/internal/config"
 	"github.com/mach-composer/mach-composer-cli/internal/utils"
+	"github.com/rs/zerolog/log"
 	"sort"
 )
 
@@ -22,12 +23,11 @@ func NewSite(g graph.Graph[string, Node], path, identifier string, deploymentTyp
 }
 
 func (s *Site) Hash() (string, error) {
-	var componentHashes []string
-
 	sort.Slice(s.NestedSiteComponentConfigs, func(i, j int) bool {
 		return s.NestedSiteComponentConfigs[i].Name < s.NestedSiteComponentConfigs[j].Name
 	})
 
+	var componentHashes []string
 	for _, component := range s.NestedSiteComponentConfigs {
 		hash, err := hashSiteComponentConfig(component)
 		if err != nil {
@@ -42,12 +42,13 @@ func (s *Site) Hash() (string, error) {
 func (s *Site) HasChanges() (bool, error) {
 	hash, err := s.Hash()
 	if err != nil {
-		return true, err
+		return false, err
 	}
 
 	tfHash, err := utils.ParseHashOutput(s.outputs)
 	if err != nil {
-		return false, err
+		log.Warn().Msgf("Could not parse hash output: %s", err)
+		return true, nil
 	}
 
 	return hash != tfHash, nil

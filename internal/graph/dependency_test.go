@@ -1,4 +1,4 @@
-package dependency
+package graph
 
 import (
 	"github.com/dominikbraun/graph"
@@ -8,7 +8,7 @@ import (
 	"testing"
 )
 
-func TestFromConfigSimple(t *testing.T) {
+func TestToDependencyGraphSimple(t *testing.T) {
 	cfg := &config.MachConfig{
 		Filename: "main",
 		MachComposer: config.MachComposer{
@@ -76,7 +76,7 @@ func TestFromConfigSimple(t *testing.T) {
 		"main/site-1/site-component-1": {}}, am)
 }
 
-func TestFromConfigExplicit(t *testing.T) {
+func TestToDependencyGraphExplicit(t *testing.T) {
 	cfg := &config.MachConfig{
 		Filename: "main",
 		MachComposer: config.MachComposer{
@@ -142,7 +142,7 @@ func TestFromConfigExplicit(t *testing.T) {
 	}, am)
 }
 
-func TestFromConfigInferred(t *testing.T) {
+func TestToDependencyGraphInferred(t *testing.T) {
 	cfg := &config.MachConfig{
 		Filename: "main",
 		MachComposer: config.MachComposer{
@@ -208,7 +208,7 @@ func TestFromConfigInferred(t *testing.T) {
 	}, am)
 }
 
-func TestFromConfigCycleErr(t *testing.T) {
+func TestToDependencyGraphCycleErr(t *testing.T) {
 	cfg := &config.MachConfig{
 		Filename: "main",
 		MachComposer: config.MachComposer{

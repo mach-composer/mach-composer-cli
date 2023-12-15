@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/dominikbraun/graph/draw"
-	"github.com/mach-composer/mach-composer-cli/internal/dependency"
+	"github.com/mach-composer/mach-composer-cli/internal/graph"
 	"github.com/spf13/cobra"
 )
 
@@ -44,13 +44,13 @@ func graphFunc(cmd *cobra.Command, _ []string) error {
 	cfg := loadConfig(cmd, true)
 	defer cfg.Close()
 
-	g, err := dependency.ToDependencyGraph(cfg, commonFlags.outputPath)
+	g, err := graph.ToDependencyGraph(cfg, commonFlags.outputPath)
 	if err != nil {
 		return err
 	}
 
 	if graphFlags.deployment {
-		dg, err := dependency.ToDeploymentGraph(cfg, commonFlags.outputPath)
+		dg, err := graph.ToDeploymentGraph(cfg, commonFlags.outputPath)
 		if err != nil {
 			return err
 		}

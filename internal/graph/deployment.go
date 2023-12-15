@@ -1,4 +1,4 @@
-package dependency
+package graph
 
 import (
 	"errors"
@@ -15,7 +15,7 @@ func ToDeploymentGraph(cfg *config.MachConfig, outPath string) (*Graph, error) {
 		return nil, err
 	}
 
-	if err := validateDeployment(g); err != nil {
+	if err = validateDeployment(g); err != nil {
 		return nil, err
 	}
 
@@ -25,6 +25,36 @@ func ToDeploymentGraph(cfg *config.MachConfig, outPath string) (*Graph, error) {
 	}
 
 	return g, nil
+}
+
+func validateDeployment(g *Graph) error {
+	var errList errorList
+	err := graph.DFS(g.Graph, g.StartNode.Path(), func(p string) bool {
+		n, _ := g.Vertex(p)
+
+		am, _ := g.AdjacencyMap()
+		edges := am[p]
+
+		for _, edge := range edges {
+			child, _ := g.Vertex(edge.Target)
+			if n.Type() == SiteComponentType && n.Independent() && !child.Independent() {
+				errList.AddError(fmt.Errorf("baseNode %s is independent but has a dependent child %s", n.Path(), child.Path()))
+			}
+		}
+
+		return false
+	})
+	if err != nil {
+		return err
+	}
+	if len(errList) > 0 {
+		return &ValidationError{
+			Msg:    "validation failed",
+			Errors: errList,
+		}
+	}
+
+	return nil
 }
 
 func reduceNodes(g *Graph) error {

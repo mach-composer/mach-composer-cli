@@ -1,4 +1,4 @@
-package dependency
+package graph
 
 import "fmt"
 

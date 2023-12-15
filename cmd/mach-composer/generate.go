@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/mach-composer/mach-composer-cli/internal/dependency"
+	"github.com/mach-composer/mach-composer-cli/internal/graph"
 	"github.com/spf13/cobra"
 
 	"github.com/mach-composer/mach-composer-cli/internal/generator"
@@ -26,7 +26,7 @@ func generateFunc(cmd *cobra.Command) error {
 	cfg := loadConfig(cmd, true)
 	defer cfg.Close()
 
-	gd, err := dependency.ToDeploymentGraph(cfg, commonFlags.outputPath)
+	gd, err := graph.ToDeploymentGraph(cfg, commonFlags.outputPath)
 	if err != nil {
 		return err
 	}

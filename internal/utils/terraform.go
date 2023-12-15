@@ -12,7 +12,7 @@ import (
 )
 
 // RunTerraform will execute a terraform command with the given arguments in the given directory.
-func RunTerraform(ctx context.Context, catchOutputs bool, cwd string, args ...string) (string, error) {
+func RunTerraform(ctx context.Context, cwd string, catchOutputs bool, args ...string) (string, error) {
 	if _, err := os.Stat(cwd); err != nil {
 		if os.IsNotExist(err) {
 			return "", fmt.Errorf("the generated files are not found: %w", err)
@@ -30,18 +30,16 @@ func RunTerraform(ctx context.Context, catchOutputs bool, cwd string, args ...st
 func GetTerraformOutputs(ctx context.Context, path string) (cty.Value, error) {
 	var data json.SimpleJSONValue
 
-	logger := log.Ctx(ctx).With().Str("path", path).Logger()
-
-	output, err := RunTerraform(ctx, true, path, "output", "-json")
+	output, err := RunTerraform(ctx, path, true, "output", "-json")
 	if err != nil {
-		logger.Error().Err(err).Msgf("failed to get terraform output: %s", err.Error())
+		log.Error().Err(err).Msgf("failed to get terraform output: %s", err.Error())
 		return cty.NilVal, err
 	}
 
-	logger.Debug().Str("output", output).Msgf("Fetched terraform output")
+	log.Debug().Str("output", output).Msgf("Fetched terraform output")
 
 	if err = data.UnmarshalJSON([]byte(output)); err != nil {
-		logger.Error().Err(err).Str("output", output).Msgf("failed to unmarshal terraform output: %s", err.Error())
+		log.Error().Err(err).Str("output", output).Msgf("failed to unmarshal terraform output: %s", err.Error())
 		return cty.NilVal, err
 	}
 
@@ -65,7 +63,6 @@ func ParseHashOutput(val cty.Value) (string, error) {
 	var hashOutput HashOutput
 	err := gocty.FromCtyValue(componentVal, &hashOutput)
 	if err != nil {
-		log.Err(err).Msgf("failed to convert terraform output to HashOutput: %s", err.Error())
 		return "", err
 	}
 

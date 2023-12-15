@@ -1,18 +1,15 @@
-package dependency
+package graph
 
 import (
 	"fmt"
 	"github.com/dominikbraun/graph"
 	"github.com/mach-composer/mach-composer-cli/internal/config"
 	"github.com/rs/zerolog/log"
-	"golang.org/x/exp/maps"
 	"path"
 	"path/filepath"
 	"slices"
 	"strings"
 )
-
-type Vertices []Node
 
 type edgeSets map[string][]string
 
@@ -23,46 +20,7 @@ func (e *edgeSets) Add(to, from string) {
 	(*e)[to] = append((*e)[to], from)
 }
 
-type Graph struct {
-	graph.Graph[string, Node]
-	StartNode Node
-}
-
-func (g *Graph) Vertices() Vertices {
-	var vertices Vertices
-
-	m, _ := g.AdjacencyMap()
-
-	keys := maps.Keys(m)
-
-	for _, k := range keys {
-		v, _ := g.Vertex(k)
-		vertices = append(vertices, v)
-	}
-
-	return vertices
-}
-
-// Routes determines all the possible paths between two nodes
-func (g *Graph) Routes(source, target string) ([]Path, error) {
-	var routes []Path
-
-	m, err := g.PredecessorMap()
-	if err != nil {
-		return routes, err
-	}
-
-	eg := m[source]
-
-	for _, pathElement := range eg {
-		p := []string{pathElement.Source}
-		newRoutes := fetchPathsToTarget(pathElement.Source, target, m, p)
-		routes = append(routes, newRoutes...)
-	}
-
-	return routes, nil
-}
-
+// ToDependencyGraph will transform a MachConfig into a graph of dependencies connected by different relations
 func ToDependencyGraph(cfg *config.MachConfig, outPath string) (*Graph, error) {
 	var edges = edgeSets{}
 	g := graph.New(func(n Node) string { return n.Path() }, graph.Directed(), graph.Tree(), graph.PreventCycles())
@@ -153,34 +111,4 @@ func ToDependencyGraph(cfg *config.MachConfig, outPath string) (*Graph, error) {
 	}
 
 	return &Graph{Graph: g, StartNode: project}, nil
-}
-
-func validateDeployment(g *Graph) error {
-	var errList errorList
-	err := graph.DFS(g.Graph, g.StartNode.Path(), func(p string) bool {
-		n, _ := g.Vertex(p)
-
-		am, _ := g.AdjacencyMap()
-		edges := am[p]
-
-		for _, edge := range edges {
-			child, _ := g.Vertex(edge.Target)
-			if n.Type() == SiteComponentType && n.Independent() && !child.Independent() {
-				errList.AddError(fmt.Errorf("baseNode %s is independent but has a dependent child %s", n.Path(), child.Path()))
-			}
-		}
-
-		return false
-	})
-	if err != nil {
-		return err
-	}
-	if len(errList) > 0 {
-		return &ValidationError{
-			Msg:    "validation failed",
-			Errors: errList,
-		}
-	}
-
-	return nil
 }
