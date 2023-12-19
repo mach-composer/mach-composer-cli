@@ -2,9 +2,7 @@ name: Build documentation
 
 on:
   workflow_dispatch:
-  push:
-    tags:
-      - '*'
+  workflow_call:
 
 defaults:
   run:

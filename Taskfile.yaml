@@ -2,6 +2,8 @@ version: '3'
 
 tasks:
   build:
+    env:
+      GORELEASER_CURRENT_TAG: "v0.0.0"
     cmd: goreleaser build --snapshot --clean --single-target --output mach-composer
 
   download:
@@ -12,6 +14,9 @@ tasks:
 
   test:
     cmd: go test -race ./...
+
+  vet:
+    cmd: go vet ./...
 
   cover:
     cmd: go test -race -coverprofile=coverage.out -covermode=atomic ./...

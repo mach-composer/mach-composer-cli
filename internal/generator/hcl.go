@@ -2,25 +2,52 @@ package generator
 
 import (
 	"encoding/json"
+	"fmt"
+	"github.com/mach-composer/mach-composer-cli/internal/config"
+	"github.com/mach-composer/mach-composer-cli/internal/config/variable"
+	"github.com/mach-composer/mach-composer-cli/internal/state"
 	"regexp"
 	"strings"
 
 	"github.com/hashicorp/hcl/v2/hclwrite"
-	"github.com/zclconf/go-cty/cty"
 	ctyjson "github.com/zclconf/go-cty/cty/json"
 )
 
-var regexVars = regexp.MustCompilePOSIX(`"\$\$\{([^\}]+)\}"`)
+var regexVars = regexp.MustCompilePOSIX(`"\$\$\{([^}]+)}"`)
 
-func serializeToHCL(attributeName string, data any) (string, error) {
-	val, err := asCTY(data)
+func serializeToHCL(attributeName string, data variable.VariablesMap, deploymentType config.DeploymentType,
+	repository *state.Repository) (string, error) {
+	var transformFunc variable.TransformValueFunc
+	switch deploymentType {
+	case config.DeploymentSite:
+		transformFunc = variable.ModuleTransformFunc()
+		break
+	case config.DeploymentSiteComponent:
+
+		transformFunc = variable.RemoteStateTransformFunc(repository)
+		break
+	default:
+		return "", fmt.Errorf("invalid deployment type: %s", deploymentType)
+	}
+
+	val, err := data.Transform(transformFunc)
 	if err != nil {
+		return "", err
+	}
+
+	jsonBytes, err := json.Marshal(val)
+	if err != nil {
+		return "", err
+	}
+
+	var ctyJsonVal ctyjson.SimpleJSONValue
+	if err := ctyJsonVal.UnmarshalJSON(jsonBytes); err != nil {
 		return "", err
 	}
 
 	f := hclwrite.NewEmptyFile()
 	rootBody := f.Body()
-	rootBody.SetAttributeValue(attributeName, val)
+	rootBody.SetAttributeValue(attributeName, ctyJsonVal.Value)
 
 	result := fixVariableReference(string(f.Bytes()))
 	return result, nil
@@ -40,17 +67,4 @@ func fixVariableReference(data string) string {
 	}
 
 	return data
-}
-
-func asCTY(source any) (cty.Value, error) {
-	jsonBytes, err := json.Marshal(source)
-	if err != nil {
-		return cty.NilVal, err
-	}
-	var ctyJsonVal ctyjson.SimpleJSONValue
-	if err := ctyJsonVal.UnmarshalJSON(jsonBytes); err != nil {
-		return cty.NilVal, err
-	}
-
-	return ctyJsonVal.Value, nil
 }

@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"os"
@@ -11,24 +12,30 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-func RunInteractive(ctx context.Context, command string, cwd string, args ...string) error {
-	log.Debug().Msgf("Running: %s %s\n", command, strings.Join(args, " "))
+func RunInteractive(ctx context.Context, catchOutputs bool, command string, cwd string, args ...string) (string, error) {
+	logger := log.Ctx(ctx).With().
+		Str("command", command).
+		Strs("args", args).
+		Str("cwd", cwd).Logger()
 
-	cmd := exec.CommandContext(
-		ctx,
-		command,
-		args...,
-	)
+	logger.Debug().Msgf("Running: %s", command)
+
+	cmd := exec.CommandContext(ctx, command, args...)
 	cmd.Dir = cwd
 	cmd.Env = os.Environ()
 
-	cmd.Stderr = os.Stderr
 	cmd.Stdin = os.Stdin
+	cmd.Stderr = os.Stderr
 	cmd.Stdout = os.Stdout
+
+	stdOut := new(bytes.Buffer)
+	if catchOutputs {
+		cmd.Stdout = stdOut
+	}
 
 	err := cmd.Start()
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	// Wait for the command to complete or the context to be cancelled
@@ -39,19 +46,21 @@ func RunInteractive(ctx context.Context, command string, cwd string, args ...str
 
 	select {
 	case <-ctx.Done():
-		return StopProcess(cmd)
+		return "", StopProcess(cmd)
 
 	case err := <-done:
 		if err != nil {
-			return fmt.Errorf("command (%s) failed: %w (args: %s , cwd: %s)", command, err, strings.Join(args, " "), cwd)
+			return "", fmt.Errorf("command (%s) failed: %w (args: %s , cwd: %s)", command, err, strings.Join(args, " "), cwd)
 		}
 	}
 
-	return nil
+	logger.Debug().Msgf("Finished running: %s", command)
+
+	return stdOut.String(), nil
 }
 
 func StopProcess(cmd *exec.Cmd) error {
-	fmt.Println("Context cancelled, waiting for the command to exit...")
+	log.Info().Msg("Context cancelled, waiting for the command to exit...")
 	err := cmd.Process.Signal(os.Interrupt)
 	if err != nil {
 		return fmt.Errorf("failed to send interrupt signal: %w\n", err)
@@ -66,10 +75,10 @@ func StopProcess(cmd *exec.Cmd) error {
 	for {
 		select {
 		case <-ticker.C:
-			fmt.Println("Waiting...")
-			fmt.Println(cmd.ProcessState)
+			log.Info().Msg("Waiting...")
+			log.Info().Msg(cmd.ProcessState.String())
 			if cmd.ProcessState != nil && cmd.ProcessState.Exited() {
-				fmt.Println("Command exited.")
+				log.Info().Msg("Command exited.")
 				return nil
 			}
 			if current.Add(10 * time.Second).After(time.Now()) {

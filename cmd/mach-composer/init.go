@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/mach-composer/mach-composer-cli/internal/graph"
 	"github.com/spf13/cobra"
 
 	"github.com/mach-composer/mach-composer-cli/internal/cli"
@@ -12,7 +13,7 @@ var initCmd = &cobra.Command{
 	Use:   "init",
 	Short: "Initialize site directories Terraform files.",
 	PreRun: func(cmd *cobra.Command, args []string) {
-		preprocessGenerateFlags()
+		preprocessCommonFlags(cmd)
 	},
 
 	RunE: func(cmd *cobra.Command, args []string) error {
@@ -24,25 +25,25 @@ var initCmd = &cobra.Command{
 }
 
 func init() {
-	registerGenerateFlags(initCmd)
+	registerCommonFlags(initCmd)
 }
 
-func initFunc(cmd *cobra.Command, args []string) error {
+func initFunc(cmd *cobra.Command, _ []string) error {
 	cfg := loadConfig(cmd, true)
 	defer cfg.Close()
 	ctx := cmd.Context()
 
-	generateFlags.ValidateSite(cfg)
-
-	paths, err := generator.WriteFiles(ctx, cfg, &generator.GenerateOptions{
-		OutputPath: generateFlags.outputPath,
-		Site:       generateFlags.siteName,
-	})
+	dg, err := graph.ToDeploymentGraph(cfg, commonFlags.outputPath)
 	if err != nil {
 		return err
 	}
 
-	return runner.TerraformInit(ctx, cfg, paths, &runner.InitOptions{
-		Site: generateFlags.siteName,
-	})
+	err = generator.Write(ctx, cfg, dg, nil)
+	if err != nil {
+		return err
+	}
+
+	b := runner.NewGraphRunner(commonFlags.workers)
+
+	return b.TerraformInit(ctx, dg)
 }

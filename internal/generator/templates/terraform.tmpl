@@ -1,0 +1,16 @@
+terraform {
+{{ .BackendConfig }}
+
+    required_providers {
+    {{ range $provider := .Providers }}
+        {{ $provider }}
+    {{ end }}
+
+    {{ if .IncludeSOPS }}
+        sops = {
+        source = "carlpett/sops"
+        version = "~> 0.5"
+        }
+    {{ end }}
+    }
+}

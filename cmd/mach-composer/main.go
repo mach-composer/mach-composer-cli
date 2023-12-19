@@ -82,4 +82,5 @@ func init() {
 	rootCmd.AddCommand(updateCmd)
 	rootCmd.AddCommand(terraformCmd)
 	rootCmd.AddCommand(versionCmd)
+	rootCmd.AddCommand(graphCmd)
 }

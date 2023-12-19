@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"fmt"
 	"os"
 	"strings"
 
@@ -10,6 +11,19 @@ import (
 
 	"github.com/mach-composer/mach-composer-cli/internal/utils"
 )
+
+type GroupedError struct {
+	msg    string
+	Errors []error
+}
+
+func NewGroupedError(msg string, errors []error) *GroupedError {
+	return &GroupedError{msg: msg, Errors: errors}
+}
+
+func (b *GroupedError) Error() string {
+	return b.msg
+}
 
 type DeprecationOptions struct {
 	Site      string
@@ -40,6 +54,7 @@ func PrintExitError(summary string, detail ...string) {
 }
 
 func HandleErr(err error) {
+	log.Error().Msgf("Error: %v\n", err)
 	if openApiErr, ok := err.(*mccsdk.GenericOpenAPIError); ok {
 		remoteErr := openApiErr.Model()
 
@@ -63,5 +78,14 @@ func HandleErr(err error) {
 		return
 	}
 
-	PrintExitError("An error occured:", err.Error())
+	if groupedErr, ok := err.(*GroupedError); ok {
+		var details []string
+		for _, e := range groupedErr.Errors {
+			details = append(details, e.Error())
+		}
+
+		PrintExitError(fmt.Sprintf("A grouped error occured: %s", groupedErr.Error()), details...)
+	}
+
+	PrintExitError("An error occurred:", err.Error())
 }

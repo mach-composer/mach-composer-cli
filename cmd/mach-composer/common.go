@@ -1,10 +1,14 @@
 package main
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"github.com/mach-composer/mach-composer-cli/internal/cloud"
+	"github.com/mach-composer/mach-composer-cli/internal/graph"
+	"github.com/mach-composer/mach-composer-cli/internal/runner"
 	"os"
+	"path"
 	"path/filepath"
 
 	"github.com/rs/zerolog/log"
@@ -14,67 +18,67 @@ import (
 	"github.com/mach-composer/mach-composer-cli/internal/config"
 )
 
-type GenerateFlags struct {
+type CommonFlags struct {
 	configFile    string
 	siteName      string
 	ignoreVersion bool
 	outputPath    string
 	varFile       string
+	workers       int
 }
 
-var generateFlags GenerateFlags
+var commonFlags CommonFlags
 
-func (gf GenerateFlags) ValidateSite(cfg *config.MachConfig) {
-	if gf.siteName != "" && !cfg.HasSite(gf.siteName) {
-		fmt.Fprintf(os.Stderr, "No site found with identifier: %s\n", gf.siteName)
-		os.Exit(1)
+func registerCommonFlags(cmd *cobra.Command) {
+	cmd.Flags().StringVarP(&commonFlags.configFile, "file", "f", "main.yml", "YAML file to parse.")
+	cmd.Flags().StringVarP(&commonFlags.varFile, "var-file", "", "", "Use a variable file to parse the configuration with.")
+	cmd.Flags().StringVarP(&commonFlags.siteName, "site", "s", "", "Site to parse. If not set parse all sites.")
+	cmd.Flags().BoolVarP(&commonFlags.ignoreVersion, "ignore-version", "", false, "Skip MACH composer version check")
+	cmd.Flags().StringVarP(&commonFlags.outputPath, "output-path", "", "deployments",
+		"Outputs path to store the generated files.")
+	cmd.Flags().IntVarP(&commonFlags.workers, "workers", "w", 1, "The number of workers to use")
+
+	_ = cmd.RegisterFlagCompletionFunc("site", AutocompleteSiteName)
+}
+
+func preprocessCommonFlags(cmd *cobra.Command) {
+	if commonFlags.siteName != "" {
+		log.Warn().Msgf("Site option not implemented")
 	}
-}
-
-func registerGenerateFlags(cmd *cobra.Command) {
-	cmd.Flags().StringVarP(&generateFlags.configFile, "file", "f", "main.yml", "YAML file to parse.")
-	cmd.Flags().StringVarP(&generateFlags.varFile, "var-file", "", "", "Use a variable file to parse the configuration with.")
-	cmd.Flags().StringVarP(&generateFlags.siteName, "site", "s", "", "Site to parse. If not set parse all sites.")
-	cmd.Flags().BoolVarP(&generateFlags.ignoreVersion, "ignore-version", "", false, "Skip MACH composer version check")
-	cmd.Flags().StringVarP(&generateFlags.outputPath, "output-path", "", "", "Output path, defaults to `cwd`/deployments.")
 
 	handleError(cmd.MarkFlagFilename("var-file", "yml", "yaml"))
 	handleError(cmd.MarkFlagFilename("file", "yml", "yaml"))
 
-	cmd.RegisterFlagCompletionFunc("site", AutocompleteSiteName)
-}
-
-func preprocessGenerateFlags() {
-	if _, err := os.Stat(generateFlags.configFile); err != nil {
+	if _, err := os.Stat(commonFlags.configFile); err != nil {
 		if errors.Is(err, os.ErrNotExist) {
-			cli.PrintExitError(fmt.Sprintf("Config file %s does not exist", generateFlags.configFile))
+			cli.PrintExitError(fmt.Sprintf("Config file %s does not exist", commonFlags.configFile))
 		}
 		cli.PrintExitError(err.Error())
 	}
-	if generateFlags.varFile != "" {
-		if _, err := os.Stat(generateFlags.varFile); err != nil {
+	if commonFlags.varFile != "" {
+		if _, err := os.Stat(commonFlags.varFile); err != nil {
 			if errors.Is(err, os.ErrNotExist) {
-				cli.PrintExitError(fmt.Sprintf("Variable file %s does not exist", generateFlags.varFile))
+				cli.PrintExitError(fmt.Sprintf("Variable file %s does not exist", commonFlags.varFile))
 			}
 			log.Error().Msgf("error: %s\n", err.Error())
 			os.Exit(1)
 		}
 	}
-	if generateFlags.outputPath == "" {
+	if path.IsAbs(commonFlags.outputPath) == false {
 		var err error
 		value, err := os.Getwd()
 		if err != nil {
 			fmt.Println(err)
 			os.Exit(1)
 		} else {
-			generateFlags.outputPath = filepath.Join(value, "deployments")
+			commonFlags.outputPath = filepath.Join(value, commonFlags.outputPath)
 		}
 	}
 }
 
 func handleError(err error) {
 	if err != nil {
-		cli.PrintExitError("An error occured:", err.Error())
+		cli.PrintExitError("An error occurred:", err.Error())
 	}
 }
 
@@ -82,9 +86,10 @@ func handleError(err error) {
 func loadConfig(cmd *cobra.Command, resolveVars bool) *config.MachConfig {
 	opts := &config.ConfigOptions{
 		NoResolveVars: !resolveVars,
+		Validate:      true,
 	}
-	if generateFlags.varFile != "" {
-		opts.VarFilenames = []string{generateFlags.varFile}
+	if commonFlags.varFile != "" {
+		opts.VarFilenames = []string{commonFlags.varFile}
 	}
 
 	configFile, err := cmd.Flags().GetString("file")
@@ -103,10 +108,14 @@ func loadConfig(cmd *cobra.Command, resolveVars bool) *config.MachConfig {
 		}
 	}
 
-	cfg.ConfigHash, err = config.ComputeHash(cfg)
-	if err != nil {
-		cli.PrintExitError("An error occurred while computing hash", err.Error())
-	}
-
 	return cfg
+}
+
+func checkReuse(ctx context.Context, dg *graph.Graph, b *runner.GraphRunner, reuse bool) error {
+	if reuse {
+		log.Info().Msgf("Reusing existing terraform state")
+		return nil
+
+	}
+	return b.TerraformInit(ctx, dg)
 }

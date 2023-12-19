@@ -1,40 +1,50 @@
 package main
 
 import (
+	"github.com/mach-composer/mach-composer-cli/internal/graph"
 	"github.com/spf13/cobra"
 
-	"github.com/mach-composer/mach-composer-cli/internal/generator"
 	"github.com/mach-composer/mach-composer-cli/internal/runner"
 )
+
+var terraformFlags struct {
+	reuse bool
+}
 
 var terraformCmd = &cobra.Command{
 	Use:   "terraform",
 	Short: "Execute terraform commands directly",
 	PreRun: func(cmd *cobra.Command, args []string) {
-		preprocessGenerateFlags()
+		preprocessCommonFlags(cmd)
 	},
-	Run: func(cmd *cobra.Command, args []string) {
-		handleError(terraformFunc(cmd, args))
+	RunE: func(cmd *cobra.Command, args []string) error {
+		return terraformFunc(cmd, args)
 	},
 }
 
 func init() {
-	registerGenerateFlags(terraformCmd)
+	registerCommonFlags(terraformCmd)
+	terraformCmd.Flags().BoolVarP(&terraformFlags.reuse, "reuse", "", false,
+		"Suppress a terraform init for improved speed (not recommended for production usage)")
 }
 
 func terraformFunc(cmd *cobra.Command, args []string) error {
 	cfg := loadConfig(cmd, true)
+	ctx := cmd.Context()
 	defer cfg.Close()
 
-	generateFlags.ValidateSite(cfg)
+	dg, err := graph.ToDeploymentGraph(cfg, commonFlags.outputPath)
+	if err != nil {
+		return err
+	}
 
-	paths := generator.FileLocations(cfg, &generator.GenerateOptions{
-		OutputPath: generateFlags.outputPath,
-		Site:       generateFlags.siteName,
-	})
+	b := runner.NewGraphRunner(commonFlags.workers)
 
-	return runner.TerraformProxy(cmd.Context(), cfg, paths, &runner.ProxyOptions{
-		Site:    generateFlags.siteName,
+	if err = checkReuse(ctx, dg, b, applyFlags.reuse); err != nil {
+		return err
+	}
+
+	return b.TerraformProxy(cmd.Context(), dg, &runner.ProxyOptions{
 		Command: args,
 	})
 }

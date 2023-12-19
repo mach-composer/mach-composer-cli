@@ -22,7 +22,7 @@ func AutocompleteComponentName(cmd *cobra.Command, args []string, toComplete str
 	if err != nil {
 		return nil, cobra.ShellCompDirectiveNoFileComp
 	}
-	generateFlags.configFile = name
+	commonFlags.configFile = name
 	cfg := loadConfig(cmd, false)
 
 	identifiers := pie.Map(cfg.Components, func(s config.ComponentConfig) string {

@@ -9,7 +9,6 @@ import (
 	"strings"
 
 	"github.com/mach-composer/mach-composer-cli/internal/cli"
-	"github.com/mach-composer/mach-composer-cli/internal/config"
 )
 
 const FileName = ".mach-composer.lock"
@@ -18,21 +17,21 @@ type LockFile struct {
 	isNew bool   `yaml:"-"`
 	path  string `yaml:"-"`
 
-	// Hash of all terraform files, alphabetically ordered
+	// hash of all terraform files, alphabetically ordered
 	TerraformHash string `yaml:"tf-hash"`
 
-	// Hash of the mach-composer config file
+	// hash of the config element
 	ConfigHash string `yaml:"cfg-hash"`
 
 	Version string `yaml:"version"`
 }
 
-func (lf *LockFile) HasChanges(cfg *config.MachConfig) bool {
+func (lf *LockFile) HasChanges(hash string) bool {
 	if lf.isNew {
 		return true
 	}
 
-	if cfg.ConfigHash != lf.ConfigHash {
+	if hash != lf.ConfigHash {
 		return true
 	}
 
@@ -40,8 +39,8 @@ func (lf *LockFile) HasChanges(cfg *config.MachConfig) bool {
 	return md.Version != lf.Version
 }
 
-func (lf *LockFile) Update(cfg *config.MachConfig) error {
-	lf.ConfigHash = cfg.ConfigHash
+func (lf *LockFile) Update(hash string) error {
+	lf.ConfigHash = hash
 	lf.Version = cli.GetVersionMetadata().Version
 	tfHash, err := getTerraformFilesHash(lf.path)
 	if err != nil {

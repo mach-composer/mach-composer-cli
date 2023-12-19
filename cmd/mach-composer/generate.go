@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/mach-composer/mach-composer-cli/internal/graph"
 	"github.com/spf13/cobra"
 
 	"github.com/mach-composer/mach-composer-cli/internal/generator"
@@ -10,32 +11,25 @@ var generateCmd = &cobra.Command{
 	Use:   "generate",
 	Short: "Generate the Terraform files.",
 	PreRun: func(cmd *cobra.Command, args []string) {
-		preprocessGenerateFlags()
+		preprocessCommonFlags(cmd)
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
-		return generateFunc(cmd, args)
+		return generateFunc(cmd)
 	},
 }
 
 func init() {
-	registerGenerateFlags(generateCmd)
+	registerCommonFlags(generateCmd)
 }
 
-func generateFunc(cmd *cobra.Command, args []string) error {
+func generateFunc(cmd *cobra.Command) error {
 	cfg := loadConfig(cmd, true)
 	defer cfg.Close()
 
-	generateFlags.ValidateSite(cfg)
-
-	genOptions := &generator.GenerateOptions{
-		OutputPath: generateFlags.outputPath,
-		Site:       generateFlags.siteName,
-	}
-
-	_, err := generator.WriteFiles(cmd.Context(), cfg, genOptions)
+	gd, err := graph.ToDeploymentGraph(cfg, commonFlags.outputPath)
 	if err != nil {
 		return err
 	}
 
-	return nil
+	return generator.Write(cmd.Context(), cfg, gd, nil)
 }

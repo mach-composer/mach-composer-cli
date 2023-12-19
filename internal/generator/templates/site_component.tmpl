@@ -1,0 +1,47 @@
+# Component: {{ .ComponentName }}
+{{ range $resource := .PluginResources }}
+    {{ $resource }}
+{{ end }}
+
+module "{{ .ComponentName }}" {
+    source = "{{ .Source }}"
+
+{{ if .ComponentVariables }}
+    {{ .ComponentVariables }}
+{{ end }}
+
+{{ if .ComponentSecrets }}
+    {{ .ComponentSecrets }}
+{{ end }}
+
+{{ if .HasCloudIntegration }}
+    component_version       = "{{ .ComponentVersion }}"
+    environment             = "{{ .Environment }}"
+    site                    = "{{ .SiteName }}"
+    tags                    = local.tags
+{{ end }}
+
+{{ range $item := .PluginVariables }}
+    {{ $item }}
+{{ end }}
+
+{{ if .PluginProviders }}
+    providers = {
+    {{ range $item := .PluginProviders }}
+        {{ $item }},
+    {{ end }}
+    }
+{{ end }}
+
+{{ if .PluginDependsOn }}
+    depends_on = [
+    {{ range $item := .PluginDependsOn }}
+        {{ $item }},
+    {{ end }}
+    ]
+{{ end }}
+}
+
+output "{{ .ComponentName }}" {
+    value =  module.{{ .ComponentName }}
+}

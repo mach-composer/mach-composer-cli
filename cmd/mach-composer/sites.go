@@ -10,15 +10,13 @@ var sitesCmd = &cobra.Command{
 	Use:   "sites",
 	Short: "List all sites.",
 	PreRun: func(cmd *cobra.Command, args []string) {
-		preprocessGenerateFlags()
+		preprocessCommonFlags(cmd)
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
 		cfg := loadConfig(cmd, false)
 		defer cfg.Close()
 
-		generateFlags.ValidateSite(cfg)
-
-		fmt.Printf("%s:\n", generateFlags.configFile)
+		fmt.Printf("%s:\n", commonFlags.configFile)
 		for _, site := range cfg.Sites {
 			fmt.Printf(" - %s\n", site.Identifier)
 			fmt.Println("   components:")
@@ -34,5 +32,5 @@ var sitesCmd = &cobra.Command{
 }
 
 func init() {
-	registerGenerateFlags(sitesCmd)
+	registerCommonFlags(sitesCmd)
 }

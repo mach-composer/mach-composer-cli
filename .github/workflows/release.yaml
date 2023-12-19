@@ -6,7 +6,6 @@ on:
 env:
   IMAGE_NAME: ghcr.io/mach-composer/mach-composer
 
-# TODO: move docker and docker-cli to goreleaser
 jobs:
   goreleaser:
     runs-on: ubuntu-latest
@@ -40,7 +39,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v4
         with:
-          go-version: 1.21.1
+          go-version: '1.21.1'
 
       - name: Get the latest version
         id: latest
@@ -171,3 +170,8 @@ jobs:
             ${{ steps.meta.outputs.bake-file }}
           targets: cli
           push: true
+
+  documentation:
+    uses: ./.github/workflows/docs.yml
+    needs: [ docker-cli, docker ]
+    environment: production
