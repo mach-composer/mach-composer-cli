@@ -174,4 +174,3 @@ jobs:
   documentation:
     uses: ./.github/workflows/docs.yml
     needs: [ docker-cli, docker ]
-    environment: production
