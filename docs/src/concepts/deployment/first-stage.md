@@ -12,7 +12,7 @@ In that case, the component itself is responsible for the following steps:
 In this section a couple of methods – for various cloud providers – will be described.
 
 !!! tip "Second stage deployment"
-    The second stage deployment is described in the [MACH configuration deployment section](./config/components.md)
+    The second stage deployment is described in the [MACH configuration deployment section](./second-stage.md)
 
 ## Package
 
@@ -150,10 +150,10 @@ Integration pipeline for component deployments:
 
 ## Second stage - MACH deployment
 
-As part of the [MACH deployment](./config/index.md), the component will be
+As part of the [MACH deployment](./index.md), the component will be
 loaded as a Terraform module so that the component can deploy the necessary
 resources needed for the specific site it is configured for.
 
-This is what we call the [second stage deployment](./config/components.md).
+This is what we call the [second stage deployment](./second-stage.md).
 
 ###

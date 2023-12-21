@@ -45,7 +45,7 @@ file so that other repositories can be accessed (see [example](#example)):
 
 To speed up deployments and avoid re-downloads of each provider and module, we
 can set a `TF_PLUGIN_CACHE_DIR` as described in the
-[MACH deployment section](../../concepts/deployment/config/index.md#cache-terraform-providers).
+[MACH deployment section](../../concepts/deployment/index.md).
 
 ### Example
 

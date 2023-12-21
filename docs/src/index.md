@@ -19,14 +19,12 @@ It includes:
 
 - A configuration framework for managing MACH-services configuration, using
   infrastructure-as-code underneath (powered by Terraform)
-- A microservices architecture based on modern serverless technology (AWS Lambda
-  and Azure Functions), including (alpha) support for building your
-  microservices
-  with the Serverless Framework
+- A microservices architecture based on modern serverless technology
 - Multi-tenancy support for managing many instances of your platform, that share
   the same library of microservices
 - CI/CD tools for automating the delivery of your MACH ecosystem
-- Tight integration with AWS, Azure and GCP
+- Tight integration with AWS, Azure or GCP
+- Plugins that allow for easy integration with other MACH SAAS platforms
 - Opt-in functionality for smart management of dependencies between components,
   reducing deployment time and risk
 
@@ -44,8 +42,10 @@ organisation.
 
 - [Tutorials](./tutorial/index.md) introduces you to MACH composer and lets you
   set up your MACH stack in a couple of steps
-- [Explanations](concepts/index.md) explanations of concepts, best practises
+- [Concepts](concepts/index.md) explanations of concepts, best practises
   and techniques
+- [Plugins](./plugins/index.md) quickly get started with the plugins that are
+  available for MACH composer
 - [Reference guides](./reference/index.md) contain technical reference for the
   MACH syntax and usage of the CLI.
 - [How-to guides](./howto/index.md) contain practical descriptions on how to
@@ -57,4 +57,4 @@ organisation.
 - Start by setting up your [first MACH stack](./tutorial/index.md)
 - Read more about the [MACH composer concepts](concepts/index.md)
 - Wonder how to reason about your MACH stack? Read
-  our[Architectural Guidance](concepts/architecture/index.md)
+  our [Architectural Guidance](concepts/architecture/index.md)

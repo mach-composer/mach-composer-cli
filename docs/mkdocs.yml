@@ -34,19 +34,18 @@ nav:
           - tutorial/examples/gcp-config-example.md
   - Concepts:
       - Overview: concepts/index.md
+      - Stack:
+        - concepts/stack/index.md
+        - concepts/stack/aws.md
+        - concepts/stack/azure.md
       - Components:
-          - Introduction: concepts/components/index.md
-          - Structure: concepts/components/structure.md
-          - Public components: concepts/components/public.md
+          - concepts/components/index.md
+          - concepts/components/structure.md
+          - concepts/components/public.md
       - Deployment:
-          - Overview: concepts/deployment/overview.md
-          - Components: concepts/deployment/components.md
-          - MACH stack:
-              - Overview: concepts/deployment/config/index.md
-              - AWS: concepts/deployment/config/aws.md
-              - Azure: concepts/deployment/config/azure.md
-              - Plugins: concepts/deployment/config/plugins.md
-              - Components: concepts/deployment/config/components.md
+          - concepts/deployment/index.md
+          - concepts/deployment/first-stage.md
+          - concepts/deployment/second-stage.md
       - Architecture guidance:
           - concepts/architecture/index.md
           - concepts/architecture/terraform.md
@@ -58,15 +57,18 @@ nav:
       - concepts/security.md
   - Plugins:
       - plugins/index.md
-      - plugins/aws.md
-      - plugins/azure.md
-      - plugins/gcp.md
       - plugins/amplience.md
       - plugins/apollo_federation.md
+      - plugins/aws.md
+      - plugins/azure.md
       - plugins/commercelayer.md
       - plugins/commercetools.md
       - plugins/contentful.md
+      - plugins/gcp.md
+      - plugins/honeycomb.md
       - plugins/sentry.md
+      - plugins/storyblok.md
+      - plugins/vercel.md
   - Reference:
       - reference/index.md
       - Syntax:

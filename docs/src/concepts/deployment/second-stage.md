@@ -2,14 +2,14 @@
 
 The '*second stage*' deployment of a component is the process of creating and
 managing the resources that are defined in the
-[Terraform configuration](../../components/index.md) of
+[Terraform configuration](../components/index.md) of
 that component.
 
 In case a component contains one or more serverless functions, the necessary
 Lambda Function or Azure Function App needs to be created and configured with
 the correct artifact.<br>
 This artifact will need to be built, packaged and uploaded in the
-['*first stage*' deployment](../components.md).
+['*first stage*' deployment](./first-stage.md).
 
 ## Creating resources
 
@@ -34,4 +34,3 @@ resource "aws_apigatewayv2_route" "app_route" {
     target    = "integrations/${aws_apigatewayv2_integration.gateway.id}"
 }
 ```
-Where the `var.api_gateway` references the [Gateway created by MACH](./aws.md#http-routing)

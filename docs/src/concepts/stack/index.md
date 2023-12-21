@@ -1,4 +1,4 @@
-# MACH composer configuration deployment
+# Stack
 
 A MACH composer configuration deployment (or simply put: **MACH deployment**)
 will generate and apply a Terraform configuration **per site** so that it can
@@ -12,25 +12,23 @@ The resources that are managed by MACH composer depend on the cloud integration:
 #### 2. Integration resources
 Resources needed for the integrations such as
 
-- [commercetools](../../../plugins/commercetools.md)
-- [sentry](../../../plugins/sentry.md)
-- [contentful](../../../plugins/contentful.md)
+- [commercetools](../../plugins/commercetools.md)
+- [sentry](../../plugins/sentry.md)
+- [contentful](../../plugins/contentful.md)
 
 #### 3. Components
 Since components are loaded into the configuration as
-[Terraform modules](../../components/index.md)
+[Terraform modules](../components/index.md)
 during a MACH composer deployment the resources defined in the component will
 get created.
 
-1. The [**first stage**](../components.md) of a component deployment (uploading
+1. The [**first stage**](../deployment/first-stage.md) of a component deployment (uploading
    the assets to a component repository) is done before a component is deployed as
    part of a MACH composer stack.
 
-2. The [**second stage**](./components.md) is getting the previously deployed
+2. The [**second stage**](../deployment/second-stage.md) is getting the previously deployed
    component assets actually up and running in your MACH composer stack and to
    create other necessary resources.
-
-More info about the [second stage deployment](./components.md).
 
 !!! info "Component deployment - first and second stage"
     Not all components have a '*first stage*' which means: some components might
@@ -82,7 +80,7 @@ to be passed on to the docker container:
 
     For Azure you'll need to run it with the `--with-sp-login` option let MACH
     Composer perform an `az login` command.<br>
-    [More info](../../../reference/cli.md#apply).
+    [More info](../../reference/cli.md#apply).
 
 
 ## Cache Terraform providers
@@ -90,7 +88,7 @@ to be passed on to the docker container:
 MACH composer comes with Terraform providers pre-installed in the Docker image.
 
 If you're overwriting these versions with in your
-[`terraform_config` block](../../../reference/syntax/global.md#nested-schema-for-terraform_config),
+[`terraform_config` block](../../reference/syntax/global.md#nested-schema-for-terraform_config),
 these providers will be downloaded.
 
 To avoid having to re-download it everytime you run MACH composer through the Docker
@@ -108,6 +106,6 @@ docker run --rm \
 !!! tip "Caching in CI/CD"
     For an example on how to set up the Terraform plugin cache, see the examples in the how-tos for:
 
-    - [GitLab](../../../howto/ci/gitlab.md#terraform-plugin-cache)
+    - [GitLab](../../howto/ci/gitlab.md#terraform-plugin-cache)
     - GitHub Actions (todo)
     - Azure DevOps (todo)

@@ -1,9 +1,5 @@
 # Commercetools
 
-## Plugin usage
-
-{{ external_markdown('https://raw.githubusercontent.com/mach-composer/mach-composer-plugin-commercetools/main/README.md', '## Usage') }}
-
 ## Configuration
 
 From a MACH composer configuration file, you can configure the following items
@@ -176,3 +172,5 @@ the component should have the following Terraform variables defined:
 - `ct_api_url`
 - `ct_auth_url`
 - `ct_stores`
+
+{{ external_markdown('https://raw.githubusercontent.com/mach-composer/mach-composer-plugin-commercetools/main/README.md', '## Usage') }}

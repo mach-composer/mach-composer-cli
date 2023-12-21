@@ -95,6 +95,6 @@ You can find example files needed for preparing the infrastructure and a configu
 - See the [CLI reference](../../reference/cli/mach-composer_apply.md) for more deployment options.
 - Set up your CI/CD pipeline on [GitLab](../../howto/ci/gitlab.md), [GitHub](../../howto/ci/github.md) or [Azure DevOps](../../howto/ci/azure_devops.md)
 - [Encrypting your configuration](../../howto/security/encrypt.md) with SOPS
-- How to create a [new MACH component](../../howto/components/create-component.md)
+- How to create a [new MACH component](../../howto/components/index.md)
 - [Architectural Guidance](../../concepts/architecture/index.md)
 

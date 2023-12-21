@@ -39,4 +39,4 @@ This gives you a couple of features:
     Although we do encourage the usage of the serverless framework for
     development and packaging, we don't recommend using it for the actual
     MACH composer deployment itself.<br>
-    More info about this in the [MACH configuration deployment notes](../../concepts/deployment/config/components.md).
+    More info about this in the [MACH configuration deployment notes](../../concepts/deployment/index.md).

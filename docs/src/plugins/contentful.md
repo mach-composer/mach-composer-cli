@@ -1,13 +1,11 @@
 # Contentful
 
-## Plugin usage
-
-{{ external_markdown('https://raw.githubusercontent.com/mach-composer/mach-composer-plugin-contentful/main/README.md', '## Usage') }}
+## Additional
 
 When configured, MACH can create and manage a [space](https://www.contentful.com/help/spaces-and-organizations/) per site.
 
 For this you need to define an **organization ID** and **CMA token** in your
-[general config](../../reference/syntax/global.md#contentful).
+[general config](../reference/syntax/global.md).
 
 ## Space configuration
 
@@ -23,3 +21,5 @@ When `contentful` is set as a [component integration](../reference/syntax/site.m
 the component should have the following Terraform variables defined:
 
 - `contentful_space_id`
+
+{{ external_markdown('https://raw.githubusercontent.com/mach-composer/mach-composer-plugin-contentful/main/README.md', '') }}

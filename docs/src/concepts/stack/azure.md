@@ -5,7 +5,7 @@
 MACH composer will create a **[resource group](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/resource_group) per site**.
 
 !!! info ""
-    Only when a [`resource_group`](../../../plugins/azure.md)
+    Only when a [`resource_group`](../../plugins/azure.md)
     is explicitly set, it won't be managed by MACH composer.
 
 ## HTTP routing
@@ -13,7 +13,7 @@ MACH composer will create a **[resource group](https://registry.terraform.io/pro
 {% include-markdown "./endpoints_deprecated.md" %}
 
 Only when a MACH composer stack contains components that have
-[`endpoints`](../../../reference/syntax/component.md) defined, MACH composer
+[`endpoints`](../../reference/syntax/component.md) defined, MACH composer
 will set up a **Frontdoor instance** to be able to route traffic to that component.
 
 ### Default endpoint
@@ -31,13 +31,13 @@ components:
 ```
 
 !!! note ""
-    This `default` endpoint doesn't need to be defined in your [endpoints' definition](../../../reference/syntax/site.md#nested-schema-for-endpoints).
+    This `default` endpoint doesn't need to be defined in your [endpoints' definition](../../reference/syntax/site.md#nested-schema-for-endpoints).
 
 ### Custom endpoint
 
-Whenever a custom endpoint from your [endpoints definition](../../../reference/syntax/site.md#nested-schema-for-endpoints)
+Whenever a custom endpoint from your [endpoints definition](../../reference/syntax/site.md#nested-schema-for-endpoints)
 is used, MACH composer will require that you have configured
-[`frontdoor`](../../../plugins/azure.md) for additional DNS
+[`frontdoor`](../../plugins/azure.md) for additional DNS
 information that it needs to set up your Frontdoor instance.
 
 In addition to that it will also set up the necessary DNS record.
@@ -68,7 +68,7 @@ components:
 
 The routing in Frontdoor that will be created:
 
-![Frontdoor routes](../../../_img/azure/frontdoor_routes.png)
+![Frontdoor routes](../../_img/azure/frontdoor_routes.png)
 
 !!! tip "Frontdoor resource"
     An important thing to keep in mind is that the
@@ -78,13 +78,13 @@ The routing in Frontdoor that will be created:
 
     This means the components can't create the routing themselves (as with AWS)
     but need to instruct MACH composer how to set up routing. This can be done by
-    defining routing options in [output values](../../../reference/components/azure.md#defining-outputs).
+    defining routing options in [output values](../../reference/components/azure.md#defining-outputs).
 
 ## App service plans
 
 What kind and how many service plans it will create depends on what service
 plans are needed by the components, and how the
-[`service_plans`](../../../plugins/azure.md)
+[`service_plans`](../../plugins/azure.md)
 configuration looks like.
 
 By default, MACH composer will create a `default` service plan which is a
@@ -104,7 +104,7 @@ service_plans:
 
 ## Action groups
 
-When an [Alert group](../../../plugins/azure.md#plugin-usage) is
+When an [Alert group](../../plugins/azure.md) is
 configured, an [Action group](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/monitor_action_group)
 will be created.
 

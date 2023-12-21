@@ -5,9 +5,10 @@
 MACH composer is primarily used to deploy components in an individual site, and
 provide it with the right context (settings, endpoints, etc.).
 
-Components themselves are responsible for publishing their own artifacts into
-an artifact repository (which can be a simple S3 bucket). And usually that is
-implemented by configuring a CI/CD pipeline that manages that automatically.
+Components themselves are responsible for publishing their own artifacts and
+terraform code into an artifact repository (which can be a simple S3 bucket),
+which usually is implemented by configuring a CI/CD pipeline that manages that
+automatically.
 
 An artifact is usually a zip file containing a serverless function, i.e.
 `my-component-vXYZ.zip`. These can be conveniently generated using the
@@ -38,14 +39,14 @@ sequenceDiagram
     opt if master branch
         CI->>C: Push artifact to component artifact repository (S3, for example)
     end
+
 </div>
 
-!!! tip "MACH composer ☁️ provides a component registry API" 
+!!! tip "MACH composer ☁️ provides a component registry API"
     To improve the stability of your MACH composer pipelines, it is often not
     reliable to rely on updating component versions based on GitHub commits. In
     order to improve this, we are introducing a [Component Registry as part of
     MACH composer ☁️](../../cloud/component-registry.md).
-
 
 ## Stage 2: MACH composer deployment
 
@@ -80,6 +81,7 @@ sequenceDiagram
         T->>Cloud: create/configure cloud resources
         T->>Cloud: deploy components (i.e. Lambda zipfiles)
     end
+
 </div>
 
 
