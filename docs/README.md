@@ -4,11 +4,11 @@ This repo holds the source files for the official [MACH composer documentation](
 
 ## Installation
 
-`make install`
+`task install`
 
 ## Preview
 
-Run `make preview`, then check http://localhost:8000/.
+Run `task preview`, then check http://localhost:8000/.
 
 ## Editing
 

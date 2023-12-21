@@ -7,7 +7,8 @@ We recommend using [SOPS](https://github.com/mozilla/sops) to encrypt your
 MACH composer configuration files or a part of it.
 
 ## Using SOPS
-#### Encrypting
+
+### Encrypting
 
 Encrypting your file can be done with the `sops --encrypt` command:
 
@@ -23,8 +24,15 @@ Encrypting your file can be done with the `sops --encrypt` command:
     $ sops -e --encrypted-regex '^(.*(secret|token).*)$' main.yml > main.enc.yml
     $ mv main.enc.yml main.yml
     ```
+=== "GCP"
+    First, log in to [gcloud](https://cloud.google.com/sdk/gcloud/reference/auth/login)
 
-#### Decrypt during deployment
+    ```bash
+    $ sops -e --encrypted-regex '^(.*(secret|token).*)$' main.yml > main.enc.yml
+    $ mv main.enc.yml main.yml
+    ```
+
+### Decrypt during deployment
 
 MACH composer offers built-in support for decrypting sops-encrypted files automatically.
 
@@ -33,7 +41,7 @@ the file prior to the execution of `generate`, `plan` or `apply`.
 Make sure that your CI/CD environment has access to the appropriate encryption
 keys in AWS KMS or Azure KeyVault.
 
-##### Decrypting manually
+### Decrypting manually
 Manual decrypting of the configuration can be done as follows:
 
 ```bash

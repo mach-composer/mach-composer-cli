@@ -5,7 +5,7 @@ and manage a **M**icroservices based, **A**PI-first, **C**loud-native SaaS and
 **H**eadless platform.
 
 {%
-   include-markdown "overhaul_warning.md"
+include-markdown "overhaul_warning.md"
 %}
 
 ## What is it?
@@ -20,13 +20,15 @@ It includes:
 - A configuration framework for managing MACH-services configuration, using
   infrastructure-as-code underneath (powered by Terraform)
 - A microservices architecture based on modern serverless technology (AWS Lambda
-  and Azure Functions), including (alpha) support for building your microservices
+  and Azure Functions), including (alpha) support for building your
+  microservices
   with the Serverless Framework
 - Multi-tenancy support for managing many instances of your platform, that share
   the same library of microservices
 - CI/CD tools for automating the delivery of your MACH ecosystem
-- Tight integration with AWS an Azure, including an (opinionated) setup of these
-  cloud environments
+- Tight integration with AWS, Azure and GCP
+- Opt-in functionality for smart management of dependencies between components,
+  reducing deployment time and risk
 
 The framework is intended as the 'centerpiece' of your MACH architecture and
 incorporates industry best practises such as the 12 Factor Methodology,
@@ -40,9 +42,9 @@ organisation.
 
 ## Documentation structure
 
-- [Tutorials](./tutorial/intro.md) introduces you to MACH composer and lets you
+- [Tutorials](./tutorial/index.md) introduces you to MACH composer and lets you
   set up your MACH stack in a couple of steps
-- [Explanations](./topics/concepts.md) explanations of concepts, best practises
+- [Explanations](concepts/index.md) explanations of concepts, best practises
   and techniques
 - [Reference guides](./reference/index.md) contain technical reference for the
   MACH syntax and usage of the CLI.
@@ -52,7 +54,7 @@ organisation.
 
 ## Where from here?
 
-- Start by setting up your [first MACH stack](./tutorial/intro.md)
-- Read more about the [MACH composer concepts](./topics/concepts.md)
-- Wonder how to reason about your MACH stack? Read our
-  [Architectural Guidance](./topics/architecture/index.md)
+- Start by setting up your [first MACH stack](./tutorial/index.md)
+- Read more about the [MACH composer concepts](concepts/index.md)
+- Wonder how to reason about your MACH stack? Read
+  our[Architectural Guidance](concepts/architecture/index.md)

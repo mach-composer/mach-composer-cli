@@ -3,7 +3,7 @@
 MACH composer ☁️ is an extension to MACH composer and can be used in existing
 MACH composer projects. It's main entrypoint is therefore still the CLI, which
 has been expanded with a `cloud` subsection with a [number of
-actions](../reference/cli.md#cloud).
+actions](../reference/cli/mach-composer_cloud.md).
 
 !!! info "The below steps can be achieved through the dashboard" 
     While MACH composer ☁️ is an API-first product, we also provide a dashboard that
@@ -38,7 +38,7 @@ MACH composer ☁️.
 
     !!! info "You can be part of multiple organizations and also invite other users to your organization by using the `mach-composer cloud add-organization-user` command."
 
-1. **Create a project**
+2. **Create a project**
     ```bash
     % mach-composer cloud create-project my-project "My Project" --organization my-org
     Created new project: my-project

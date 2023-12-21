@@ -1,8 +1,8 @@
 # Parse store variables and secrets
 
-When [integrating with commercetools](../../topics/integrations/commercetools.md)
+When [integrating with commercetools](../../plugins/commercetools.md)
 MACH composer makes it possible to define
-[store specific variables and secrets](../../topics/integrations/commercetools.md).
+[store specific variables and secrets](../../plugins/commercetools.md).
 
 You could have for example the following configuration
 
@@ -22,8 +22,6 @@ component:
       nl-store:
         MAIL_API_KEY: i1hajIJ92LPNYGB2p3W1
 ```
-
-Which is passed on to the component using the [`ct_stores`](../../reference/components/structure.md#commercetools) variable.
 
 ## Incoming format
 

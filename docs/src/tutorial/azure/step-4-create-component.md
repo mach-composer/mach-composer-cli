@@ -32,4 +32,4 @@ provided example components, these commands will be enough:
 
 !!! info "Component deployment"
     The deployment process of a component can vary.<br>
-    [Read more](../../topics/deployment/components.md) about component deployments.
+    [Read more](../../concepts/deployment/components.md) about component deployments.

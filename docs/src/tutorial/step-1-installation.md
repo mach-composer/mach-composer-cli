@@ -3,7 +3,7 @@
 ## Install MACH composer
 The easiest way to get started is by installing MACH composer locally to be able
 to perform a MACH composer deploy and make use of the
-[developer tools](../topics/development/workflow.md).
+[developer tools](../concepts/development/workflow.md).
 
 
 ### MacOS and linux

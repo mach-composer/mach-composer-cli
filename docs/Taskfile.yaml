@@ -1,0 +1,26 @@
+version: '3'
+
+tasks:
+  install:
+    cmd: pip install -r requirements.txt
+
+  generate:
+    dir: ../
+    cmd: go generate ./...
+
+  preview:
+    deps:
+      - install
+    cmd: mkdocs serve
+
+  docker-image:
+    cmd: docker build -t docs .
+
+  docker-build:
+    cmds:
+      - docker run --name docs docs mkdocs build -d /build
+      - docker cp src:/build .
+      - docker rm -f docs
+
+  clean:
+    cmd: rm -rf build

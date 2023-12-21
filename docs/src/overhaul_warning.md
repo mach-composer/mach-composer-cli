@@ -4,14 +4,16 @@
     like this, as it is also the language in which Hashicorp builds Terraform
     itself.
 
-    Because of this, some commands might not be available yet in the Golang version; particularly the
-    `mach-composer bootstrap` command is not available, which makes it a bit
-    harder to start up. However, based on the [examples in the GitHub repository](https://github.com/mach-composer/mach-composer-cli/tree/main/examples),
+    Because of this, some commands might not be available yet in the Golang 
+    version; particularly the `mach-composer bootstrap` command is not 
+    available, which makes it a bit harder to start up. However, based on 
+    the [examples in the GitHub repository](https://github.com/mach-composer/mach-composer-cli/tree/main/examples),
     you should be able to get started without the `bootstrap` command.
 
-    For creating components, please instead of `mach-composer bootstrap component`, use [mach-composer-cookiecutter](https://github.com/labd/mach-component-cookiecutter).
+    For creating components, please instead of `mach-composer bootstrap 
+    component`, use [mach-composer-cookiecutter](https://github.com/labd/mach-component-cookiecutter).
 
-    **We do currently recommend to use the latest version (2.5.x).**
+    **We do currently recommend to use the latest version (2.14.x).**
 
     If you are still on the Python version, the `bootstrap` command will still work.
 

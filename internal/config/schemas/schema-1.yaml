@@ -22,9 +22,6 @@ properties:
         items:
           $ref: "#/definitions/ComponentConfig"
 
-  sops:
-    type: object
-
 definitions:
   MachComposerConfig:
     type: object
@@ -87,6 +84,12 @@ definitions:
     description: Terraform configuration.
     additionalProperties: true
     properties:
+      providers:
+        type: object
+        additionalProperties: false
+        patternProperties:
+          "^[a-zA-Z-]+$":
+            type: string
       remote_state:
         allOf:
           - type: object
@@ -119,6 +122,9 @@ definitions:
         type: string
       endpoints:
         type: object
+        deprecationMessage: |
+          The `endpoints` configuration is deprecated. Please refer to the docs
+          on how to change implementation
         patternProperties:
           "^[A-Za-z0-9+-]+$":
             oneOf:
@@ -156,18 +162,22 @@ definitions:
       secrets:
         type: object
       store_variables:
-        description: Commercetools store specific variables (deprecated)
+        description: Commercetools store specific variables
+        deprecationMessage: The `store_variables` configuration is deprecated
         type: object
       store_secrets:
-        description: Commercetools store specific variables (deprecated)
+        description: Commercetools store specific variables
+        deprecationMessage: The `store_secrets` configuration is deprecated
         type: object
       health_check_path:
         type: string
+        deprecationMessage: The `health_check_path` configuration is deprecated
       deployment:
         $ref: "#/definitions/MachComposerDeployment"
       depends_on:
         description: |
-          List of components that this component depends on. This will override any implicit links based on variables
+          List of components that this component depends on. This will override 
+          any implicit links based on variables
         type: array
         items:
           type: string
@@ -204,6 +214,9 @@ definitions:
 
   ComponentEndpointConfig:
     type: object
+    deprecationMessage: |
+      The `endpoints` configuration is deprecated. Please refer to the 
+      docs on how to change implementation
     additionalProperties: false
     patternProperties:
       "[a-zA-Z0-9]+":

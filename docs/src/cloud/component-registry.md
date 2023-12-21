@@ -27,7 +27,7 @@ you can simply include in an existing component pipeline.
 ## How does it work?
 
 We introduce an additional step to the [component deployment
-sequence](../topics/deployment/overview.md), by connecting that sequence to MACH
+sequence](../concepts/deployment/index.md), by connecting that sequence to MACH
 composer cloud.
 
 <div class="mermaid">
