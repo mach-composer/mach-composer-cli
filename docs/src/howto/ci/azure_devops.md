@@ -146,7 +146,7 @@ The *Service connection name* will be used later in the pipeline.
 
 Example DevOps CI configuration.
 
-See the [Components deployment](../../concepts/deployment/index.md)
+See the [Components deployment](../../concepts/components/lifecycle/index.md)
 section for examples of the package/upload script used here.
 
 === "Python"

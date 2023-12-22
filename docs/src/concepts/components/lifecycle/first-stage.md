@@ -1,6 +1,6 @@
-# Component deployment - first stage
+# Component life cycle - first stage
 
-As described in the [components section](../../concepts/components/index.md)
+As described in the [components section](../index.md)
 whenever a component contains a **serverless function** that needs to be
 uploaded to a registry, it needs a '*first stage*' deployment.
 
@@ -143,9 +143,9 @@ $ ./build.sh upload
 Refer to the CI/CD section for instructions on how to set up your Continuous
 Integration pipeline for component deployments:
 
-- [GitLab](../../howto/ci/gitlab.md#component-deployment)
-- [GitHub Actions](../../howto/ci/github.md#component-deployment)
-- [Azure DevOps](../../howto/ci/azure_devops.md#component-deployment)
+- [GitLab](../../../howto/ci/gitlab.md#component-deployment)
+- [GitHub Actions](../../../howto/ci/github.md#component-deployment)
+- [Azure DevOps](../../../howto/ci/azure_devops.md#component-deployment)
 
 
 ## Second stage - MACH deployment
@@ -155,5 +155,3 @@ loaded as a Terraform module so that the component can deploy the necessary
 resources needed for the specific site it is configured for.
 
 This is what we call the [second stage deployment](./second-stage.md).
-
-###

@@ -1,6 +1,6 @@
 ## mach-composer cloud describe-component-versions
 
-List all changes for an component version
+List all changes for a component version
 
 ```
 mach-composer cloud describe-component-versions [name] [version] [flags]

@@ -33,10 +33,10 @@ This gives you a couple of features:
 - Easy local development of your function code including mocked infrastructure
   that might be needed for your setup
 - Build & package your function by calling `sls package`.
-  [More info about Packaging & Deployment](../../concepts/deployment/index.md)
+  [More info about Packaging & Deployment](../../concepts/components/lifecycle/index.md)
 
 !!! info "Serverless framework in your MACH deployment"
     Although we do encourage the usage of the serverless framework for
     development and packaging, we don't recommend using it for the actual
     MACH composer deployment itself.<br>
-    More info about this in the [MACH configuration deployment notes](../../concepts/deployment/index.md).
+    More info about this in the [MACH configuration deployment notes](../../concepts/components/lifecycle/index.md).

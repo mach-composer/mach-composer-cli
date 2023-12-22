@@ -238,7 +238,7 @@ var componentListVersionCmd = &cobra.Command{
 
 var componentDescribeVersionCmd = &cobra.Command{
 	Use:   "describe-component-versions [name] [version]",
-	Short: "List all changes for an component version",
+	Short: "List all changes for a component version",
 	Args:  cobra.ExactArgs(2),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		ctx := cmd.Context()

@@ -22,11 +22,11 @@ Since components are loaded into the configuration as
 during a MACH composer deployment the resources defined in the component will
 get created.
 
-1. The [**first stage**](../deployment/first-stage.md) of a component deployment (uploading
+1. The [**first stage**](../components/lifecycle/first-stage.md) of a component deployment (uploading
    the assets to a component repository) is done before a component is deployed as
    part of a MACH composer stack.
 
-2. The [**second stage**](../deployment/second-stage.md) is getting the previously deployed
+2. The [**second stage**](../components/lifecycle/second-stage.md) is getting the previously deployed
    component assets actually up and running in your MACH composer stack and to
    create other necessary resources.
 
@@ -80,8 +80,7 @@ to be passed on to the docker container:
 
     For Azure you'll need to run it with the `--with-sp-login` option let MACH
     Composer perform an `az login` command.<br>
-    [More info](../../reference/cli.md#apply).
-
+    [More info](../../reference/cli/mach-composer_apply.md).
 
 ## Cache Terraform providers
 

@@ -1,8 +1,8 @@
-# Component deployment - second stage
+# Component life cycle - second stage
 
 The '*second stage*' deployment of a component is the process of creating and
 managing the resources that are defined in the
-[Terraform configuration](../components/index.md) of
+[Terraform configuration](../../components/index.md) of
 that component.
 
 In case a component contains one or more serverless functions, the necessary

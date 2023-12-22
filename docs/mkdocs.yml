@@ -35,17 +35,23 @@ nav:
   - Concepts:
       - Overview: concepts/index.md
       - Stack:
-        - concepts/stack/index.md
-        - concepts/stack/aws.md
-        - concepts/stack/azure.md
+          - concepts/stack/index.md
+          - concepts/stack/aws.md
+          - concepts/stack/azure.md
       - Components:
           - concepts/components/index.md
           - concepts/components/structure.md
+          - Life cycle:
+              - concepts/components/lifecycle/index.md
+              - concepts/components/lifecycle/first-stage.md
+              - concepts/components/lifecycle/second-stage.md
           - concepts/components/public.md
       - Deployment:
           - concepts/deployment/index.md
-          - concepts/deployment/first-stage.md
-          - concepts/deployment/second-stage.md
+          - concepts/deployment/configuration.md
+          - concepts/deployment/managing-dependencies.md
+          - concepts/deployment/detecting-changes.md
+          - concepts/deployment/applying-changes.md
       - Architecture guidance:
           - concepts/architecture/index.md
           - concepts/architecture/terraform.md

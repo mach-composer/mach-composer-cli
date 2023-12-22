@@ -7,5 +7,5 @@
     - How to [deal with secrets](./security/handle-secrets.md)
     - How to [encrypt your MACH configuration](./security/encrypt.md)
 - How to set up a CI/CD pipeline with [GitHub](./ci/github.md) actions.
-- [Splitting state](./state/split.md) to speed up deployments and reduce change
-  blast radius
+- State:
+  - How to [migrate existing state](./state/migration.md) 

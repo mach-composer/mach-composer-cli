@@ -1,7 +1,7 @@
 # Mach Composer
 
-All MACH composer specific configurations options. These govern how the 
-application as a whole will function, where variables can be sourced from 
+All MACH composer specific configurations options. These govern how the
+application as a whole will function, where variables can be sourced from
 and which plugins are loaded, among others.
 
 ## Example
