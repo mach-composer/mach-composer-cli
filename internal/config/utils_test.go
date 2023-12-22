@@ -123,6 +123,23 @@ func TestLoadRefData(t *testing.T) {
 			wantErr: false,
 		},
 		{
+			name: "mapping node with ${include()}",
+			node: &yaml.Node{
+				Kind:  yaml.ScalarNode,
+				Value: "${include(ref.yaml)}",
+			},
+			refContent:  "key: value",
+			refFilename: "ref.yaml",
+			expected: &yaml.Node{
+				Kind: yaml.MappingNode,
+				Content: []*yaml.Node{
+					{Value: "key"},
+					{Value: "value"},
+				},
+			},
+			wantErr: false,
+		},
+		{
 			name: "mapping node with nested $ref",
 			node: &yaml.Node{
 				Kind: yaml.MappingNode,
@@ -180,6 +197,17 @@ func TestLoadRefData(t *testing.T) {
 			expected:    nil,
 			wantErr:     true,
 		},
+		{
+			name: "error loading ref document with include",
+			node: &yaml.Node{
+				Kind: yaml.ScalarNode,
+				Content: []*yaml.Node{
+					{Value: "${include(ref.yaml)}"},
+				},
+			},
+			refContent: "key: value",
+			wantErr:    true,
+		},
 	}
 
 	utils.FS = afero.NewMemMapFs()
@@ -199,10 +227,10 @@ func TestLoadRefData(t *testing.T) {
 				assert.Equal(t, filename, tc.refFilename)
 				assert.NoError(t, err)
 
-				expectedData := []byte{}
+				var expectedData []byte
 				require.NoError(t, tc.expected.Encode(expectedData))
 
-				resultData := []byte{}
+				var resultData []byte
 				require.NoError(t, tc.node.Encode(resultData))
 
 				assert.Equal(t, expectedData, resultData)
