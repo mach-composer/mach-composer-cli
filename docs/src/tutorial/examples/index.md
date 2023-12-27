@@ -1,4 +1,4 @@
-# Examples
+# Overview
 
 - AWS: [AWS MACH config](./aws-config-example.md)
 - Azure: [Azure MACH config](./azure-config-example.md)
