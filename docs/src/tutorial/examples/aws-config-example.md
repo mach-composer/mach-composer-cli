@@ -1,6 +1,6 @@
 # AWS MACH config
 
-The below is a simplified example of a full configuration that should work.
+The below is a simplified example built on AWS and including Commercetools.
 
 ```yaml
 mach_composer:
@@ -15,12 +15,13 @@ mach_composer:
 
 global:
   environment: test
+  cloud: aws
   terraform_config:
-    aws_remote_state:
+    remote_state:
+      plugin: aws
       bucket: <your bucket>
       key_prefix: mach
       region: eu-central-1
-  cloud: aws
 sites:
   - identifier: my-site
     commercetools:

@@ -10,94 +10,133 @@ copyright: 'Copyright &copy; 2021 - Lab Digital B.V.'
 docs_dir: src
 
 nav:
-- Overview: index.md
-- Tutorial:
-  - tutorial/intro.md
-  - tutorial/step-1-installation.md
-  - tutorial/step-2-setup-ct.md
-  - AWS:
-    - tutorial/aws/step-3-setup-aws-services.md
-    - tutorial/aws/step-4-setup-aws-site.md
-    - tutorial/aws/step-5-create-component.md
-    - tutorial/aws/step-6-create-mach-stack.md
-  - Azure:
-    - tutorial/azure/step-3-setup-azure.md
-    - tutorial/azure/step-4-create-component.md
-    - tutorial/azure/step-5-create-mach-stack.md
-    - tutorial/azure/manual.md
-  - GCP:
-    - tutorial/gcp/step-3-setup-gcp.md
-  - Example configurations:
-    - tutorial/examples/aws-config-example.md
-    - tutorial/examples/azure-config-example.md
-- Explanations:
-  - topics/concepts.md
-  - Components:
-    - Introduction: topics/components/index.md
-    - topics/components/public.md
-  - Deployment:
-    - Overview: topics/deployment/overview.md
-    - Components: topics/deployment/components.md
-    - MACH stack:
-      - Overview: topics/deployment/config/index.md
-      - topics/deployment/config/aws.md
-      - topics/deployment/config/azure.md
-      - topics/deployment/config/integrations.md
-      - Components: topics/deployment/config/components.md
+  - Overview: index.md
+  - Tutorial:
+      - tutorial/index.md
+      - tutorial/step-1-installation.md
+      - tutorial/step-2-setup-ct.md
+      - AWS:
+          - tutorial/aws/step-3-setup-aws-services.md
+          - tutorial/aws/step-4-setup-aws-site.md
+          - tutorial/aws/step-5-create-component.md
+          - tutorial/aws/step-6-create-mach-stack.md
+      - Azure:
+          - tutorial/azure/step-3-setup-azure.md
+          - tutorial/azure/step-4-create-component.md
+          - tutorial/azure/step-5-create-mach-stack.md
+          - tutorial/azure/manual.md
+      - GCP:
+          - tutorial/gcp/step-3-setup-gcp.md
+      - Examples:
+          - tutorial/examples/index.md
+          - tutorial/examples/aws-config-example.md
+          - tutorial/examples/azure-config-example.md
+          - tutorial/examples/gcp-config-example.md
+  - Concepts:
+      - Overview: concepts/index.md
+      - Stack:
+          - concepts/stack/index.md
+          - concepts/stack/aws.md
+          - concepts/stack/azure.md
+      - Components:
+          - concepts/components/index.md
+          - concepts/components/structure.md
+          - Life cycle:
+              - concepts/components/lifecycle/index.md
+              - concepts/components/lifecycle/first-stage.md
+              - concepts/components/lifecycle/second-stage.md
+          - concepts/components/public.md
+      - Deployment:
+          - concepts/deployment/index.md
+          - concepts/deployment/configuration.md
+          - concepts/deployment/managing-dependencies.md
+          - concepts/deployment/detecting-changes.md
+          - concepts/deployment/applying-changes.md
+      - Architecture guidance:
+          - concepts/architecture/index.md
+          - concepts/architecture/terraform.md
+          - concepts/architecture/tenancy.md
+      - Development:
+          - concepts/development/workflow.md
+          - concepts/development/environment.md
+          - concepts/development/troubleshooting.md
+      - concepts/security.md
   - Plugins:
-    - topics/integrations/plugin-system.md
-    - topics/integrations/amplience.md
-    - topics/integrations/apollo_federation.md
-    - topics/integrations/aws.md
-    - topics/integrations/azure.md
-    - topics/integrations/commercelayer.md
-    - topics/integrations/commercetools.md
-    - topics/integrations/contentful.md
-    - topics/integrations/sentry.md
-    - topics/integrations/googlecloud.md
-  - topics/security.md
-  - Architecture guidance:
-    - Overview: topics/architecture/index.md
-    - Terraform: topics/architecture/terraform.md
-    - Tenancy: topics/architecture/tenancy.md
-  - Development:
-    - Workflow: topics/development/workflow.md
-    - topics/development/environment.md
-    - topics/development/troubleshooting.md
-- Reference:
-  - Overview: reference/index.md
-  - Syntax:
-    - Overview: reference/syntax/index.md
-    - reference/syntax/mach.md
-    - reference/syntax/global.md
-    - reference/syntax/sites.md
-    - reference/syntax/components.md
-  - Components:
-    - reference/components/structure.md
-    - reference/components/aws.md
-    - reference/components/azure.md
-  - reference/variables.md
-  - reference/cli.md
-  - reference/changelog.md
-- How-to:
-  - howto/index.md
-  - Components:
-    - howto/components/create-component.md
-    - howto/components/best-practices.md
-  - Security:
-    - howto/security/handle-secrets.md
-    - howto/security/encrypt.md
-  - CI/CD:
-    - Setup GitHub actions: howto/ci/github.md
-    - Setup Azure DevOps: howto/ci/devops.md
-    - Setup GitLab: howto/ci/gitlab.md
-  - commercetools:
-    - howto/commercetools/store-vars.md
-- Cloud ☁️:
-  - cloud/index.md
-  - Getting started: cloud/getting-started.md
-  - Component registry: cloud/component-registry.md
-  - Autonomous deployments: cloud/autonomous-deployments.md
+      - plugins/index.md
+      - plugins/amplience.md
+      - plugins/apollo_federation.md
+      - plugins/aws.md
+      - plugins/azure.md
+      - plugins/commercelayer.md
+      - plugins/commercetools.md
+      - plugins/contentful.md
+      - plugins/gcp.md
+      - plugins/honeycomb.md
+      - plugins/sentry.md
+      - plugins/storyblok.md
+      - plugins/vercel.md
+  - Reference:
+      - reference/index.md
+      - Syntax:
+          - reference/syntax/index.md
+          - reference/syntax/mach_composer.md
+          - reference/syntax/global.md
+          - reference/syntax/site.md
+          - reference/syntax/component.md
+      - CLI:
+          - Overview: reference/cli/mach-composer.md
+          - init: reference/cli/mach-composer_init.md
+          - generate: reference/cli/mach-composer_generate.md
+          - plan: reference/cli/mach-composer_plan.md
+          - show-plan: reference/cli/mach-composer_show-plan.md
+          - apply: reference/cli/mach-composer_apply.md
+          - update: reference/cli/mach-composer_update.md
+          - graph: reference/cli/mach-composer_graph.md
+          - schema: reference/cli/mach-composer_schema.md
+          - components: reference/cli/mach-composer_components.md
+          - sites: reference/cli/mach-composer_sites.md
+          - terraform: reference/cli/mach-composer_terraform.md
+          - version: reference/cli/mach-composer_version.md
+          - cloud:
+              - overview: reference/cli/mach-composer_cloud.md
+              - add-organization-user: reference/cli/mach-composer_cloud_add-organization-user.md
+              - config: reference/cli/mach-composer_cloud_config.md
+              - create-api-client: reference/cli/mach-composer_cloud_create-api-client.md
+              - create-component: reference/cli/mach-composer_cloud_create-component.md
+              - create-organization: reference/cli/mach-composer_cloud_create-organization.md
+              - create-project: reference/cli/mach-composer_cloud_create-project.md
+              - describe-component-versions: reference/cli/mach-composer_cloud_describe-component-versions.md
+              - list-api-clients: reference/cli/mach-composer_cloud_list-api-clients.md
+              - list-component-versions: reference/cli/mach-composer_cloud_list-component-versions.md
+              - list-components: reference/cli/mach-composer_cloud_list-components.md
+              - list-organization-users: reference/cli/mach-composer_cloud_list-organization-users.md
+              - list-organizations: reference/cli/mach-composer_cloud_list-organizations.md
+              - list-projects: reference/cli/mach-composer_cloud_list-projects.md
+              - login: reference/cli/mach-composer_cloud_login.md
+              - register-component-version: reference/cli/mach-composer_cloud_register-component-version.md
+              - update-component: reference/cli/mach-composer_cloud_update-component.md
+  - How-to:
+      - howto/index.md
+      - Components:
+          - howto/components/index.md
+          - howto/components/best-practices.md
+      - State:
+          - howto/state/migration.md
+      - Security:
+          - howto/security/handle-secrets.md
+          - howto/security/encrypt.md
+      - CI/CD:
+          - howto/ci/github.md
+          - howto/ci/azure_devops.md
+          - howto/ci/gitlab.md
+      - Commercetools:
+          - howto/commercetools/store-vars.md
+  - Mach Composer Cloud:
+      - Overview: cloud/index.md
+      - Getting started: cloud/getting-started.md
+      - Component registry: cloud/component-registry.md
+      - Autonomous deployments: cloud/autonomous-deployments.md
+  - changelog.md
 
 
 extra_javascript:

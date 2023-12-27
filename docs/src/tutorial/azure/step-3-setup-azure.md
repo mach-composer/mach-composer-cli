@@ -65,27 +65,27 @@ module "shared_infra" {
 
 ## 4. Apply Terraform
 1. Run the following commands:
-```bash
-$ terraform init
-$ terraform apply
-```
+    ```bash
+    $ terraform init
+    $ terraform apply
+    ```
 2. For a new Terraform setup, initially it will store the Terraform state locally and should be named `terraform.tfstate`.<br>
    We'll move this state to the Storage Account that has been created by the shared infra module.<br>
    To do this, add a backend setting to project like below
-```terraform
-terraform {
- required_version = ">= 0.14.0"
- backend "azurerm" {
- }
-}
-```
+    ```terraform
+    terraform {
+     required_version = ">= 0.14.0"
+     backend "azurerm" {
+     }
+    }
+    ```
 3. Now run:
-```bash
-$ terraform init -reconfigure 
-```
-Terraform will detect that you're trying to move your state into Azure and ask; "*Do you want to copy existing state to the new backend?*".<br>
-Enter **"yes"**.<br>
-Now the state is stored in the Storage Account.
+    ```bash
+    $ terraform init -reconfigure 
+    ```
+   Terraform will detect that you're trying to move your state into Azure and ask; "*Do you want to copy existing state to the new backend?*".<br>
+   Enter **"yes"**.<br>
+   Now the state is stored in the Storage Account.
 4. Check if `terraform.tfstate` is empty and remove it
 
 ## Example

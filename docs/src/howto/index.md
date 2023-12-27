@@ -1,9 +1,11 @@
 # Overview
 
 - Components:
-  - How to [create a MACH component](components/create-component.md)
-  - [Best practices](components/best-practices.md)
+    - How to [create a MACH component](components/index.md)
+    - [Best practices](components/best-practices.md)
 - Security:
     - How to [deal with secrets](./security/handle-secrets.md)
     - How to [encrypt your MACH configuration](./security/encrypt.md)
 - How to set up a CI/CD pipeline with [GitHub](./ci/github.md) actions.
+- State:
+  - How to [migrate existing state](./state/migration.md) 

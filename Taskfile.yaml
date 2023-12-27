@@ -1,5 +1,10 @@
 version: '3'
 
+includes:
+  docs:
+    taskfile: ./docs/Taskfile.yaml
+    dir: ./docs
+
 tasks:
   build:
     env:
@@ -12,11 +17,11 @@ tasks:
   tidy:
     cmd: go mod tidy -v
 
+  generate:
+    cmd: go generate ./...
+
   test:
     cmd: go test -race ./...
-
-  vet:
-    cmd: go vet ./...
 
   cover:
     cmd: go test -race -coverprofile=coverage.out -covermode=atomic ./...
@@ -28,3 +33,4 @@ tasks:
 
   docker:
     cmd: docker build -t docker.pkg.github.com/mach-composer/mach-composer-cli/mach:latest . --progress=plain
+

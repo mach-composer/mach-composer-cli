@@ -1,6 +1,6 @@
 # Azure MACH config
 
-The below is a simplified example of a full configuration that should work.
+The below is a simplified example built on Azure and including Commercetools.
 
 ```yaml
 mach_composer:
@@ -14,13 +14,14 @@ mach_composer:
       version: 0.1.8
 global:
   environment: test
+  cloud: azure
   terraform_config:
-    azure_remote_state:
+    remote_state:
+      plugin: azure
       resource_group: mach-shared-we-rg
       storage_account: machsharedwesaterra
       container_name: tfstate
       state_folder: test
-  cloud: azure
   azure:
     tenant_id: <your-tenant-id>
     subscription_id: <your-subscription-id>

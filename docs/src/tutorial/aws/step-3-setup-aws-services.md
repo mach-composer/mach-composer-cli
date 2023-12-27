@@ -8,7 +8,7 @@ In AWS, we need two accounts:
 In this step we'll create the first one, the service account.
 
 !!! tip "Tenancy model"
-      As described in the [tenancy model](../../topics/architecture/tenancy.md#aws-tenancy), we advise to set up your MACH environment by creating **one service AWS account** containing shared resources and create an **AWS account per stack**.
+      As described in the [tenancy model](../../concepts/architecture/tenancy.md#aws-tenancy), we advise to set up your MACH environment by creating **one service AWS account** containing shared resources and create an **AWS account per stack**.
 
       This way, all resources are strictly separated from eachother.
 
@@ -106,17 +106,17 @@ module "shared-config" {
 ### 3. Terraform apply
 
 1. Within your `service` directory, run the following commands:
-```bash
-$ terraform init
-$ terraform apply
-```
+    ```bash
+    $ terraform init
+    $ terraform apply
+    ```
 2. Terraform has now created a `backend.tf` file which instructs Terraform to
 store the state on a S3 bucket.<br>
 In order to move the current (local) state file to the bucket, perform this
 one-time command:
-```bash
-$ terraform init -force-copy
-```
+    ```bash
+    $ terraform init -force-copy
+    ```
 Now the state is stored in the S3 bucket, and the DynamoDB table will be used to
 lock the state to prevent concurrent modification.
 

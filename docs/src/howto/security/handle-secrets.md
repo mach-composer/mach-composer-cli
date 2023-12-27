@@ -1,7 +1,7 @@
 # Handle secrets in components
 
 Secrets values are passed on to the component by MACH composer using the
-[`secrets` attribute](../../reference/syntax/sites.md#components).
+[`secrets` attribute](../../reference/syntax/site.md#nested-schema-for-components).
 
 It is up to the component to use those secret values in a secure manner.
 
@@ -191,3 +191,9 @@ resource "azurerm_function_app" "crm_365_component" {
   depends_on   = [azurerm_key_vault_secret.secrets]
 }
 ```
+
+## Handle secrets in GCP
+
+!!! todo "TODO"
+
+    Add GCP secrets documentation
