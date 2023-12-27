@@ -27,7 +27,7 @@ mach-composer cloud [flags]
 * [mach-composer cloud create-component](mach-composer_cloud_create-component.md)	 - Register a new component
 * [mach-composer cloud create-organization](mach-composer_cloud_create-organization.md)	 - Create a new organization
 * [mach-composer cloud create-project](mach-composer_cloud_create-project.md)	 - Create a new Project
-* [mach-composer cloud describe-component-versions](mach-composer_cloud_describe-component-versions.md)	 - List all changes for an component version
+* [mach-composer cloud describe-component-versions](mach-composer_cloud_describe-component-versions.md)	 - List all changes for a component version
 * [mach-composer cloud list-api-clients](mach-composer_cloud_list-api-clients.md)	 - List existing API clients (without secret)
 * [mach-composer cloud list-component-versions](mach-composer_cloud_list-component-versions.md)	 - List all version for an existing component
 * [mach-composer cloud list-components](mach-composer_cloud_list-components.md)	 - List your components

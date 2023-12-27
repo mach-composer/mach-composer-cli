@@ -6,7 +6,7 @@ import (
 	"os"
 )
 
-//go:generate go run ../../tools/cli-docs.go ../../docs/src/reference/cli/
+//go:generate go run tools/cli-docs/main.go docs/src/reference/cli/
 func main() {
 	if err := cmd.RootCmd.Execute(); err != nil {
 		if cmd.RootCmd.SilenceErrors {

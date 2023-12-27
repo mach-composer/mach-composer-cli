@@ -23,9 +23,6 @@ tasks:
   test:
     cmd: go test -race ./...
 
-  vet:
-    cmd: go vet ./...
-
   cover:
     cmd: go test -race -coverprofile=coverage.out -covermode=atomic ./...
 

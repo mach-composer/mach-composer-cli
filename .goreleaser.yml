@@ -11,7 +11,7 @@ before:
 # Build step
 builds:
   - id: mach-composer
-    main: ./cmd/mach-composer
+    main: .
     binary: bin/mach-composer
     flags:
       - -trimpath
