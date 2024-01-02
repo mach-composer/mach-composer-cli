@@ -3,56 +3,63 @@ package plugins
 import (
 	"context"
 	"fmt"
+	"github.com/hashicorp/go-plugin"
+	protocolv1 "github.com/mach-composer/mach-composer-plugin-sdk/protocol"
+	schemav1 "github.com/mach-composer/mach-composer-plugin-sdk/schema"
+	protocolv2 "github.com/mach-composer/mach-composer-plugin-sdk/v2/protocol"
+	schemav2 "github.com/mach-composer/mach-composer-plugin-sdk/v2/schema"
+	"github.com/rs/zerolog/log"
 	"hash/crc32"
-	"io"
 	"os"
 	"strings"
-
-	"github.com/hashicorp/go-plugin"
-	"github.com/mach-composer/mach-composer-plugin-sdk/protocol"
-	"github.com/mach-composer/mach-composer-plugin-sdk/schema"
-	"github.com/rs/zerolog/log"
-
-	"github.com/mach-composer/mach-composer-cli/internal/utils"
 )
 
-type Plugin struct {
-	schema.MachComposerPlugin
+type PluginHandler struct {
+	schemav2.MachComposerPlugin
 	Name string
 
 	client    *plugin.Client
 	isRunning bool
-	config    PluginConfig
+	Config    PluginConfig
 }
 
-func (p *Plugin) start(ctx context.Context) error {
+func (p *PluginHandler) Close() {
+	p.client.Kill()
+	p.isRunning = false
+	p.client = nil
+}
+
+func (p *PluginHandler) Start(ctx context.Context) error {
 	if p.isRunning {
 		return nil
 	}
 
-	var pluginMap = map[string]plugin.Plugin{
-		"MachComposerPlugin": &protocol.Plugin{
-			Identifier: p.Name,
-		},
+	var versionedPlugins = map[int]plugin.PluginSet{
+		1: {"MachComposerPlugin": &protocolv1.Plugin{Identifier: p.Name}},
+		2: {"MachComposerPlugin": &protocolv2.Plugin{Identifier: p.Name}},
 	}
 
-	// Safety check to not run external plugins during test for now
+	// Safety check to not run external handlers during test for now
 	if strings.HasSuffix(os.Args[0], ".test") {
 		panic(fmt.Sprintf("Not loading %s: invalid command: %s", p.Name, os.Args[0]))
 	}
 
 	logger := NewHCLogAdapter(log.Logger)
 
-	executable, err := resolvePlugin(p.config)
+	executable, err := resolvePlugin(p.Config)
 	if err != nil {
 		return err
 	}
 
 	p.client = plugin.NewClient(&plugin.ClientConfig{
-		HandshakeConfig: protocol.HandShakeConfig(),
-		Plugins:         pluginMap,
-		Cmd:             executable.command(),
-		Logger:          logger,
+		HandshakeConfig: plugin.HandshakeConfig{
+			ProtocolVersion:  1,
+			MagicCookieKey:   protocolv2.HandShakeConfig().MagicCookieKey,
+			MagicCookieValue: protocolv2.HandShakeConfig().MagicCookieValue,
+		},
+		VersionedPlugins: versionedPlugins,
+		Cmd:              executable.command(),
+		Logger:           logger,
 		SecureConfig: &plugin.SecureConfig{
 			Hash:     crc32.NewIEEE(),
 			Checksum: executable.Checksum,
@@ -68,37 +75,36 @@ func (p *Plugin) start(ctx context.Context) error {
 	// Connect via RPC
 	rpcClient, err := p.client.Client()
 	if err != nil {
-		log.Fatal().Err(err).Msg("failed to connect to plugin")
+		return fmt.Errorf("failed to connect to plugin: %s", err.Error())
 	}
 
 	// Request the plugin
 	raw, err := rpcClient.Dispense("MachComposerPlugin")
 	if err != nil {
-		log.Fatal().Err(err).Msg("failed to init the plugin")
+		return fmt.Errorf("failed to dispense plugin: %s", err.Error())
 	}
 
-	plugin, ok := raw.(schema.MachComposerPlugin)
-	if !ok {
-		return fmt.Errorf("incompatible plugin resolved")
+	protocolVersion := p.client.NegotiatedVersion()
+	switch protocolVersion {
+	case 1:
+		machComposerPlugin, ok := raw.(schemav1.MachComposerPlugin)
+		if !ok {
+			return fmt.Errorf("incompatible machComposerPlugin resolved")
+		}
+		p.MachComposerPlugin = NewPluginV1Adapter(machComposerPlugin)
+		log.Debug().Msgf("Loading plugin with protocol version %d", protocolVersion)
+
+	case 2:
+		machComposerPlugin, ok := raw.(schemav2.MachComposerPlugin)
+		if !ok {
+			return fmt.Errorf("incompatible machComposerPlugin resolved")
+		}
+		p.MachComposerPlugin = machComposerPlugin
+		log.Debug().Msgf("Loading plugin with protocol version %d", protocolVersion)
+	default:
+		return fmt.Errorf("incompatible protocol version %d. Try upgrading your mach-composer binary to the latest version", protocolVersion)
 	}
-	p.MachComposerPlugin = plugin
 	p.isRunning = true
 
 	return nil
-}
-
-func getPluginChecksum(filePath string) ([]byte, error) {
-	h := crc32.NewIEEE()
-	file, err := utils.AFS.Open(filePath)
-	if err != nil {
-		return nil, fmt.Errorf("failed to get checksum of file: %w", err)
-	}
-	defer file.Close()
-
-	_, err = io.Copy(h, file)
-	if err != nil {
-		return nil, err
-	}
-
-	return h.Sum(nil), nil
 }

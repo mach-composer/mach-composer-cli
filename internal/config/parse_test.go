@@ -85,9 +85,9 @@ func TestOpenBasic(t *testing.T) {
 
 func TestParseComplex(t *testing.T) {
 	pr := plugins.NewPluginRepository()
-	err := pr.Add("my-plugin", plugins.NewMockPlugin())
+	err := pr.Add("my-plugin", plugins.NewPluginV1Adapter(plugins.NewMockPluginV1()))
 	require.NoError(t, err)
-	err = pr.Add("aws", plugins.NewMockPlugin())
+	err = pr.Add("aws", plugins.NewPluginV1Adapter(plugins.NewMockPluginV1()))
 	require.NoError(t, err)
 
 	config, err := Open(context.Background(), "testdata/configs/complex.yaml", &ConfigOptions{
@@ -188,7 +188,7 @@ func TestParseComponentsNodeInline(t *testing.T) {
 			Cloud: "my-cloud",
 		},
 	}
-	err = cfg.Plugins.Add("my-cloud", plugins.NewMockPlugin())
+	err = cfg.Plugins.Add("my-cloud", plugins.NewPluginV1Adapter(plugins.NewMockPluginV1()))
 	require.NoError(t, err)
 
 	err = parseComponentsNode(cfg, &intermediate.Components)
@@ -234,7 +234,7 @@ func TestParseComponentsNodeRef(t *testing.T) {
 			Cloud: "my-cloud",
 		},
 	}
-	err = cfg.Plugins.Add("my-cloud", plugins.NewMockPlugin())
+	err = cfg.Plugins.Add("my-cloud", plugins.NewPluginV1Adapter(plugins.NewMockPluginV1()))
 	require.NoError(t, err)
 
 	err = parseComponentsNode(cfg, &intermediate.Components)
@@ -278,7 +278,7 @@ func TestParseComponentsNodeInclude(t *testing.T) {
 			Cloud: "my-cloud",
 		},
 	}
-	err = cfg.Plugins.Add("my-cloud", plugins.NewMockPlugin())
+	err = cfg.Plugins.Add("my-cloud", plugins.NewPluginV1Adapter(plugins.NewMockPluginV1()))
 	require.NoError(t, err)
 
 	err = parseComponentsNode(cfg, &intermediate.Components)

@@ -95,7 +95,7 @@ func parseSiteEndpointNode(cfg *MachConfig, siteId string, node *yaml.Node) erro
 	for endpointId, endpointNode := range nodes {
 		if endpointNode.Kind == yaml.ScalarNode {
 			cli.DeprecationWarning(&cli.DeprecationOptions{
-				Message: fmt.Sprintf("endpoint '%s' should be mapping node with a plugin tag", endpointId),
+				Message: fmt.Sprintf("endpoint '%s' should be mapping n with a plugin tag", endpointId),
 				Details: utils.TrimIndent(`
 					For example instead of:
 						endpoints:
@@ -125,9 +125,9 @@ func parseSiteEndpointNode(cfg *MachConfig, siteId string, node *yaml.Node) erro
 			continue
 		}
 
-		childs := mapYamlNodes(endpointNode.Content)
+		children := mapYamlNodes(endpointNode.Content)
 
-		if len(pie.Intersect(knownTags, pie.Keys(childs))) > 0 {
+		if len(pie.Intersect(knownTags, pie.Keys(children))) > 0 {
 			cli.DeprecationWarning(&cli.DeprecationOptions{
 				Message: fmt.Sprintf("All endpoint properties on '%s' should be moved within the plugin tag", endpointId),
 				Details: utils.TrimIndent(`
@@ -151,18 +151,18 @@ func parseSiteEndpointNode(cfg *MachConfig, siteId string, node *yaml.Node) erro
 		}
 
 		legacyData := map[string]any{}
-		for key, node := range childs {
+		for key, n := range children {
 			if pie.Contains(knownTags, key) {
-				legacyData[key] = node.Value
+				legacyData[key] = n.Value
 			}
 		}
 
-		for key, node := range childs {
+		for key, n := range children {
 			if pie.Contains(knownTags, key) {
 				continue
 			}
 
-			data, err := nodeAsMap(node)
+			data, err := nodeAsMap(n)
 			if err != nil {
 				return err
 			}
@@ -175,16 +175,27 @@ func parseSiteEndpointNode(cfg *MachConfig, siteId string, node *yaml.Node) erro
 				}
 			}
 
-			if err := cfg.Plugins.SetSiteEndpointConfig(key, siteId, endpointId, data); err != nil {
-				return fmt.Errorf("plugins.SetSiteEndpointConfig: %w", err)
+			for _, plugin := range cfg.Plugins.All() {
+				pluginNode, ok := nodes[plugin.Name]
+				if ok {
+					var err error
+					data, err = nodeAsMap(pluginNode)
+					if err != nil {
+						return err
+					}
+				}
+
+				if err := plugin.SetSiteEndpointConfig(siteId, endpointId, data); err != nil {
+					return fmt.Errorf("%s.SetSiteEndpointConfig failed: %w", plugin.Name, err)
+				}
 			}
 		}
 	}
 	return nil
 }
 
-func parseSiteComponentsNode(cfg *MachConfig, site string, node *yaml.Node) error {
-	// Exit early when no components are defined for this site. Not a common
+func parseSiteComponentsNode(cfg *MachConfig, siteKey string, node *yaml.Node) error {
+	// Exit early when no components are defined for this siteKey. Not a common
 	// scenario, but still
 	if node == nil {
 		return nil
@@ -192,9 +203,9 @@ func parseSiteComponentsNode(cfg *MachConfig, site string, node *yaml.Node) erro
 
 	for _, component := range node.Content {
 		nodes := mapYamlNodes(component.Content)
-		identifier := nodes["name"].Value
+		componentKey := nodes["name"].Value
 
-		migrateCommercetools(site, identifier, nodes)
+		migrateCommercetools(siteKey, componentKey, nodes)
 
 		for _, plugin := range cfg.Plugins.All() {
 			data := map[string]any{}
@@ -208,7 +219,7 @@ func parseSiteComponentsNode(cfg *MachConfig, site string, node *yaml.Node) erro
 				}
 			}
 
-			if err := plugin.SetSiteComponentConfig(site, identifier, data); err != nil {
+			if err := plugin.SetSiteComponentConfig(siteKey, componentKey, data); err != nil {
 				return err
 			}
 		}
@@ -238,7 +249,7 @@ func resolveSiteComponents(cfg *MachConfig) error {
 
 			ref, ok := components[c.Name]
 			if !ok {
-				return fmt.Errorf("component %s does not exist in global components.", c.Name)
+				return fmt.Errorf("component %s does not exist in global components", c.Name)
 			}
 			c.Definition = ref
 		}

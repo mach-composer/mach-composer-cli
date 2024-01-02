@@ -3,10 +3,10 @@ package plugins
 import (
 	"context"
 	"fmt"
+	"github.com/elliotchance/pie/v2"
 	"strings"
 
-	"github.com/elliotchance/pie/v2"
-	"github.com/mach-composer/mach-composer-plugin-sdk/schema"
+	schemav2 "github.com/mach-composer/mach-composer-plugin-sdk/v2/schema"
 	"github.com/rs/zerolog/log"
 )
 
@@ -28,90 +28,90 @@ func (e *PluginError) Error() string {
 }
 
 type PluginRepository struct {
-	plugins map[string]*Plugin
-	schemas map[string]schema.ValidationSchema
+	handlers map[string]*PluginHandler
+	schemas  map[string]schemav2.ValidationSchema
 }
 
 func NewPluginRepository() *PluginRepository {
 	return &PluginRepository{
-		plugins: make(map[string]*Plugin),
-		schemas: make(map[string]schema.ValidationSchema),
+		handlers: make(map[string]*PluginHandler),
+		schemas:  make(map[string]schemav2.ValidationSchema),
 	}
 }
 
-// Close kills alls the running plugins
+// Close kills all the running handlers
 func (p *PluginRepository) Close() {
-	for _, rp := range p.plugins {
-		rp.client.Kill()
-		rp.isRunning = false
-		rp.client = nil
+	for _, rp := range p.handlers {
+		rp.Close()
 	}
 }
 
 // All returns all the plugin names in the repository, ordered by the plugin name
-func (p *PluginRepository) All() []Plugin {
-	result := make([]Plugin, len(p.plugins))
-	for i, key := range pie.Sort(pie.Keys(p.plugins)) {
-		result[i] = *p.plugins[key]
+func (p *PluginRepository) All() []*PluginHandler {
+	result := make([]*PluginHandler, len(p.handlers))
+	for i, key := range pie.Sort(pie.Keys(p.handlers)) {
+		result[i] = p.handlers[key]
 	}
 	return result
 }
 
-func (p *PluginRepository) Names(names ...string) []Plugin {
-	var result []Plugin
+func (p *PluginRepository) Names(names ...string) []PluginHandler {
+	var result []PluginHandler
 
-	for _, key := range pie.Sort(pie.Keys(p.plugins)) {
+	for _, key := range pie.Sort(pie.Keys(p.handlers)) {
 		if !pie.Contains(names, key) {
 			continue
 		}
 
-		result = append(result, *p.plugins[key])
+		result = append(result, *p.handlers[key])
 	}
 
 	return result
 }
 
 // Add an existing plugin to the repository. Only used for testing purposes
-func (p *PluginRepository) Add(name string, plugin schema.MachComposerPlugin) error {
-	p.plugins[name] = &Plugin{
-		MachComposerPlugin: plugin,
+func (p *PluginRepository) Add(name string, machComposerPlugin schemav2.MachComposerPlugin) error {
+	handlers := &PluginHandler{
+		MachComposerPlugin: machComposerPlugin,
 		Name:               name,
 		isRunning:          true,
 	}
+
+	p.handlers[name] = handlers
 	return nil
 }
 
 // Get returns the plugin from the repository
-func (p *PluginRepository) Get(name string) (*Plugin, error) {
+func (p *PluginRepository) Get(name string) (*PluginHandler, error) {
 	if name == "" {
-		panic("plugin name is empty") // this should never happen
+		panic("handler name is empty") // this should never happen
 	}
-	plugin, ok := p.plugins[name]
+	handler, ok := p.handlers[name]
 	if !ok {
 		return nil, &PluginNotFoundError{name: name}
 	}
-	return plugin, nil
+	return handler, nil
 }
 
-// LoadPlugin will load the plugin with the given name and start it
+// LoadPlugin will load the plugin with the given name and Start it
 func (p *PluginRepository) LoadPlugin(ctx context.Context, name string, config PluginConfig) error {
-	if _, ok := p.plugins[name]; ok {
-		return fmt.Errorf("plugin %s is already loaded", name)
+	if _, ok := p.handlers[name]; ok {
+		return fmt.Errorf("handler %s is already loaded", name)
 	}
 
-	plug := &Plugin{
+	handler := &PluginHandler{
 		Name:   name,
-		config: config,
+		Config: config,
 	}
-	p.plugins[name] = plug
+	p.handlers[name] = handler
 
-	if err := plug.start(ctx); err != nil {
+	if err := handler.Start(ctx); err != nil {
 		return err
 	}
 	return nil
 }
 
-func (p *PluginRepository) loadSchema(name string) (*schema.ValidationSchema, error) {
+func (p *PluginRepository) loadSchema(name string) (*schemav2.ValidationSchema, error) {
 	plugin, err := p.Get(name)
 	if err != nil {
 		return nil, err
@@ -128,7 +128,7 @@ func (p *PluginRepository) loadSchema(name string) (*schema.ValidationSchema, er
 	return schema, nil
 }
 
-func (p *PluginRepository) GetSchema(name string) (*schema.ValidationSchema, error) {
+func (p *PluginRepository) GetSchema(name string) (*schemav2.ValidationSchema, error) {
 	if name == "" {
 		panic("plugin name is empty") // this should never happen
 	}
@@ -139,38 +139,6 @@ func (p *PluginRepository) GetSchema(name string) (*schema.ValidationSchema, err
 	}
 
 	return p.loadSchema(name)
-}
-
-func (p *PluginRepository) SetRemoteState(name string, data map[string]any) error {
-	plugin, err := p.Get(name)
-	if err != nil {
-		return err
-	}
-	return p.handleError(name, plugin.SetRemoteStateBackend(data))
-}
-
-func (p *PluginRepository) SetGlobalConfig(name string, data map[string]any) error {
-	plugin, err := p.Get(name)
-	if err != nil {
-		return err
-	}
-	return p.handleError(name, plugin.SetGlobalConfig(data))
-}
-
-func (p *PluginRepository) SetSiteEndpointConfig(name string, site string, key string, data map[string]any) error {
-	plugin, err := p.Get(name)
-	if err != nil {
-		return err
-	}
-	return p.handleError(name, plugin.SetSiteEndpointConfig(site, key, data))
-}
-
-func (p *PluginRepository) SetComponentConfig(name, component string, data map[string]any) error {
-	plugin, err := p.Get(name)
-	if err != nil {
-		return err
-	}
-	return p.handleError(name, plugin.SetComponentConfig(component, data))
 }
 
 func (p *PluginRepository) handleError(plugin string, err error) error {

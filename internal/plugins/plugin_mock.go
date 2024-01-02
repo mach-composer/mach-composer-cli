@@ -12,13 +12,14 @@ type MockPlugin struct {
 	Provider    string
 }
 
-func NewMockPlugin() schema.MachComposerPlugin {
+func NewMockPluginV1() schema.MachComposerPlugin {
 	state := MockPlugin{}
 
 	return plugin.NewPlugin(&schema.PluginSchema{
-		Configure:           state.Configure,
-		GetValidationSchema: state.GetValidationSchema,
-		IsEnabled:           func() bool { return true },
+		Configure:                state.Configure,
+		GetValidationSchema:      state.GetValidationSchema,
+		RenderTerraformComponent: state.RenderTerraformComponent,
+		IsEnabled:                func() bool { return true },
 	})
 }
 
@@ -58,4 +59,8 @@ func (p *MockPlugin) GetValidationSchema() (*schema.ValidationSchema, error) {
 	}
 
 	return &result, nil
+}
+
+func (p *MockPlugin) RenderTerraformComponent(site string, component string) (*schema.ComponentSchema, error) {
+	return &schema.ComponentSchema{}, nil
 }

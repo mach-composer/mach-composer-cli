@@ -51,6 +51,11 @@ definitions:
                 type: string
               version:
                 type: string
+              replace:
+                description: |
+                  If set, the plugin will be replaced with the one from the
+                  local filesystem. This is useful for development purposes.
+                type: string
 
   MachComposerCloud:
     type: object

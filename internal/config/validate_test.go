@@ -50,7 +50,7 @@ func TestCreateSchema(t *testing.T) {
 	require.NoError(t, err)
 
 	pr := plugins.NewPluginRepository()
-	err = pr.Add("aws", plugins.NewMockPlugin())
+	err = pr.Add("aws", plugins.NewPluginV1Adapter(plugins.NewMockPluginV1()))
 	require.NoError(t, err)
 
 	raw, err := newRawConfig("main.yml", document)
