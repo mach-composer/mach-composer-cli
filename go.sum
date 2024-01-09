@@ -451,8 +451,8 @@ github.com/lithammer/dedent v1.1.0 h1:VNzHMVCBNG1j0fh3OrsFRkVUwStdDArbgBWoPAffkt
 github.com/lithammer/dedent v1.1.0/go.mod h1:jrXYCQtgg0nJiN+StA2KgR7w6CiQNv9Fd/Z9BP0jIOc=
 github.com/mach-composer/mach-composer-plugin-sdk v1.0.0 h1:JC2CexXB03VxxyfNUdlBPdT5zEnB6o0hnR7Q69wOYPA=
 github.com/mach-composer/mach-composer-plugin-sdk v1.0.0/go.mod h1:qfmnfIOp8k4RYlOEbV0UVOQZ8g3mJPKsUopZCOW2qDU=
-github.com/mach-composer/mach-composer-plugin-sdk/v2 v2.0.0-20240102132153-4158409bb886 h1:7uaxRS2inYFER2G7iwjxxbCqM4fo7LMu+kvdoVPyaq8=
-github.com/mach-composer/mach-composer-plugin-sdk/v2 v2.0.0-20240102132153-4158409bb886/go.mod h1:xzxcSqyvZpOa3j5MbSOQFfeBt5Anv9zsXI/pHcfSQx0=
+github.com/mach-composer/mach-composer-plugin-sdk/v2 v2.0.0 h1:rz5PgtCAEtbCIiiQF9VbsggSvjXvmz2orKvgpWtcIuc=
+github.com/mach-composer/mach-composer-plugin-sdk/v2 v2.0.0/go.mod h1:xzxcSqyvZpOa3j5MbSOQFfeBt5Anv9zsXI/pHcfSQx0=
 github.com/mach-composer/mcc-sdk-go v0.0.3-0.20230301072130-d1c0f6c7e0f0 h1:j50lfg7zohGqwAuQGi7UEsiAL+5fjTkLC+nOZ7lZPJI=
 github.com/mach-composer/mcc-sdk-go v0.0.3-0.20230301072130-d1c0f6c7e0f0/go.mod h1:rE23R5N7WysVWT3UVt4W5ZBfMyaRkgsoRP3zTLrrCjI=
 github.com/magiconair/properties v1.8.7 h1:IeQXZAiQcpL9mgcAe1Nu6cX9LLw6ExEHKjN0VQdvPDY=

@@ -75,7 +75,7 @@ require (
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/kevinburke/ssh_config v1.2.0 // indirect
 	github.com/klauspost/compress v1.17.0 // indirect
-	github.com/mach-composer/mach-composer-plugin-sdk/v2 v2.0.0-20240102132153-4158409bb886 // indirect
+	github.com/mach-composer/mach-composer-plugin-sdk/v2 v2.0.0
 	github.com/magiconair/properties v1.8.7 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-runewidth v0.0.15 // indirect
