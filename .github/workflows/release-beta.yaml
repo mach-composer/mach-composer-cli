@@ -27,7 +27,12 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v4
         with:
-          go-version: '1.21.1'
+          go-version-file: go.mod
+
+      - name: Set up Task
+        uses: arduino/setup-task@v1
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Get goreleaser app token
         id: get-app-token
@@ -36,21 +41,6 @@ jobs:
           app-id: ${{ secrets.MCI_APP_ID }}
           private-key: ${{ secrets.MCI_APP_PRIVATE_KEY }}
           installation-id: ${{ secrets.MCI_APP_INSTALLATION_ID }}
-
-      - name: Install Task
-        uses: arduino/setup-task@v1
-        with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Install chocolatey
-        run: |
-          mkdir -p /opt/chocolatey
-          wget -q -O - "https://github.com/chocolatey/choco/releases/download/${CHOCOLATEY_VERSION}/chocolatey.v${CHOCOLATEY_VERSION}.tar.gz" | tar -xz -C "/opt/chocolatey"
-          echo '#!/bin/bash' >> /usr/local/bin/choco
-          echo 'mono /opt/chocolatey/choco.exe $@' >> /usr/local/bin/choco
-          chmod +x /usr/local/bin/choco
-        env:
-          CHOCOLATEY_VERSION: 1.2.1
 
       - name: Get hash
         shell: bash
