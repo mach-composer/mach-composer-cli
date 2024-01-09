@@ -3,6 +3,9 @@ package plugins
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/mach-composer/mach-composer-cli/internal/utils"
+	"hash/crc32"
+	"io"
 	"net/http"
 	"net/url"
 	"os"
@@ -33,6 +36,22 @@ type registryResponse struct {
 
 func (p pluginExecutable) command() *exec.Cmd {
 	return exec.Command(p.Path, p.Args...)
+}
+
+func getPluginChecksum(filePath string) ([]byte, error) {
+	h := crc32.NewIEEE()
+	file, err := utils.AFS.Open(filePath)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get checksum of file: %w", err)
+	}
+	defer file.Close()
+
+	_, err = io.Copy(h, file)
+	if err != nil {
+		return nil, err
+	}
+
+	return h.Sum(nil), nil
 }
 
 func resolvePlugin(pluginCfg PluginConfig) (*pluginExecutable, error) {
@@ -131,7 +150,7 @@ func queryPluginRegistry(pluginCfg PluginConfig) (*registryResponse, error) {
 	defer r.Body.Close()
 
 	if r.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("Plugin does not exist")
+		return nil, fmt.Errorf("plugin does not exist")
 	}
 
 	info := &registryResponse{}

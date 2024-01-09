@@ -12,6 +12,7 @@ import (
 type PluginConfig struct {
 	Source  string
 	Version string
+	Replace string
 }
 
 func (pc PluginConfig) name() string {
@@ -29,18 +30,18 @@ func (pc PluginConfig) executableName() string {
 }
 
 func (pc PluginConfig) path() string {
-	path := path.Join(
+	if pc.Replace != "" {
+		return pc.Replace
+	}
+
+	p := path.Join(
 		xdg.ConfigHome, "mach-composer", "plugins", pc.Source, pc.Version,
 		fmt.Sprintf("%s_%s", runtime.GOOS, runtime.GOARCH),
 		pc.name())
 
 	if runtime.GOOS == "windows" {
-		path += ".exe"
+		p += ".exe"
 	}
 
-	return path
-}
-
-func NewDefaultPlugin(name string) PluginConfig {
-	return PluginConfig{Source: name, Version: "builtin"}
+	return p
 }

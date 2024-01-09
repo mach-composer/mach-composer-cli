@@ -9,7 +9,6 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/elliotchance/pie/v2"
 	"gopkg.in/yaml.v3"
 
 	"github.com/mach-composer/mach-composer-cli/internal/utils"
@@ -39,28 +38,6 @@ func mapYamlNodes(nodes []*yaml.Node) map[string]*yaml.Node {
 		result[key] = value
 	}
 	return result
-}
-
-func iterateYamlNodes(
-	nodes map[string]*yaml.Node,
-	skipKeys []string,
-	cb func(key string, data map[string]any) error) error {
-	for key, node := range nodes {
-		if pie.Contains(skipKeys, key) {
-			continue
-		}
-
-		data, err := nodeAsMap(node)
-		if err != nil {
-			return err
-		}
-
-		if err := cb(key, data); err != nil {
-			return err
-		}
-	}
-
-	return nil
 }
 
 // LoadRefData will load referenced files and replace the node with the content of these files. It works both with the

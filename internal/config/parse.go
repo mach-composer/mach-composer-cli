@@ -160,6 +160,7 @@ func loadPlugins(ctx context.Context, raw *rawConfig) error {
 		pluginConfig := plugins.PluginConfig{
 			Source:  pluginData.Source,
 			Version: pluginData.Version,
+			Replace: pluginData.Replace,
 		}
 		if err := raw.plugins.LoadPlugin(ctx, pluginName, pluginConfig); err != nil {
 			return err

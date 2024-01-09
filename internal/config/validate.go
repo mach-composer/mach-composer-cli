@@ -223,7 +223,7 @@ func createFullSchema(pr *plugins.PluginRepository, globalNode *yaml.Node) (map[
 
 	// site config
 	for _, plugin := range pr.All() {
-		schema, err := pr.GetSchema(plugin.Name)
+		schema, err := plugin.GetValidationSchema()
 		if err != nil {
 			return nil, err
 		}
