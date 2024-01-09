@@ -21,7 +21,12 @@ jobs:
           private-key: ${{ secrets.MCI_APP_PRIVATE_KEY }}
           installation-id: ${{ secrets.MCI_APP_INSTALLATION_ID }}
 
-      - name: Install Task
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version-file: go.mod
+
+      - name: Set up Task
         uses: arduino/setup-task@v1
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
@@ -35,11 +40,6 @@ jobs:
           chmod +x /usr/local/bin/choco
         env:
           CHOCOLATEY_VERSION: 1.2.1
-
-      - name: Set up Go
-        uses: actions/setup-go@v4
-        with:
-          go-version: '1.21.1'
 
       - name: Get the latest version
         id: latest
