@@ -43,5 +43,7 @@ module "{{ .ComponentName }}" {
 }
 
 output "{{ .ComponentName }}" {
+    description = "The module outputs for {{ .ComponentName }}"
+    sensitive = true
     value =  module.{{ .ComponentName }}
 }
