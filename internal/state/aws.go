@@ -60,8 +60,8 @@ func (ar *AwsRenderer) RemoteState() (string, error) {
 
 	template := `
 	data "terraform_remote_state" "{{ .Key }}" {
-	  backend = "aws"
-	
+	  backend = "s3"
+
 	  config = {
 		  bucket         = "{{ .State.Bucket }}"
 		  key            = "{{ .State.KeyPrefix}}/{{ .Key }}"
