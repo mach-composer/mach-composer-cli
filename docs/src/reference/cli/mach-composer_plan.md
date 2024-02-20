@@ -11,6 +11,7 @@ mach-composer plan [flags]
 ```
   -c, --component stringArray   
   -f, --file string             YAML file to parse. (default "main.yml")
+      --force                   Force the plan to run even if the components are considered up to date
   -h, --help                    help for plan
       --ignore-version          Skip MACH composer version check
       --lock                    Acquire a lock on the state file before running terraform plan (default true)

@@ -10,6 +10,7 @@ mach-composer show-plan [flags]
 
 ```
   -f, --file string          YAML file to parse. (default "main.yml")
+      --force                Force the show plan to run even if the components are considered up to date
   -h, --help                 help for show-plan
       --ignore-version       Skip MACH composer version check
       --no-color             Disable color output

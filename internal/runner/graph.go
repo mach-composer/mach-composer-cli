@@ -72,7 +72,7 @@ func NewGraphRunner(workers int) *GraphRunner {
 		}}
 }
 
-func (gr *GraphRunner) run(ctx context.Context, g *graph.Graph, f executorFunc) error {
+func (gr *GraphRunner) run(ctx context.Context, g *graph.Graph, f executorFunc, force bool) error {
 	if err := gr.taint(ctx, g); err != nil {
 		return err
 	}
@@ -89,7 +89,7 @@ func (gr *GraphRunner) run(ctx context.Context, g *graph.Graph, f executorFunc) 
 		sem := semaphore.NewWeighted(int64(gr.workers))
 
 		for _, n := range batches[k] {
-			if n.Tainted() == false {
+			if n.Tainted() == false && force == false {
 				log.Info().Msgf("Skipping %s because it has no changes", n.Identifier())
 				continue
 			}
@@ -135,7 +135,7 @@ func (gr *GraphRunner) run(ctx context.Context, g *graph.Graph, f executorFunc) 
 func (gr *GraphRunner) TerraformApply(ctx context.Context, dg *graph.Graph, opts *ApplyOptions) error {
 	if err := gr.run(ctx, dg, func(ctx context.Context, n graph.Node) (string, error) {
 		return terraform.Apply(ctx, n.Path(), opts.Destroy, opts.AutoApprove)
-	}); err != nil {
+	}, opts.Force); err != nil {
 		return err
 	}
 
@@ -155,7 +155,7 @@ func (gr *GraphRunner) TerraformPlan(ctx context.Context, dg *graph.Graph, opts 
 		}
 
 		return terraform.Plan(ctx, n.Path(), opts.Lock)
-	}); err != nil {
+	}, opts.Force); err != nil {
 		return err
 	}
 
@@ -165,7 +165,7 @@ func (gr *GraphRunner) TerraformPlan(ctx context.Context, dg *graph.Graph, opts 
 func (gr *GraphRunner) TerraformProxy(ctx context.Context, dg *graph.Graph, opts *ProxyOptions) error {
 	if err := gr.run(ctx, dg, func(ctx context.Context, n graph.Node) (string, error) {
 		return utils.RunTerraform(ctx, n.Path(), false, opts.Command...)
-	}); err != nil {
+	}, opts.Force); err != nil {
 		return err
 	}
 
@@ -175,7 +175,7 @@ func (gr *GraphRunner) TerraformProxy(ctx context.Context, dg *graph.Graph, opts
 func (gr *GraphRunner) TerraformShow(ctx context.Context, dg *graph.Graph, opts *ShowPlanOptions) error {
 	if err := gr.run(ctx, dg, func(ctx context.Context, n graph.Node) (string, error) {
 		return terraform.Show(ctx, n.Path(), opts.NoColor)
-	}); err != nil {
+	}, opts.Force); err != nil {
 		return err
 	}
 

@@ -13,6 +13,7 @@ mach-composer apply [flags]
   -c, --component stringArray   
       --destroy                 Destroy option is a convenient way to destroy all remote objects managed by this mach config
   -f, --file string             YAML file to parse. (default "main.yml")
+      --force                   Force the apply to run even if the components are considered up to date
   -h, --help                    help for apply
       --ignore-version          Skip MACH composer version check
       --output-path string      Outputs path to store the generated files. (default "deployments")
