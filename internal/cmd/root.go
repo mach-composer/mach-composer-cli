@@ -24,24 +24,39 @@ var (
 
 			verbose, err := cmd.Flags().GetBool("verbose")
 			if err != nil {
-				panic(err)
+				cli.PrintExitError(err.Error())
 			}
 
-			logger := zerolog.New(os.Stdout)
+			logger := log.Logger
 			if verbose {
 				logger = logger.Level(zerolog.TraceLevel)
 			} else {
 				logger = logger.Level(zerolog.InfoLevel)
 			}
-			logger = logger.Output(cli.NewConsoleWriter())
-			log.Logger = logger
 
 			ctx := logger.WithContext(cmd.Context())
-			ctx, cancel := context.WithCancel(ctx)
+			logger = logger.Output(cli.NewConsoleWriter())
 
+			o, err := cmd.Flags().GetString("output")
+			if err != nil {
+				cli.PrintExitError(err.Error())
+			}
+			output, err := cli.ConvertOutputType(o)
+			if err != nil {
+				cli.PrintExitError(err.Error())
+			}
+
+			ctx = cli.ContextWithOutput(ctx, output)
+
+			if output == cli.OutputTypeJSON {
+				logger = logger.Output(os.Stdout)
+			}
+			log.Logger = logger
 			// Register a signal handler to cancel the current context
 			c := make(chan os.Signal, 1)
 			signal.Notify(c, os.Interrupt)
+
+			ctx, cancel := context.WithCancel(ctx)
 
 			go func() {
 				select {
@@ -59,6 +74,7 @@ var (
 
 func init() {
 	RootCmd.PersistentFlags().BoolP("verbose", "", false, "Verbose output.")
+	RootCmd.PersistentFlags().String("output", "console", "The output type. One of: console, json, github")
 	RootCmd.AddCommand(applyCmd)
 	RootCmd.AddCommand(cloudcmd.CloudCmd)
 	RootCmd.AddCommand(componentsCmd)

@@ -72,7 +72,9 @@ func NewGraphRunner(workers int) *GraphRunner {
 		}}
 }
 
-func (gr *GraphRunner) run(ctx context.Context, g *graph.Graph, f executorFunc, force bool) error {
+var logLock sync.Mutex
+
+func (gr *GraphRunner) run(ctx context.Context, g *graph.Graph, f executorFunc, name string) error {
 	if err := gr.taint(ctx, g); err != nil {
 		return err
 	}
@@ -102,14 +104,22 @@ func (gr *GraphRunner) run(ctx context.Context, g *graph.Graph, f executorFunc, 
 				defer wg.Done()
 				defer sem.Release(1)
 
-				log.Info().Msgf("Running command on %s", n.Identifier())
-
 				out, err := f(ctx, n)
 				if err != nil {
 					errChan <- err
 					return
 				}
-				log.Info().Msg(out)
+
+				//We use this logger with hook to parse terraform output
+				var jLogger = log.Logger.
+					Hook(cli.NewGitHubHook(fmt.Sprintf("%s-%s", n.Identifier(), name))).
+					Hook(cli.NewTerraformHook(n.Identifier())).
+					With().Ctx(ctx).Logger()
+
+				logLock.Lock()
+				jLogger.Info().Msg(out)
+				logLock.Unlock()
+
 			}(ctx, n)
 		}
 		wg.Wait()
@@ -135,7 +145,7 @@ func (gr *GraphRunner) run(ctx context.Context, g *graph.Graph, f executorFunc, 
 func (gr *GraphRunner) TerraformApply(ctx context.Context, dg *graph.Graph, opts *ApplyOptions) error {
 	if err := gr.run(ctx, dg, func(ctx context.Context, n graph.Node) (string, error) {
 		return terraform.Apply(ctx, n.Path(), opts.Destroy, opts.AutoApprove)
-	}, opts.Force); err != nil {
+	}, "apply", opts.Force); err != nil {
 		return err
 	}
 
@@ -155,7 +165,7 @@ func (gr *GraphRunner) TerraformPlan(ctx context.Context, dg *graph.Graph, opts 
 		}
 
 		return terraform.Plan(ctx, n.Path(), opts.Lock)
-	}, opts.Force); err != nil {
+	}, "plan", opts.Force); err != nil {
 		return err
 	}
 
@@ -165,7 +175,7 @@ func (gr *GraphRunner) TerraformPlan(ctx context.Context, dg *graph.Graph, opts 
 func (gr *GraphRunner) TerraformProxy(ctx context.Context, dg *graph.Graph, opts *ProxyOptions) error {
 	if err := gr.run(ctx, dg, func(ctx context.Context, n graph.Node) (string, error) {
 		return utils.RunTerraform(ctx, n.Path(), false, opts.Command...)
-	}, opts.Force); err != nil {
+	}, "proxy", , opts.Force); err != nil {
 		return err
 	}
 
@@ -175,7 +185,7 @@ func (gr *GraphRunner) TerraformProxy(ctx context.Context, dg *graph.Graph, opts
 func (gr *GraphRunner) TerraformShow(ctx context.Context, dg *graph.Graph, opts *ShowPlanOptions) error {
 	if err := gr.run(ctx, dg, func(ctx context.Context, n graph.Node) (string, error) {
 		return terraform.Show(ctx, n.Path(), opts.NoColor)
-	}, opts.Force); err != nil {
+	}, "show", opts.Force); err != nil {
 		return err
 	}
 
@@ -200,11 +210,20 @@ func (gr *GraphRunner) TerraformInit(ctx context.Context, dg *graph.Graph) error
 				return
 			}
 
-			err := terraform.Init(ctx, n.Path())
+			out, err := terraform.Init(ctx, n.Path())
 			if err != nil {
 				errChan <- err
 				return
 			}
+
+			//We use this logger with hook to parse terraform output
+			var jLogger = log.Logger.
+				Hook(cli.NewGitHubHook(fmt.Sprintf("%s-init", n.Identifier()))).
+				With().Ctx(ctx).Logger()
+
+			logLock.Lock()
+			jLogger.Info().Msgf(out)
+			logLock.Unlock()
 		}(n)
 	}
 	wg.Wait()

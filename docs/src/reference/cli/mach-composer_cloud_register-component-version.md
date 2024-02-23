@@ -20,7 +20,8 @@ mach-composer cloud register-component-version [name] [version] [flags]
 ### Options inherited from parent commands
 
 ```
-      --verbose   Verbose output.
+      --output string   The output type. One of: console, json, github (default "console")
+      --verbose         Verbose output.
 ```
 
 ### SEE ALSO
