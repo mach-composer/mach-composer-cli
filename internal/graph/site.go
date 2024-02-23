@@ -1,6 +1,7 @@
 package graph
 
 import (
+	"errors"
 	"github.com/dominikbraun/graph"
 	"github.com/mach-composer/mach-composer-cli/internal/config"
 	"github.com/mach-composer/mach-composer-cli/internal/utils"
@@ -47,8 +48,15 @@ func (s *Site) HasChanges() (bool, error) {
 
 	tfHash, err := utils.ParseHashOutput(s.outputs)
 	if err != nil {
-		log.Warn().Msgf("Could not parse hash output: %s", err)
-		return true, nil
+		var serr *utils.MissingHashError
+		if errors.As(err, &serr) {
+			log.Warn().Msgf("Could not parse hash output: %s. This is "+
+				"generally caused by incorrect output state, but will be updated "+
+				"at the next succesful update, so can be ignored", serr)
+			return true, nil
+		}
+
+		return false, err
 	}
 
 	return hash != tfHash, nil
