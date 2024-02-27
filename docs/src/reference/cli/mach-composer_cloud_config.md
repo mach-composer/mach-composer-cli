@@ -19,7 +19,7 @@ mach-composer cloud config [flags]
 ### Options inherited from parent commands
 
 ```
-      --output string   The output type. One of: console, json, github (default "console")
+      --output string   The output type. One of: console, json (default "console")
       --verbose         Verbose output.
 ```
 

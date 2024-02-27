@@ -28,7 +28,7 @@ func TestRun_Enabled_GithubOutput(t *testing.T) {
 	g := NewGitHubHook("test")
 
 	e := &zerolog.Event{}
-	e.Ctx(ContextWithOutput(context.Background(), OutputTypeGitHub))
+	e.Ctx(ContextWithGithubCI(context.Background()))
 
 	sink := &LogSink{}
 
@@ -39,4 +39,12 @@ func TestRun_Enabled_GithubOutput(t *testing.T) {
 	assert.Equal(t, 1, len(sink.logs))
 	assert.Equal(t, "::group::{test}\ntest-message\n::endgroup::", sink.Index(0).Message)
 	assert.Equal(t, "info", sink.Index(0).Level)
+}
+
+func TestGithubCIFromContext_Disabled(t *testing.T) {
+	assert.False(t, GithubCIFromContext(context.Background()))
+}
+
+func TestGithubCIFromContext_Enabled(t *testing.T) {
+	assert.True(t, GithubCIFromContext(ContextWithGithubCI(context.Background())))
 }

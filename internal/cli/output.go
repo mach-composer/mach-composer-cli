@@ -12,7 +12,6 @@ type OutputType string
 const (
 	OutputTypeConsole OutputType = "console"
 	OutputTypeJSON    OutputType = "json"
-	OutputTypeGitHub  OutputType = "github"
 )
 
 func ContextWithOutput(ctx context.Context, output OutputType) context.Context {
@@ -34,8 +33,6 @@ func ConvertOutputType(s string) (OutputType, error) {
 		return OutputTypeConsole, nil
 	case "json":
 		return OutputTypeJSON, nil
-	case "github":
-		return OutputTypeGitHub, nil
 	default:
 		return "", fmt.Errorf("unknown output type: %s", s)
 	}

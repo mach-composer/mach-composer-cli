@@ -10,7 +10,7 @@ MACH composer is a framework that you use to orchestrate and extend modern digit
 
 ```
   -h, --help            help for mach-composer
-      --output string   The output type. One of: console, json, github (default "console")
+      --output string   The output type. One of: console, json (default "console")
       --verbose         Verbose output.
 ```
 

@@ -41,12 +41,18 @@ var (
 			if err != nil {
 				cli.PrintExitError(err.Error())
 			}
+
 			output, err := cli.ConvertOutputType(o)
 			if err != nil {
 				cli.PrintExitError(err.Error())
 			}
 
 			ctx = cli.ContextWithOutput(ctx, output)
+
+			//Github CI environment recognition
+			if os.Getenv("GITHUB_ACTIONS") == "true" {
+				ctx = cli.ContextWithGithubCI(ctx)
+			}
 
 			if output == cli.OutputTypeJSON {
 				logger = logger.Output(os.Stdout)
@@ -74,7 +80,7 @@ var (
 
 func init() {
 	RootCmd.PersistentFlags().BoolP("verbose", "", false, "Verbose output.")
-	RootCmd.PersistentFlags().String("output", "console", "The output type. One of: console, json, github")
+	RootCmd.PersistentFlags().String("output", "console", "The output type. One of: console, json")
 	RootCmd.AddCommand(applyCmd)
 	RootCmd.AddCommand(cloudcmd.CloudCmd)
 	RootCmd.AddCommand(componentsCmd)
