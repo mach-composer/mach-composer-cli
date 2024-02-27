@@ -27,6 +27,29 @@ func TestSite_Hash_NestedComponentConfigSorted(t *testing.T) {
 	assert.Equal(t, unsortedHash, sortedHash, "Hashes should be equal")
 }
 
+func TestSite_HasChanges_NoHash(t *testing.T) {
+	s := NewSite(nil, "", "", "", nil, config.SiteConfig{})
+	s.NestedSiteComponentConfigs = []config.SiteComponentConfig{
+		{Name: "b", Definition: &config.ComponentConfig{Name: "b"}},
+		{Name: "a", Definition: &config.ComponentConfig{Name: "a"}},
+	}
+	s.outputs = cty.ObjectVal(map[string]cty.Value{})
+
+	changed, err := s.HasChanges()
+	assert.NoError(t, err)
+	assert.True(t, changed)
+}
+
+func TestSite_HasChanges_Error(t *testing.T) {
+	s := NewSite(nil, "", "", "", nil, config.SiteConfig{})
+	s.outputs = cty.ObjectVal(map[string]cty.Value{
+		"hash": cty.StringVal("some-hash"),
+	})
+
+	_, err := s.HasChanges()
+	assert.Error(t, err)
+}
+
 func TestSite_HasChanges_True(t *testing.T) {
 	s := NewSite(nil, "", "", "", nil, config.SiteConfig{})
 	s.NestedSiteComponentConfigs = []config.SiteComponentConfig{

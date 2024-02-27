@@ -11,6 +11,18 @@ import (
 	"os/exec"
 )
 
+type MissingHashError struct {
+	message string
+}
+
+func NewMissingHashError(message string) *MissingHashError {
+	return &MissingHashError{message: message}
+}
+
+func (m *MissingHashError) Error() string {
+	return m.message
+}
+
 // RunTerraform will execute a terraform command with the given arguments in the given directory.
 func RunTerraform(ctx context.Context, cwd string, catchOutputs bool, args ...string) (string, error) {
 	if _, err := os.Stat(cwd); err != nil {
@@ -55,7 +67,7 @@ type HashOutput struct {
 // ParseHashOutput returns the hash output by the given key.
 func ParseHashOutput(val cty.Value) (string, error) {
 	if !val.Type().HasAttribute("hash") {
-		return "", fmt.Errorf("no attribute with key hash found in terraform output")
+		return "", NewMissingHashError("no attribute with key hash found in terraform output")
 	}
 
 	componentVal := val.GetAttr("hash")
@@ -67,7 +79,7 @@ func ParseHashOutput(val cty.Value) (string, error) {
 	}
 
 	if hashOutput.Value == nil {
-		return "", fmt.Errorf("no value set for hash in terraform output")
+		return "", NewMissingHashError("no value set for hash in terraform output")
 	}
 
 	return *hashOutput.Value, nil

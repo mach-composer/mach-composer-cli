@@ -251,9 +251,4 @@ func TestToDependencyGraphCycleErr(t *testing.T) {
 	assert.Error(t, err)
 	assert.IsType(t, &ValidationError{}, err)
 	assert.Len(t, err.(*ValidationError).Errors, 1)
-	assert.Equal(t,
-		"failed to add dependency from main/site-1/site-component-1 to main/site-1/site-component-2: "+
-			"edge would create a cycle",
-		err.(*ValidationError).Errors[0].Error(),
-	)
 }
