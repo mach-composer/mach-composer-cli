@@ -10,6 +10,7 @@ import (
 var showPlanFlags struct {
 	reuse   bool
 	noColor bool
+	force   bool
 }
 
 var showPlanCmd = &cobra.Command{
@@ -29,6 +30,7 @@ func init() {
 	showPlanCmd.Flags().BoolVarP(&showPlanFlags.noColor, "no-color", "", false, "Disable color output")
 	showPlanCmd.Flags().BoolVarP(&showPlanFlags.reuse, "reuse", "", false,
 		"Suppress a terraform init for improved speed (not recommended for production usage)")
+	showPlanCmd.Flags().BoolVarP(&showPlanFlags.force, "force", "", false, "Force the show plan to run even if the components are considered up to date")
 }
 
 func showPlanFunc(cmd *cobra.Command, _ []string) error {
@@ -49,5 +51,6 @@ func showPlanFunc(cmd *cobra.Command, _ []string) error {
 
 	return b.TerraformShow(ctx, dg, &runner.ShowPlanOptions{
 		NoColor: showPlanFlags.noColor,
+		Force:   showPlanFlags.force,
 	})
 }

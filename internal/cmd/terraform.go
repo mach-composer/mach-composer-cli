@@ -9,6 +9,7 @@ import (
 
 var terraformFlags struct {
 	reuse bool
+	force bool
 }
 
 var terraformCmd = &cobra.Command{
@@ -26,6 +27,7 @@ func init() {
 	registerCommonFlags(terraformCmd)
 	terraformCmd.Flags().BoolVarP(&terraformFlags.reuse, "reuse", "", false,
 		"Suppress a terraform init for improved speed (not recommended for production usage)")
+	terraformCmd.Flags().BoolVarP(&terraformFlags.force, "force", "", false, "Force the terraform command to run even if the components are considered up to date")
 }
 
 func terraformFunc(cmd *cobra.Command, args []string) error {
@@ -40,11 +42,12 @@ func terraformFunc(cmd *cobra.Command, args []string) error {
 
 	b := runner.NewGraphRunner(commonFlags.workers)
 
-	if err = checkReuse(ctx, dg, b, applyFlags.reuse); err != nil {
+	if err = checkReuse(ctx, dg, b, terraformFlags.reuse); err != nil {
 		return err
 	}
 
 	return b.TerraformProxy(cmd.Context(), dg, &runner.ProxyOptions{
 		Command: args,
+		Force:   terraformFlags.force,
 	})
 }

@@ -126,7 +126,7 @@ func TestGraphRunnerMultipleLevels(t *testing.T) {
 	err := runner.run(context.Background(), &internalgraph.Graph{}, func(ctx context.Context, node internalgraph.Node) (string, error) {
 		called = append(called, node.Identifier())
 		return "", nil
-	})
+	}, false)
 
 	assert.NoError(t, err)
 	assert.Equal(t, []string{"component-2", "component-3"}, called)
@@ -165,7 +165,7 @@ func TestGraphRunnerError(t *testing.T) {
 			return "", assert.AnError
 		}
 		return "", nil
-	})
+	}, false)
 
 	cliErr := &cli.GroupedError{}
 
@@ -174,4 +174,34 @@ func TestGraphRunnerError(t *testing.T) {
 	errors.As(err, &cliErr)
 	assert.Len(t, cliErr.Errors, 1)
 	assert.Equal(t, assert.AnError, cliErr.Errors[0])
+}
+
+func TestGraphRunnerForce(t *testing.T) {
+	project := new(internalgraph.NodeMock)
+	project.On("Identifier").Return("main")
+
+	site := new(internalgraph.NodeMock)
+	site.On("Identifier").Return("site-1")
+	site.SetTainted(false)
+
+	runner := NewGraphRunner(1)
+	runner.taint = func(ctx context.Context, g *internalgraph.Graph) error {
+		return nil
+	}
+	runner.batch = func(g *internalgraph.Graph) map[int][]internalgraph.Node {
+		return map[int][]internalgraph.Node{
+			0: {project},
+			1: {site},
+		}
+	}
+
+	var called []string
+
+	err := runner.run(context.Background(), &internalgraph.Graph{}, func(ctx context.Context, node internalgraph.Node) (string, error) {
+		called = append(called, node.Identifier())
+		return "", nil
+	}, true)
+
+	assert.NoError(t, err)
+	assert.Equal(t, []string{"site-1"}, called)
 }

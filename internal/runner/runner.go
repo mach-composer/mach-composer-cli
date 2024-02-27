@@ -6,19 +6,23 @@ import (
 )
 
 type ApplyOptions struct {
+	Force       bool
 	Destroy     bool
 	AutoApprove bool
 }
 
 type PlanOptions struct {
-	Lock bool
+	Force bool
+	Lock  bool
 }
 
 type ProxyOptions struct {
+	Force   bool
 	Command []string
 }
 
 type ShowPlanOptions struct {
+	Force   bool
 	NoColor bool
 }
 
