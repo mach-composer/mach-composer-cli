@@ -187,21 +187,20 @@ func (gr *GraphRunner) TerraformInit(ctx context.Context, dg *graph.Graph) error
 	var wg = &sync.WaitGroup{}
 
 	for _, n := range dg.Vertices() {
+		//We don't need to initialize the project type
+		if n.Type() == graph.ProjectType {
+			continue
+		}
+
 		wg.Add(1)
 		go func(n graph.Node) {
 			defer wg.Done()
-			hash, err := n.Hash()
-			if err != nil {
-				errChan <- err
-				return
-			}
-
 			//Projects are not initialized
 			if n.Type() == graph.ProjectType {
 				return
 			}
 
-			err = terraform.Init(ctx, hash, n.Path())
+			err := terraform.Init(ctx, n.Path())
 			if err != nil {
 				errChan <- err
 				return
