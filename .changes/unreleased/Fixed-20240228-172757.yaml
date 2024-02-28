@@ -1,0 +1,3 @@
+kind: Fixed
+body: Added check on terraform files to detect changes
+time: 2024-02-28T17:27:57.932668733+01:00

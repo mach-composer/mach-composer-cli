@@ -10,18 +10,18 @@ import (
 func TestSiteComponent_Hash_Ok(t *testing.T) {
 	su := NewSiteComponent(nil, "", "", "", nil,
 		config.SiteConfig{},
-		config.SiteComponentConfig{Name: "b", Definition: &config.ComponentConfig{Name: "b"}},
+		config.SiteComponentConfig{Name: "b", Definition: &config.ComponentConfig{Name: "b", Source: "testdata/dirhash"}},
 	)
 	hash, err := su.Hash()
 
 	assert.NoError(t, err)
-	assert.Equal(t, "e95a356ad37de77080ea6827f0e29e56aa2dbc58088b955861ae18b1eef841a0", hash, "Hashes should be equal")
+	assert.Equal(t, "7da132f84ee30a8cf451e9c70d3c5107ebc0c62c836183b6bc20081a38d2f77c", hash, "Hashes should be equal")
 }
 
 func TestSiteComponent_HasChanges_HashNotFound(t *testing.T) {
 	su := NewSiteComponent(nil, "", "", "", nil,
 		config.SiteConfig{},
-		config.SiteComponentConfig{Name: "b", Definition: &config.ComponentConfig{Name: "b"}},
+		config.SiteComponentConfig{Name: "b", Definition: &config.ComponentConfig{Name: "b", Source: "testdata/dirhash"}},
 	)
 	su.outputs = cty.ObjectVal(map[string]cty.Value{})
 
@@ -33,7 +33,7 @@ func TestSiteComponent_HasChanges_HashNotFound(t *testing.T) {
 func TestSiteComponent_HasChanges_Error(t *testing.T) {
 	su := NewSiteComponent(nil, "", "", "", nil,
 		config.SiteConfig{},
-		config.SiteComponentConfig{Name: "b", Definition: &config.ComponentConfig{Name: "b"}},
+		config.SiteComponentConfig{Name: "b", Definition: &config.ComponentConfig{Name: "b", Source: "testdata/dirhash"}},
 	)
 	su.outputs = cty.ObjectVal(map[string]cty.Value{
 		"hash": cty.StringVal("some-hash"),
@@ -46,7 +46,7 @@ func TestSiteComponent_HasChanges_Error(t *testing.T) {
 func TestSiteComponent_HasChanges_True(t *testing.T) {
 	su := NewSiteComponent(nil, "", "", "", nil,
 		config.SiteConfig{},
-		config.SiteComponentConfig{Name: "b", Definition: &config.ComponentConfig{Name: "b"}},
+		config.SiteComponentConfig{Name: "b", Definition: &config.ComponentConfig{Name: "b", Source: "testdata/dirhash"}},
 	)
 	su.outputs = cty.ObjectVal(map[string]cty.Value{
 		"hash": cty.ObjectVal(map[string]cty.Value{
@@ -64,12 +64,12 @@ func TestSiteComponent_HasChanges_True(t *testing.T) {
 func TestSiteComponent_HasChanges_False(t *testing.T) {
 	su := NewSiteComponent(nil, "", "", "", nil,
 		config.SiteConfig{},
-		config.SiteComponentConfig{Name: "b", Definition: &config.ComponentConfig{Name: "b"}},
+		config.SiteComponentConfig{Name: "b", Definition: &config.ComponentConfig{Name: "b", Source: "testdata/dirhash"}},
 	)
 	su.outputs = cty.ObjectVal(map[string]cty.Value{
 		"hash": cty.ObjectVal(map[string]cty.Value{
 			"sensitive": cty.BoolVal(false),
-			"value":     cty.StringVal("e95a356ad37de77080ea6827f0e29e56aa2dbc58088b955861ae18b1eef841a0"),
+			"value":     cty.StringVal("7da132f84ee30a8cf451e9c70d3c5107ebc0c62c836183b6bc20081a38d2f77c"),
 			"type":      cty.StringVal("some-type"),
 		}),
 	})

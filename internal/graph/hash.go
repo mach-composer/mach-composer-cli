@@ -7,6 +7,11 @@ import (
 )
 
 func hashSiteComponentConfig(sc config.SiteComponentConfig) (string, error) {
+	tfHash, err := utils.ComputeDirHash(sc.Definition.Source)
+	if err != nil {
+		return "", err
+	}
+
 	return utils.ComputeHash(struct {
 		Name       string `json:"name"`
 		Definition struct {
@@ -18,6 +23,7 @@ func hashSiteComponentConfig(sc config.SiteComponentConfig) (string, error) {
 		Variables variable.VariablesMap `json:"variables"`
 		Secrets   variable.VariablesMap `json:"secrets"`
 		DependsOn []string              `json:"depends_on"`
+		Terraform string                `json:"terraform"`
 	}{
 		Name: sc.Name,
 		Definition: struct {
@@ -34,5 +40,6 @@ func hashSiteComponentConfig(sc config.SiteComponentConfig) (string, error) {
 		Variables: sc.Variables,
 		Secrets:   sc.Secrets,
 		DependsOn: sc.DependsOn,
+		Terraform: tfHash,
 	})
 }
