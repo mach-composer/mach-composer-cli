@@ -1,9 +1,6 @@
 package config
 
 import (
-	"crypto/sha256"
-	"encoding/hex"
-	"encoding/json"
 	"fmt"
 	"github.com/creasty/defaults"
 	"github.com/mach-composer/mach-composer-cli/internal/plugins"
@@ -38,32 +35,6 @@ func (r *rawConfig) validate() error {
 	}
 
 	return nil
-}
-
-func (r *rawConfig) computeHash() (string, error) {
-	hashConfig := struct {
-		MachComposer MachComposer `json:"mach_composer"`
-		Global       yaml.Node    `json:"global"`
-		Sites        yaml.Node    `json:"sites"`
-		Components   yaml.Node    `json:"components"`
-		Filename     string       `json:"filename"`
-		Variables    *Variables   `json:"variables"`
-	}{
-		MachComposer: r.MachComposer,
-		Global:       r.Global,
-		Sites:        r.Sites,
-		Components:   r.Components,
-		Filename:     r.filename,
-		Variables:    r.variables,
-	}
-	data, err := json.Marshal(hashConfig)
-	if err != nil {
-		return "", err
-	}
-
-	h := sha256.New()
-	h.Write(data)
-	return hex.EncodeToString(h.Sum(nil)), nil
 }
 
 func newRawConfig(filename string, document *yaml.Node) (*rawConfig, error) {
