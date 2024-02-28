@@ -17,7 +17,6 @@ import (
 	"github.com/rs/zerolog/log"
 
 	"github.com/mach-composer/mach-composer-cli/internal/config"
-	"github.com/mach-composer/mach-composer-cli/internal/lockfile"
 )
 
 type GenerateOptions struct{}
@@ -99,16 +98,6 @@ func Write(ctx context.Context, cfg *config.MachConfig, g *graph.Graph, _ *Gener
 }
 
 func writeContent(hash, path, content string) error {
-	lock, err := lockfile.GetLock(hash, path)
-	if err != nil {
-		return err
-	}
-
-	if !lock.HasChanges(hash) {
-		log.Info().Msgf("Files for path %s are up-to-date", path)
-		return nil
-	}
-
 	filename := filepath.Join(path, "main.tf")
 
 	log.Info().Msgf("Writing %s", filename)
@@ -127,13 +116,6 @@ func writeContent(hash, path, content string) error {
 
 	if err := os.WriteFile(filename, formatted, 0700); err != nil {
 		return fmt.Errorf("error writing file: %w", err)
-	}
-
-	if err := lock.Update(hash); err != nil {
-		return err
-	}
-	if err := lockfile.WriteLock(lock); err != nil {
-		return err
 	}
 
 	log.Info().Msgf("Wrote files for path %s", path)
