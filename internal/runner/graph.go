@@ -74,7 +74,7 @@ func NewGraphRunner(workers int) *GraphRunner {
 
 var logLock sync.Mutex
 
-func (gr *GraphRunner) run(ctx context.Context, g *graph.Graph, f executorFunc, name string) error {
+func (gr *GraphRunner) run(ctx context.Context, g *graph.Graph, f executorFunc, name string, force bool) error {
 	if err := gr.taint(ctx, g); err != nil {
 		return err
 	}
@@ -175,7 +175,7 @@ func (gr *GraphRunner) TerraformPlan(ctx context.Context, dg *graph.Graph, opts 
 func (gr *GraphRunner) TerraformProxy(ctx context.Context, dg *graph.Graph, opts *ProxyOptions) error {
 	if err := gr.run(ctx, dg, func(ctx context.Context, n graph.Node) (string, error) {
 		return utils.RunTerraform(ctx, n.Path(), false, opts.Command...)
-	}, "proxy", , opts.Force); err != nil {
+	}, "proxy", opts.Force); err != nil {
 		return err
 	}
 

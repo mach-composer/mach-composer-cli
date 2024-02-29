@@ -200,7 +200,7 @@ func TestGraphRunnerForce(t *testing.T) {
 	err := runner.run(context.Background(), &internalgraph.Graph{}, func(ctx context.Context, node internalgraph.Node) (string, error) {
 		called = append(called, node.Identifier())
 		return "", nil
-	}, true)
+	}, "test", true)
 
 	assert.NoError(t, err)
 	assert.Equal(t, []string{"site-1"}, called)
