@@ -216,6 +216,11 @@ func (gr *GraphRunner) TerraformInit(ctx context.Context, dg *graph.Graph) error
 				return
 			}
 
+			if out == "" {
+				log.Info().Msgf("Initialization skipped on path %s", n.Path())
+				return
+			}
+
 			//We use this logger with hook to parse terraform output
 			var jLogger = log.Logger.
 				Hook(cli.NewGitHubHook(fmt.Sprintf("%s-init", n.Identifier()))).
