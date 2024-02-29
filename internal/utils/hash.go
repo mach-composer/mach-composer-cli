@@ -4,6 +4,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
+	"golang.org/x/mod/sumdb/dirhash"
 )
 
 func ComputeHash(t interface{}) (string, error) {
@@ -15,4 +16,8 @@ func ComputeHash(t interface{}) (string, error) {
 	h := sha256.New()
 	h.Write(data)
 	return hex.EncodeToString(h.Sum(nil)), nil
+}
+
+func ComputeDirHash(path string) (string, error) {
+	return dirhash.HashDir(path, "", dirhash.DefaultHash)
 }

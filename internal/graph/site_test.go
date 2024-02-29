@@ -10,16 +10,16 @@ import (
 func TestSite_Hash_NestedComponentConfigSorted(t *testing.T) {
 	su := NewSite(nil, "", "", "", nil, config.SiteConfig{})
 	su.NestedSiteComponentConfigs = []config.SiteComponentConfig{
-		{Name: "b", Definition: &config.ComponentConfig{Name: "b"}},
-		{Name: "a", Definition: &config.ComponentConfig{Name: "a"}},
+		{Name: "b", Definition: &config.ComponentConfig{Name: "b", Source: "testdata/dirhash"}},
+		{Name: "a", Definition: &config.ComponentConfig{Name: "a", Source: "testdata/dirhash"}},
 	}
 
 	unsortedHash, err := su.Hash()
 
 	s := NewSite(nil, "", "", "", nil, config.SiteConfig{})
 	s.NestedSiteComponentConfigs = []config.SiteComponentConfig{
-		{Name: "a", Definition: &config.ComponentConfig{Name: "a"}},
-		{Name: "b", Definition: &config.ComponentConfig{Name: "b"}},
+		{Name: "a", Definition: &config.ComponentConfig{Name: "a", Source: "testdata/dirhash"}},
+		{Name: "b", Definition: &config.ComponentConfig{Name: "b", Source: "testdata/dirhash"}},
 	}
 	sortedHash, err := s.Hash()
 
@@ -30,8 +30,8 @@ func TestSite_Hash_NestedComponentConfigSorted(t *testing.T) {
 func TestSite_HasChanges_NoHash(t *testing.T) {
 	s := NewSite(nil, "", "", "", nil, config.SiteConfig{})
 	s.NestedSiteComponentConfigs = []config.SiteComponentConfig{
-		{Name: "b", Definition: &config.ComponentConfig{Name: "b"}},
-		{Name: "a", Definition: &config.ComponentConfig{Name: "a"}},
+		{Name: "b", Definition: &config.ComponentConfig{Name: "b", Source: "testdata/dirhash"}},
+		{Name: "a", Definition: &config.ComponentConfig{Name: "a", Source: "testdata/dirhash"}},
 	}
 	s.outputs = cty.ObjectVal(map[string]cty.Value{})
 
@@ -53,8 +53,8 @@ func TestSite_HasChanges_Error(t *testing.T) {
 func TestSite_HasChanges_True(t *testing.T) {
 	s := NewSite(nil, "", "", "", nil, config.SiteConfig{})
 	s.NestedSiteComponentConfigs = []config.SiteComponentConfig{
-		{Name: "b", Definition: &config.ComponentConfig{Name: "b"}},
-		{Name: "a", Definition: &config.ComponentConfig{Name: "a"}},
+		{Name: "b", Definition: &config.ComponentConfig{Name: "b", Source: "testdata/dirhash"}},
+		{Name: "a", Definition: &config.ComponentConfig{Name: "a", Source: "testdata/dirhash"}},
 	}
 	s.outputs = cty.ObjectVal(map[string]cty.Value{
 		"hash": cty.ObjectVal(map[string]cty.Value{
@@ -72,13 +72,14 @@ func TestSite_HasChanges_True(t *testing.T) {
 func TestSite_HasChanges_False(t *testing.T) {
 	s := NewSite(nil, "", "", "", nil, config.SiteConfig{})
 	s.NestedSiteComponentConfigs = []config.SiteComponentConfig{
-		{Name: "b", Definition: &config.ComponentConfig{Name: "b"}},
-		{Name: "a", Definition: &config.ComponentConfig{Name: "a"}},
+		{Name: "b", Definition: &config.ComponentConfig{Name: "b", Source: "testdata/dirhash"}},
+		{Name: "a", Definition: &config.ComponentConfig{Name: "a", Source: "testdata/dirhash"}},
 	}
+
 	s.outputs = cty.ObjectVal(map[string]cty.Value{
 		"hash": cty.ObjectVal(map[string]cty.Value{
 			"sensitive": cty.BoolVal(false),
-			"value":     cty.StringVal("0bc0ceeb092a6d7f8a949dea9f9a264c9f86409a279b11421d688b2cd4a4367e"),
+			"value":     cty.StringVal("af53b20696c3bd5fa66c1c269968b6ad84a1c087b600823beab4bb17153d5cd5"),
 			"type":      cty.StringVal("some-type"),
 		}),
 	})
