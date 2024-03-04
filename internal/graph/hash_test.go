@@ -49,3 +49,23 @@ func TestHashSiteComponentConfigChanged(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotEqual(t, h1, h2)
 }
+
+func TestHashSiteComponentConfigGithubSource(t *testing.T) {
+	val, _ := variable.NewScalarVariable("value1")
+	cfg := config.SiteComponentConfig{
+		Name: "site-component-1",
+		Variables: variable.VariablesMap{
+			"var1": val,
+		},
+		Secrets: variable.VariablesMap{},
+		Definition: &config.ComponentConfig{
+			Name:   "site-component-1",
+			Source: "git@github.com:hashicorp/example.git",
+		},
+	}
+
+	h, err := hashSiteComponentConfig(cfg)
+
+	assert.NoError(t, err)
+	assert.Equal(t, "5fa49450032642f53ca6df3cd853530cbd0f2b6468d250e7603980007b91bf7a", h)
+}
