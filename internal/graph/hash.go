@@ -4,12 +4,20 @@ import (
 	"github.com/mach-composer/mach-composer-cli/internal/config"
 	"github.com/mach-composer/mach-composer-cli/internal/config/variable"
 	"github.com/mach-composer/mach-composer-cli/internal/utils"
+	"github.com/rs/zerolog/log"
 )
 
 func hashSiteComponentConfig(sc config.SiteComponentConfig) (string, error) {
-	tfHash, err := utils.ComputeDirHash(sc.Definition.Source)
-	if err != nil {
-		return "", err
+	var err error
+	var tfHash string
+
+	if !sc.Definition.IsGitSource() {
+		tfHash, err = utils.ComputeDirHash(sc.Definition.Source)
+		if err != nil {
+			return "", err
+		}
+	} else {
+		log.Debug().Msgf("Site component %s is a git source, so could not generate hash for terraform code", sc.Name)
 	}
 
 	return utils.ComputeHash(struct {
