@@ -6,7 +6,6 @@ import (
 	"github.com/rs/zerolog/log"
 	"math"
 	"runtime"
-	"strings"
 	"sync"
 
 	"github.com/mach-composer/mach-composer-cli/internal/config"
@@ -156,14 +155,14 @@ func getLastVersion(ctx context.Context, cfg *PartialConfig, c *config.Component
 		return getLastVersionCloud(ctx, cfg, c, origin)
 	}
 
-	if strings.HasPrefix(c.Source, "git:") {
+	if c.Source.IsType(config.SourceTypeGit) {
 		return getLastVersionGit(ctx, c, origin)
 	}
 
 	err := &UpdateError{
 		msg:       fmt.Sprintf("unrecognized component source for %s: %s", c.Name, c.Source),
 		component: c.Name,
-		source:    c.Source,
+		source:    string(c.Source),
 	}
 	return nil, err
 }
@@ -178,7 +177,7 @@ func getLastVersionCloud(ctx context.Context, cfg *PartialConfig, c *config.Comp
 		Execute()
 
 	if err != nil {
-		if strings.HasPrefix(c.Source, "git:") {
+		if c.Source.IsType(config.SourceTypeGit) {
 			log.Ctx(ctx).Warn().Msgf("Error checking for %s in MACH Composer Cloud, falling back to Git", c.Name)
 			return getLastVersionGit(ctx, c, origin)
 		}
@@ -187,7 +186,7 @@ func getLastVersionCloud(ctx context.Context, cfg *PartialConfig, c *config.Comp
 	}
 
 	if version == nil {
-		if strings.HasPrefix(c.Source, "git:") {
+		if c.Source.IsType(config.SourceTypeGit) {
 			log.Ctx(ctx).Warn().Msgf("No version found for %s in MACH Composer Cloud, falling back to Git", c.Name)
 			return getLastVersionGit(ctx, c, origin)
 		}
