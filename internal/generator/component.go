@@ -71,7 +71,7 @@ func renderSiteComponent(ctx context.Context, cfg *config.MachConfig, n graph.No
 	result = append(result, val)
 
 	// Render hash output
-	val, err = renderHashOutput(n)
+	val, err = renderHashOutput(n, []config.SiteComponentConfig{siteComponent})
 	if err != nil {
 		return "", fmt.Errorf("failed to render hash output: %w", err)
 	}

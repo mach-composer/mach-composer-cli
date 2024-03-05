@@ -1,3 +1,9 @@
 output "hash" {
     value =  "{{ .NodeHash }}"
+
+    depends_on = [
+        {{range .ComponentNames}}
+            module.{{.}},
+        {{end}}
+    ]
 }
