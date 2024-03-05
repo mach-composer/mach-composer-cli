@@ -3,16 +3,21 @@ package terraform
 import (
 	"context"
 	"fmt"
+	"github.com/mach-composer/mach-composer-cli/internal/cli"
 	"github.com/mach-composer/mach-composer-cli/internal/utils"
 )
 
 func Plan(ctx context.Context, path string, lock bool) (string, error) {
-	cmd := []string{"plan"}
+	args := []string{"plan"}
 
 	if lock == false {
-		cmd = append(cmd, "-lock=false")
+		args = append(args, "-lock=false")
 	}
 
-	cmd = append(cmd, fmt.Sprintf("-out=%s", PlanFile))
-	return utils.RunTerraform(ctx, path, false, cmd...)
+	if ctx.Value(cli.OutputKey) == cli.OutputTypeJSON {
+		args = append(args, "-json")
+	}
+
+	args = append(args, fmt.Sprintf("-out=%s", PlanFile))
+	return utils.RunTerraform(ctx, path, true, args...)
 }

@@ -5,11 +5,9 @@ import (
 	"github.com/mach-composer/mach-composer-cli/internal/utils"
 )
 
-func Init(ctx context.Context, path string) error {
+func Init(ctx context.Context, path string) (string, error) {
 	if !terraformIsInitialized(path) {
-		if _, err := utils.RunTerraform(ctx, path, false, "init"); err != nil {
-			return err
-		}
+		return utils.RunTerraform(ctx, path, true, "init")
 	}
-	return nil
+	return "", nil
 }

@@ -2,19 +2,24 @@ package terraform
 
 import (
 	"context"
+	"github.com/mach-composer/mach-composer-cli/internal/cli"
 	"github.com/mach-composer/mach-composer-cli/internal/utils"
 	"strings"
 )
 
 func Apply(ctx context.Context, path string, destroy, autoApprove bool) (string, error) {
-	cmd := []string{"apply"}
+	args := []string{"apply"}
 
 	if destroy {
-		cmd = append(cmd, "-destroy")
+		args = append(args, "-destroy")
 	}
 
 	if autoApprove {
-		cmd = append(cmd, "-auto-approve")
+		args = append(args, "-auto-approve")
+	}
+
+	if ctx.Value(cli.OutputKey) == cli.OutputTypeJSON {
+		args = append(args, "-json")
 	}
 
 	// If there is a plan then we should use it.
@@ -23,8 +28,8 @@ func Apply(ctx context.Context, path string, destroy, autoApprove bool) (string,
 		return "", err
 	}
 	if planFilename != "" {
-		cmd = append(cmd, strings.TrimPrefix(planFilename, path+"/"))
+		args = append(args, strings.TrimPrefix(planFilename, path+"/"))
 	}
 
-	return utils.RunTerraform(ctx, path, false, cmd...)
+	return utils.RunTerraform(ctx, path, true, args...)
 }

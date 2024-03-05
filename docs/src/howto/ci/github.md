@@ -1,25 +1,35 @@
 # Deploy using GitHub Actions
-This section will describe how to set up your CI/CD pipeline using GitHub Actions
+
+This section will describe how to set up your CI/CD pipeline using GitHub
+Actions
 including some examples.
 
 !!! tip "GitHub Actions is the preferred CI/CD platform for MACH composer"
-    While any CI/CD platform can run MACH composer, our examples and tooling will focus around GitHub Actions, as this is 
-the preferred platform for many of our clients, and provides the best developer experience.
+While any CI/CD platform can run MACH composer, our examples and tooling will
+focus around GitHub Actions, as this is
+the preferred platform for many of our clients, and provides the best developer
+experience.
 
     In case you use a different CI/CD solution, take the below pipelines as examples. Essentially, a CI/CD pipeline should run a combination of the `mach-composer plan` and `mach-composer apply` commands.
 
-
 ## MACH stack deployment
+
 This page describes how to deploy your MACH composer configuration to your
 cloud provider. We recommend to use a PR workflow whereby changes are done via
 a PR which allows additional rules (e.g. approval flows).
 
+### Log outputs
+
+Mach Composer will automatically recognize it is running in a CI/CD environment
+and will group log outputs for subroutines in a more Github-friendly way. This
+is based on the presence of
+the `GITHUB_ACTIONS` [environment variable](https://docs.github.com/en/actions/learn-github-actions/variables#default-environment-variables).
 
 ### Authenticating with your cloud provider
+
 For deploying to a cloud provider (e.g. AWS, Azure or GCP) as we recommend to
 use OpenID Connect. See how this works with GitHub at
 [security hardening your deployments](https://docs.github.com/en/actions/deployment/security-hardening-your-deployments)
-
 
 ### Example
 
@@ -151,6 +161,7 @@ use OpenID Connect. See how this works with GitHub at
           - name: Cleanup terraform plan
             run: aws s3 rm --recursive s3://${{ env.AWS_PLAN_BUCKET }}/${{ github.event.pull_request.number }}/
     ```
+
 {% endraw %}
 
 <!--
@@ -256,4 +267,5 @@ Example GitHub Action to package and deploy a component on AWS.
           - name: Upload
             run: aws s3 cp .serverless/${{ env.PACKAGE_NAME }}.zip s3://${{ env.AWS_BUCKET_NAME }}/${{ steps.artifact-name.outputs.artifact }}
     ```
+
 {% endraw %}

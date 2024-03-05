@@ -3,6 +3,7 @@ package terraform
 import (
 	"context"
 	"fmt"
+	"github.com/mach-composer/mach-composer-cli/internal/cli"
 	"github.com/mach-composer/mach-composer-cli/internal/utils"
 )
 
@@ -15,9 +16,15 @@ func Show(ctx context.Context, path string, noColor bool) (string, error) {
 		return "", fmt.Errorf("no plan found for path %s. Did you run `mach-composer plan`", path)
 	}
 
-	cmd := []string{"show", filename}
+	args := []string{"show", filename}
+
 	if noColor {
-		cmd = append(cmd, "-no-color")
+		args = append(args, "-no-color")
 	}
-	return utils.RunTerraform(ctx, path, false, cmd...)
+
+	if ctx.Value(cli.OutputKey) == cli.OutputTypeJSON {
+		args = append(args, "-json")
+	}
+
+	return utils.RunTerraform(ctx, path, true, args...)
 }
