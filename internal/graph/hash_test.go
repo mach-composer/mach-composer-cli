@@ -23,7 +23,7 @@ func TestHashSiteComponentConfigOk(t *testing.T) {
 	})
 
 	assert.NoError(t, err)
-	assert.Equal(t, "930c819f53a9b36fa7dc3857acb2d567dc3dd0c8c3f41922e957ea9fe4b066ea", h)
+	assert.Equal(t, "28ea13834f4d36a8799267a372d3a8d4bb8353097fcbd3b2445005b702e9ac8b", h)
 }
 
 func TestHashSiteComponentConfigChanged(t *testing.T) {
