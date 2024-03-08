@@ -28,7 +28,7 @@ module "{{ .ComponentName }}" {
 {{ if .PluginProviders }}
     providers = {
     {{ range $item := .PluginProviders }}
-        {{ $item }},
+        {{ $item }}
     {{ end }}
     }
 {{ end }}
