@@ -182,44 +182,63 @@ func (gr *GraphRunner) TerraformShow(ctx context.Context, dg *graph.Graph, opts 
 	return nil
 }
 
+// TerraformInit will run terraform init on all nodes in the graph. It will
+// batch the nodes and run them in parallel. This is slightly different from the
+// run command above, in that it skips the tainting of nodes. The only check it
+// will do is see if terraform has already been initialized, and skip init if
+// that is the case.
+//
+// TODO: move init into the graph runner after we have found a way to save and
+// search hashes without using terraform as a storage
 func (gr *GraphRunner) TerraformInit(ctx context.Context, dg *graph.Graph) error {
-	var errChan = make(chan error, len(dg.Vertices()))
-	var wg = &sync.WaitGroup{}
+	batches := gr.batch(dg)
 
-	for _, n := range dg.Vertices() {
-		//We don't need to initialize the project type
-		if n.Type() == graph.ProjectType {
-			continue
+	keys := maps.Keys(batches)
+	sort.Ints(keys)
+	for i, k := range keys[1:] {
+		log.Info().Msgf("Running batch %d with %d nodes", i, len(batches[k]))
+
+		errChan := make(chan error, len(batches[k]))
+		wg := &sync.WaitGroup{}
+		sem := semaphore.NewWeighted(int64(gr.workers))
+
+		for _, n := range batches[k] {
+			if err := sem.Acquire(ctx, 1); err != nil {
+				return err
+			}
+			wg.Add(1)
+			go func(ctx context.Context, n graph.Node) {
+				defer wg.Done()
+				defer sem.Release(1)
+
+				log.Info().Msgf("Running init on %s", n.Identifier())
+
+				if n.Type() == graph.ProjectType {
+					return
+				}
+				err := terraform.Init(ctx, n.Path())
+				if err != nil {
+					errChan <- err
+					return
+				}
+			}(ctx, n)
 		}
+		wg.Wait()
+		close(errChan)
 
-		wg.Add(1)
-		go func(n graph.Node) {
-			defer wg.Done()
-			//Projects are not initialized
-			if n.Type() == graph.ProjectType {
-				return
+		if len(errChan) > 0 {
+			var errors []error
+			for err := range errChan {
+				errors = append(errors, err)
 			}
 
-			err := terraform.Init(ctx, n.Path())
-			if err != nil {
-				errChan <- err
-				return
-			}
-		}(n)
-	}
-	wg.Wait()
-	close(errChan)
-
-	if len(errChan) > 0 {
-		var errors []error
-		for err := range errChan {
-			errors = append(errors, err)
+			return cli.NewGroupedError(fmt.Sprintf("batch run %d failed (%d errors)", i, len(errors)), errors)
 		}
 
-		return cli.NewGroupedError(
-			fmt.Sprintf("failed initializing terraform projects (%d errors)", len(errors)), errors,
-		)
+		log.Info().Msgf("Finished batch %d", i)
 	}
+
+	log.Info().Msgf("Finished all batches")
 
 	return nil
 }
