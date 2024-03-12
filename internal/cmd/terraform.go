@@ -42,7 +42,7 @@ func terraformFunc(cmd *cobra.Command, args []string) error {
 
 	b := runner.NewGraphRunner(commonFlags.workers)
 
-	if err = checkReuse(ctx, dg, b, terraformFlags.reuse); err != nil {
+	if err = checkReuse(ctx, dg, b, applyFlags.reuse); err != nil {
 		return err
 	}
 
