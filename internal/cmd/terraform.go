@@ -8,8 +8,8 @@ import (
 )
 
 var terraformFlags struct {
-	reuse bool
-	force bool
+	reuse                 bool
+	ignoreChangeDetection bool
 }
 
 var terraformCmd = &cobra.Command{
@@ -27,7 +27,9 @@ func init() {
 	registerCommonFlags(terraformCmd)
 	terraformCmd.Flags().BoolVarP(&terraformFlags.reuse, "reuse", "", false,
 		"Suppress a terraform init for improved speed (not recommended for production usage)")
-	terraformCmd.Flags().BoolVarP(&terraformFlags.force, "force", "", false, "Force the terraform command to run even if the components are considered up to date")
+	terraformCmd.Flags().BoolVarP(&terraformFlags.ignoreChangeDetection, "ignore-change-detection", "", true,
+		"Ignore change detection to run even if the components are considered up to date. Per default the proxy will ignore change detection")
+
 }
 
 func terraformFunc(cmd *cobra.Command, args []string) error {
@@ -47,7 +49,7 @@ func terraformFunc(cmd *cobra.Command, args []string) error {
 	}
 
 	return b.TerraformProxy(cmd.Context(), dg, &runner.ProxyOptions{
-		Command: args,
-		Force:   terraformFlags.force,
+		Command:               args,
+		IgnoreChangeDetection: terraformFlags.ignoreChangeDetection,
 	})
 }

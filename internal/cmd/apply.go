@@ -10,12 +10,12 @@ import (
 )
 
 var applyFlags struct {
-	reuse       bool
-	autoApprove bool
-	destroy     bool
-	components  []string
-	numWorkers  int
-	force       bool
+	reuse                 bool
+	autoApprove           bool
+	destroy               bool
+	components            []string
+	numWorkers            int
+	ignoreChangeDetection bool
 }
 
 var applyCmd = &cobra.Command{
@@ -36,7 +36,7 @@ func init() {
 	applyCmd.Flags().BoolVarP(&applyFlags.autoApprove, "auto-approve", "", false, "Suppress a terraform init for improved speed (not recommended for production usage)")
 	applyCmd.Flags().BoolVarP(&applyFlags.destroy, "destroy", "", false, "Destroy option is a convenient way to destroy all remote objects managed by this mach config")
 	applyCmd.Flags().StringArrayVarP(&applyFlags.components, "component", "c", nil, "")
-	applyCmd.Flags().BoolVarP(&applyFlags.force, "force", "", false, "Force the apply to run even if the components are considered up to date")
+	applyCmd.Flags().BoolVarP(&applyFlags.ignoreChangeDetection, "ignore-change-detection", "", false, "Ignore change detection to run even if the components are considered up to date")
 }
 
 func applyFunc(cmd *cobra.Command, _ []string) error {
@@ -68,8 +68,8 @@ func applyFunc(cmd *cobra.Command, _ []string) error {
 	}
 
 	return b.TerraformApply(ctx, dg, &runner.ApplyOptions{
-		Destroy:     applyFlags.destroy,
-		AutoApprove: applyFlags.autoApprove,
-		Force:       applyFlags.force,
+		Destroy:               applyFlags.destroy,
+		AutoApprove:           applyFlags.autoApprove,
+		IgnoreChangeDetection: applyFlags.ignoreChangeDetection,
 	})
 }
