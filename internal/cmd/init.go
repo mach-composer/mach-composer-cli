@@ -9,6 +9,10 @@ import (
 	"github.com/mach-composer/mach-composer-cli/internal/runner"
 )
 
+var initFlags struct {
+	force bool
+}
+
 var initCmd = &cobra.Command{
 	Use:   "init",
 	Short: "Initialize site directories Terraform files.",
@@ -26,6 +30,7 @@ var initCmd = &cobra.Command{
 
 func init() {
 	registerCommonFlags(initCmd)
+	initCmd.Flags().BoolVarP(&initFlags.force, "force", "", false, "Force the apply to run even if the components are considered up to date")
 }
 
 func initFunc(cmd *cobra.Command, _ []string) error {

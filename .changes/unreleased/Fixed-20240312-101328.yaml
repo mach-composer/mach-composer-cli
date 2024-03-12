@@ -1,0 +1,4 @@
+kind: Fixed
+body: Made terraform init parallelization configurable, and run in same order as other
+  batches
+time: 2024-03-12T10:13:28.046052321+01:00
