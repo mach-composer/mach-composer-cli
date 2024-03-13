@@ -42,8 +42,8 @@ func Write(ctx context.Context, cfg *config.MachConfig, g *graph.Graph, _ *Gener
 		}
 
 		if site, ok := n.(*graph.Site); ok {
-			for _, c := range site.NestedSiteComponentConfigs {
-				cfg.StateRepository.Alias(n.Identifier(), c.Name)
+			for _, c := range site.NestedNodes {
+				cfg.StateRepository.Alias(n.Identifier(), c.SiteComponentConfig.Name)
 			}
 		}
 	}
@@ -62,11 +62,7 @@ func Write(ctx context.Context, cfg *config.MachConfig, g *graph.Graph, _ *Gener
 				return err
 			}
 
-			hash, err := n.Hash()
-			if err != nil {
-				return err
-			}
-			if err = writeContent(hash, n.Path(), body); err != nil {
+			if err = writeContent(n.Path(), body); err != nil {
 				return err
 			}
 			break
@@ -80,11 +76,7 @@ func Write(ctx context.Context, cfg *config.MachConfig, g *graph.Graph, _ *Gener
 				return err
 			}
 
-			hash, err := n.Hash()
-			if err != nil {
-				return err
-			}
-			if err = writeContent(hash, n.Path(), body); err != nil {
+			if err = writeContent(n.Path(), body); err != nil {
 				return err
 			}
 			break
@@ -97,7 +89,7 @@ func Write(ctx context.Context, cfg *config.MachConfig, g *graph.Graph, _ *Gener
 	return nil
 }
 
-func writeContent(hash, path, content string) error {
+func writeContent(path, content string) error {
 	filename := filepath.Join(path, "main.tf")
 
 	log.Info().Msgf("Writing %s", filename)

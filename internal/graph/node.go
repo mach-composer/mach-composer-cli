@@ -3,7 +3,6 @@ package graph
 import (
 	"github.com/dominikbraun/graph"
 	"github.com/mach-composer/mach-composer-cli/internal/config"
-	"github.com/zclconf/go-cty/cty"
 )
 
 const (
@@ -42,17 +41,8 @@ type Node interface {
 	//related components. This can be compared to other hashes to determine whether a node has changed
 	Hash() (string, error)
 
-	//Outputs returns the outputs of the node
-	Outputs() cty.Value
-
-	//SetOutputs sets the outputs of the node
-	SetOutputs(cty.Value)
-
 	//SetTainted sets the tainted status of the node
 	SetTainted(tainted bool)
-
-	//HasChanges returns true if the node has changes, false otherwise
-	HasChanges() (bool, error)
 
 	//ResetGraph resets the graph of the node. If the graph the node belongs to the node graphs must also be reset,
 	//as these are used to determine the parents of the node
@@ -67,7 +57,6 @@ type baseNode struct {
 	ancestor       Node
 	deploymentType config.DeploymentType
 	tainted        bool
-	outputs        cty.Value
 }
 
 func newBaseNode(graph graph.Graph[string, Node], path string, identifier string, typ Type, ancestor Node, deploymentType config.DeploymentType) baseNode {
@@ -78,20 +67,11 @@ func newBaseNode(graph graph.Graph[string, Node], path string, identifier string
 		ancestor:       ancestor,
 		deploymentType: deploymentType,
 		tainted:        false,
-		outputs:        cty.NilVal,
 	}
 }
 
 func (n *baseNode) resetGraph(ng graph.Graph[string, Node]) {
 	n.graph = ng
-}
-
-func (n *baseNode) Outputs() cty.Value {
-	return n.outputs
-}
-
-func (n *baseNode) SetOutputs(val cty.Value) {
-	n.outputs = val
 }
 
 func (n *baseNode) SetTainted(tainted bool) {

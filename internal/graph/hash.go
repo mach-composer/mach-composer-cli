@@ -6,7 +6,7 @@ import (
 	"github.com/mach-composer/mach-composer-cli/internal/utils"
 )
 
-func hashSiteComponentConfig(sc config.SiteComponentConfig) (string, error) {
+func HashSiteComponentConfig(sc config.SiteComponentConfig) (string, error) {
 	var err error
 	var tfHash string
 

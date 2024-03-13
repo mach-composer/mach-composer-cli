@@ -1,7 +1,9 @@
 package cmd
 
 import (
+	"github.com/mach-composer/mach-composer-cli/internal/batcher"
 	"github.com/mach-composer/mach-composer-cli/internal/graph"
+	"github.com/mach-composer/mach-composer-cli/internal/hash"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 
@@ -10,7 +12,6 @@ import (
 )
 
 var planFlags struct {
-	reuse                 bool
 	components            []string
 	lock                  bool
 	ignoreChangeDetection bool
@@ -30,8 +31,6 @@ var planCmd = &cobra.Command{
 
 func init() {
 	registerCommonFlags(planCmd)
-	planCmd.Flags().BoolVarP(&planFlags.reuse, "reuse", "", false,
-		"Suppress a terraform init for improved speed (not recommended for production usage)")
 	planCmd.Flags().StringArrayVarP(&planFlags.components, "component", "c", nil, "")
 	planCmd.Flags().BoolVarP(&planFlags.lock, "lock", "", true,
 		"Acquire a lock on the state file before running terraform plan")
@@ -57,13 +56,13 @@ func planFunc(cmd *cobra.Command, _ []string) error {
 		return err
 	}
 
-	b := runner.NewGraphRunner(commonFlags.workers)
+	r := runner.NewGraphRunner(
+		batcher.NaiveBatchFunc(),
+		hash.Factory(cfg),
+		commonFlags.workers,
+	)
 
-	if err = checkReuse(ctx, dg, b, applyFlags.reuse); err != nil {
-		return err
-	}
-
-	return b.TerraformPlan(ctx, dg, &runner.PlanOptions{
+	return r.TerraformPlan(ctx, dg, &runner.PlanOptions{
 		Lock:                  planFlags.lock,
 		IgnoreChangeDetection: planFlags.ignoreChangeDetection,
 	})

@@ -21,8 +21,3 @@ func NewProject(g graph.Graph[string, Node], path, identifier string, deployment
 func (p *Project) Hash() (string, error) {
 	return "", nil
 }
-
-// HasChanges always returns false, as any change in the project config will be picked up at the site or site component level
-func (p *Project) HasChanges() (bool, error) {
-	return false, nil
-}

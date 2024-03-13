@@ -2,7 +2,7 @@ package graph
 
 import (
 	"github.com/dominikbraun/graph"
-	"github.com/zclconf/go-cty/cty"
+	"github.com/rs/zerolog/log"
 )
 
 type Path []string
@@ -27,21 +27,7 @@ func fetchPathsToTarget(source, target string, pm map[string]map[string]graph.Ed
 	return paths
 }
 
-func HasMissingParentOutputs(n Node) (bool, error) {
-	if n.Type() != SiteComponentType {
-		return false, nil
-	}
-
-	parents, err := n.Parents()
-	if err != nil {
-		return false, err
-	}
-
-	for _, p := range parents {
-		if p.Outputs() == cty.NilVal {
-			return true, nil
-		}
-	}
-
+func HasMissingParentOutputs(_ Node) (bool, error) {
+	log.Warn().Msg("We don't actually check if a node has missing parent outputs, so we always return false here. This is a stub.")
 	return false, nil
 }

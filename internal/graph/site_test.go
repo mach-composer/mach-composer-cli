@@ -9,7 +9,7 @@ import (
 
 func TestSite_Hash_NestedComponentConfigSorted(t *testing.T) {
 	su := NewSite(nil, "", "", "", nil, config.SiteConfig{})
-	su.NestedSiteComponentConfigs = []config.SiteComponentConfig{
+	su.NestedNodes = []config.SiteComponentConfig{
 		{Name: "b", Definition: &config.ComponentConfig{Name: "b", Source: "testdata/dirhash"}},
 		{Name: "a", Definition: &config.ComponentConfig{Name: "a", Source: "testdata/dirhash"}},
 	}
@@ -17,7 +17,7 @@ func TestSite_Hash_NestedComponentConfigSorted(t *testing.T) {
 	unsortedHash, err := su.Hash()
 
 	s := NewSite(nil, "", "", "", nil, config.SiteConfig{})
-	s.NestedSiteComponentConfigs = []config.SiteComponentConfig{
+	s.NestedNodes = []config.SiteComponentConfig{
 		{Name: "a", Definition: &config.ComponentConfig{Name: "a", Source: "testdata/dirhash"}},
 		{Name: "b", Definition: &config.ComponentConfig{Name: "b", Source: "testdata/dirhash"}},
 	}
@@ -29,7 +29,7 @@ func TestSite_Hash_NestedComponentConfigSorted(t *testing.T) {
 
 func TestSite_HasChanges_NoHash(t *testing.T) {
 	s := NewSite(nil, "", "", "", nil, config.SiteConfig{})
-	s.NestedSiteComponentConfigs = []config.SiteComponentConfig{
+	s.NestedNodes = []config.SiteComponentConfig{
 		{Name: "b", Definition: &config.ComponentConfig{Name: "b", Source: "testdata/dirhash"}},
 		{Name: "a", Definition: &config.ComponentConfig{Name: "a", Source: "testdata/dirhash"}},
 	}
@@ -52,7 +52,7 @@ func TestSite_HasChanges_Error(t *testing.T) {
 
 func TestSite_HasChanges_True(t *testing.T) {
 	s := NewSite(nil, "", "", "", nil, config.SiteConfig{})
-	s.NestedSiteComponentConfigs = []config.SiteComponentConfig{
+	s.NestedNodes = []config.SiteComponentConfig{
 		{Name: "b", Definition: &config.ComponentConfig{Name: "b", Source: "testdata/dirhash"}},
 		{Name: "a", Definition: &config.ComponentConfig{Name: "a", Source: "testdata/dirhash"}},
 	}
@@ -71,7 +71,7 @@ func TestSite_HasChanges_True(t *testing.T) {
 
 func TestSite_HasChanges_False(t *testing.T) {
 	s := NewSite(nil, "", "", "", nil, config.SiteConfig{})
-	s.NestedSiteComponentConfigs = []config.SiteComponentConfig{
+	s.NestedNodes = []config.SiteComponentConfig{
 		{Name: "b", Definition: &config.ComponentConfig{Name: "b", Source: "testdata/dirhash"}},
 		{Name: "a", Definition: &config.ComponentConfig{Name: "a", Source: "testdata/dirhash"}},
 	}

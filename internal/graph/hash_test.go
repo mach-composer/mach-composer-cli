@@ -10,7 +10,7 @@ import (
 func TestHashSiteComponentConfigOk(t *testing.T) {
 	val, _ := variable.NewScalarVariable("value1")
 
-	h, err := hashSiteComponentConfig(config.SiteComponentConfig{
+	h, err := HashSiteComponentConfig(config.SiteComponentConfig{
 		Name: "site-component-1",
 		Variables: variable.VariablesMap{
 			"var1": val,
@@ -40,11 +40,11 @@ func TestHashSiteComponentConfigChanged(t *testing.T) {
 		},
 	}
 
-	h1, err := hashSiteComponentConfig(cfg)
+	h1, err := HashSiteComponentConfig(cfg)
 
 	cfg.DependsOn = []string{"site-component-2"}
 
-	h2, err := hashSiteComponentConfig(cfg)
+	h2, err := HashSiteComponentConfig(cfg)
 
 	assert.NoError(t, err)
 	assert.NotEqual(t, h1, h2)
@@ -64,7 +64,7 @@ func TestHashSiteComponentConfigGithubSource(t *testing.T) {
 		},
 	}
 
-	h, err := hashSiteComponentConfig(cfg)
+	h, err := HashSiteComponentConfig(cfg)
 
 	assert.NoError(t, err)
 	assert.Equal(t, "de87afc8419dcd29e3e8cbe2e47b5026593ac0975555fe3d0f341eb3e0cf5785", h)

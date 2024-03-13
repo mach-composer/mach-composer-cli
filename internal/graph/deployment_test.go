@@ -55,8 +55,8 @@ func TestToDeploymentGraphSimple(t *testing.T) {
 	assert.Equal(t, "main/site-1", siteNode.Path())
 	assert.IsType(t, &Site{}, siteNode)
 	assert.Equal(t, cfg.Sites[0], siteNode.(*Site).SiteConfig)
-	assert.Equal(t, 1, len(siteNode.(*Site).NestedSiteComponentConfigs))
-	assert.Equal(t, "site-component-1", siteNode.(*Site).NestedSiteComponentConfigs[0].Name)
+	assert.Equal(t, 1, len(siteNode.(*Site).NestedNodes))
+	assert.Equal(t, "site-component-1", siteNode.(*Site).NestedNodes[0].Name)
 
 	siteComponentNode, err := g.Vertex("main/site-1/site-component-2")
 	assert.NoError(t, err)
