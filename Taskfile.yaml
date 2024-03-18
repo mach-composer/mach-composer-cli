@@ -23,6 +23,9 @@ tasks:
   test:
     cmd: go test -race ./...
 
+  test:integration:
+    cmd: go test -tags=integration ./...
+
   cover:
     cmd: go test -race -coverprofile=coverage.out -covermode=atomic ./...
 
