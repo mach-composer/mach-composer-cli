@@ -66,11 +66,6 @@ func (gr *GraphRunner) run(ctx context.Context, g *graph.Graph, f executorFunc, 
 			go func(ctx context.Context, n graph.Node) {
 				defer wg.Done()
 				defer sem.Release(1)
-				defer func() {
-					if err := gr.hash.Store(ctx, n); err != nil {
-						log.Warn().Err(err).Msgf("Failed to store hash for %s", n.Identifier())
-					}
-				}()
 
 				log.Info().Msgf("Running command on %s", n.Identifier())
 
@@ -113,7 +108,17 @@ func (gr *GraphRunner) TerraformApply(ctx context.Context, dg *graph.Graph, opts
 			log.Info().Msgf("Skipping terraform init for %s", n.Path())
 		}
 
-		return terraform.Apply(ctx, n.Path(), opts.Destroy, opts.AutoApprove)
+		out, err := terraform.Apply(ctx, n.Path(), opts.Destroy, opts.AutoApprove)
+		if err != nil {
+			return out, err
+		}
+
+		log.Info().Msgf("Storing new hash for %s", n.Path())
+		if err = gr.hash.Store(ctx, n); err != nil {
+			log.Warn().Err(err).Msgf("Failed to store hash for %s", n.Identifier())
+		}
+		return out, nil
+
 	}, opts.IgnoreChangeDetection); err != nil {
 		return err
 	}
@@ -132,7 +137,7 @@ func (gr *GraphRunner) TerraformPlan(ctx context.Context, dg *graph.Graph, opts 
 			log.Info().Msgf("Skipping terraform init for %s", n.Path())
 		}
 
-		missing, err := graph.HasMissingParentOutputs(n)
+		missing, err := terraformCanPlan(ctx, n)
 		if err != nil {
 			return "", err
 		}

@@ -3,12 +3,46 @@ package graph
 import (
 	"github.com/dominikbraun/graph"
 	"github.com/stretchr/testify/mock"
-	"github.com/zclconf/go-cty/cty"
 )
+
+type EdgeMock struct {
+	Source string
+	Target string
+}
+
+func CreateGraphMock(
+	vertices map[string]Node,
+	startNode Node,
+	edges ...EdgeMock,
+) *Graph {
+	g := graph.New(func(n Node) string { return n.Path() }, graph.Directed(), graph.Tree(), graph.PreventCycles())
+
+	for _, v := range vertices {
+		_ = g.AddVertex(v)
+	}
+
+	for _, e := range edges {
+		_ = g.AddEdge(e.Source, e.Target)
+	}
+
+	return &Graph{
+		Graph:     g,
+		StartNode: startNode,
+	}
+}
 
 type NodeMock struct {
 	mock.Mock
 	tainted bool
+	oldHash string
+}
+
+func (n *NodeMock) SetOldHash(hash string) {
+	n.oldHash = hash
+}
+
+func (n *NodeMock) GetOldHash() string {
+	return n.oldHash
 }
 
 func (n *NodeMock) Path() string {
@@ -46,17 +80,8 @@ func (n *NodeMock) Tainted() bool {
 }
 
 func (n *NodeMock) Hash() (string, error) {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (n *NodeMock) Outputs() cty.Value {
 	args := n.Called()
-	return args.Get(0).(cty.Value)
-}
-
-func (n *NodeMock) SetOutputs(value cty.Value) {
-	_ = n.Called(value)
+	return args.String(0), args.Error(1)
 }
 
 func (n *NodeMock) SetTainted(tainted bool) {

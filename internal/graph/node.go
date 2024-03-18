@@ -47,6 +47,12 @@ type Node interface {
 	//ResetGraph resets the graph of the node. If the graph the node belongs to the node graphs must also be reset,
 	//as these are used to determine the parents of the node
 	resetGraph(graph.Graph[string, Node])
+
+	//SetOldHash sets the old hash of the node. This is used to determine if the node has changed
+	SetOldHash(hash string)
+
+	//GetOldHash returns the old hash of the node
+	GetOldHash() string
 }
 
 type baseNode struct {
@@ -57,6 +63,7 @@ type baseNode struct {
 	ancestor       Node
 	deploymentType config.DeploymentType
 	tainted        bool
+	oldHash        string
 }
 
 func newBaseNode(graph graph.Graph[string, Node], path string, identifier string, typ Type, ancestor Node, deploymentType config.DeploymentType) baseNode {
@@ -130,4 +137,12 @@ func (n *baseNode) Independent() bool {
 	}
 
 	return false
+}
+
+func (n *baseNode) SetOldHash(hash string) {
+	n.oldHash = hash
+}
+
+func (n *baseNode) GetOldHash() string {
+	return n.oldHash
 }

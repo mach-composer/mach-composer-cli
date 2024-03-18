@@ -23,14 +23,14 @@ func NewSite(g graph.Graph[string, Node], path, identifier string, deploymentTyp
 func (s *Site) Hash() (string, error) {
 	SortSiteComponentNodes(s.NestedNodes)
 
-	var componentHashes []string
+	var hashes []string
 	for _, component := range s.NestedNodes {
 		h, err := HashSiteComponentConfig(component.SiteComponentConfig)
 		if err != nil {
 			return "", err
 		}
-		componentHashes = append(componentHashes, h)
+		hashes = append(hashes, h)
 	}
 
-	return utils.ComputeHash(componentHashes)
+	return utils.ComputeHash(hashes)
 }

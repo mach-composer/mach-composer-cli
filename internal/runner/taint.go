@@ -42,10 +42,14 @@ func taintNode(ctx context.Context, hashFetcher hash.Handler, g *graph.Graph, pa
 	if err != nil {
 		return err
 	}
+	n.SetOldHash(oldHash)
 
-	isTainted, err := determineTainted(oldHash, n, parentTainted)
-	if err != nil {
-		return err
+	var isTainted = false
+	if n.Type() != graph.ProjectType {
+		isTainted, err = determineTainted(oldHash, n, parentTainted)
+		if err != nil {
+			return err
+		}
 	}
 	n.SetTainted(isTainted)
 

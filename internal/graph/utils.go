@@ -2,7 +2,6 @@ package graph
 
 import (
 	"github.com/dominikbraun/graph"
-	"github.com/rs/zerolog/log"
 )
 
 type Path []string
@@ -25,9 +24,4 @@ func fetchPathsToTarget(source, target string, pm map[string]map[string]graph.Ed
 	}
 
 	return paths
-}
-
-func HasMissingParentOutputs(_ Node) (bool, error) {
-	log.Warn().Msg("We don't actually check if a node has missing parent outputs, so we always return false here. This is a stub.")
-	return false, nil
 }
