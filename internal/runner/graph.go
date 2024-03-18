@@ -137,12 +137,12 @@ func (gr *GraphRunner) TerraformPlan(ctx context.Context, dg *graph.Graph, opts 
 			log.Info().Msgf("Skipping terraform init for %s", n.Path())
 		}
 
-		missing, err := terraformCanPlan(ctx, n)
+		canPlan, err := terraformCanPlan(ctx, n)
 		if err != nil {
 			return "", err
 		}
 
-		if missing {
+		if !canPlan {
 			log.Info().Msgf("Skipping planning %s because it has missing outputs", n.Path())
 			return "", nil
 		}

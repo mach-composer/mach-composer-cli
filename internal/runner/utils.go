@@ -29,12 +29,10 @@ func terraformCanPlan(ctx context.Context, n graph.Node) (bool, error) {
 	for _, parent := range parents {
 		v, err := utils.GetTerraformOutputs(ctx, parent.Path())
 		if err != nil {
-			log.Warn().Err(err).Msgf("Failed to get outputs for %s", parent.Identifier())
 			return false, nil
 		}
 		a := v.Type().AttributeTypes()
 		if len(a) == 0 {
-			log.Warn().Err(err).Msgf("Empty outputs for %s", parent.Identifier())
 			return false, nil
 		}
 	}
