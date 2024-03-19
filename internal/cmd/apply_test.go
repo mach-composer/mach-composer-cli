@@ -61,7 +61,7 @@ func (s *ApplyTestSuite) TestApplySimple() {
 	defer cleanWorkingDir(workdir)
 
 	cmd := RootCmd
-	_ = os.Setenv("HASH_FILE", path.Join(workdir, "hashes.json"))
+	_ = os.Setenv("MC_HASH_FILE", path.Join(workdir, "hashes.json"))
 	cmd.SetArgs([]string{
 		"apply",
 		"--output-path", path.Join(workdir, "deployments"),
@@ -83,7 +83,7 @@ func (s *ApplyTestSuite) TestApplySplitState() {
 	defer cleanWorkingDir(workdir)
 
 	cmd := RootCmd
-	_ = os.Setenv("HASH_FILE", path.Join(workdir, "hashes.json"))
+	_ = os.Setenv("MC_HASH_FILE", path.Join(workdir, "hashes.json"))
 	_ = os.Setenv("STATES_PATH", path.Join(workdir, "states"))
 	cmd.SetArgs([]string{
 		"apply",
@@ -107,7 +107,7 @@ func (s *ApplyTestSuite) TestApplyNoHashesFile() {
 	defer cleanWorkingDir(workdir)
 
 	cmd := RootCmd
-	_ = os.Setenv("HASH_FILE", path.Join(workdir, "hashes.json"))
+	_ = os.Setenv("MC_HASH_FILE", path.Join(workdir, "hashes.json"))
 	cmd.SetArgs([]string{
 		"apply",
 		"--output-path", path.Join(workdir, "deployments"),

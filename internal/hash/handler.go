@@ -7,7 +7,7 @@ import (
 	"os"
 )
 
-const defaultHashFile = ".mach/hashes.json"
+const defaultHashFile = ".mach-composer/hashes.json"
 
 type Handler interface {
 	Store(ctx context.Context, n graph.Node) error
@@ -15,7 +15,7 @@ type Handler interface {
 }
 
 func Factory(_ *config.MachConfig) Handler {
-	hashFile := os.Getenv("HASH_FILE")
+	hashFile := os.Getenv("MC_HASH_FILE")
 	if hashFile == "" {
 		hashFile = defaultHashFile
 	}
