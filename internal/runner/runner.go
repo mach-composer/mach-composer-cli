@@ -6,12 +6,14 @@ import (
 )
 
 type ApplyOptions struct {
+	ForceInit             bool
 	IgnoreChangeDetection bool
 	Destroy               bool
 	AutoApprove           bool
 }
 
 type PlanOptions struct {
+	ForceInit             bool
 	IgnoreChangeDetection bool
 	Lock                  bool
 }

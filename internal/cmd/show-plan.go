@@ -50,7 +50,7 @@ func showPlanFunc(cmd *cobra.Command, _ []string) error {
 	)
 
 	return r.TerraformShow(ctx, dg, &runner.ShowPlanOptions{
-		NoColor: showPlanFlags.noColor,
-		Force:   showPlanFlags.ignoreChangeDetection,
+		NoColor:               showPlanFlags.noColor,
+		IgnoreChangeDetection: showPlanFlags.ignoreChangeDetection,
 	})
 }

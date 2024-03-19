@@ -12,6 +12,7 @@ import (
 )
 
 var planFlags struct {
+	forceInit             bool
 	components            []string
 	lock                  bool
 	ignoreChangeDetection bool
@@ -31,9 +32,9 @@ var planCmd = &cobra.Command{
 
 func init() {
 	registerCommonFlags(planCmd)
+	planCmd.Flags().BoolVarP(&planFlags.forceInit, "force-init", "", false, "Force terraform initialization. By default mach-composer will reuse existing terraform resources")
 	planCmd.Flags().StringArrayVarP(&planFlags.components, "component", "c", nil, "")
-	planCmd.Flags().BoolVarP(&planFlags.lock, "lock", "", true,
-		"Acquire a lock on the state file before running terraform plan")
+	planCmd.Flags().BoolVarP(&planFlags.lock, "lock", "", true, "Acquire a lock on the state file before running terraform plan")
 	planCmd.Flags().BoolVarP(&planFlags.ignoreChangeDetection, "ignore-change-detection", "", false, "Ignore change detection to run even if the components are considered up to date")
 }
 
@@ -63,6 +64,7 @@ func planFunc(cmd *cobra.Command, _ []string) error {
 	)
 
 	return r.TerraformPlan(ctx, dg, &runner.PlanOptions{
+		ForceInit:             planFlags.forceInit,
 		Lock:                  planFlags.lock,
 		IgnoreChangeDetection: planFlags.ignoreChangeDetection,
 	})

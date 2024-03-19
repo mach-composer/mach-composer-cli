@@ -99,7 +99,7 @@ func (gr *GraphRunner) run(ctx context.Context, g *graph.Graph, f executorFunc, 
 
 func (gr *GraphRunner) TerraformApply(ctx context.Context, dg *graph.Graph, opts *ApplyOptions) error {
 	if err := gr.run(ctx, dg, func(ctx context.Context, n graph.Node) (string, error) {
-		if !terraformIsInitialized(n.Path()) || opts.Force {
+		if !terraformIsInitialized(n.Path()) || opts.ForceInit {
 			log.Info().Msgf("Running terraform init for %s", n.Path())
 			if out, err := terraform.Init(ctx, n.Path()); err != nil {
 				return out, err
@@ -128,7 +128,7 @@ func (gr *GraphRunner) TerraformApply(ctx context.Context, dg *graph.Graph, opts
 
 func (gr *GraphRunner) TerraformPlan(ctx context.Context, dg *graph.Graph, opts *PlanOptions) error {
 	if err := gr.run(ctx, dg, func(ctx context.Context, n graph.Node) (string, error) {
-		if !terraformIsInitialized(n.Path()) || opts.Force {
+		if !terraformIsInitialized(n.Path()) || opts.ForceInit {
 			log.Info().Msgf("Running terraform init for %s", n.Path())
 			if out, err := terraform.Init(ctx, n.Path()); err != nil {
 				return out, err

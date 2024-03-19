@@ -48,7 +48,7 @@ func terraformFunc(cmd *cobra.Command, args []string) error {
 	)
 
 	return r.TerraformProxy(ctx, dg, &runner.ProxyOptions{
-		Command: args,
-		Force:   terraformFlags.ignoreChangeDetection,
+		Command:               args,
+		IgnoreChangeDetection: terraformFlags.ignoreChangeDetection,
 	})
 }

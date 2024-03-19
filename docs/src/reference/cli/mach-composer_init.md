@@ -10,6 +10,7 @@ mach-composer init [flags]
 
 ```
   -f, --file string          YAML file to parse. (default "main.yml")
+      --force                Force the apply to run even if the components are considered up to date
   -h, --help                 help for init
       --ignore-version       Skip MACH composer version check
       --output-path string   Outputs path to store the generated files. (default "deployments")
