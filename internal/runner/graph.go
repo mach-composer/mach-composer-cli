@@ -171,6 +171,15 @@ func (gr *GraphRunner) TerraformProxy(ctx context.Context, dg *graph.Graph, opts
 
 func (gr *GraphRunner) TerraformShow(ctx context.Context, dg *graph.Graph, opts *ShowPlanOptions) error {
 	if err := gr.run(ctx, dg, func(ctx context.Context, n graph.Node) (string, error) {
+		if !terraformIsInitialized(n.Path()) || opts.ForceInit {
+			log.Info().Msgf("Running terraform init for %s", n.Path())
+			if out, err := terraform.Init(ctx, n.Path()); err != nil {
+				return out, err
+			}
+		} else {
+			log.Info().Msgf("Skipping terraform init for %s", n.Path())
+		}
+
 		return terraform.Show(ctx, n.Path(), opts.NoColor)
 	}, opts.IgnoreChangeDetection); err != nil {
 		return err

@@ -24,6 +24,7 @@ type ProxyOptions struct {
 }
 
 type ShowPlanOptions struct {
+	ForceInit             bool
 	IgnoreChangeDetection bool
 	NoColor               bool
 }

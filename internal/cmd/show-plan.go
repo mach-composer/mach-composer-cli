@@ -10,6 +10,7 @@ import (
 )
 
 var showPlanFlags struct {
+	forceInit             bool
 	noColor               bool
 	ignoreChangeDetection bool
 }
@@ -28,6 +29,7 @@ var showPlanCmd = &cobra.Command{
 
 func init() {
 	registerCommonFlags(showPlanCmd)
+	showPlanCmd.Flags().BoolVarP(&showPlanFlags.forceInit, "force-init", "", false, "Force terraform initialization. By default mach-composer will reuse existing terraform resources")
 	showPlanCmd.Flags().BoolVarP(&showPlanFlags.noColor, "no-color", "", false, "Disable color output")
 	showPlanCmd.Flags().BoolVarP(&showPlanFlags.ignoreChangeDetection, "ignore-change-detection", "", false,
 		"Ignore change detection to run even if the components are considered up to date")
@@ -50,6 +52,7 @@ func showPlanFunc(cmd *cobra.Command, _ []string) error {
 	)
 
 	return r.TerraformShow(ctx, dg, &runner.ShowPlanOptions{
+		ForceInit:             showPlanFlags.forceInit,
 		NoColor:               showPlanFlags.noColor,
 		IgnoreChangeDetection: showPlanFlags.ignoreChangeDetection,
 	})
