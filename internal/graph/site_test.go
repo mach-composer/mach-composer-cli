@@ -79,7 +79,7 @@ func TestSite_HasChanges_False(t *testing.T) {
 	s.outputs = cty.ObjectVal(map[string]cty.Value{
 		"hash": cty.ObjectVal(map[string]cty.Value{
 			"sensitive": cty.BoolVal(false),
-			"value":     cty.StringVal("af53b20696c3bd5fa66c1c269968b6ad84a1c087b600823beab4bb17153d5cd5"),
+			"value":     cty.StringVal("6b70e89e46522af5c0dad35f403ed12c13e891cef0f1360024be3645754fa53e"),
 			"type":      cty.StringVal("some-type"),
 		}),
 	})

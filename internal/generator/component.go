@@ -155,7 +155,6 @@ func renderComponentModule(_ context.Context, cfg *config.MachConfig, site *conf
 		ComponentVersion: siteComponent.Definition.Version,
 		SiteName:         site.Identifier,
 		Environment:      cfg.Global.Environment,
-		Source:           siteComponent.Definition.Source,
 		PluginResources:  []string{},
 		PluginVariables:  []string{},
 		PluginDependsOn:  []string{},
@@ -204,12 +203,11 @@ func renderComponentModule(_ context.Context, cfg *config.MachConfig, site *conf
 		tc.ComponentSecrets = val
 	}
 
-	if siteComponent.Definition.IsGitSource() {
-		// When using Git, we will automatically add a reference to the string
-		// so that the given version is used when fetching the module itself
-		// from Git as well
-		tc.Source += fmt.Sprintf("?ref=%s", siteComponent.Definition.Version)
+	vs, err := siteComponent.Definition.Source.GetVersionSource(siteComponent.Definition.Version)
+	if err != nil {
+		return "", err
 	}
+	tc.Source = vs
 
 	val, err := utils.RenderGoTemplate(string(tpl), tc)
 	if err != nil {

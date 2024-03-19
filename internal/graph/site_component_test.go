@@ -15,7 +15,7 @@ func TestSiteComponent_Hash_Ok(t *testing.T) {
 	hash, err := su.Hash()
 
 	assert.NoError(t, err)
-	assert.Equal(t, "7da132f84ee30a8cf451e9c70d3c5107ebc0c62c836183b6bc20081a38d2f77c", hash, "Hashes should be equal")
+	assert.Equal(t, "6c477d3042a9c36f088df7375cce8fed8e3a6c71d1c0da17d36e69593b8aafd7", hash, "Hashes should be equal")
 }
 
 func TestSiteComponent_HasChanges_HashNotFound(t *testing.T) {
@@ -69,7 +69,7 @@ func TestSiteComponent_HasChanges_False(t *testing.T) {
 	su.outputs = cty.ObjectVal(map[string]cty.Value{
 		"hash": cty.ObjectVal(map[string]cty.Value{
 			"sensitive": cty.BoolVal(false),
-			"value":     cty.StringVal("7da132f84ee30a8cf451e9c70d3c5107ebc0c62c836183b6bc20081a38d2f77c"),
+			"value":     cty.StringVal("6c477d3042a9c36f088df7375cce8fed8e3a6c71d1c0da17d36e69593b8aafd7"),
 			"type":      cty.StringVal("some-type"),
 		}),
 	})

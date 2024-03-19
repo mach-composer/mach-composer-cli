@@ -23,7 +23,7 @@ func TestHashSiteComponentConfigOk(t *testing.T) {
 	})
 
 	assert.NoError(t, err)
-	assert.Equal(t, "930c819f53a9b36fa7dc3857acb2d567dc3dd0c8c3f41922e957ea9fe4b066ea", h)
+	assert.Equal(t, "28ea13834f4d36a8799267a372d3a8d4bb8353097fcbd3b2445005b702e9ac8b", h)
 }
 
 func TestHashSiteComponentConfigChanged(t *testing.T) {
@@ -60,12 +60,12 @@ func TestHashSiteComponentConfigGithubSource(t *testing.T) {
 		Secrets: variable.VariablesMap{},
 		Definition: &config.ComponentConfig{
 			Name:   "site-component-1",
-			Source: "git@github.com:hashicorp/example.git",
+			Source: "git::github.com:hashicorp/example.git",
 		},
 	}
 
 	h, err := hashSiteComponentConfig(cfg)
 
 	assert.NoError(t, err)
-	assert.Equal(t, "5fa49450032642f53ca6df3cd853530cbd0f2b6468d250e7603980007b91bf7a", h)
+	assert.Equal(t, "de87afc8419dcd29e3e8cbe2e47b5026593ac0975555fe3d0f341eb3e0cf5785", h)
 }

@@ -4,29 +4,27 @@ import (
 	"github.com/mach-composer/mach-composer-cli/internal/config"
 	"github.com/mach-composer/mach-composer-cli/internal/config/variable"
 	"github.com/mach-composer/mach-composer-cli/internal/utils"
-	"github.com/rs/zerolog/log"
 )
 
 func hashSiteComponentConfig(sc config.SiteComponentConfig) (string, error) {
 	var err error
 	var tfHash string
 
-	if !sc.Definition.IsGitSource() {
-		tfHash, err = utils.ComputeDirHash(sc.Definition.Source)
+	// If the source is local, we include the hash of the directory.
+	if sc.Definition.Source.IsType(config.SourceTypeLocal) {
+		tfHash, err = utils.ComputeDirHash(string(sc.Definition.Source))
 		if err != nil {
 			return "", err
 		}
-	} else {
-		log.Debug().Msgf("Site component %s is a git source, so could not generate hash for terraform code", sc.Name)
 	}
 
 	return utils.ComputeHash(struct {
 		Name       string `json:"name"`
 		Definition struct {
-			Name    string `json:"name"`
-			Version string `json:"version"`
-			Source  string `json:"source"`
-			Branch  string `json:"branch"`
+			Name    string        `json:"name"`
+			Version string        `json:"version"`
+			Source  config.Source `json:"source"`
+			Branch  string        `json:"branch"`
 		} `json:"definition"`
 		Variables variable.VariablesMap `json:"variables"`
 		Secrets   variable.VariablesMap `json:"secrets"`
@@ -35,10 +33,10 @@ func hashSiteComponentConfig(sc config.SiteComponentConfig) (string, error) {
 	}{
 		Name: sc.Name,
 		Definition: struct {
-			Name    string `json:"name"`
-			Version string `json:"version"`
-			Source  string `json:"source"`
-			Branch  string `json:"branch"`
+			Name    string        `json:"name"`
+			Version string        `json:"version"`
+			Source  config.Source `json:"source"`
+			Branch  string        `json:"branch"`
 		}{
 			Name:    sc.Definition.Name,
 			Version: sc.Definition.Version,
