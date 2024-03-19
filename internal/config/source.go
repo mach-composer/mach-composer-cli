@@ -93,8 +93,7 @@ func (s *Source) GetVersionSource(version string) (string, error) {
 	case SourceTypeGCS:
 		// For GCS and AWS we assume that the version is the name of the zip file
 		return fmt.Sprintf("%s/%s.zip", string(*s), version), nil
-	default:
-		// For all other sources we will just return the source as is
-		return string(*s), nil
 	}
+
+	return "", fmt.Errorf("unsupported source type: %s", t)
 }

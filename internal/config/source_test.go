@@ -19,6 +19,8 @@ func TestType(t *testing.T) {
 		{source: Source("bitbucket.org/hashicorp/terraform-consul-aws"), expected: SourceTypeBitbucket},
 		{source: Source("git::https://example.com/vpc.git"), expected: SourceTypeGit},
 		{source: Source("hg::http://example.com/vpc.hg"), expected: SourceTypeMercurial},
+		{source: Source("http://example.com/vpc.zip"), expected: SourceTypeHttp},
+		{source: Source("https://example.com/vpc.zip"), expected: SourceTypeHttp},
 		{source: Source("s3::https://github.com/my/project"), expected: SourceTypeS3},
 		{source: Source("gcs::https://github.com/my/project"), expected: SourceTypeGCS},
 		{source: Source("bla::https://github.com/my/project"), error: true},
@@ -52,13 +54,17 @@ func TestGetVersionSource(t *testing.T) {
 	}{
 		{source: Source("./local/file"), expected: mustAbs("./local/file")},
 		{source: Source("../local/file"), expected: mustAbs("../local/file")},
-		{source: Source("git@github.com:hashicorp/example.git"), expected: "git@github.com:hashicorp/example.git"},
-		{source: Source("github.com/hashicorp/example"), expected: "github.com/hashicorp/example"},
-		{source: Source("bitbucket.org/hashicorp/terraform-consul-aws"), expected: "bitbucket.org/hashicorp/terraform-consul-aws"},
 		{source: Source("git::https://example.com/vpc.git"), expected: "git::https://example.com/vpc.git?ref=v1.0.0"},
-		{source: Source("hg::http://example.com/vpc.hg"), expected: "hg::http://example.com/vpc.hg"},
 		{source: Source("s3::https://github.com/my/project"), expected: "s3::https://github.com/my/project/v1.0.0.zip"},
 		{source: Source("gcs::https://github.com/my/project"), expected: "gcs::https://github.com/my/project/v1.0.0.zip"},
+
+		//Unsupported sources. We throw an error instead, as we don't know how to handle them yet
+		{source: Source("http://example.com/vpc.zip"), error: true},
+		{source: Source("https://example.com/vpc.zip"), error: true},
+		{source: Source("git@github.com:hashicorp/example.git"), error: true},
+		{source: Source("github.com/hashicorp/example"), error: true},
+		{source: Source("bitbucket.org/hashicorp/terraform-consul-aws"), error: true},
+		{source: Source("hg::http://example.com/vpc.hg"), error: true},
 		{source: Source("bla::https://github.com/my/project"), error: true},
 	}
 	for _, tc := range tests {
