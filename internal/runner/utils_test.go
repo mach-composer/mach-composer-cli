@@ -11,6 +11,7 @@ import (
 
 func TestTerraformCanPlanNoParents(t *testing.T) {
 	n := new(graph.NodeMock)
+	n.On("Type").Return(graph.ProjectType).Once()
 	n.On("Parents").Return([]graph.Node{}, nil).Once()
 
 	canPlan, err := terraformCanPlan(context.Background(), n)
