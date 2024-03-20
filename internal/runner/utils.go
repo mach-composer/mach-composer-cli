@@ -26,6 +26,11 @@ func terraformCanPlan(ctx context.Context, n graph.Node) (bool, error) {
 		return false, err
 	}
 
+	// Sites can always plan, so no need to check
+	if n.Type() == graph.SiteType {
+		return true, nil
+	}
+
 	for _, parent := range parents {
 		v, err := utils.GetTerraformOutputs(ctx, parent.Path())
 		if err != nil {
