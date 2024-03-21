@@ -8,5 +8,5 @@ import (
 func Init(ctx context.Context, path string) (string, error) {
 	args := []string{"init"}
 
-	return utils.RunTerraform(ctx, path, true, args...)
+	return utils.RunTerraform(ctx, path, false, args...)
 }
