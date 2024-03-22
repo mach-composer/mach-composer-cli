@@ -292,7 +292,7 @@ func getGitCachePath(origin string) (string, error) {
 	}
 
 	base := strings.TrimSuffix(origin, filepath.Ext(origin))
-	path := filepath.Join(cwd, ".mach", base)
+	path := filepath.Join(cwd, ".mach-composer", base)
 	if err := os.MkdirAll(path, 0700); err != nil {
 		return "", err
 	}

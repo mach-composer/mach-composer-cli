@@ -70,16 +70,7 @@ func renderSiteComponent(ctx context.Context, cfg *config.MachConfig, n graph.No
 	}
 	result = append(result, val)
 
-	// Render hash output
-	val, err = renderHashOutput(n, []config.SiteComponentConfig{siteComponent})
-	if err != nil {
-		return "", fmt.Errorf("failed to render hash output: %w", err)
-	}
-	result = append(result, val)
-
-	content := strings.Join(result, "\n")
-
-	return content, nil
+	return strings.Join(result, "\n"), nil
 }
 
 // renderSiteComponentTerraformConfig uses templates/terraform.tmpl to generate a terraform snippet for each component

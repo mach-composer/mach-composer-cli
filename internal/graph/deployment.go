@@ -75,10 +75,7 @@ func reduceNodes(g *Graph) error {
 				return true
 			}
 
-			siteNode.NestedSiteComponentConfigs = append(
-				siteNode.NestedSiteComponentConfigs,
-				siteComponentNode.SiteComponentConfig,
-			)
+			siteNode.NestedNodes = append(siteNode.NestedNodes, siteComponentNode)
 
 			am, _ := g.Graph.AdjacencyMap()
 			pm, _ := g.Graph.PredecessorMap()

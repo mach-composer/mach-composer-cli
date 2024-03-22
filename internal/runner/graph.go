@@ -3,8 +3,10 @@ package runner
 import (
 	"context"
 	"fmt"
+	"github.com/mach-composer/mach-composer-cli/internal/batcher"
 	"github.com/mach-composer/mach-composer-cli/internal/cli"
 	"github.com/mach-composer/mach-composer-cli/internal/graph"
+	"github.com/mach-composer/mach-composer-cli/internal/hash"
 	"github.com/mach-composer/mach-composer-cli/internal/terraform"
 	"github.com/mach-composer/mach-composer-cli/internal/utils"
 	"github.com/rs/zerolog/log"
@@ -17,63 +19,26 @@ import (
 type (
 	//executorFunc is a function that executes an arbitrary command on a node
 	executorFunc func(ctx context.Context, node graph.Node) (string, error)
-
-	//batchFunc is a function that batches nodes in groups that can run in parallel by some criteria
-	batchFunc func(g *graph.Graph) map[int][]graph.Node
-
-	//taintFunc is a function that marks nodes as tainted if they have changes that need to be applied
-	taintFunc func(ctx context.Context, g *graph.Graph) error
 )
 
 // GraphRunner will run a set of commands on a graph of nodes. Untainted nodes (no changes) will be skipped.
 // The nodes are batched based on a batching function, and all nodes in the same batch will be run in parallel.
 type GraphRunner struct {
 	workers int
-	batch   batchFunc
-	taint   taintFunc
+	batch   batcher.BatchFunc
+	hash    hash.Handler
 }
 
-// batchNodes will batch nodes based on the length of the longest route from the node to the root.
-// This is a naive implementation that might break down for very complex graphs
-func batchNodes(g *graph.Graph) map[int][]graph.Node {
-	batches := map[int][]graph.Node{}
-
-	var sets = map[string][]graph.Path{}
-
-	for _, n := range g.Vertices() {
-		var route, _ = g.Routes(n.Path(), g.StartNode.Path())
-		sets[n.Path()] = route
-	}
-
-	for k, routes := range sets {
-		var mx int
-		for _, route := range routes {
-			if len(route) > mx {
-				mx = len(route)
-			}
-		}
-		n, _ := g.Vertex(k)
-		batches[mx] = append(batches[mx], n)
-	}
-
-	return batches
-}
-
-func NewGraphRunner(workers int) *GraphRunner {
+func NewGraphRunner(batcher batcher.BatchFunc, hashHandler hash.Handler, workers int) *GraphRunner {
 	return &GraphRunner{
 		workers: workers,
-		batch:   batchNodes,
-		taint: func(ctx context.Context, g *graph.Graph) error {
-			if err := graph.LoadOutputs(ctx, g, utils.GetTerraformOutputs); err != nil {
-				return err
-			}
-
-			return graph.TaintNodes(g)
-		}}
+		batch:   batcher,
+		hash:    hashHandler,
+	}
 }
 
 func (gr *GraphRunner) run(ctx context.Context, g *graph.Graph, f executorFunc, ignoreChangeDetection bool) error {
-	if err := gr.taint(ctx, g); err != nil {
+	if err := taintGraph(ctx, g, gr.hash); err != nil {
 		return err
 	}
 
@@ -134,7 +99,26 @@ func (gr *GraphRunner) run(ctx context.Context, g *graph.Graph, f executorFunc, 
 
 func (gr *GraphRunner) TerraformApply(ctx context.Context, dg *graph.Graph, opts *ApplyOptions) error {
 	if err := gr.run(ctx, dg, func(ctx context.Context, n graph.Node) (string, error) {
-		return terraform.Apply(ctx, n.Path(), opts.Destroy, opts.AutoApprove)
+		if !terraformIsInitialized(n.Path()) || opts.ForceInit {
+			log.Info().Msgf("Running terraform init for %s", n.Path())
+			if out, err := terraform.Init(ctx, n.Path()); err != nil {
+				return out, err
+			}
+		} else {
+			log.Info().Msgf("Skipping terraform init for %s", n.Path())
+		}
+
+		out, err := terraform.Apply(ctx, n.Path(), opts.Destroy, opts.AutoApprove)
+		if err != nil {
+			return out, err
+		}
+
+		log.Info().Msgf("Storing new hash for %s", n.Path())
+		if err = gr.hash.Store(ctx, n); err != nil {
+			log.Warn().Err(err).Msgf("Failed to store hash for %s", n.Identifier())
+		}
+		return out, nil
+
 	}, opts.IgnoreChangeDetection); err != nil {
 		return err
 	}
@@ -144,12 +128,21 @@ func (gr *GraphRunner) TerraformApply(ctx context.Context, dg *graph.Graph, opts
 
 func (gr *GraphRunner) TerraformPlan(ctx context.Context, dg *graph.Graph, opts *PlanOptions) error {
 	if err := gr.run(ctx, dg, func(ctx context.Context, n graph.Node) (string, error) {
-		missing, err := graph.HasMissingParentOutputs(n)
+		if !terraformIsInitialized(n.Path()) || opts.ForceInit {
+			log.Info().Msgf("Running terraform init for %s", n.Path())
+			if out, err := terraform.Init(ctx, n.Path()); err != nil {
+				return out, err
+			}
+		} else {
+			log.Info().Msgf("Skipping terraform init for %s", n.Path())
+		}
+
+		canPlan, err := terraformCanPlan(ctx, n)
 		if err != nil {
 			return "", err
 		}
 
-		if missing {
+		if !canPlan {
 			log.Info().Msgf("Skipping planning %s because it has missing outputs", n.Path())
 			return "", nil
 		}
@@ -164,6 +157,10 @@ func (gr *GraphRunner) TerraformPlan(ctx context.Context, dg *graph.Graph, opts 
 
 func (gr *GraphRunner) TerraformProxy(ctx context.Context, dg *graph.Graph, opts *ProxyOptions) error {
 	if err := gr.run(ctx, dg, func(ctx context.Context, n graph.Node) (string, error) {
+		if !terraformIsInitialized(n.Path()) {
+			return "", fmt.Errorf("terraform is not initialized for %s. Please run init beforehand", n.Path())
+		}
+
 		return utils.RunTerraform(ctx, n.Path(), false, opts.Command...)
 	}, opts.IgnoreChangeDetection); err != nil {
 		return err
@@ -174,6 +171,15 @@ func (gr *GraphRunner) TerraformProxy(ctx context.Context, dg *graph.Graph, opts
 
 func (gr *GraphRunner) TerraformShow(ctx context.Context, dg *graph.Graph, opts *ShowPlanOptions) error {
 	if err := gr.run(ctx, dg, func(ctx context.Context, n graph.Node) (string, error) {
+		if !terraformIsInitialized(n.Path()) || opts.ForceInit {
+			log.Info().Msgf("Running terraform init for %s", n.Path())
+			if out, err := terraform.Init(ctx, n.Path()); err != nil {
+				return out, err
+			}
+		} else {
+			log.Info().Msgf("Skipping terraform init for %s", n.Path())
+		}
+
 		return terraform.Show(ctx, n.Path(), opts.NoColor)
 	}, opts.IgnoreChangeDetection); err != nil {
 		return err
@@ -182,63 +188,12 @@ func (gr *GraphRunner) TerraformShow(ctx context.Context, dg *graph.Graph, opts 
 	return nil
 }
 
-// TerraformInit will run terraform init on all nodes in the graph. It will
-// batch the nodes and run them in parallel. This is slightly different from the
-// run command above, in that it skips the tainting of nodes. The only check it
-// will do is see if terraform has already been initialized, and skip init if
-// that is the case.
-//
-// TODO: move init into the graph runner after we have found a way to save and
-// search hashes without using terraform as a storage
 func (gr *GraphRunner) TerraformInit(ctx context.Context, dg *graph.Graph) error {
-	batches := gr.batch(dg)
-
-	keys := maps.Keys(batches)
-	sort.Ints(keys)
-	for i, k := range keys[1:] {
-		log.Info().Msgf("Running batch %d with %d nodes", i, len(batches[k]))
-
-		errChan := make(chan error, len(batches[k]))
-		wg := &sync.WaitGroup{}
-		sem := semaphore.NewWeighted(int64(gr.workers))
-
-		for _, n := range batches[k] {
-			if err := sem.Acquire(ctx, 1); err != nil {
-				return err
-			}
-			wg.Add(1)
-			go func(ctx context.Context, n graph.Node) {
-				defer wg.Done()
-				defer sem.Release(1)
-
-				log.Info().Msgf("Running init on %s", n.Identifier())
-
-				if n.Type() == graph.ProjectType {
-					return
-				}
-				err := terraform.Init(ctx, n.Path())
-				if err != nil {
-					errChan <- err
-					return
-				}
-			}(ctx, n)
-		}
-		wg.Wait()
-		close(errChan)
-
-		if len(errChan) > 0 {
-			var errors []error
-			for err := range errChan {
-				errors = append(errors, err)
-			}
-
-			return cli.NewGroupedError(fmt.Sprintf("batch run %d failed (%d errors)", i, len(errors)), errors)
-		}
-
-		log.Info().Msgf("Finished batch %d", i)
+	if err := gr.run(ctx, dg, func(ctx context.Context, n graph.Node) (string, error) {
+		return terraform.Init(ctx, n.Path())
+	}, true); err != nil {
+		return err
 	}
-
-	log.Info().Msgf("Finished all batches")
 
 	return nil
 }
