@@ -35,7 +35,8 @@ mach-composer graph [flags]
 ### Options inherited from parent commands
 
 ```
-      --verbose   Verbose output.
+  -q, --quiet     Quiet output. This is equal to setting log levels to error and higher
+  -v, --verbose   Verbose output. This is equal to setting log levels to debug and higher
 ```
 
 ### SEE ALSO
