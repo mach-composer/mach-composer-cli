@@ -172,7 +172,8 @@ func getLastVersionCloud(ctx context.Context, cfg *PartialConfig, c *config.Comp
 	project := cfg.MachComposer.Cloud.Project
 
 	version, _, err := cfg.client.
-		ComponentsApi.ComponentLatestVersion(ctx, organization, project, c.Name).
+		ComponentsApi.
+		ComponentLatestVersion(ctx, organization, project, c.Name).
 		Branch(c.Branch).
 		Execute()
 
@@ -203,7 +204,9 @@ func getLastVersionCloud(ctx context.Context, cfg *PartialConfig, c *config.Comp
 	if c.Version != version.Version {
 		paginator, _, err := cfg.client.
 			ComponentsApi.
-			ComponentVersionQueryCommits(ctx, organization, project, c.Name, version.Version).
+			ComponentCommitQuery(ctx, organization, project, c.Name).
+			From(c.Version).
+			To(version.Version).
 			Offset(0).
 			Limit(200).
 			Execute()
