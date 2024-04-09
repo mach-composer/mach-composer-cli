@@ -1,0 +1,3 @@
+kind: Fixed
+body: Use cloud endpoint to fetch commits during update
+time: 2024-04-08T14:36:11.145535954+02:00
