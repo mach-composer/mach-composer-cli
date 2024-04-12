@@ -31,7 +31,7 @@ locals {
 
 # Component: component-1
 module "component-1" {
-  source = "/home/thomas/Projects/mach-composer/mach-composer-cli/internal/cmd/testdata/modules/application"
+  source = "{{ .PWD }}/testdata/modules/application"
 }
 
 output "component-1" {
@@ -42,7 +42,7 @@ output "component-1" {
 
 # Component: component-2
 module "component-2" {
-  source = "/home/thomas/Projects/mach-composer/mach-composer-cli/internal/cmd/testdata/modules/application"
+  source = "{{ .PWD }}/testdata/modules/application"
 }
 
 output "component-2" {
