@@ -8,15 +8,18 @@ import (
 
 type Site struct {
 	baseNode
-	NestedNodes []*SiteComponent
-	SiteConfig  config.SiteConfig
+	NestedNodes   []*SiteComponent
+	ProjectConfig config.MachConfig
+	SiteConfig    config.SiteConfig
 }
 
-func NewSite(g graph.Graph[string, Node], path, identifier string, deploymentType config.DeploymentType, ancestor Node,
-	siteConfig config.SiteConfig) *Site {
+func NewSite(g graph.Graph[string, Node], path, identifier string,
+	deploymentType config.DeploymentType, ancestor Node,
+	projectConfig config.MachConfig, siteConfig config.SiteConfig) *Site {
 	return &Site{
-		baseNode:   newBaseNode(g, path, identifier, SiteType, ancestor, deploymentType),
-		SiteConfig: siteConfig,
+		baseNode:      newBaseNode(g, path, identifier, SiteType, ancestor, deploymentType),
+		ProjectConfig: projectConfig,
+		SiteConfig:    siteConfig,
 	}
 }
 
@@ -25,7 +28,7 @@ func (s *Site) Hash() (string, error) {
 
 	var hashes []string
 	for _, component := range s.NestedNodes {
-		h, err := HashSiteComponentConfig(component.SiteComponentConfig)
+		h, err := HashSiteComponent(component)
 		if err != nil {
 			return "", err
 		}

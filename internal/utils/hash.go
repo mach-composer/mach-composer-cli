@@ -5,6 +5,8 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"golang.org/x/mod/sumdb/dirhash"
+	"io"
+	"os"
 )
 
 func ComputeHash(t interface{}) (string, error) {
@@ -20,4 +22,10 @@ func ComputeHash(t interface{}) (string, error) {
 
 func ComputeDirHash(path string) (string, error) {
 	return dirhash.HashDir(path, "", dirhash.DefaultHash)
+}
+
+func ComputeFileHash(filePath string) (string, error) {
+	return dirhash.Hash1([]string{filePath}, func(name string) (io.ReadCloser, error) {
+		return os.Open(name)
+	})
 }

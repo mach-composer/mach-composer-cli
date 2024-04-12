@@ -7,11 +7,11 @@ import (
 
 type Project struct {
 	baseNode
-	ProjectConfig *config.MachConfig
+	ProjectConfig config.MachConfig
 }
 
 func NewProject(g graph.Graph[string, Node], path, identifier string, deploymentType config.DeploymentType,
-	projectConfig *config.MachConfig) *Project {
+	projectConfig config.MachConfig) *Project {
 	return &Project{
 		baseNode:      newBaseNode(g, path, identifier, ProjectType, nil, deploymentType),
 		ProjectConfig: projectConfig,
