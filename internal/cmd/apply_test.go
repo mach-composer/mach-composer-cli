@@ -19,7 +19,7 @@ type ApplyTestSuite struct {
 	tempDir string
 }
 
-func TestExampleTestSuite(t *testing.T) {
+func TestApplyTestSuite(t *testing.T) {
 	suite.Run(t, new(ApplyTestSuite))
 }
 
@@ -38,21 +38,6 @@ func (s *ApplyTestSuite) SetupSuite() {
 
 func (s *ApplyTestSuite) TearDownSuite() {
 	_ = os.RemoveAll(s.tempDir)
-}
-
-func cleanWorkingDir(workdir string) {
-	err := os.RemoveAll(path.Join(workdir, "deployments"))
-	if err != nil {
-		panic(err)
-	}
-	err = os.RemoveAll(path.Join(workdir, "states"))
-	if err != nil {
-		panic(err)
-	}
-	err = os.RemoveAll(path.Join(workdir, "hashes.json"))
-	if err != nil {
-		panic(err)
-	}
 }
 
 func (s *ApplyTestSuite) TestApplySimple() {

@@ -1,0 +1,35 @@
+mach_composer:
+  version: 1
+  plugins:
+    aws:
+      source: mach-composer/aws
+      version: 0.1.0
+
+global:
+  cloud: ""
+  environment: test
+  terraform_config:
+    remote_state:
+      plugin: local
+      path: ./states
+
+sites:
+  - identifier: test-1
+    components:
+      - name: component-1
+      - name: component-2
+        variables:
+          parent_names:
+            - ${component.component-1.name}
+        deployment:
+          type: "site-component"
+
+components:
+  - name: component-1
+    source: ./testdata/modules/application
+    version: "test"
+    branch: main
+  - name: component-2
+    source: ./testdata/modules/application
+    version: "test"
+    branch: main

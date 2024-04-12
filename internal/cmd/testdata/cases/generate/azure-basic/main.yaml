@@ -1,0 +1,36 @@
+mach_composer:
+  version: 1
+  deployment:
+    type: "site-component"
+  plugins:
+    azure:
+      source: mach-composer/azure-minimal
+      version: 0.1.0
+
+global:
+  cloud: "azure"
+  environment: test
+
+  azure:
+    subscription_id: my-id #resource group in which the site is deployed, usually one per site
+    resource_prefix: my-resource-prefix #prefix used for created resources in this group
+  terraform_config:
+    remote_state:
+      plugin: azure
+      resource_group: resourcegroupid
+      storage_account: storageaccount
+      container_name: container-name
+
+sites:
+  - identifier: test-1
+    components:
+      - name: component-1
+
+components:
+  - name: component-1
+    source: ./testdata/modules/application
+    version: "test"
+    branch: main
+    integrations:
+      - azure
+
