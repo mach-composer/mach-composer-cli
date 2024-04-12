@@ -116,7 +116,7 @@ func NewUpdater(ctx context.Context, filename string, useCloud bool) (*Updater, 
 
 	if useCloud {
 		if cfg.MachComposer.Cloud.Empty() {
-			return nil, fmt.Errorf("Please defined cloud details")
+			return nil, fmt.Errorf("please defined cloud details")
 		}
 
 		client, err := cloud.NewClient(ctx)

@@ -10,7 +10,7 @@ func TestLocalRendererBackendFull(t *testing.T) {
 		state: &LocalState{Path: "path"},
 		BaseRenderer: BaseRenderer{
 			identifier: "test-1/component-1",
-			key:        "component-1",
+			stateKey:   "component-1",
 		},
 	}
 
@@ -30,7 +30,7 @@ func TestLocalRendererRemoteStateFull(t *testing.T) {
 		state: &LocalState{Path: "path"},
 		BaseRenderer: BaseRenderer{
 			identifier: "test-1/component-1",
-			key:        "component-1",
+			stateKey:   "component-1",
 		},
 	}
 

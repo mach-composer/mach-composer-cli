@@ -27,11 +27,9 @@ type AzureRenderer struct {
 func (ar *AzureRenderer) Backend() (string, error) {
 	templateContext := struct {
 		State      *AzureState
-		Site       string
 		Identifier string
 	}{
 		State:      ar.state,
-		Site:       ar.key,
 		Identifier: ar.state.Identifier(ar.identifier),
 	}
 
@@ -49,14 +47,12 @@ func (ar *AzureRenderer) Backend() (string, error) {
 func (ar *AzureRenderer) RemoteState() (string, error) {
 	templateContext := struct {
 		State      *AzureState
-		Site       string
 		Identifier string
 		Key        string
 	}{
 		State:      ar.state,
-		Site:       ar.key,
 		Identifier: ar.state.Identifier(ar.identifier),
-		Key:        ar.key,
+		Key:        ar.stateKey,
 	}
 
 	template := `

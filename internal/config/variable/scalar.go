@@ -123,7 +123,7 @@ func RemoteStateTransformFunc(repository *state.Repository, siteIdentifier strin
 		}
 
 		for _, part := range parts {
-			stateKey, exists := repository.Key(path.Join(siteIdentifier, part[1]))
+			stateKey, exists := repository.StateKey(path.Join(siteIdentifier, part[1]))
 			if !exists {
 				return nil, fmt.Errorf("state key '%s' not found", part[1])
 			}

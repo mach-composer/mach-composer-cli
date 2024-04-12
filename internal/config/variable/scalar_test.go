@@ -79,7 +79,7 @@ func TestRemoteStateTransformFunc(t *testing.T) {
 	}
 
 	r := state.NewRepository()
-	rr, _ := state.NewRenderer(state.DefaultType, "my_state", "foo", nil)
+	rr, _ := state.NewRenderer(state.DefaultType, "my_state", nil)
 
 	err := r.Add(rr)
 	r.Alias("my_state", "test-1/foo")

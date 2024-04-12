@@ -50,7 +50,7 @@ func (gr *GcpRenderer) RemoteState() (string, error) {
 		Identifier: gr.identifier,
 		Bucket:     gr.state.Bucket,
 		Prefix:     gr.state.Identifier(gr.identifier),
-		Key:        gr.key,
+		Key:        gr.stateKey,
 	}
 
 	template := `

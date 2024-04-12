@@ -13,7 +13,7 @@ func TestGcpRendererBackendFull(t *testing.T) {
 		},
 		BaseRenderer: BaseRenderer{
 			identifier: "test-1/component-1",
-			key:        "component-1",
+			stateKey:   "component-1",
 		},
 	}
 
@@ -35,7 +35,7 @@ func TestGcpRendererRemoteStateFull(t *testing.T) {
 		},
 		BaseRenderer: BaseRenderer{
 			identifier: "test-1/component-1",
-			key:        "component-1",
+			stateKey:   "component-1",
 		},
 	}
 

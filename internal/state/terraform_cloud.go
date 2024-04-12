@@ -51,7 +51,7 @@ func (tcr *TerraformCloudRenderer) RemoteState() (string, error) {
 		Key   string
 	}{
 		State: tcr.state,
-		Key:   tcr.key,
+		Key:   tcr.stateKey,
 	}
 
 	template := `

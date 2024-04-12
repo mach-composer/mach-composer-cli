@@ -5,17 +5,15 @@ import (
 	"embed"
 	"errors"
 	"fmt"
+	"github.com/hashicorp/hcl/v2/hclparse"
+	"github.com/hashicorp/hcl/v2/hclwrite"
 	"github.com/mach-composer/mach-composer-cli/internal/graph"
 	"github.com/mach-composer/mach-composer-cli/internal/state"
+	"github.com/rs/zerolog/log"
 	"io"
 	"os"
 	"path/filepath"
 	"regexp"
-	"strings"
-
-	"github.com/hashicorp/hcl/v2/hclparse"
-	"github.com/hashicorp/hcl/v2/hclwrite"
-	"github.com/rs/zerolog/log"
 
 	"github.com/mach-composer/mach-composer-cli/internal/config"
 )
@@ -29,16 +27,9 @@ var templates embed.FS
 // the required terraform files.
 func Write(ctx context.Context, cfg *config.MachConfig, g *graph.Graph, _ *GenerateOptions) error {
 	for _, n := range g.Vertices() {
-		identifier := n.Identifier()
-		keyParts := strings.Split(identifier, "/")
-		if len(keyParts) < 1 {
-			return fmt.Errorf("invalid identifier %s", identifier)
-		}
-
 		sr, err := state.NewRenderer(
 			state.Type(cfg.Global.TerraformStateProvider),
 			n.Identifier(),
-			keyParts[len(keyParts)-1],
 			cfg.Global.TerraformConfig.RemoteState,
 		)
 		if err != nil {

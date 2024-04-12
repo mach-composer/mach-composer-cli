@@ -65,10 +65,10 @@ func (s *ApplyTestSuite) TestApplySimple() {
 func (s *ApplyTestSuite) TestApplySplitState() {
 	pwd, _ := os.Getwd()
 	workdir := path.Join(pwd, "testdata/cases/apply/split-state")
-	defer cleanWorkingDir(workdir)
+	//defer cleanWorkingDir(workdir)
 
 	cmd := RootCmd
-	_ = os.Setenv("MC_HASH_FILE", path.Join(workdir, "hashes.json"))
+	_ = os.Setenv("MC_HASH_FILE", path.Join(workdir, "deployments/hashes.json"))
 	_ = os.Setenv("STATES_PATH", path.Join(workdir, "states"))
 	cmd.SetArgs([]string{
 		"apply",
@@ -79,11 +79,11 @@ func (s *ApplyTestSuite) TestApplySplitState() {
 	err := cmd.Execute()
 	assert.NoError(s.T(), err)
 
-	assert.FileExists(s.T(), path.Join(workdir, "hashes.json"))
+	assert.FileExists(s.T(), path.Join(workdir, "deployments/hashes.json"))
 	assert.FileExists(s.T(), path.Join(workdir, "deployments/main/test-1/main.tf"))
 	assert.FileExists(s.T(), path.Join(workdir, "deployments/main/test-1/component-2/main.tf"))
 	assert.FileExists(s.T(), path.Join(workdir, "states/test-1.tfstate"))
-	assert.FileExists(s.T(), path.Join(workdir, "states/component-2.tfstate"))
+	assert.FileExists(s.T(), path.Join(workdir, "states/test-1/component-2.tfstate"))
 }
 
 func (s *ApplyTestSuite) TestApplyNoHashesFile() {

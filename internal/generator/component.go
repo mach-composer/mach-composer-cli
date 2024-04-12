@@ -6,7 +6,6 @@ import (
 	"github.com/mach-composer/mach-composer-cli/internal/config"
 	"github.com/mach-composer/mach-composer-cli/internal/graph"
 	"github.com/mach-composer/mach-composer-cli/internal/utils"
-	"path"
 	"slices"
 	"strings"
 )
@@ -221,7 +220,7 @@ func renderRemoteSources(cfg *config.MachConfig, n *graph.SiteComponent) (string
 
 	var links []string
 	for _, parent := range parents {
-		key, ok := cfg.StateRepository.Key(path.Join(siteConfig.Identifier, parent))
+		key, ok := cfg.StateRepository.StateKey(graph.CreateIdentifier(siteConfig.Identifier, parent))
 		if !ok {
 			return "", fmt.Errorf("missing remote state for %s", parent)
 		}
@@ -237,7 +236,7 @@ func renderRemoteSources(cfg *config.MachConfig, n *graph.SiteComponent) (string
 		if siteConfig.Identifier == link {
 			linkIdentifier = link
 		} else {
-			linkIdentifier = path.Join(siteConfig.Identifier, link)
+			linkIdentifier = graph.CreateIdentifier(siteConfig.Identifier, link)
 		}
 
 		s, ok := cfg.StateRepository.Get(linkIdentifier)

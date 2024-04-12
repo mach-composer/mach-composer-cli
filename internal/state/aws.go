@@ -53,7 +53,7 @@ func (ar *AwsRenderer) RemoteState() (string, error) {
 	}{
 		State:      ar.state,
 		Identifier: ar.identifier,
-		Key:        ar.key,
+		Key:        ar.stateKey,
 	}
 
 	template := `

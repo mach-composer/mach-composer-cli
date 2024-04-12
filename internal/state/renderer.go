@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/creasty/defaults"
 	"github.com/mitchellh/mapstructure"
+	"strings"
 )
 
 type Type string
@@ -18,26 +19,37 @@ const (
 )
 
 type Renderer interface {
+	// Identifier returns the full identifier for the renderer. This can be used to fetch a renderer for a node
 	Identifier() string
-	Key() string
+	// StateKey returns the terraform state key for the renderer
+	StateKey() string
+	// Backend returns the terraform backend configuration for the renderer
 	Backend() (string, error)
+	// RemoteState returns the terraform remote state data configuration for the renderer
 	RemoteState() (string, error)
 }
 
 type BaseRenderer struct {
 	identifier string
-	key        string
+	stateKey   string
 }
 
 func (br *BaseRenderer) Identifier() string {
 	return br.identifier
 }
 
-func (br *BaseRenderer) Key() string {
-	return br.key
+func (br *BaseRenderer) StateKey() string {
+	return br.stateKey
 }
 
-func NewRenderer(typ Type, identifier, key string, data map[string]any) (Renderer, error) {
+func NewRenderer(typ Type, identifier string, data map[string]any) (Renderer, error) {
+	//We only use the last part of the identifier as the state key.
+	keyParts := strings.Split(identifier, "/")
+	if len(keyParts) < 1 {
+		return nil, fmt.Errorf("invalid identifier %s", identifier)
+	}
+	key := keyParts[len(keyParts)-1]
+
 	switch typ {
 	case DefaultType:
 		//Fallthrough to local
@@ -53,7 +65,7 @@ func NewRenderer(typ Type, identifier, key string, data map[string]any) (Rendere
 		return &LocalRenderer{
 			BaseRenderer: BaseRenderer{
 				identifier: identifier,
-				key:        key,
+				stateKey:   key,
 			},
 			state: state,
 		}, nil
@@ -68,7 +80,7 @@ func NewRenderer(typ Type, identifier, key string, data map[string]any) (Rendere
 		return &AwsRenderer{
 			BaseRenderer: BaseRenderer{
 				identifier: identifier,
-				key:        key,
+				stateKey:   key,
 			},
 			state: state,
 		}, nil
@@ -83,7 +95,7 @@ func NewRenderer(typ Type, identifier, key string, data map[string]any) (Rendere
 		return &GcpRenderer{
 			BaseRenderer: BaseRenderer{
 				identifier: identifier,
-				key:        key,
+				stateKey:   key,
 			},
 			state: state,
 		}, nil
@@ -98,7 +110,7 @@ func NewRenderer(typ Type, identifier, key string, data map[string]any) (Rendere
 		return &AzureRenderer{
 			BaseRenderer: BaseRenderer{
 				identifier: identifier,
-				key:        key,
+				stateKey:   key,
 			},
 			state: state,
 		}, nil
@@ -113,7 +125,7 @@ func NewRenderer(typ Type, identifier, key string, data map[string]any) (Rendere
 		return &TerraformCloudRenderer{
 			BaseRenderer: BaseRenderer{
 				identifier: identifier,
-				key:        key,
+				stateKey:   key,
 			},
 			state: state,
 		}, nil

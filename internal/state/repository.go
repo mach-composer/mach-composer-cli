@@ -25,10 +25,10 @@ func (r *Repository) Add(renderer Renderer) error {
 	return nil
 }
 
-func (r *Repository) Key(identifier string) (string, bool) {
+func (r *Repository) StateKey(identifier string) (string, bool) {
 	rr, ok := r.renderers[identifier]
 	if ok {
-		return rr.Key(), true
+		return rr.StateKey(), true
 	}
 
 	for alias, k := range r.aliases {

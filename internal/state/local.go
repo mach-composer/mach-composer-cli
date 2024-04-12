@@ -38,7 +38,7 @@ func (lr *LocalRenderer) RemoteState() (string, error) {
 	}{
 		State:      lr.state,
 		Identifier: lr.identifier,
-		Key:        lr.key,
+		Key:        lr.stateKey,
 	}
 
 	tpl := `
