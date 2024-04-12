@@ -53,8 +53,9 @@ func ToDependencyGraph(cfg *config.MachConfig, outPath string) (*Graph, error) {
 		for _, componentConfig := range siteConfig.Components {
 			log.Debug().Msgf("Deploying site component %s separately", componentConfig.Name)
 
+			siteComponentIdentifier := path.Join(siteConfig.Identifier, componentConfig.Name)
 			p = path.Join(site.Path(), componentConfig.Name)
-			component := NewSiteComponent(g, p, componentConfig.Name, componentConfig.Deployment.Type, site,
+			component := NewSiteComponent(g, p, siteComponentIdentifier, componentConfig.Deployment.Type, site,
 				siteConfig, componentConfig)
 
 			err = g.AddVertex(component)

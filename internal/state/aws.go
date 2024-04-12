@@ -15,27 +15,23 @@ type AwsState struct {
 }
 
 type AwsRenderer struct {
-	key   string
+	BaseRenderer
 	state *AwsState
-}
-
-func (ar *AwsRenderer) Key() string {
-	return ar.key
 }
 
 func (ar *AwsRenderer) Backend() (string, error) {
 	templateContext := struct {
-		State *AwsState
-		Key   string
+		State      *AwsState
+		Identifier string
 	}{
-		State: ar.state,
-		Key:   ar.key,
+		State:      ar.state,
+		Identifier: ar.identifier,
 	}
 
 	tpl := `
 	backend "s3" {
 	  bucket         = "{{ .State.Bucket }}"
-	  key            = "{{ .State.KeyPrefix}}/{{ .Key }}"
+	  key            = "{{ .State.KeyPrefix}}/{{ .Identifier }}"
 	  region         = "{{ .State.Region }}"
 	  {{ if .State.RoleARN }}
 	  role_arn       = "{{ .State.RoleARN }}"
@@ -51,11 +47,13 @@ func (ar *AwsRenderer) Backend() (string, error) {
 
 func (ar *AwsRenderer) RemoteState() (string, error) {
 	templateContext := struct {
-		State *AwsState
-		Key   string
+		State      *AwsState
+		Identifier string
+		Key        string
 	}{
-		State: ar.state,
-		Key:   ar.key,
+		State:      ar.state,
+		Identifier: ar.identifier,
+		Key:        ar.key,
 	}
 
 	template := `
@@ -64,7 +62,7 @@ func (ar *AwsRenderer) RemoteState() (string, error) {
 
 	  config = {
 		  bucket         = "{{ .State.Bucket }}"
-		  key            = "{{ .State.KeyPrefix}}/{{ .Key }}"
+		  key            = "{{ .State.KeyPrefix}}/{{ .Identifier }}"
 		  region         = "{{ .State.Region }}"
 		  {{ if .State.RoleARN }}
 		  role_arn       = "{{ .State.RoleARN }}"

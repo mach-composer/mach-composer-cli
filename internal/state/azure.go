@@ -12,27 +12,27 @@ type AzureState struct {
 	StateFolder    string `mapstructure:"state_folder"`
 }
 
-func (a AzureState) Key(site string) string {
+func (a AzureState) Identifier(identifier string) string {
 	if a.StateFolder == "" {
-		return site
+		return identifier
 	}
-	return fmt.Sprintf("%s/%s", a.StateFolder, site)
+	return fmt.Sprintf("%s/%s", a.StateFolder, identifier)
 }
 
 type AzureRenderer struct {
-	key   string
+	BaseRenderer
 	state *AzureState
 }
 
 func (ar *AzureRenderer) Backend() (string, error) {
 	templateContext := struct {
-		State *AzureState
-		Site  string
-		Key   string
+		State      *AzureState
+		Site       string
+		Identifier string
 	}{
-		State: ar.state,
-		Site:  ar.key,
-		Key:   ar.state.Key(ar.key),
+		State:      ar.state,
+		Site:       ar.key,
+		Identifier: ar.state.Identifier(ar.identifier),
 	}
 
 	tpl := `
@@ -40,25 +40,23 @@ func (ar *AzureRenderer) Backend() (string, error) {
 	  resource_group_name  = "{{ .State.ResourceGroup }}"
 	  storage_account_name = "{{ .State.StorageAccount }}"
 	  container_name       = "{{ .State.ContainerName }}"
-	  key                  = "{{ .Key }}"
+	  key                  = "{{ .Identifier }}"
 	}
 	`
 	return utils.RenderGoTemplate(tpl, templateContext)
 }
 
-func (ar *AzureRenderer) Key() string {
-	return ar.key
-}
-
 func (ar *AzureRenderer) RemoteState() (string, error) {
 	templateContext := struct {
-		State *AzureState
-		Site  string
-		Key   string
+		State      *AzureState
+		Site       string
+		Identifier string
+		Key        string
 	}{
-		State: ar.state,
-		Site:  ar.key,
-		Key:   ar.state.Key(ar.key),
+		State:      ar.state,
+		Site:       ar.key,
+		Identifier: ar.state.Identifier(ar.identifier),
+		Key:        ar.key,
 	}
 
 	template := `
@@ -69,7 +67,7 @@ func (ar *AzureRenderer) RemoteState() (string, error) {
 		  resource_group_name  = "{{ .State.ResourceGroup }}"
 		  storage_account_name = "{{ .State.StorageAccount }}"
 		  container_name       = "{{ .State.ContainerName }}"
-		  key                  = "{{ .Key }}"
+		  key                  = "{{ .Identifier }}"
 	  }
 	}
 	`

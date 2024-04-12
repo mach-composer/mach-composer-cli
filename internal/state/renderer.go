@@ -18,12 +18,26 @@ const (
 )
 
 type Renderer interface {
+	Identifier() string
 	Key() string
 	Backend() (string, error)
 	RemoteState() (string, error)
 }
 
-func NewRenderer(typ Type, key string, data map[string]any) (Renderer, error) {
+type BaseRenderer struct {
+	identifier string
+	key        string
+}
+
+func (br *BaseRenderer) Identifier() string {
+	return br.identifier
+}
+
+func (br *BaseRenderer) Key() string {
+	return br.key
+}
+
+func NewRenderer(typ Type, identifier, key string, data map[string]any) (Renderer, error) {
 	switch typ {
 	case DefaultType:
 		//Fallthrough to local
@@ -37,8 +51,11 @@ func NewRenderer(typ Type, key string, data map[string]any) (Renderer, error) {
 			return nil, err
 		}
 		return &LocalRenderer{
+			BaseRenderer: BaseRenderer{
+				identifier: identifier,
+				key:        key,
+			},
 			state: state,
-			key:   key,
 		}, nil
 	case AwsType:
 		state := &AwsState{}
@@ -49,7 +66,10 @@ func NewRenderer(typ Type, key string, data map[string]any) (Renderer, error) {
 			return nil, err
 		}
 		return &AwsRenderer{
-			key:   key,
+			BaseRenderer: BaseRenderer{
+				identifier: identifier,
+				key:        key,
+			},
 			state: state,
 		}, nil
 	case GcpType:
@@ -61,7 +81,10 @@ func NewRenderer(typ Type, key string, data map[string]any) (Renderer, error) {
 			return nil, err
 		}
 		return &GcpRenderer{
-			key:   key,
+			BaseRenderer: BaseRenderer{
+				identifier: identifier,
+				key:        key,
+			},
 			state: state,
 		}, nil
 	case AzureType:
@@ -73,7 +96,10 @@ func NewRenderer(typ Type, key string, data map[string]any) (Renderer, error) {
 			return nil, err
 		}
 		return &AzureRenderer{
-			key:   key,
+			BaseRenderer: BaseRenderer{
+				identifier: identifier,
+				key:        key,
+			},
 			state: state,
 		}, nil
 	case TerraformCloudType:
@@ -85,7 +111,10 @@ func NewRenderer(typ Type, key string, data map[string]any) (Renderer, error) {
 			return nil, err
 		}
 		return &TerraformCloudRenderer{
-			key:   key,
+			BaseRenderer: BaseRenderer{
+				identifier: identifier,
+				key:        key,
+			},
 			state: state,
 		}, nil
 	}

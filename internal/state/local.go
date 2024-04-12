@@ -7,27 +7,23 @@ type LocalState struct {
 }
 
 type LocalRenderer struct {
+	BaseRenderer
 	state *LocalState
-	key   string
-}
-
-func (lr *LocalRenderer) Key() string {
-	return lr.key
 }
 
 func (lr *LocalRenderer) Backend() (string, error) {
 	templateContext := struct {
-		State *LocalState
-		Key   string
+		State      *LocalState
+		Identifier string
 	}{
-		State: lr.state,
-		Key:   lr.key,
+		State:      lr.state,
+		Identifier: lr.identifier,
 	}
 
 	tpl := `
 	backend "local" {
 		{{ if .State.Path }}
-		path = "{{ .State.Path }}/{{ .Key }}.tfstate"
+		path = "{{ .State.Path }}/{{ .Identifier }}.tfstate"
 		{{ end }}
 	}
 	`
@@ -36,11 +32,13 @@ func (lr *LocalRenderer) Backend() (string, error) {
 
 func (lr *LocalRenderer) RemoteState() (string, error) {
 	templateContext := struct {
-		State *LocalState
-		Key   string
+		State      *LocalState
+		Identifier string
+		Key        string
 	}{
-		State: lr.state,
-		Key:   lr.key,
+		State:      lr.state,
+		Identifier: lr.identifier,
+		Key:        lr.key,
 	}
 
 	tpl := `
@@ -49,7 +47,7 @@ func (lr *LocalRenderer) RemoteState() (string, error) {
 	
 	  config = {
 		{{ if .State.Path }}
-		path = "{{ .State.Path }}/{{ .Key }}.tfstate"
+		path = "{{ .State.Path }}/{{ .Identifier }}.tfstate"
 		{{ end }}
 	  }
 	}

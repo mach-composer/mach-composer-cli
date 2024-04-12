@@ -101,7 +101,7 @@ func TestSerializeToHCL(t *testing.T) {
 	}
 
 	for _, tc := range tests {
-		value, err := serializeToHCL("variables", tc.input, tc.deploymentType, nil)
+		value, err := serializeToHCL("variables", tc.input, tc.deploymentType, nil, "test-1")
 		assert.NoError(t, err)
 		assert.Equal(t, tc.output, value)
 	}

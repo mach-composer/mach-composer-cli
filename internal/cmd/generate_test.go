@@ -56,7 +56,7 @@ func (s *GenerateTestSuite) TestGenerateLocalMultisite() {
 func (s *GenerateTestSuite) TestGenerateLocalDeploymentTypeSite() {
 	pwd, _ := os.Getwd()
 	workdir := path.Join(pwd, "testdata/cases/generate/local-deployment-type-site")
-	//defer cleanWorkingDir(workdir)
+	defer cleanWorkingDir(workdir)
 
 	cmd := RootCmd
 	cmd.SetArgs([]string{
@@ -72,7 +72,7 @@ func (s *GenerateTestSuite) TestGenerateLocalDeploymentTypeSite() {
 func (s *GenerateTestSuite) TestGenerateLocalDeploymentTypeMixed() {
 	pwd, _ := os.Getwd()
 	workdir := path.Join(pwd, "testdata/cases/generate/local-deployment-type-mixed")
-	//defer cleanWorkingDir(workdir)
+	defer cleanWorkingDir(workdir)
 
 	cmd := RootCmd
 	cmd.SetArgs([]string{

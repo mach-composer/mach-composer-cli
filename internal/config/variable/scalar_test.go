@@ -79,15 +79,17 @@ func TestRemoteStateTransformFunc(t *testing.T) {
 	}
 
 	r := state.NewRepository()
-	err := r.Add("my_state", nil)
-	r.Alias("my_state", "foo")
+	rr, _ := state.NewRenderer(state.DefaultType, "my_state", "foo", nil)
+
+	err := r.Add(rr)
+	r.Alias("my_state", "test-1/foo")
 	assert.NoError(t, err)
 
 	for _, tc := range tests {
 		value, err := NewScalarVariable(tc.input)
 		assert.NoError(t, err)
 
-		res, err := value.TransformValue(RemoteStateTransformFunc(r))
+		res, err := value.TransformValue(RemoteStateTransformFunc(r, "test-1"))
 		assert.NoError(t, err)
 
 		assert.Equal(t, tc.output, res)

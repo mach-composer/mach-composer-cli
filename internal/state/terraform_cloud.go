@@ -15,21 +15,13 @@ type TerraformCloudState struct {
 }
 
 type TerraformCloudRenderer struct {
-	key   string
+	BaseRenderer
 	state *TerraformCloudState
 }
 
-func (tcr *TerraformCloudRenderer) Key() string {
-	return tcr.key
-}
-
 func (tcr *TerraformCloudRenderer) Backend() (string, error) {
-	templateContext := struct {
-		State *TerraformCloudState
-		Key   string
-	}{
+	templateContext := struct{ State *TerraformCloudState }{
 		State: tcr.state,
-		Key:   tcr.key,
 	}
 
 	tpl := `

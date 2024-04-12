@@ -11,6 +11,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"strings"
 
 	"github.com/hashicorp/hcl/v2/hclparse"
 	"github.com/hashicorp/hcl/v2/hclwrite"
@@ -28,22 +29,29 @@ var templates embed.FS
 // the required terraform files.
 func Write(ctx context.Context, cfg *config.MachConfig, g *graph.Graph, _ *GenerateOptions) error {
 	for _, n := range g.Vertices() {
+		identifier := n.Identifier()
+		keyParts := strings.Split(identifier, "/")
+		if len(keyParts) < 1 {
+			return fmt.Errorf("invalid identifier %s", identifier)
+		}
+
 		sr, err := state.NewRenderer(
 			state.Type(cfg.Global.TerraformStateProvider),
 			n.Identifier(),
+			keyParts[len(keyParts)-1],
 			cfg.Global.TerraformConfig.RemoteState,
 		)
 		if err != nil {
 			return err
 		}
-		err = cfg.StateRepository.Add(sr.Key(), sr)
+		err = cfg.StateRepository.Add(sr)
 		if err != nil {
 			return err
 		}
 
 		if site, ok := n.(*graph.Site); ok {
 			for _, c := range site.NestedNodes {
-				cfg.StateRepository.Alias(n.Identifier(), c.SiteComponentConfig.Name)
+				cfg.StateRepository.Alias(n.Identifier(), c.Identifier())
 			}
 		}
 	}
@@ -57,7 +65,7 @@ func Write(ctx context.Context, cfg *config.MachConfig, g *graph.Graph, _ *Gener
 			if err := copySecrets(cfg, n.Identifier(), n.Path()); err != nil {
 				return err
 			}
-			body, err := renderSite(ctx, cfg, n)
+			body, err := renderSite(ctx, cfg, n.(*graph.Site))
 			if err != nil {
 				return err
 			}
@@ -71,7 +79,7 @@ func Write(ctx context.Context, cfg *config.MachConfig, g *graph.Graph, _ *Gener
 				return err
 			}
 
-			body, err := renderSiteComponent(ctx, cfg, n)
+			body, err := renderSiteComponent(ctx, cfg, n.(*graph.SiteComponent))
 			if err != nil {
 				return err
 			}
