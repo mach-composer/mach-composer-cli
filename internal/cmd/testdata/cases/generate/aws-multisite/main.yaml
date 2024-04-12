@@ -12,11 +12,17 @@ global:
   environment: test
   terraform_config:
     remote_state:
-      plugin: local
-      path: ./states
+      plugin: aws
+      bucket: state-bucket
+      key_prefix: mach-composer
+      lock_table: lock-table
+      region: eu-west-1
 
 sites:
   - identifier: test-1
+    aws:
+      account_id: "12345"
+      region: eu-west-1
     components:
       - name: component-1
 

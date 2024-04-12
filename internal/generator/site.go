@@ -6,6 +6,7 @@ import (
 	"github.com/mach-composer/mach-composer-cli/internal/config"
 	"github.com/mach-composer/mach-composer-cli/internal/graph"
 	"github.com/mach-composer/mach-composer-cli/internal/utils"
+	"sort"
 	"strings"
 )
 
@@ -39,6 +40,10 @@ func renderSite(ctx context.Context, cfg *config.MachConfig, n *graph.Site) (str
 		return "", fmt.Errorf("failed to render resources: %w", err)
 	}
 	result = append(result, val)
+
+	sort.Slice(nestedNodes, func(i, j int) bool {
+		return nestedNodes[i].Identifier() < nestedNodes[j].Identifier()
+	})
 
 	for _, component := range nestedNodes {
 		if component.SiteComponentConfig.Deployment.Type != config.DeploymentSite {

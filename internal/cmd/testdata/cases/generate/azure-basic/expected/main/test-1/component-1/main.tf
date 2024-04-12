@@ -14,7 +14,7 @@ terraform {
 # Resources
 # Component: component-1
 module "component-1" {
-  source            = "/home/thomas/Projects/mach-composer/mach-composer-cli/internal/cmd/testdata/modules/application"
+  source            = "{{ .PWD }}/testdata/modules/application"
   variables         = {}
   secrets           = {}
   component_version = "test"

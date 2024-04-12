@@ -2,7 +2,9 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/mach-composer/mach-composer-cli/internal/utils"
 	"github.com/sergi/go-diff/diffmatchpatch"
+	"log"
 	"os"
 	"path"
 	"path/filepath"
@@ -93,8 +95,22 @@ func CompareDirectories(dir1, dir2 string) error {
 }
 
 func compareFiles(file1, file2 string) error {
+	path, err := os.Getwd()
+	if err != nil {
+		log.Println(err)
+	}
+
+	tplCtx := struct {
+		PWD string
+	}{
+		PWD: path,
+	}
 
 	content1, err := os.ReadFile(file1)
+	if err != nil {
+		return err
+	}
+	parsedContent1, err := utils.RenderGoTemplate(string(content1), tplCtx)
 	if err != nil {
 		return err
 	}
@@ -103,17 +119,21 @@ func compareFiles(file1, file2 string) error {
 	if err != nil {
 		return err
 	}
+	parsedContent2, err := utils.RenderGoTemplate(string(content2), tplCtx)
+	if err != nil {
+		return err
+	}
 
 	dmp := diffmatchpatch.New()
 
 	diffs := dmp.DiffMain(
-		strings.TrimSpace(string(content1)),
-		strings.TrimSpace(string(content2)),
+		strings.TrimSpace(string(parsedContent1)),
+		strings.TrimSpace(string(parsedContent2)),
 		true,
 	)
 
 	if len(diffs) != 1 {
-		return fmt.Errorf("file %s and %s differ:\n\n %s:\n\n%s\n\n%s\n\n%s", file1, file2, file1, content1, file2, content2)
+		return fmt.Errorf("file %s and %s differ:\n\n %s:\n\n%s\n\n%s\n\n%s", file1, file2, file1, parsedContent1, file2, parsedContent2)
 	}
 
 	return nil

@@ -35,10 +35,9 @@ func (s *GenerateTestSuite) TearDownSuite() {
 	_ = os.RemoveAll(s.tempDir)
 }
 
-func (s *GenerateTestSuite) TestGenerateLocalMultisite() {
+func (s *GenerateTestSuite) TestGenerateAWSMultisite() {
 	pwd, _ := os.Getwd()
-	workdir := path.Join(pwd, "testdata/cases/generate/local-multisite")
-	defer cleanWorkingDir(workdir)
+	workdir := path.Join(pwd, "testdata/cases/generate/aws-multisite")
 
 	cmd := RootCmd
 	cmd.SetArgs([]string{
@@ -51,10 +50,9 @@ func (s *GenerateTestSuite) TestGenerateLocalMultisite() {
 	assert.NoError(s.T(), CompareDirectories(path.Join(workdir, "deployments"), path.Join(workdir, "expected")))
 }
 
-func (s *GenerateTestSuite) TestGenerateLocalDeploymentTypeSite() {
+func (s *GenerateTestSuite) TestGenerateAWSDeploymentTypeSite() {
 	pwd, _ := os.Getwd()
-	workdir := path.Join(pwd, "testdata/cases/generate/local-deployment-type-site")
-	defer cleanWorkingDir(workdir)
+	workdir := path.Join(pwd, "testdata/cases/generate/aws-deployment-type-site")
 
 	cmd := RootCmd
 	cmd.SetArgs([]string{
@@ -67,10 +65,9 @@ func (s *GenerateTestSuite) TestGenerateLocalDeploymentTypeSite() {
 	assert.NoError(s.T(), CompareDirectories(path.Join(workdir, "deployments"), path.Join(workdir, "expected")))
 }
 
-func (s *GenerateTestSuite) TestGenerateLocalDeploymentTypeMixed() {
+func (s *GenerateTestSuite) TestGenerateAWSDeploymentTypeMixed() {
 	pwd, _ := os.Getwd()
-	workdir := path.Join(pwd, "testdata/cases/generate/local-deployment-type-mixed")
-	defer cleanWorkingDir(workdir)
+	workdir := path.Join(pwd, "testdata/cases/generate/aws-deployment-type-mixed")
 
 	cmd := RootCmd
 	cmd.SetArgs([]string{
@@ -83,10 +80,9 @@ func (s *GenerateTestSuite) TestGenerateLocalDeploymentTypeMixed() {
 	assert.NoError(s.T(), CompareDirectories(path.Join(workdir, "deployments"), path.Join(workdir, "expected")))
 }
 
-func (s *GenerateTestSuite) TestGenerateAWS() {
+func (s *GenerateTestSuite) TestGenerateAWSBasic() {
 	pwd, _ := os.Getwd()
 	workdir := path.Join(pwd, "testdata/cases/generate/aws-basic")
-	defer cleanWorkingDir(workdir)
 
 	cmd := RootCmd
 	cmd.SetArgs([]string{
@@ -99,10 +95,9 @@ func (s *GenerateTestSuite) TestGenerateAWS() {
 	assert.NoError(s.T(), CompareDirectories(path.Join(workdir, "deployments"), path.Join(workdir, "expected")))
 }
 
-func (s *GenerateTestSuite) TestGenerateGCP() {
+func (s *GenerateTestSuite) TestGenerateGCPBasic() {
 	pwd, _ := os.Getwd()
 	workdir := path.Join(pwd, "testdata/cases/generate/gcp-basic")
-	defer cleanWorkingDir(workdir)
 
 	cmd := RootCmd
 	cmd.SetArgs([]string{
@@ -115,10 +110,24 @@ func (s *GenerateTestSuite) TestGenerateGCP() {
 	assert.NoError(s.T(), CompareDirectories(path.Join(workdir, "deployments"), path.Join(workdir, "expected")))
 }
 
-func (s *GenerateTestSuite) TestGenerateAzure() {
+func (s *GenerateTestSuite) TestGenerateAzureBasic() {
 	pwd, _ := os.Getwd()
 	workdir := path.Join(pwd, "testdata/cases/generate/azure-basic")
-	defer cleanWorkingDir(workdir)
+
+	cmd := RootCmd
+	cmd.SetArgs([]string{
+		"generate",
+		"--output-path", path.Join(workdir, "deployments"),
+		"--file", path.Join(workdir, "main.yaml"),
+	})
+	err := cmd.Execute()
+	assert.NoError(s.T(), err)
+	assert.NoError(s.T(), CompareDirectories(path.Join(workdir, "deployments"), path.Join(workdir, "expected")))
+}
+
+func (s *GenerateTestSuite) TestGenerateLocalBasic() {
+	pwd, _ := os.Getwd()
+	workdir := path.Join(pwd, "testdata/cases/generate/local-basic")
 
 	cmd := RootCmd
 	cmd.SetArgs([]string{
