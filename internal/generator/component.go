@@ -6,6 +6,7 @@ import (
 	"github.com/mach-composer/mach-composer-cli/internal/config"
 	"github.com/mach-composer/mach-composer-cli/internal/graph"
 	"github.com/mach-composer/mach-composer-cli/internal/utils"
+	"runtime"
 	"slices"
 	"strings"
 )
@@ -198,7 +199,13 @@ func renderComponentModule(_ context.Context, cfg *config.MachConfig, site *conf
 	if err != nil {
 		return "", err
 	}
-	tc.Source = vs
+
+    // Escape backslashes in paths (Windows path separator)
+    if runtime.GOOS == "windows" {
+        tc.Source = strings.Replace(vs, "\\", "\\\\", -1)
+    } else {
+        tc.Source = vs
+    }
 
 	val, err := utils.RenderGoTemplate(string(tpl), tc)
 	if err != nil {
