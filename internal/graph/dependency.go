@@ -45,7 +45,7 @@ func ToDependencyGraph(cfg *config.MachConfig, outPath string) (*Graph, error) {
 	}
 
 	for _, siteConfig := range cfg.Sites {
-		p = CreateIdentifier(project.Path(), siteConfig.Identifier)
+		p = path.Join(project.Path(), siteConfig.Identifier)
 		site := NewSite(g, p, siteConfig.Identifier, siteConfig.Deployment.Type, project, siteConfig)
 
 		err = g.AddVertex(site)
