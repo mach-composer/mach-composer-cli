@@ -71,9 +71,9 @@ func ToDependencyGraph(cfg *config.MachConfig, outPath string) (*Graph, error) {
 			siteComponentIdentifier := CreateIdentifier(siteConfig.Identifier, componentConfig.Name)
 			p = path.Join(site.Path(), componentConfig.Name)
 			component := NewSiteComponent(g, p,
-				componentConfig.Name,
-				componentConfig.Deployment.Type,
 				siteComponentIdentifier,
+				componentConfig.Deployment.Type,
+				site,
 				*cfg,
 				siteConfig,
 				componentConfig,
