@@ -20,12 +20,20 @@ func (e *edgeSets) Add(to, from string) {
 	(*e)[to] = append((*e)[to], from)
 }
 
+func CreateIdentifier(elem ...string) string {
+	return strings.Join(elem, "/")
+}
+
+func CreateProjectIdentifier(filename string) string {
+	return strings.TrimSuffix(filename, filepath.Ext(filename))
+}
+
 // ToDependencyGraph will transform a MachConfig into a graph of dependencies connected by different relations
 func ToDependencyGraph(cfg *config.MachConfig, outPath string) (*Graph, error) {
 	var edges = edgeSets{}
 	g := graph.New(func(n Node) string { return n.Path() }, graph.Directed(), graph.Tree(), graph.PreventCycles())
 
-	projectIdentifier := strings.TrimSuffix(cfg.Filename, filepath.Ext(cfg.Filename))
+	projectIdentifier := CreateProjectIdentifier(cfg.Filename)
 
 	p := path.Join(outPath, projectIdentifier)
 
@@ -60,9 +68,10 @@ func ToDependencyGraph(cfg *config.MachConfig, outPath string) (*Graph, error) {
 			log.Debug().Msgf("Deploying site component %s separately",
 				componentConfig.Name)
 
+			siteComponentIdentifier := CreateIdentifier(siteConfig.Identifier, componentConfig.Name)
 			p = path.Join(site.Path(), componentConfig.Name)
 			component := NewSiteComponent(g, p,
-				componentConfig.Name,
+				siteComponentIdentifier,
 				componentConfig.Deployment.Type,
 				site,
 				*cfg,

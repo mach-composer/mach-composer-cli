@@ -10,20 +10,16 @@ type GcpState struct {
 	Prefix string `mapstructure:"prefix"`
 }
 
-func (a *GcpState) Key(key string) string {
+func (a *GcpState) Identifier(identifier string) string {
 	if a.Prefix == "" {
-		return key
+		return identifier
 	}
-	return fmt.Sprintf("%s/%s", a.Prefix, key)
+	return fmt.Sprintf("%s/%s", a.Prefix, identifier)
 }
 
 type GcpRenderer struct {
-	key   string
+	BaseRenderer
 	state *GcpState
-}
-
-func (gr *GcpRenderer) Key() string {
-	return gr.key
 }
 
 func (gr *GcpRenderer) Backend() (string, error) {
@@ -32,7 +28,7 @@ func (gr *GcpRenderer) Backend() (string, error) {
 		Prefix string
 	}{
 		Bucket: gr.state.Bucket,
-		Prefix: gr.state.Key(gr.key),
+		Prefix: gr.state.Identifier(gr.identifier),
 	}
 
 	tpl := `
@@ -46,13 +42,15 @@ func (gr *GcpRenderer) Backend() (string, error) {
 
 func (gr *GcpRenderer) RemoteState() (string, error) {
 	templateContext := struct {
-		Key    string
-		Bucket string
-		Prefix string
+		Identifier string
+		Bucket     string
+		Prefix     string
+		Key        string
 	}{
-		Key:    gr.key,
-		Bucket: gr.state.Bucket,
-		Prefix: gr.state.Key(gr.key),
+		Identifier: gr.identifier,
+		Bucket:     gr.state.Bucket,
+		Prefix:     gr.state.Identifier(gr.identifier),
+		Key:        gr.stateKey,
 	}
 
 	template := `

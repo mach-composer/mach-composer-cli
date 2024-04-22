@@ -16,23 +16,23 @@ func NewRepository() *Repository {
 	}
 }
 
-func (r *Repository) Add(key string, renderer Renderer) error {
-	if key == "" {
-		return fmt.Errorf("renderer Key cannot be empty")
+func (r *Repository) Add(renderer Renderer) error {
+	if renderer.Identifier() == "" {
+		return fmt.Errorf("renderer Identifier cannot be empty")
 	}
 
-	r.renderers[key] = renderer
+	r.renderers[renderer.Identifier()] = renderer
 	return nil
 }
 
-func (r *Repository) Key(key string) (string, bool) {
-	_, ok := r.renderers[key]
+func (r *Repository) StateKey(identifier string) (string, bool) {
+	rr, ok := r.renderers[identifier]
 	if ok {
-		return key, true
+		return rr.StateKey(), true
 	}
 
 	for alias, k := range r.aliases {
-		if alias == key {
+		if alias == identifier {
 			return k, true
 		}
 	}
@@ -40,19 +40,15 @@ func (r *Repository) Key(key string) (string, bool) {
 	return "", false
 }
 
-func (r *Repository) Has(key string) bool {
-	_, ok := r.Key(key)
+func (r *Repository) Has(identifier string) bool {
+	_, ok := r.renderers[identifier]
 	return ok
 }
 
-func (r *Repository) Get(key string) Renderer {
-	k, ok := r.Key(key)
-	if !ok {
-		return nil
-	}
-	return r.renderers[k]
+func (r *Repository) Get(identifier string) (Renderer, bool) {
+	return r.renderers[identifier], r.Has(identifier)
 }
 
-func (r *Repository) Alias(key string, alias string) {
-	r.aliases[alias] = key
+func (r *Repository) Alias(identifier string, alias string) {
+	r.aliases[alias] = identifier
 }

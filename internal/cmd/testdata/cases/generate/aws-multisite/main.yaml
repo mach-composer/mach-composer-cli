@@ -1,0 +1,37 @@
+mach_composer:
+  version: 1
+  deployment:
+    type: "site-component"
+  plugins:
+    aws:
+      source: mach-composer/aws
+      version: 0.1.0
+
+global:
+  cloud: ""
+  environment: test
+  terraform_config:
+    remote_state:
+      plugin: aws
+      bucket: state-bucket
+      key_prefix: mach-composer
+      lock_table: lock-table
+      region: eu-west-1
+
+sites:
+  - identifier: test-1
+    aws:
+      account_id: "12345"
+      region: eu-west-1
+    components:
+      - name: component-1
+
+  - identifier: test-2
+    components:
+      - name: component-1
+
+components:
+  - name: component-1
+    source: ./testdata/modules/application
+    version: "test"
+    branch: main
