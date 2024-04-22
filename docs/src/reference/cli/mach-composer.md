@@ -10,7 +10,8 @@ MACH composer is a framework that you use to orchestrate and extend modern digit
 
 ```
   -h, --help      help for mach-composer
-      --verbose   Verbose output.
+  -q, --quiet     Quiet output. This is equal to setting log levels to error and higher
+  -v, --verbose   Verbose output. This is equal to setting log levels to debug and higher
 ```
 
 ### SEE ALSO

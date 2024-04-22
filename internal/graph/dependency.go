@@ -37,7 +37,7 @@ func ToDependencyGraph(cfg *config.MachConfig, outPath string) (*Graph, error) {
 
 	p := path.Join(outPath, projectIdentifier)
 
-	project := NewProject(g, p, projectIdentifier, cfg.MachComposer.Deployment.Type, cfg)
+	project := NewProject(g, p, projectIdentifier, cfg.MachComposer.Deployment.Type, *cfg)
 
 	err := g.AddVertex(project)
 	if err != nil {
@@ -46,7 +46,13 @@ func ToDependencyGraph(cfg *config.MachConfig, outPath string) (*Graph, error) {
 
 	for _, siteConfig := range cfg.Sites {
 		p = path.Join(project.Path(), siteConfig.Identifier)
-		site := NewSite(g, p, siteConfig.Identifier, siteConfig.Deployment.Type, project, siteConfig)
+		site := NewSite(g, p,
+			siteConfig.Identifier,
+			siteConfig.Deployment.Type,
+			project,
+			*cfg,
+			siteConfig,
+		)
 
 		err = g.AddVertex(site)
 		if err != nil {
@@ -59,12 +65,19 @@ func ToDependencyGraph(cfg *config.MachConfig, outPath string) (*Graph, error) {
 		}
 
 		for _, componentConfig := range siteConfig.Components {
-			log.Debug().Msgf("Deploying site component %s separately", componentConfig.Name)
+			log.Debug().Msgf("Deploying site component %s separately",
+				componentConfig.Name)
 
 			siteComponentIdentifier := CreateIdentifier(siteConfig.Identifier, componentConfig.Name)
 			p = path.Join(site.Path(), componentConfig.Name)
-			component := NewSiteComponent(g, p, siteComponentIdentifier, componentConfig.Deployment.Type, site,
-				siteConfig, componentConfig)
+			component := NewSiteComponent(g, p,
+				componentConfig.Name,
+				componentConfig.Deployment.Type,
+				siteComponentIdentifier,
+				*cfg,
+				siteConfig,
+				componentConfig,
+			)
 
 			err = g.AddVertex(component)
 			if err != nil {
