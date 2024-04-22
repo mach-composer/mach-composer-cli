@@ -8,20 +8,25 @@ import (
 
 type SiteComponent struct {
 	baseNode
+	ProjectConfig       config.MachConfig
 	SiteConfig          config.SiteConfig
 	SiteComponentConfig config.SiteComponentConfig
 }
 
-func NewSiteComponent(g graph.Graph[string, Node], path, identifier string, deploymentType config.DeploymentType,
-	ancestor Node, siteConfig config.SiteConfig, siteComponentConfig config.SiteComponentConfig) *SiteComponent {
+func NewSiteComponent(
+	g graph.Graph[string, Node], path, identifier string, deploymentType config.DeploymentType,
+	ancestor Node, projectConfig config.MachConfig, siteConfig config.SiteConfig, siteComponentConfig config.SiteComponentConfig,
+) *SiteComponent {
 	return &SiteComponent{
-		baseNode:   newBaseNode(g, path, identifier, SiteComponentType, ancestor, deploymentType),
-		SiteConfig: siteConfig, SiteComponentConfig: siteComponentConfig,
+		baseNode:            newBaseNode(g, path, identifier, SiteComponentType, ancestor, deploymentType),
+		ProjectConfig:       projectConfig,
+		SiteConfig:          siteConfig,
+		SiteComponentConfig: siteComponentConfig,
 	}
 }
 
 func (sc *SiteComponent) Hash() (string, error) {
-	return HashSiteComponentConfig(sc.SiteComponentConfig)
+	return HashSiteComponent(sc)
 }
 
 func SortSiteComponentNodes(nodes []*SiteComponent) {
