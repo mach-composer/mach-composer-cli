@@ -3,6 +3,7 @@ package updater
 import (
 	"context"
 	"fmt"
+	"github.com/mach-composer/mach-composer-cli/internal/cloud"
 	"github.com/rs/zerolog/log"
 	"math"
 	"runtime"
@@ -171,6 +172,18 @@ func getLastVersionCloud(ctx context.Context, cfg *PartialConfig, c *config.Comp
 	organization := cfg.MachComposer.Cloud.Organization
 	project := cfg.MachComposer.Cloud.Project
 
+	if c.Version == cloud.LatestVersion {
+		log.Ctx(ctx).Warn().
+			Str("msg", "When using $LATEST the difference between latest available and currently configured cannot be determined.").
+			Msgf("Version set to %s for %s", cloud.LatestVersion, c.Name)
+		return nil, nil
+	}
+
+	if c.Version == cloud.VersionNotApplicable {
+		log.Ctx(ctx).Debug().Msgf("Version set to %s for %s. Ignoring", cloud.VersionNotApplicable, c.Name)
+		return nil, nil
+	}
+
 	version, _, err := cfg.client.
 		ComponentsApi.
 		ComponentLatestVersion(ctx, organization, project, c.Name).
@@ -179,7 +192,7 @@ func getLastVersionCloud(ctx context.Context, cfg *PartialConfig, c *config.Comp
 
 	if err != nil {
 		if c.Source.IsType(config.SourceTypeGit) {
-			log.Ctx(ctx).Warn().Msgf("Error checking for %s in MACH Composer Cloud, falling back to Git", c.Name)
+			log.Ctx(ctx).Err(err).Msgf("Error checking for %s in MACH Composer Cloud, falling back to Git", c.Name)
 			return getLastVersionGit(ctx, c, origin)
 		}
 		log.Ctx(ctx).Error().Err(err).Msgf("Error checking for latest version of %s", c.Name)

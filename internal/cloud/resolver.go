@@ -7,6 +7,11 @@ import (
 	"github.com/mach-composer/mach-composer-cli/internal/config"
 )
 
+const (
+	LatestVersion        = "$LATEST"
+	VersionNotApplicable = "NOT_APPLICABLE"
+)
+
 func ResolveComponentsData(ctx context.Context, cfg *config.MachConfig) error {
 	for i := range cfg.Components {
 		if err := resolveComponentVersion(ctx, cfg, &cfg.Components[i]); err != nil {
@@ -17,7 +22,7 @@ func ResolveComponentsData(ctx context.Context, cfg *config.MachConfig) error {
 }
 
 func resolveComponentVersion(ctx context.Context, cfg *config.MachConfig, c *config.ComponentConfig) error {
-	if c.Version != "$LATEST" {
+	if c.Version != LatestVersion {
 		return nil
 	}
 
