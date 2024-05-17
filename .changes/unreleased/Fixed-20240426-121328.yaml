@@ -1,4 +1,0 @@
-kind: Fixed
-body: Added additional logging around $LATEST when using mach-composer update with
-  cloud
-time: 2024-04-26T12:13:28.460563027+02:00
