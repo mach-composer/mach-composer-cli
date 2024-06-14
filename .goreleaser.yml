@@ -62,48 +62,79 @@ archives:
       - goos: windows
         format: zip
 
-brews:
-  - name: "{{ .ProjectName }}"
-    skip_upload: "{{ .Env.SKIP_UPLOAD }}"
-    repository:
-      owner: mach-composer
-      name: homebrew-{{ .ProjectName }}
+# brews:
+#   - name: "{{ .ProjectName }}"
+#     skip_upload: "{{ .Env.SKIP_UPLOAD }}"
+#     repository:
+#       owner: mach-composer
+#       name: homebrew-{{ .ProjectName }}
+#     url_template: https://github.com/mach-composer/mach-composer-cli/releases/download/v{{ .Version }}/{{ .ArtifactName }}
+#     commit_author:
+#       name: goreleaserbot
+#       email: opensource@labdigital.nl
+#     homepage: "https://machcomposer.io/"
+#     description: |
+#       MACH composer is a framework that you use to orchestrate and extend
+#       modern digital commerce & experience platforms, based on MACH
+#       technologies and cloud native services..
+#     license: "MIT"
+#     dependencies:
+#       - name: terraform
+#       - name: git
+#         type: optional
+
+# chocolateys:
+#   - title: MACH composer
+#     owners: Lab
+#     authors: Lab Digital
+#     project_url: https://machcomposer.io/
+#     license_url: https://github.com/mach-composer/mach-composer-cli/blob/main/LICENSE
+#     project_source_url: https://github.com/mach-composer/mach-composer-cli
+#     docs_url: https://docs.machcomposer.io
+#     bug_tracker_url: https://github.com/mach-composer/mach-composer-cli/issues
+#     url_template: "https://github.com/mach-composer/mach-composer-cli/releases/download/{{ .Tag }}/{{ .ArtifactName }}"
+#     icon_url: 'https://avatars.githubusercontent.com/u/82937813?s=200&v=4'
+#     copyright: 2020-2022 Lab Digital
+#     tags: "mach terraform"
+#     summary: A framework to orchestrate MACH platforms
+#     description: |
+#       MACH composer is a framework that you use to orchestrate and extend
+#       modern digital commerce & experience platforms, based on MACH
+#       technologies and cloud native services..
+#     release_notes: "https://github.com/mach-composer/mach-composer-cli/releases/tag/v{{ .Version }}"
+#     api_key: '{{ .Env.CHOCOLATEY_API_KEY }}'
+
+#     #TODO: Re-enable this when we have a working chocolaty registry
+#     #    skip_publish: "{{ .Env.SKIP_UPLOAD }}"
+#     skip_publish: true
+
+nix:
+  - name: mach-composer
     url_template: https://github.com/mach-composer/mach-composer-cli/releases/download/v{{ .Version }}/{{ .ArtifactName }}
     commit_author:
       name: goreleaserbot
       email: opensource@labdigital.nl
-    homepage: "https://machcomposer.io/"
-    description: |
-      MACH composer is a framework that you use to orchestrate and extend
-      modern digital commerce & experience platforms, based on MACH
-      technologies and cloud native services..
-    license: "MIT"
+    path: pkgs/mach-composer.nix
+    description: "Orchestration tool for modern MACH ecosystems, powered by Terraform infrastructure-as-code underneath"
+    homepage: "https://www.machcomposer.io/"
+    license: "mit"
+    # TODO: put this back after testing
+    # skip_upload: "{{ .Env.SKIP_UPLOAD }}"
+    skip_upload: false
     dependencies:
-      - name: terraform
-      - name: git
-        type: optional
-
-chocolateys:
-  - title: MACH composer
-    owners: Lab
-    authors: Lab Digital
-    project_url: https://machcomposer.io/
-    license_url: https://github.com/mach-composer/mach-composer-cli/blob/main/LICENSE
-    project_source_url: https://github.com/mach-composer/mach-composer-cli
-    docs_url: https://docs.machcomposer.io
-    bug_tracker_url: https://github.com/mach-composer/mach-composer-cli/issues
-    url_template: "https://github.com/mach-composer/mach-composer-cli/releases/download/{{ .Tag }}/{{ .ArtifactName }}"
-    icon_url: 'https://avatars.githubusercontent.com/u/82937813?s=200&v=4'
-    copyright: 2020-2022 Lab Digital
-    tags: "mach terraform"
-    summary: A framework to orchestrate MACH platforms
-    description: |
-      MACH composer is a framework that you use to orchestrate and extend
-      modern digital commerce & experience platforms, based on MACH
-      technologies and cloud native services..
-    release_notes: "https://github.com/mach-composer/mach-composer-cli/releases/tag/v{{ .Version }}"
-    api_key: '{{ .Env.CHOCOLATEY_API_KEY }}'
-
-    #TODO: Re-enable this when we have a working chocolaty registry
-    #    skip_publish: "{{ .Env.SKIP_UPLOAD }}"
-    skip_publish: true
+      - git
+      - terraform
+    # go-releaser tries to cp bin/mach-composer store/bin/bin/mach-composer
+    # override install step to fix that. dependencies need redefining here :(
+    install: |
+      mkdir -p $out/bin
+      cp -vr ./bin/mach-composer $out/bin/mach-composer
+      wrapProgram $out/bin/mach-composer --prefix PATH : ${lib.makeBinPath ([ git terraform ])}
+    post_install: |
+      installShellCompletion --cmd mach-composer \
+        --bash <($out/bin/mach-composer completion bash) \
+        --fish <($out/bin/mach-composer completion fish) \
+        --zsh <($out/bin/mach-composer completion zsh)
+    repository:
+      owner: mach-composer
+      name: nix-{{ .ProjectName }}

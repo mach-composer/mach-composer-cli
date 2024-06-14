@@ -44,6 +44,9 @@ jobs:
         env:
           CHOCOLATEY_VERSION: 1.2.1
 
+      - name: Set up nix
+        uses: cachix/install-nix-action@v19
+
       - name: Get goreleaser app token
         id: get-app-token
         uses: labd/action-gh-app-token@main
