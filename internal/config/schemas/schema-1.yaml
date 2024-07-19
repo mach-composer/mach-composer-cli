@@ -11,6 +11,29 @@ properties:
     type: array
     items:
       $ref: "#/definitions/SiteConfig"
+  templates:
+    type: array
+    description: |
+      Templates can be used to set yaml aliases that can be used as anchors elsewhere:
+      
+      templates:
+        - &application
+          source: ../../modules/application
+          version: "test"
+          branch: main
+          integrations:
+            - sentry
+
+      components:
+        - <<: *application
+          name: application-1
+        - <<: *application
+          name: application-2
+          version: other_version
+          
+      Note that any values set in the template will be overriden by the component
+    items:
+      type: object
   components:
     oneOf:
       - type: string

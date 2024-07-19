@@ -37,6 +37,22 @@ func mapYamlNodes(nodes []*yaml.Node) map[string]*yaml.Node {
 		value := nodes[i+1]
 		result[key] = value
 	}
+
+	// Check if there is an alias node and resolve it
+	val, ok := result["<<"]
+	if ok {
+		aliasData := mapYamlNodes(val.Alias.Content)
+		delete(result, "<<")
+
+		// We only add the aliased data if the key is not already present
+		for k, v := range aliasData {
+			if _, ok := result[k]; ok {
+				continue
+			}
+			result[k] = v
+		}
+	}
+
 	return result
 }
 
