@@ -97,6 +97,11 @@ var componentRegisterVersionCmd = &cobra.Command{
 			return err
 		}
 
+		branch, err := cmd.Flags().GetString("branch")
+		if err != nil {
+			return err
+		}
+
 		client, err := cloud.NewClient(ctx)
 		if err != nil {
 			return err
@@ -113,6 +118,7 @@ var componentRegisterVersionCmd = &cobra.Command{
 				ComponentVersionCreate(ctx, organization, project, componentKey).
 				ComponentVersionDraft(mccsdk.ComponentVersionDraft{
 					Version: version,
+					Branch:  branch,
 				}).
 				Execute()
 			if err != nil {
@@ -294,7 +300,8 @@ func init() {
 	registerContextFlags(componentRegisterVersionCmd)
 	componentRegisterVersionCmd.Flags().Bool("auto", false, "Automate")
 	componentRegisterVersionCmd.Flags().Bool("dry-run", false, "Dry run")
-	componentRegisterVersionCmd.Flags().StringArray("git-filter-path", nil, "Filter comits based on given paths")
+	componentRegisterVersionCmd.Flags().StringArray("git-filter-path", nil, "Filter commits based on given paths")
+	componentRegisterVersionCmd.Flags().String("branch", "", "The branch to use for the version. Defaults to the backend default if not set")
 
 	CloudCmd.AddCommand(componentListVersionCmd)
 	registerContextFlags(componentListVersionCmd)
