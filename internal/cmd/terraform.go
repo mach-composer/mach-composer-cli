@@ -36,7 +36,12 @@ func terraformFunc(cmd *cobra.Command, args []string) error {
 	ctx := cmd.Context()
 	defer cfg.Close()
 
-	dg, err := graph.ToDeploymentGraph(cfg, commonFlags.outputPath)
+	g, err := graph.ToDependencyGraph(cfg, commonFlags.outputPath)
+	if err != nil {
+		return err
+	}
+
+	dg, err := graph.ToDeploymentGraph(g)
 	if err != nil {
 		return err
 	}

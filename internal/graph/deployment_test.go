@@ -41,7 +41,10 @@ func TestToDeploymentGraphSimple(t *testing.T) {
 		},
 	}
 
-	g, err := ToDeploymentGraph(cfg, "")
+	dg, err := ToDependencyGraph(cfg, "")
+	assert.NoError(t, err)
+
+	g, err := ToDeploymentGraph(dg)
 	assert.NoError(t, err)
 
 	o, _ := g.Order()
