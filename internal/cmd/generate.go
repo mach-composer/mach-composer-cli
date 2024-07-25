@@ -26,7 +26,12 @@ func generateFunc(cmd *cobra.Command) error {
 	cfg := loadConfig(cmd, true)
 	defer cfg.Close()
 
-	gd, err := graph.ToDeploymentGraph(cfg, commonFlags.outputPath)
+	g, err := graph.ToDependencyGraph(cfg, commonFlags.outputPath)
+	if err != nil {
+		return err
+	}
+
+	gd, err := graph.ToDeploymentGraph(g)
 	if err != nil {
 		return err
 	}
