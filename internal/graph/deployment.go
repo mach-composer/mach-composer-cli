@@ -4,23 +4,42 @@ import (
 	"errors"
 	"fmt"
 	"github.com/dominikbraun/graph"
-	"github.com/mach-composer/mach-composer-cli/internal/config"
 )
+
+type options struct {
+	site string
+}
+
+type Option func(o *options)
+
+func WithSite(site string) Option {
+	return func(o *options) {
+		o.site = site
+	}
+}
 
 // ToDeploymentGraph converts a MachConfig to a Graph ready for deployment.
 // This means that all nodes that are not independently deployable are pruned from the graph.
-func ToDeploymentGraph(cfg *config.MachConfig, outPath string) (*Graph, error) {
-	g, err := ToDependencyGraph(cfg, outPath)
-	if err != nil {
-		return nil, err
+func ToDeploymentGraph(g *Graph, opts ...Option) (*Graph, error) {
+	o := options{
+		site: "",
 	}
 
-	if err = validateDeployment(g); err != nil {
+	for _, opt := range opts {
+		opt(&o)
+	}
+
+	if err := validateDeployment(g); err != nil {
 		return nil, err
 	}
 
 	// Remove all nodes that are not independent to site node
-	if err = reduceNodes(g); err != nil {
+	if err := reduceNodes(g); err != nil {
+		return nil, err
+	}
+
+	//Prune to only include the site node if provided
+	if err := pruneSiteNodes(g, o.site); err != nil {
 		return nil, err
 	}
 
@@ -131,4 +150,21 @@ func reduceNodes(g *Graph) error {
 	}
 
 	return pErr
+}
+
+func pruneSiteNodes(g *Graph, site string) error {
+	if site == "" {
+		return nil
+	}
+
+	for _, v := range g.Vertices() {
+		if v.Type() == SiteType && v.Identifier() != site {
+			err := pruneBranch(g, v)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	return nil
 }

@@ -50,7 +50,12 @@ func applyFunc(cmd *cobra.Command, _ []string) error {
 	defer cfg.Close()
 	ctx := cmd.Context()
 
-	dg, err := graph.ToDeploymentGraph(cfg, commonFlags.outputPath)
+	g, err := graph.ToDependencyGraph(cfg, commonFlags.outputPath)
+	if err != nil {
+		return err
+	}
+
+	dg, err := graph.ToDeploymentGraph(g)
 	if err != nil {
 		return err
 	}
