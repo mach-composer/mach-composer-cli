@@ -1,3 +1,4 @@
+version: 2
 project_name: mach-composer
 
 env:
@@ -50,7 +51,7 @@ release:
 
 changelog:
   use: github
-  skip: false
+  disable: false
 
 archives:
   - id: mach-composer
