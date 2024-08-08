@@ -1,9 +1,9 @@
 variable "aws_account_id" {
-  type    = string
+  type = string
 }
 
 variable "name" {
-  type    = string
+  type = string
 }
 
 variable "region" {
