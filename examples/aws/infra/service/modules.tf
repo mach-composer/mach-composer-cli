@@ -8,11 +8,11 @@ module "tfstate-backend" {
 }
 
 module "shared-config" {
-  source = "git::https://github.com/labd/terraform-aws-mach-shared.git"
+  source            = "git::https://github.com/labd/terraform-aws-mach-shared.git"
   code_repo_name    = "${var.name}-lambdas"
   aws_account_alias = "${var.name}-srv"
   allow_code_repo_read_access = [
-      # Include sub-accounts here for each MACH environment
+    # Include sub-accounts here for each MACH environment
   ]
   allow_assume_deploy_role = [
     # Specify accounts that should be able to assume the deploy role

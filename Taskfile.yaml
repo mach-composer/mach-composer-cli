@@ -17,6 +17,11 @@ tasks:
   tidy:
     cmd: go mod tidy -v
 
+  format:
+    cmds:
+     - go fmt ./...
+     - terraform fmt -recursive -write=true .
+
   generate:
     cmd: go generate ./...
 
