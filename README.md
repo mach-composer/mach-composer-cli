@@ -50,6 +50,44 @@ Releases](https://github.com/mach-composer/mach-composer-cli/releases/latest). A
 choco install mach-composer --version=2.5.0
 ``` -->
 
+### Nix
+
+Add the flake input
+
+```
+  inputs.mach-composer = {
+    url = "github:mach-composer/nix-mach-composer";
+    inputs.nixpkgs.follows = "nixpkgs";
+  };
+
+  # in outputs, pass mach-composer into your configuration
+```
+
+Then add to your package list
+
+```
+  mach-composer.packages.${system}.mach-composer
+```
+
+#### making an overlay
+```
+let
+  mach-composer-overlay = final: prev: {
+    mach-composer = mach-composer.packages.${system}.mach-composer;
+  };
+  pkgs = import nixpkgs {
+    inherit system;
+    config = {
+      allowUnfree = true;
+    };
+
+    overlays = [
+      mach-composer-overlay
+    ];
+  };
+```
+
+> if using [numtide/devshell](https://github.com/numtide/devshell/), you can then put `mach-composer` in your `devshell.toml` packages list.
 
 ## Getting started
 
