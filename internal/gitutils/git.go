@@ -402,7 +402,11 @@ func asRevision(s string) *plumbing.Revision {
 }
 
 func branchContainsCommit(ctx context.Context, gitPath, targetRev, baseRev string) (bool, error) {
-	output, err := runGit(ctx, gitPath, "branch", "-a", targetRev, "--contains", baseRev)
+	args := []string{"branch", "-a", targetRev, "--contains"}
+	if baseRev != "" {
+		args = append(args, baseRev)
+	}
+	output, err := runGit(ctx, gitPath, args...)
 	if err != nil {
 		return false, fmt.Errorf(strings.TrimSpace(err.Error()))
 	}
