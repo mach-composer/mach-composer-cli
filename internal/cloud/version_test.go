@@ -51,7 +51,7 @@ func TestRegisterComponentVersionComponentNotFoundWithoutCreateComponent(t *test
 	var gitFilterPaths []string
 
 	err := RegisterComponentVersion(ctx, client, organization, project, componentKey, branch, version, false, false, false, gitFilterPaths)
-	assert.ErrorContains(t, err, "Component test-component does not exist")
+	assert.ErrorContains(t, err, "component test-component does not exist")
 	assert.True(t, client.AssertNotCalled(t, "CreateComponent"))
 	assert.True(t, client.AssertNotCalled(t, "CreateComponentVersion"))
 }
