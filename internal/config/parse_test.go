@@ -7,14 +7,10 @@ import (
 	"github.com/mach-composer/mach-composer-cli/internal/config/variable"
 	"testing"
 
+	"github.com/mach-composer/mach-composer-cli/internal/plugins"
 	"github.com/rs/zerolog"
-	"github.com/spf13/afero"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"gopkg.in/yaml.v3"
-
-	"github.com/mach-composer/mach-composer-cli/internal/plugins"
-	"github.com/mach-composer/mach-composer-cli/internal/utils"
 )
 
 func TestMain(m *testing.M) {
@@ -28,7 +24,7 @@ var ignoreOpts = []cmp.Option{
 }
 
 func TestOpenBasic(t *testing.T) {
-	config, err := Open(context.Background(), "testdata/configs/basic.yaml", &ConfigOptions{
+	config, err := Open(context.Background(), "testdata/configs/basic/main.yaml", &ConfigOptions{
 		Validate:      false,
 		NoResolveVars: true,
 		Plugins:       plugins.NewPluginRepository(),
@@ -45,7 +41,7 @@ func TestOpenBasic(t *testing.T) {
 	}
 
 	expected := &MachConfig{
-		Filename: "basic.yaml",
+		Filename: "main.yaml",
 		MachComposer: MachComposer{
 			Version: "1.0.0",
 			Deployment: Deployment{
@@ -83,14 +79,14 @@ func TestOpenBasic(t *testing.T) {
 	assert.True(t, cmp.Equal(config, expected, ignoreOpts...), cmp.Diff(config, expected, ignoreOpts...))
 }
 
-func TestParseComplex(t *testing.T) {
+func TestOpenComplex(t *testing.T) {
 	pr := plugins.NewPluginRepository()
 	err := pr.Add("my-plugin", plugins.NewPluginV1Adapter(plugins.NewMockPluginV1()))
 	require.NoError(t, err)
 	err = pr.Add("aws", plugins.NewPluginV1Adapter(plugins.NewMockPluginV1()))
 	require.NoError(t, err)
 
-	config, err := Open(context.Background(), "testdata/configs/complex.yaml", &ConfigOptions{
+	config, err := Open(context.Background(), "testdata/configs/complex/main.yaml", &ConfigOptions{
 		Validate:      false,
 		NoResolveVars: true,
 		Plugins:       pr,
@@ -109,7 +105,7 @@ func TestParseComplex(t *testing.T) {
 	}
 
 	expected := &MachConfig{
-		Filename: "complex.yaml",
+		Filename: "main.yaml",
 		MachComposer: MachComposer{
 			Version: "1.0.0",
 			Plugins: map[string]MachPluginConfig{
@@ -167,122 +163,26 @@ func TestParseComplex(t *testing.T) {
 	assert.True(t, cmp.Equal(config, expected, ignoreOpts...), cmp.Diff(config, expected, ignoreOpts...))
 }
 
-func TestParseComponentsNodeInline(t *testing.T) {
-	var intermediate struct {
-		Components yaml.Node `yaml:"components"`
-	}
-
-	data := []byte(utils.TrimIndent(`
-        components:
-        - name: your-component
-          source: "git::https://github.com/<username>/<your-component>.git//terraform"
-          version: 0.1.0
-  `))
-
-	err := yaml.Unmarshal(data, &intermediate)
+func TestOpenComponentIncludeFunc(t *testing.T) {
+	config, err := Open(context.Background(), "testdata/configs/component_include_func/main.yaml", &ConfigOptions{
+		Validate:      false,
+		NoResolveVars: true,
+		Plugins:       plugins.NewPluginRepository(),
+	})
 	require.NoError(t, err)
 
-	cfg := &MachConfig{
-		Plugins: plugins.NewPluginRepository(),
-		Global: GlobalConfig{
-			Cloud: "my-cloud",
-		},
-	}
-	err = cfg.Plugins.Add("my-cloud", plugins.NewPluginV1Adapter(plugins.NewMockPluginV1()))
-	require.NoError(t, err)
-
-	err = parseComponentsNode(cfg, &intermediate.Components)
-	require.NoError(t, err)
-	assert.Len(t, cfg.Components, 1)
-	assert.Equal(t, "your-component", cfg.Components[0].Name)
+	assert.Len(t, config.Components, 1)
+	assert.Equal(t, "your-component", config.Components[0].Name)
 }
 
-func TestParseComponentsNodeRef(t *testing.T) {
-	utils.FS = afero.NewMemMapFs()
-	utils.AFS = &afero.Afero{Fs: utils.FS}
-
-	content := utils.TrimIndent(`
-	components:
-		- name: your-component
-		  source: "git::https://github.com/<username>/<your-component>.git//terraform"
-		  version: 0.1.0
-	`)
-
-	err := utils.AFS.WriteFile("components.yml", []byte(content), 0644)
+func TestOpenComponentRef(t *testing.T) {
+	config, err := Open(context.Background(), "testdata/configs/component_ref/main.yaml", &ConfigOptions{
+		Validate:      false,
+		NoResolveVars: true,
+		Plugins:       plugins.NewPluginRepository(),
+	})
 	require.NoError(t, err)
 
-	var intermediate struct {
-		Components yaml.Node `yaml:"components"`
-	}
-
-	data := []byte(utils.TrimIndent(`
-        components:
-			$ref: components.yml#/components
-  `))
-
-	err = yaml.Unmarshal(data, &intermediate)
-	require.NoError(t, err)
-
-	componentNode, fileName, err := LoadRefData(context.Background(), &intermediate.Components, "")
-	assert.NoError(t, err)
-	assert.Equal(t, "components.yml", fileName)
-	intermediate.Components = *componentNode
-
-	cfg := &MachConfig{
-		Plugins: plugins.NewPluginRepository(),
-		Global: GlobalConfig{
-			Cloud: "my-cloud",
-		},
-	}
-	err = cfg.Plugins.Add("my-cloud", plugins.NewPluginV1Adapter(plugins.NewMockPluginV1()))
-	require.NoError(t, err)
-
-	err = parseComponentsNode(cfg, &intermediate.Components)
-	require.NoError(t, err)
-	assert.Len(t, cfg.Components, 1)
-	assert.Equal(t, "your-component", cfg.Components[0].Name)
-}
-
-func TestParseComponentsNodeInclude(t *testing.T) {
-	utils.FS = afero.NewMemMapFs()
-	utils.AFS = &afero.Afero{Fs: utils.FS}
-
-	content := utils.TrimIndent(`
-    - name: your-component
-      source: "git::https://github.com/<username>/<your-component>.git//terraform"
-      version: 0.1.0
-	`)
-
-	err := utils.AFS.WriteFile("components.yml", []byte(content), 0644)
-	require.NoError(t, err)
-
-	var intermediate struct {
-		Components yaml.Node `yaml:"components"`
-	}
-
-	data := []byte(utils.TrimIndent(`
-        components: ${include(components.yml)}
-  `))
-
-	err = yaml.Unmarshal(data, &intermediate)
-	require.NoError(t, err)
-
-	componentNode, fileName, err := LoadRefData(context.Background(), &intermediate.Components, "")
-	assert.NoError(t, err)
-	assert.Equal(t, "components.yml", fileName)
-	intermediate.Components = *componentNode
-
-	cfg := &MachConfig{
-		Plugins: plugins.NewPluginRepository(),
-		Global: GlobalConfig{
-			Cloud: "my-cloud",
-		},
-	}
-	err = cfg.Plugins.Add("my-cloud", plugins.NewPluginV1Adapter(plugins.NewMockPluginV1()))
-	require.NoError(t, err)
-
-	err = parseComponentsNode(cfg, &intermediate.Components)
-	require.NoError(t, err)
-	assert.Len(t, cfg.Components, 1)
-	assert.Equal(t, "your-component", cfg.Components[0].Name)
+	assert.Len(t, config.Components, 1)
+	assert.Equal(t, "your-component", config.Components[0].Name)
 }
