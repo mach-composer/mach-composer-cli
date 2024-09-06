@@ -14,14 +14,14 @@ import (
 	"github.com/mach-composer/mach-composer-cli/internal/gitutils"
 )
 
-func RegisterComponentVersion(ctx context.Context, client ClientWrapper, organization, project, componentKey, branch, version string, dryRun, auto, createComponent bool, gitFilterPaths []string) error {
-	p, err := client.ListComponents(ctx, organization, project, 250)
+func RegisterComponentVersion(ctx context.Context, client ClientWrapper, repository gitutils.GitRepository, organization, project, componentKey, branch, version string, dryRun, auto, createComponent bool, gitFilterPaths []string) error {
+	lc, err := client.ListComponents(ctx, organization, project, 250)
 	if err != nil {
 		return err
 	}
 
 	var component *mccsdk.Component
-	for _, c := range p.Results {
+	for _, c := range lc.Results {
 		if c.GetKey() == componentKey {
 			component = &c
 			break
@@ -44,7 +44,9 @@ func RegisterComponentVersion(ctx context.Context, client ClientWrapper, organiz
 		}
 	}
 
-	if !auto {
+	if auto {
+		return autoRegisterVersion(ctx, client, repository, organization, project, componentKey, dryRun, gitFilterPaths)
+	} else {
 		if dryRun {
 			log.Info().Msgf("Would create new version: %s (branch=%s)", version, branch)
 			return nil
@@ -56,29 +58,24 @@ func RegisterComponentVersion(ctx context.Context, client ClientWrapper, organiz
 		}
 		log.Info().Msgf("Created new version %s for component %s", resource.GetVersion(), resource.GetComponent())
 		return nil
-	} else {
-		cwd, err := os.Getwd()
-		if err != nil {
-			return err
-		}
-		gitFilterPaths = pie.Map(gitFilterPaths, func(path string) string {
-			if filepath.IsAbs(path) {
-				return path
-			}
-
-			return filepath.Join(cwd, path)
-		})
-		return autoRegisterVersion(ctx, client, organization, project, componentKey, dryRun, gitFilterPaths)
 	}
 }
 
-func autoRegisterVersion(ctx context.Context, client ClientWrapper, organization, project, componentKey string, dryRun bool, gitFilterPaths []string) error {
+func autoRegisterVersion(ctx context.Context, client ClientWrapper, repository gitutils.GitRepository, organization, project, componentKey string, dryRun bool, gitFilterPaths []string) error {
 	cwd, err := os.Getwd()
 	if err != nil {
 		return err
 	}
 
-	branch, err := gitutils.GetCurrentBranch(ctx, cwd)
+	gitFilterPaths = pie.Map(gitFilterPaths, func(path string) string {
+		if filepath.IsAbs(path) {
+			return path
+		}
+
+		return filepath.Join(cwd, path)
+	})
+
+	branch, err := repository.GetCurrentBranch(ctx, cwd)
 	if err != nil {
 		return err
 	}
@@ -96,7 +93,7 @@ func autoRegisterVersion(ctx context.Context, client ClientWrapper, organization
 		baseRef = lastVersion.Version
 	}
 
-	newVersion, err := gitutils.GetVersionInfo(ctx, cwd, branch)
+	newVersion, err := repository.GetVersionInfo(ctx, cwd, branch)
 	if err != nil {
 		return err
 	}
@@ -113,7 +110,7 @@ func autoRegisterVersion(ctx context.Context, client ClientWrapper, organization
 		log.Info().Msgf("Created new version: %s (branch=%s)", createdVersion.Version, branch)
 	}
 
-	commits, err := gitutils.GetRecentCommits(ctx, cwd, baseRef, branch, gitFilterPaths)
+	commits, err := repository.GetRecentCommits(ctx, cwd, baseRef, branch, gitFilterPaths)
 	if err != nil {
 		if errors.Is(err, gitutils.ErrGitRevisionNotFound) {
 			log.Info().Msgf("Failed to calculate changes, last version (%s) not found in the repository", baseRef)

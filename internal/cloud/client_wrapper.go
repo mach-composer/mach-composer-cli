@@ -7,7 +7,7 @@ import (
 
 var _ ClientWrapper = (*MccSdkClientWrapper)(nil)
 
-// ClientWrapper is an interface for the mccsdk.APIClient so we can more easily write tests
+// ClientWrapper is an interface wrapper for the mccsdk.APIClient so we can more easily write tests
 type ClientWrapper interface {
 	ListComponents(ctx context.Context, organization, project string, limit int32) (*mccsdk.ComponentPaginator, error)
 	CreateComponent(ctx context.Context, organization, project, key string) (*mccsdk.Component, error)
@@ -16,7 +16,7 @@ type ClientWrapper interface {
 	PushComponentVersionCommits(ctx context.Context, organization, project, componentKey, versionIdentifier string, commits []mccsdk.CommitData) error
 }
 
-func NewMccSdkWrapper(client *mccsdk.APIClient) *MccSdkClientWrapper {
+func NewClientWrapper(client *mccsdk.APIClient) *MccSdkClientWrapper {
 	return &MccSdkClientWrapper{client: client}
 }
 

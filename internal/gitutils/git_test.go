@@ -13,11 +13,11 @@ import (
 func TestParseGitSource(t *testing.T) {
 	params := []struct {
 		source   string
-		expected *gitSource
+		expected *GitSource
 	}{
 		{
 			source: "git::https://github.com/mach-composer/mach-composer-cli",
-			expected: &gitSource{
+			expected: &GitSource{
 				Repository: "https://github.com/mach-composer/mach-composer-cli",
 				Path:       "",
 				Name:       "mach-composer-cli",
@@ -25,7 +25,7 @@ func TestParseGitSource(t *testing.T) {
 		},
 		{
 			source: "git::https://github.com/mach-composer/mach-composer-cli//terraform",
-			expected: &gitSource{
+			expected: &GitSource{
 				Repository: "https://github.com/mach-composer/mach-composer-cli",
 				Path:       "terraform",
 				Name:       "mach-composer-cli",

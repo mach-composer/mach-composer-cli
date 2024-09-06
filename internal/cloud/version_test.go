@@ -2,45 +2,20 @@ package cloud
 
 import (
 	"context"
+	"github.com/mach-composer/mach-composer-cli/internal/gitutils"
 	"github.com/mach-composer/mach-composer-cli/internal/utils"
 	"github.com/mach-composer/mcc-sdk-go/mccsdk"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"testing"
+	"time"
 )
-
-type ClientWrapperMock struct {
-	mock.Mock
-}
-
-func (c *ClientWrapperMock) ListComponents(ctx context.Context, organization, project string, limit int32) (*mccsdk.ComponentPaginator, error) {
-	args := c.Called(ctx, organization, project, limit)
-	return args.Get(0).(*mccsdk.ComponentPaginator), args.Error(1)
-}
-
-func (c *ClientWrapperMock) CreateComponent(ctx context.Context, organization, project, key string) (*mccsdk.Component, error) {
-	args := c.Called(ctx, organization, project, key)
-	return args.Get(0).(*mccsdk.Component), args.Error(1)
-}
-
-func (c *ClientWrapperMock) CreateComponentVersion(ctx context.Context, organization, project, key, version, branch string) (*mccsdk.ComponentVersion, error) {
-	args := c.Called(ctx, organization, project, key, version, branch)
-	return args.Get(0).(*mccsdk.ComponentVersion), args.Error(1)
-}
-
-func (c *ClientWrapperMock) GetLatestComponentVersion(ctx context.Context, organization, project, key, branch string) (*mccsdk.ComponentVersion, error) {
-	args := c.Called(ctx, organization, project, key, branch)
-	return args.Get(0).(*mccsdk.ComponentVersion), args.Error(1)
-}
-
-func (c *ClientWrapperMock) PushComponentVersionCommits(ctx context.Context, organization, project, componentKey, versionIdentifier string, commits []mccsdk.CommitData) error {
-	args := c.Called(ctx, organization, project, componentKey, versionIdentifier, commits)
-	return args.Error(0)
-}
 
 func TestRegisterComponentVersionComponentNotFoundWithoutCreateComponent(t *testing.T) {
 	client := &ClientWrapperMock{}
 	client.On("ListComponents", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(&mccsdk.ComponentPaginator{}, nil)
+
+	gitRepo := &gitutils.GitRepositoryMock{}
 
 	ctx := context.Background()
 	organization := "test-org"
@@ -50,7 +25,7 @@ func TestRegisterComponentVersionComponentNotFoundWithoutCreateComponent(t *test
 	version := "1.0.0"
 	var gitFilterPaths []string
 
-	err := RegisterComponentVersion(ctx, client, organization, project, componentKey, branch, version, false, false, false, gitFilterPaths)
+	err := RegisterComponentVersion(ctx, client, gitRepo, organization, project, componentKey, branch, version, false, false, false, gitFilterPaths)
 	assert.ErrorContains(t, err, "component test-component does not exist")
 	assert.True(t, client.AssertNotCalled(t, "CreateComponent"))
 	assert.True(t, client.AssertNotCalled(t, "CreateComponentVersion"))
@@ -60,6 +35,8 @@ func TestRegisterComponentVersionComponentNotFoundWithCreateComponentDryRun(t *t
 	client := &ClientWrapperMock{}
 	client.On("ListComponents", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(&mccsdk.ComponentPaginator{}, nil)
 
+	gitRepo := &gitutils.GitRepositoryMock{}
+
 	ctx := context.Background()
 	organization := "test-org"
 	project := "test-project"
@@ -68,7 +45,7 @@ func TestRegisterComponentVersionComponentNotFoundWithCreateComponentDryRun(t *t
 	version := "1.0.0"
 	var gitFilterPaths []string
 
-	err := RegisterComponentVersion(ctx, client, organization, project, componentKey, branch, version, true, false, true, gitFilterPaths)
+	err := RegisterComponentVersion(ctx, client, gitRepo, organization, project, componentKey, branch, version, true, false, true, gitFilterPaths)
 	assert.NoError(t, err)
 	assert.True(t, client.AssertNotCalled(t, "CreateComponent"))
 	assert.True(t, client.AssertNotCalled(t, "CreateComponentVersion"))
@@ -83,6 +60,8 @@ func TestRegisterComponentVersionComponentNotFoundWithCreateComponent(t *testing
 	client.On("CreateComponentVersion", mock.Anything, mock.Anything, mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(&mccsdk.ComponentVersion{
 		Version: "test-component-version"}, nil)
 
+	gitRepo := &gitutils.GitRepositoryMock{}
+
 	ctx := context.Background()
 	organization := "test-org"
 	project := "test-project"
@@ -91,7 +70,7 @@ func TestRegisterComponentVersionComponentNotFoundWithCreateComponent(t *testing
 	version := "1.0.0"
 	var gitFilterPaths []string
 
-	err := RegisterComponentVersion(ctx, client, organization, project, componentKey, branch, version, false, false, true, gitFilterPaths)
+	err := RegisterComponentVersion(ctx, client, gitRepo, organization, project, componentKey, branch, version, false, false, true, gitFilterPaths)
 	assert.NoError(t, err)
 }
 
@@ -107,6 +86,8 @@ func TestRegisterComponentVersionComponentFound(t *testing.T) {
 	client.On("CreateComponentVersion", mock.Anything, mock.Anything, mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(&mccsdk.ComponentVersion{
 		Version: "test-component-version"}, nil)
 
+	gitRepo := &gitutils.GitRepositoryMock{}
+
 	ctx := context.Background()
 	organization := "test-org"
 	project := "test-project"
@@ -115,7 +96,182 @@ func TestRegisterComponentVersionComponentFound(t *testing.T) {
 	version := "1.0.0"
 	var gitFilterPaths []string
 
-	err := RegisterComponentVersion(ctx, client, organization, project, componentKey, branch, version, false, false, true, gitFilterPaths)
+	err := RegisterComponentVersion(ctx, client, gitRepo, organization, project, componentKey, branch, version, false, false, true, gitFilterPaths)
 	assert.NoError(t, err)
 	assert.True(t, client.AssertNotCalled(t, "CreateComponent"))
+}
+
+func TestRegisterComponentVersionComponentFoundAutoGitRevisionNotFound(t *testing.T) {
+	client := &ClientWrapperMock{}
+	client.On("ListComponents", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(&mccsdk.ComponentPaginator{
+		Results: []mccsdk.Component{
+			{
+				Key: utils.Ref("test-component"),
+			},
+		},
+	}, nil)
+	client.On("GetLatestComponentVersion", mock.Anything, mock.Anything, mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(&mccsdk.ComponentVersion{
+		Version: "previous-test-component-version"}, nil)
+	client.On("CreateComponentVersion", mock.Anything, mock.Anything, mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(&mccsdk.ComponentVersion{
+		Version: "test-component-version"}, nil)
+
+	gitRepo := &gitutils.GitRepositoryMock{}
+	gitRepo.On("GetCurrentBranch", mock.Anything, mock.Anything).Return("main", nil)
+	gitRepo.On("GetVersionInfo", mock.Anything, mock.Anything, mock.Anything).Return(&gitutils.GitVersionInfo{}, nil)
+	gitRepo.On("GetRecentCommits", mock.Anything, mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return([]gitutils.GitCommit{}, gitutils.ErrGitRevisionNotFound)
+
+	ctx := context.Background()
+	organization := "test-org"
+	project := "test-project"
+	componentKey := "test-component"
+	branch := "main"
+	version := "1.0.0"
+	var gitFilterPaths []string
+
+	err := RegisterComponentVersion(ctx, client, gitRepo, organization, project, componentKey, branch, version, false, true, true, gitFilterPaths)
+	assert.NoError(t, err)
+	assert.True(t, client.AssertNotCalled(t, "CreateComponent"))
+	assert.True(t, client.AssertNotCalled(t, "PushComponentVersionCommits"))
+}
+
+func TestRegisterComponentVersionComponentFoundAutoNoCommits(t *testing.T) {
+	client := &ClientWrapperMock{}
+	client.On("ListComponents", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(&mccsdk.ComponentPaginator{
+		Results: []mccsdk.Component{
+			{
+				Key: utils.Ref("test-component"),
+			},
+		},
+	}, nil)
+	client.On("GetLatestComponentVersion", mock.Anything, mock.Anything, mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(&mccsdk.ComponentVersion{
+		Version: "previous-test-component-version"}, nil)
+	client.On("CreateComponentVersion", mock.Anything, mock.Anything, mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(&mccsdk.ComponentVersion{
+		Version: "test-component-version"}, nil)
+
+	gitRepo := &gitutils.GitRepositoryMock{}
+	gitRepo.On("GetCurrentBranch", mock.Anything, mock.Anything).Return("main", nil)
+	gitRepo.On("GetVersionInfo", mock.Anything, mock.Anything, mock.Anything).Return(&gitutils.GitVersionInfo{}, nil)
+	gitRepo.On("GetRecentCommits", mock.Anything, mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return([]gitutils.GitCommit{}, nil)
+
+	ctx := context.Background()
+	organization := "test-org"
+	project := "test-project"
+	componentKey := "test-component"
+	branch := "main"
+	version := "1.0.0"
+	var gitFilterPaths []string
+
+	err := RegisterComponentVersion(ctx, client, gitRepo, organization, project, componentKey, branch, version, false, true, true, gitFilterPaths)
+	assert.NoError(t, err)
+	assert.True(t, client.AssertNotCalled(t, "CreateComponent"))
+	assert.True(t, client.AssertNotCalled(t, "PushComponentVersionCommits"))
+}
+
+func TestRegisterComponentVersionComponentFoundAutoOK(t *testing.T) {
+	client := &ClientWrapperMock{}
+	client.On("ListComponents", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(&mccsdk.ComponentPaginator{
+		Results: []mccsdk.Component{
+			{
+				Key: utils.Ref("test-component"),
+			},
+		},
+	}, nil)
+	client.On("GetLatestComponentVersion", mock.Anything, mock.Anything, mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(&mccsdk.ComponentVersion{
+		Version: "previous-test-component-version"}, nil)
+	client.On("CreateComponentVersion", mock.Anything, mock.Anything, mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(&mccsdk.ComponentVersion{
+		Version: "test-component-version"}, nil)
+	client.On("PushComponentVersionCommits", mock.Anything, mock.Anything, mock.Anything, mock.Anything, mock.Anything, mock.MatchedBy(func(s []mccsdk.CommitData) bool {
+		assert.Len(t, s, 1)
+		assert.Equal(t, "test-commit", s[0].Commit)
+		assert.Equal(t, "test-subject", s[0].Subject)
+		assert.Equal(t, "test-parent", s[0].Parents[0])
+		assert.Equal(t, "test-author", s[0].Author.Name)
+		assert.Equal(t, "test-committer", s[0].Committer.Name)
+
+		return true
+	},
+	)).Return(nil)
+
+	gitRepo := &gitutils.GitRepositoryMock{}
+	gitRepo.On("GetCurrentBranch", mock.Anything, mock.Anything).Return("main", nil)
+	gitRepo.On("GetVersionInfo", mock.Anything, mock.Anything, mock.Anything).Return(&gitutils.GitVersionInfo{}, nil)
+	gitRepo.On("GetRecentCommits", mock.Anything, mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return([]gitutils.GitCommit{
+		{
+			Commit:  "test-commit",
+			Message: "test-subject",
+			Parents: []string{"test-parent"},
+			Author: gitutils.GitCommitAuthor{
+				Name:  "test-author",
+				Email: "test-author@email.com",
+				Date:  time.Now(),
+			},
+			Committer: gitutils.GitCommitAuthor{
+				Name:  "test-committer",
+				Email: "test-committer@email.com",
+				Date:  time.Now(),
+			},
+			Tags: []string{"test-tag"},
+		},
+	}, nil)
+
+	ctx := context.Background()
+	organization := "test-org"
+	project := "test-project"
+	componentKey := "test-component"
+	branch := "main"
+	version := "1.0.0"
+	var gitFilterPaths []string
+
+	err := RegisterComponentVersion(ctx, client, gitRepo, organization, project, componentKey, branch, version, false, true, true, gitFilterPaths)
+	assert.NoError(t, err)
+	assert.True(t, client.AssertNotCalled(t, "CreateComponent"))
+}
+
+func TestRegisterComponentVersionComponentFoundAutoDryRun(t *testing.T) {
+	client := &ClientWrapperMock{}
+	client.On("ListComponents", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(&mccsdk.ComponentPaginator{
+		Results: []mccsdk.Component{
+			{
+				Key: utils.Ref("test-component"),
+			},
+		},
+	}, nil)
+	client.On("GetLatestComponentVersion", mock.Anything, mock.Anything, mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(&mccsdk.ComponentVersion{
+		Version: "previous-test-component-version"}, nil)
+
+	gitRepo := &gitutils.GitRepositoryMock{}
+	gitRepo.On("GetCurrentBranch", mock.Anything, mock.Anything).Return("main", nil)
+	gitRepo.On("GetVersionInfo", mock.Anything, mock.Anything, mock.Anything).Return(&gitutils.GitVersionInfo{}, nil)
+	gitRepo.On("GetRecentCommits", mock.Anything, mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return([]gitutils.GitCommit{
+		{
+			Commit:  "test-commit",
+			Message: "test-subject",
+			Parents: []string{"test-parent"},
+			Author: gitutils.GitCommitAuthor{
+				Name:  "test-author",
+				Email: "test-author@email.com",
+				Date:  time.Now(),
+			},
+			Committer: gitutils.GitCommitAuthor{
+				Name:  "test-committer",
+				Email: "test-committer@email.com",
+				Date:  time.Now(),
+			},
+			Tags: []string{"test-tag"},
+		},
+	}, nil)
+
+	ctx := context.Background()
+	organization := "test-org"
+	project := "test-project"
+	componentKey := "test-component"
+	branch := "main"
+	version := "1.0.0"
+	var gitFilterPaths []string
+
+	err := RegisterComponentVersion(ctx, client, gitRepo, organization, project, componentKey, branch, version, true, true, true, gitFilterPaths)
+	assert.NoError(t, err)
+	assert.True(t, client.AssertNotCalled(t, "CreateComponent"))
+	assert.True(t, client.AssertNotCalled(t, "CreateComponentVersion"))
+	assert.True(t, client.AssertNotCalled(t, "PushComponentVersionCommits"))
 }

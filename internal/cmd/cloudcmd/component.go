@@ -2,6 +2,7 @@ package cloudcmd
 
 import (
 	"fmt"
+	"github.com/mach-composer/mach-composer-cli/internal/gitutils"
 	"github.com/mach-composer/mcc-sdk-go/mccsdk"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
@@ -121,7 +122,7 @@ var componentRegisterVersionCmd = &cobra.Command{
 		}
 		version := args[1]
 
-		return cloud.RegisterComponentVersion(ctx, cloud.NewMccSdkWrapper(client), organization, project, componentKey, branch, version, dryRun, auto, createComponent, gitFilterPaths)
+		return cloud.RegisterComponentVersion(ctx, cloud.NewClientWrapper(client), gitutils.NewGitRepositoryWrapper(), organization, project, componentKey, branch, version, dryRun, auto, createComponent, gitFilterPaths)
 	},
 }
 

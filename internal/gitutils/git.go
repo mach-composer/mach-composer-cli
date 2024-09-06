@@ -24,23 +24,23 @@ var downloadFiles = utils.OnceMap[string]{}
 
 var ErrGitRevisionNotFound = errors.New("git revision not found")
 
-type gitSource struct {
+type GitSource struct {
 	URL        string
 	Repository string
 	Path       string
 	Name       string
 }
 
-type gitCommit struct {
+type GitCommit struct {
 	Commit    string
 	Parents   []string
-	Author    gitCommitAuthor
-	Committer gitCommitAuthor
+	Author    GitCommitAuthor
+	Committer GitCommitAuthor
 	Message   string
 	Tags      []string
 }
 
-type gitCommitAuthor struct {
+type GitCommitAuthor struct {
 	Name  string
 	Email string
 	Date  time.Time
@@ -108,7 +108,7 @@ func Commit(_ context.Context, fileNames []string, message string) error {
 	return nil
 }
 
-func GetLastVersionGit(ctx context.Context, c *config.ComponentConfig, origin string) ([]gitCommit, error) {
+func GetLastVersionGit(ctx context.Context, c *config.ComponentConfig, origin string) ([]GitCommit, error) {
 	cacheDir, err := getGitCachePath(origin)
 	if err != nil {
 		return nil, err
@@ -214,7 +214,7 @@ func determineRevision(ctx context.Context, repository *git.Repository, revision
 
 // GetRecentCommits returns all commits in descending order (newest first)
 // baseRef is the commit to start from, if empty the current HEAD is used
-func GetRecentCommits(ctx context.Context, basePath string, baseRevision, targetRevision string, filterPaths []string) ([]gitCommit, error) {
+func GetRecentCommits(ctx context.Context, basePath string, baseRevision, targetRevision string, filterPaths []string) ([]GitCommit, error) {
 	gitPath, err := searchGitPath(basePath)
 	if err != nil {
 		return nil, err
@@ -237,7 +237,7 @@ func GetRecentCommits(ctx context.Context, basePath string, baseRevision, target
 		return nil, err
 	}
 
-	result := make([]gitCommit, len(commits))
+	result := make([]GitCommit, len(commits))
 	for i, c := range commits {
 		refIter, err := repository.References()
 		if err != nil {
@@ -261,15 +261,15 @@ func GetRecentCommits(ctx context.Context, basePath string, baseRevision, target
 			parents[i] = parent.String()[:7]
 		}
 
-		result[i] = gitCommit{
+		result[i] = GitCommit{
 			Commit:  c.Hash.String()[:7],
 			Parents: parents,
-			Author: gitCommitAuthor{
+			Author: GitCommitAuthor{
 				Name:  c.Author.Name,
 				Email: c.Author.Email,
 				Date:  c.Author.When,
 			},
-			Committer: gitCommitAuthor{
+			Committer: GitCommitAuthor{
 				Name:  c.Committer.Name,
 				Email: c.Committer.Email,
 				Date:  c.Committer.When,
@@ -299,8 +299,8 @@ func getGitCachePath(origin string) (string, error) {
 	return path, nil
 }
 
-// Parse a git url and return a gitSource reference
-func parseGitSource(source string) (*gitSource, error) {
+// Parse a git url and return a GitSource reference
+func parseGitSource(source string) (*GitSource, error) {
 	re := regexp.MustCompile("^git::(?P<repo>https://.*?)(?://(?P<path>.*))?$")
 	match := re.FindStringSubmatch(source)
 
@@ -308,7 +308,7 @@ func parseGitSource(source string) (*gitSource, error) {
 		return nil, errors.New("invalid Git source defined")
 	}
 
-	result := &gitSource{
+	result := &GitSource{
 		URL: source,
 	}
 	for i, name := range re.SubexpNames() {
@@ -329,7 +329,7 @@ func parseGitSource(source string) (*gitSource, error) {
 }
 
 // fetchGitRepository clones or updates the repository. We only need the history so clone using --bare
-func fetchGitRepository(ctx context.Context, source *gitSource, dest string) {
+func fetchGitRepository(ctx context.Context, source *GitSource, dest string) {
 	_, err := os.Stat(dest)
 	if os.IsNotExist(err) {
 		output, _ := runGit(ctx, ".", "clone", "--bare", source.Repository, dest)
