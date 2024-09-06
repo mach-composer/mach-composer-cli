@@ -186,3 +186,33 @@ func TestOpenComponentRef(t *testing.T) {
 	assert.Len(t, config.Components, 1)
 	assert.Equal(t, "your-component", config.Components[0].Name)
 }
+
+func TestAliased(t *testing.T) {
+	config, err := Open(context.Background(), "testdata/configs/basic_alias/main.yaml", &ConfigOptions{
+		Validate:      false,
+		NoResolveVars: true,
+		Plugins:       plugins.NewPluginRepository(),
+	})
+	require.NoError(t, err)
+
+	assert.Len(t, config.Components, 2)
+	assert.Equal(t, "your-component", config.Components[0].Name)
+	assert.Equal(t, "0.1.0", config.Components[0].Version)
+	assert.Equal(t, "your-component-aliased", config.Components[1].Name)
+	assert.Equal(t, "0.1.0", config.Components[1].Version)
+}
+
+func TestComponentRefAliased(t *testing.T) {
+	config, err := Open(context.Background(), "testdata/configs/component_ref_alias/main.yaml", &ConfigOptions{
+		Validate:      false,
+		NoResolveVars: true,
+		Plugins:       plugins.NewPluginRepository(),
+	})
+	require.NoError(t, err)
+
+	assert.Len(t, config.Components, 2)
+	assert.Equal(t, "your-component", config.Components[0].Name)
+	assert.Equal(t, "0.1.0", config.Components[0].Version)
+	assert.Equal(t, "your-component-aliased", config.Components[1].Name)
+	assert.Equal(t, "0.1.0", config.Components[1].Version)
+}
