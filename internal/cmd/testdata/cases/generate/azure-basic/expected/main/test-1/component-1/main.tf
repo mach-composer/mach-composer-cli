@@ -2,10 +2,10 @@
 # SiteComponent: test-1/component-1
 terraform {
   backend "azurerm" {
-    resource_group_name  = "resourcegroupid"
+    key                  = "test-1/component-1"
     storage_account_name = "storageaccount"
     container_name       = "container-name"
-    key                  = "test-1/component-1"
+    resource_group_name  = "resourcegroupid"
   }
   required_providers {}
 }
