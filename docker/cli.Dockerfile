@@ -1,4 +1,4 @@
-FROM goreleaser/goreleaser:v1.22.1 AS builder
+FROM goreleaser/goreleaser:v2.1.0 AS builder
 ARG GOOS=linux
 ARG GOARCH=amd64
 

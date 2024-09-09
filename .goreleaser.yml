@@ -50,7 +50,7 @@ release:
 
 changelog:
   use: github
-  skip: false
+  disable: false
 
 archives:
   - id: mach-composer

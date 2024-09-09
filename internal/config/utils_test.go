@@ -84,6 +84,25 @@ func TestMapYamlNodes(t *testing.T) {
 			},
 			expected: nil,
 		},
+		{
+			name: "anchor node",
+			nodes: []*yaml.Node{
+				{Value: "key1"},
+				{Value: "value1"},
+				{Value: "<<"},
+				{
+					Alias: &yaml.Node{
+						Content: []*yaml.Node{
+							{Value: "key2"},
+							{Value: "value2"},
+						}},
+				},
+			},
+			expected: map[string]*yaml.Node{
+				"key1": {Value: "value1"},
+				"key2": {Value: "value2"},
+			},
+		},
 	}
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
