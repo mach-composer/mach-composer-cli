@@ -3,6 +3,7 @@ package updater
 import (
 	"context"
 	"fmt"
+	"github.com/rs/zerolog/log"
 	"path"
 	"path/filepath"
 	"strings"
@@ -65,6 +66,7 @@ type Updater struct {
 // NewUpdater creates an update to update the component versions in a config
 // file.
 func NewUpdater(ctx context.Context, filename string, useCloud bool) (*Updater, error) {
+	//TODO: Switch to using config.loadConfig to load the config file so we have a consistent way of loading the config
 	body, err := utils.AFS.ReadFile(filename)
 	if err != nil {
 		return nil, err
@@ -79,7 +81,7 @@ func NewUpdater(ctx context.Context, filename string, useCloud bool) (*Updater, 
 	cwd := path.Dir(filename)
 
 	// Resolve $ref and include() references for the components.
-	componentNode, componentsFilename, err := config.LoadRefData(ctx, &raw.Components, cwd)
+	componentNode, componentsFilename, err := loadRefData(ctx, &raw.Components, cwd)
 	if err != nil {
 		return nil, err
 	}
@@ -136,7 +138,7 @@ func (u *Updater) UpdateAllComponents(ctx context.Context) error {
 		return err
 	}
 	u.updates = updateSet.updates
-	fmt.Printf("%d components have updates available\n", len(u.updates))
+	log.Info().Msgf("%d components have updates available\n", len(u.updates))
 	return nil
 }
 
@@ -145,7 +147,7 @@ func (u *Updater) UpdateAllComponents(ctx context.Context) error {
 func (u *Updater) UpdateComponent(ctx context.Context, name, version string) error {
 	component := u.config.GetComponent(name)
 	if component == nil {
-		return fmt.Errorf("No component found with name %s", name)
+		return fmt.Errorf("no component found with name %s", name)
 	}
 
 	// If no specific version is defined we auto-detect the last version
@@ -157,7 +159,7 @@ func (u *Updater) UpdateComponent(ctx context.Context, name, version string) err
 				Forced:      true,
 			},
 		}
-		fmt.Printf("Setting component %s to version %s\n", component.Name, version)
+		log.Info().Msgf("Setting component %s to version %s\n", component.Name, version)
 		return nil
 	}
 
@@ -166,10 +168,10 @@ func (u *Updater) UpdateComponent(ctx context.Context, name, version string) err
 		return err
 	}
 	if updateSet.HasChanges() {
-		fmt.Printf("Updating component %s to version %s\n", component.Name, updateSet.updates[0].LastVersion)
+		log.Info().Msgf("Updating component %s to version %s\n", component.Name, updateSet.updates[0].LastVersion)
 		u.updates = updateSet.updates
 	} else {
-		fmt.Printf("No updates for component %s\n", component.Name)
+		log.Info().Msgf("No updates for component %s\n", component.Name)
 	}
 	return nil
 }

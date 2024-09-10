@@ -31,7 +31,7 @@ func parseComponentsNode(cfg *MachConfig, node *yaml.Node) error {
 	for _, component := range node.Content {
 		for _, plugin := range cfg.Plugins.All() {
 			data := map[string]any{}
-			nodes := mapYamlNodes(component.Content)
+			nodes := MapYamlNodes(component.Content)
 			componentName := nodes["name"].Value
 			version := nodes["version"].Value
 

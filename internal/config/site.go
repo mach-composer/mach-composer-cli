@@ -38,7 +38,7 @@ func parseSitesNode(cfg *MachConfig, sitesNode *yaml.Node) error {
 	}
 
 	for _, site := range sitesNode.Content {
-		nodes := mapYamlNodes(site.Content)
+		nodes := MapYamlNodes(site.Content)
 		siteId := nodes["identifier"].Value
 
 		for _, plugin := range cfg.Plugins.All() {
@@ -89,7 +89,7 @@ func parseSitesNode(cfg *MachConfig, sitesNode *yaml.Node) error {
 }
 
 func parseSiteEndpointNode(cfg *MachConfig, siteId string, node *yaml.Node) error {
-	nodes := mapYamlNodes(node.Content)
+	nodes := MapYamlNodes(node.Content)
 	knownTags := []string{"url", "key", "zone", "throttling_rate_limit", "throttling_burst_limit"}
 
 	for endpointId, endpointNode := range nodes {
@@ -125,7 +125,7 @@ func parseSiteEndpointNode(cfg *MachConfig, siteId string, node *yaml.Node) erro
 			continue
 		}
 
-		children := mapYamlNodes(endpointNode.Content)
+		children := MapYamlNodes(endpointNode.Content)
 
 		if len(pie.Intersect(knownTags, pie.Keys(children))) > 0 {
 			cli.DeprecationWarning(&cli.DeprecationOptions{
@@ -202,7 +202,7 @@ func parseSiteComponentsNode(cfg *MachConfig, siteKey string, node *yaml.Node) e
 	}
 
 	for _, component := range node.Content {
-		nodes := mapYamlNodes(component.Content)
+		nodes := MapYamlNodes(component.Content)
 		componentKey := nodes["name"].Value
 
 		migrateCommercetools(siteKey, componentKey, nodes)

@@ -1,0 +1,19 @@
+mach_composer:
+  version: "1.0.0"
+plugins: { }
+global:
+  environment: test
+sites:
+  - identifier: my-site
+    components:
+      - name: your-component
+      - name: your-component-aliased
+
+components:
+  - &alias
+    name: your-component
+    source: "git::https://github.com/<username>/<your-component>.git//terraform"
+    version: 0.1.0
+  - <<: *alias
+    name: your-component-aliased
+

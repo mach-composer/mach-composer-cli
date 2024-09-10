@@ -1,0 +1,3 @@
+kind: Fixed
+body: Load referenced files before validating config
+time: 2024-09-06T12:37:38.406897171+02:00
