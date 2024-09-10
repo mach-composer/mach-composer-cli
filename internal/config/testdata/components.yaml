@@ -1,0 +1,3 @@
+- name: your-component
+  source: "git::https://github.com/<username>/<your-component>.git//terraform"
+  version: 0.1.0

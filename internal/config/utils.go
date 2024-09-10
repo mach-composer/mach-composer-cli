@@ -1,15 +1,11 @@
 package config
 
 import (
-	"context"
 	"fmt"
 	"github.com/mach-composer/mach-composer-cli/internal/cli"
-	"path"
+	"gopkg.in/yaml.v3"
 	"path/filepath"
 	"regexp"
-	"strings"
-
-	"gopkg.in/yaml.v3"
 
 	"github.com/mach-composer/mach-composer-cli/internal/utils"
 )
@@ -22,9 +18,9 @@ func nodeAsMap(n *yaml.Node) (map[string]any, error) {
 	return target, nil
 }
 
-// mapYamlNodes creates a map[key]node from a slice of yaml.Node's. It assumes
+// MapYamlNodes creates a map[key]node from a slice of yaml.Node's. It assumes
 // that the nodes are pairs, e.g. [key, value, key, value]
-func mapYamlNodes(nodes []*yaml.Node) map[string]*yaml.Node {
+func MapYamlNodes(nodes []*yaml.Node) map[string]*yaml.Node {
 	result := map[string]*yaml.Node{}
 
 	// Check if there are an even number of nodes as we expect a
@@ -41,7 +37,7 @@ func mapYamlNodes(nodes []*yaml.Node) map[string]*yaml.Node {
 	// Check if there is an alias node and resolve it
 	val, ok := result["<<"]
 	if ok {
-		aliasData := mapYamlNodes(val.Alias.Content)
+		aliasData := MapYamlNodes(val.Alias.Content)
 		delete(result, "<<")
 
 		// We only add the aliased data if the key is not already present
@@ -56,14 +52,10 @@ func mapYamlNodes(nodes []*yaml.Node) map[string]*yaml.Node {
 	return result
 }
 
-// LoadRefData will load referenced files and replace the node with the content of these files. It works both with the
-// ${include()} syntax and the $ref syntax.
-func LoadRefData(_ context.Context, node *yaml.Node, cwd string) (*yaml.Node, string, error) {
-	switch node.Kind {
-	case yaml.ScalarNode:
-		cli.DeprecationWarning(&cli.DeprecationOptions{
-			Message: "the '${include()}' syntax is deprecated and will be removed in version 3.0",
-			Details: `
+func LoadIncludeDocument(node *yaml.Node, cwd string) (*yaml.Node, string, error) {
+	cli.DeprecationWarning(&cli.DeprecationOptions{
+		Message: "the '${include()}' syntax is deprecated and will be removed in version 3.0",
+		Details: `
 				For example instead of:
 					components: ${include(components.yml)}
 
@@ -71,65 +63,8 @@ func LoadRefData(_ context.Context, node *yaml.Node, cwd string) (*yaml.Node, st
 					components:
 						$ref: "components.yml"
 			`,
-		})
+	})
 
-		newNode, filePath, err := loadIncludeDocument(node, cwd)
-		if err != nil {
-			return nil, "", err
-		}
-
-		return newNode, filePath, nil
-	case yaml.MappingNode:
-		newNode, filePath, err := loadRefDocument(node, cwd)
-		if err != nil {
-			return nil, "", err
-		}
-
-		return newNode, filePath, nil
-	default:
-		return node, "", nil
-	}
-}
-
-func loadRefDocument(node *yaml.Node, cwd string) (*yaml.Node, string, error) {
-	data := mapYamlNodes(node.Content)
-	ref, ok := data["$ref"]
-	if !ok {
-		return node, "", nil
-	}
-
-	parts := strings.SplitN(ref.Value, "#", 2)
-	fileName := parts[0]
-
-	body, err := utils.AFS.ReadFile(path.Join(cwd, fileName))
-	if err != nil {
-		return nil, "", err
-	}
-	result := &yaml.Node{}
-	if err = yaml.Unmarshal(body, result); err != nil {
-		return nil, "", err
-	}
-
-	root := result.Content[0]
-
-	if len(parts) > 1 {
-		p := strings.TrimPrefix(parts[1], "/")
-		node := root
-		for _, p := range strings.Split(p, "/") {
-			nodes := mapYamlNodes(node.Content)
-			n, ok := nodes[p]
-			if !ok {
-				return nil, "", fmt.Errorf("unable to resolve node %s", parts[1])
-			}
-			node = n
-		}
-		root = node
-	}
-
-	return root, fileName, nil
-}
-
-func loadIncludeDocument(node *yaml.Node, cwd string) (*yaml.Node, string, error) {
 	re := regexp.MustCompile(`\$\{include\(([^)]+)\)\}`)
 	data := re.FindStringSubmatch(node.Value)
 	if len(data) != 2 {
