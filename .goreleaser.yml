@@ -107,3 +107,32 @@ chocolateys:
     #TODO: Re-enable this when we have a working chocolaty registry
     #    skip_publish: "{{ .Env.SKIP_UPLOAD }}"
     skip_publish: true
+
+nix:
+  - name: mach-composer
+    url_template: https://github.com/mach-composer/mach-composer-cli/releases/download/v{{ .Version }}/{{ .ArtifactName }}
+    commit_author:
+      name: goreleaserbot
+      email: opensource@labdigital.nl
+    path: pkgs/mach-composer.nix
+    description: "Orchestration tool for modern MACH ecosystems, powered by Terraform infrastructure-as-code underneath"
+    homepage: "https://www.machcomposer.io/"
+    license: "mit"
+    skip_upload: "{{ .Env.SKIP_UPLOAD }}"
+    dependencies:
+      - git
+      - terraform
+    # go-releaser tries to cp bin/mach-composer store/bin/bin/mach-composer
+    # override install step to fix that. dependencies need redefining here :(
+    install: |
+      mkdir -p $out/bin
+      cp -vr ./bin/mach-composer $out/bin/mach-composer
+      wrapProgram $out/bin/mach-composer --prefix PATH : ${lib.makeBinPath ([ git terraform ])}
+    post_install: |
+      installShellCompletion --cmd mach-composer \
+        --bash <($out/bin/mach-composer completion bash) \
+        --fish <($out/bin/mach-composer completion fish) \
+        --zsh <($out/bin/mach-composer completion zsh)
+    repository:
+      owner: mach-composer
+      name: nix-{{ .ProjectName }}
