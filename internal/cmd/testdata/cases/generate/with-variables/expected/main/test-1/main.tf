@@ -33,7 +33,11 @@ module "component" {
     global_variable    = "global_variable_value"
     site_variable      = "site_variable_value"
   }
-  secrets           = {}
+  secrets = {
+    component_secret = "component_secret_value"
+    global_secret    = "global_secret_value"
+    site_secret      = "site_secret_value"
+  }
   component_version = "test"
   environment       = "test"
   site              = "test-1"

@@ -16,12 +16,19 @@ global:
     global_variable: "global_variable_value"
     site_variable: "overridden_site_variable_value"
     component_variable: "overridden_component_variable_value"
+  secrets:
+    global_secret: "global_secret_value"
+    site_secret: "overridden_site_secret_value"
+    component_secret: "overridden_component_secret_value"
 
 sites:
   - identifier: test-1
     variables:
       site_variable: "site_variable_value"
       component_variable: "overridden_component_variable_value"
+    secrets:
+      site_secret: "site_secret_value"
+      component_secret: "overridden_component_secret_value"
     aws:
       account_id: "12345"
       region: eu-west-1
@@ -29,6 +36,8 @@ sites:
       - name: component
         variables:
           component_variable: "component_variable_value"
+        secrets:
+          component_secret: "component_secret_value"
 
 components:
   - name: component
