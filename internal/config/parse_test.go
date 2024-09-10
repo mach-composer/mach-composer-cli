@@ -61,12 +61,12 @@ func TestOpenBasic(t *testing.T) {
 						Name:       "your-component",
 						Deployment: &Deployment{Type: DeploymentSite},
 						Variables: variable.VariablesMap{
-							"FOO_VAR":       variable.MustCreateNewScalarVariable(t, "my-value"),
-							"BAR_VAR":       variable.MustCreateNewScalarVariable(t, "${var.foo}"),
-							"MULTIPLE_VARS": variable.MustCreateNewScalarVariable(t, "${var.foo.bar} ${var.bar.foo}"),
+							"FOO_VAR":       variable.MustCreateNewScalarVariable("my-value"),
+							"BAR_VAR":       variable.MustCreateNewScalarVariable("${var.foo}"),
+							"MULTIPLE_VARS": variable.MustCreateNewScalarVariable("${var.foo.bar} ${var.bar.foo}"),
 						},
 						Secrets: variable.VariablesMap{
-							"MY_SECRET": variable.MustCreateNewScalarVariable(t, "secretvalue"),
+							"MY_SECRET": variable.MustCreateNewScalarVariable("secretvalue"),
 						},
 						Definition: &component,
 					},
@@ -145,12 +145,12 @@ func TestOpenComplex(t *testing.T) {
 						Name:       "your-component",
 						Deployment: &Deployment{Type: DeploymentSite},
 						Variables: variable.VariablesMap{
-							"FOO_VAR":       variable.MustCreateNewScalarVariable(t, "my-value"),
-							"BAR_VAR":       variable.MustCreateNewScalarVariable(t, "${var.foo}"),
-							"MULTIPLE_VARS": variable.MustCreateNewScalarVariable(t, "${var.foo.bar} ${var.bar.foo}"),
+							"FOO_VAR":       variable.MustCreateNewScalarVariable("my-value"),
+							"BAR_VAR":       variable.MustCreateNewScalarVariable("${var.foo}"),
+							"MULTIPLE_VARS": variable.MustCreateNewScalarVariable("${var.foo.bar} ${var.bar.foo}"),
 						},
 						Secrets: variable.VariablesMap{
-							"MY_SECRET": variable.MustCreateNewScalarVariable(t, "secretvalue"),
+							"MY_SECRET": variable.MustCreateNewScalarVariable("secretvalue"),
 						},
 						Definition: &component,
 					},

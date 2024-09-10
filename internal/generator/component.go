@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/mach-composer/mach-composer-cli/internal/config"
+	"github.com/mach-composer/mach-composer-cli/internal/config/variable"
 	"github.com/mach-composer/mach-composer-cli/internal/graph"
 	"github.com/mach-composer/mach-composer-cli/internal/utils"
 	"runtime"
@@ -181,15 +182,18 @@ func renderComponentModule(_ context.Context, cfg *config.MachConfig, n *graph.S
 		tc.ComponentSecrets = "secrets = {}"
 	}
 
-	if len(n.SiteComponentConfig.Variables) > 0 {
-		val, err := serializeToHCL("variables", n.SiteComponentConfig.Variables, n.SiteComponentConfig.Deployment.Type, cfg.StateRepository, n.SiteConfig.Identifier)
+	var variablesMap = variable.MergeVariablesMaps(n.ProjectConfig.Global.Variables, n.SiteConfig.Variables, n.SiteComponentConfig.Variables)
+	if len(variablesMap) > 0 {
+		val, err := serializeToHCL("variables", variablesMap, n.SiteComponentConfig.Deployment.Type, cfg.StateRepository, n.SiteConfig.Identifier)
 		if err != nil {
 			return "", err
 		}
 		tc.ComponentVariables = val
 	}
-	if len(n.SiteComponentConfig.Secrets) > 0 {
-		val, err := serializeToHCL("secrets", n.SiteComponentConfig.Secrets, n.SiteComponentConfig.Deployment.Type, cfg.StateRepository, n.SiteConfig.Identifier)
+
+	var secretsMap = variable.MergeVariablesMaps(n.ProjectConfig.Global.Secrets, n.SiteConfig.Secrets, n.SiteComponentConfig.Secrets)
+	if len(secretsMap) > 0 {
+		val, err := serializeToHCL("secrets", secretsMap, n.SiteComponentConfig.Deployment.Type, cfg.StateRepository, n.SiteConfig.Identifier)
 		if err != nil {
 			return "", err
 		}
@@ -201,12 +205,12 @@ func renderComponentModule(_ context.Context, cfg *config.MachConfig, n *graph.S
 		return "", err
 	}
 
-    // Escape backslashes in paths (Windows path separator)
-    if runtime.GOOS == "windows" {
-        tc.Source = strings.Replace(vs, "\\", "\\\\", -1)
-    } else {
-        tc.Source = vs
-    }
+	// Escape backslashes in paths (Windows path separator)
+	if runtime.GOOS == "windows" {
+		tc.Source = strings.Replace(vs, "\\", "\\\\", -1)
+	} else {
+		tc.Source = vs
+	}
 
 	val, err := utils.RenderGoTemplate(string(tpl), tc)
 	if err != nil {

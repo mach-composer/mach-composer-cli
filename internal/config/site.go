@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"github.com/mach-composer/mach-composer-cli/internal/config/variable"
 	"github.com/rs/zerolog/log"
 
 	"github.com/elliotchance/pie/v2"
@@ -28,6 +29,9 @@ type SiteConfig struct {
 	Identifier   string         `yaml:"identifier"`
 	Deployment   *Deployment    `yaml:"deployment"`
 	RawEndpoints map[string]any `yaml:"endpoints"`
+
+	Variables variable.VariablesMap `yaml:"variables"`
+	Secrets   variable.VariablesMap `yaml:"secrets"`
 
 	Components SiteComponentConfigs `yaml:"components"`
 }

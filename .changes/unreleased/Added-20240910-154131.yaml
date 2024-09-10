@@ -1,0 +1,4 @@
+kind: Added
+body: Added option to set global and site-level configurations. These will be merged
+  into the component variables during generation
+time: 2024-09-10T15:41:31.371358062+02:00

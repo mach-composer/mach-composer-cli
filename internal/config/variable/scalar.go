@@ -3,11 +3,9 @@ package variable
 import (
 	"fmt"
 	"github.com/mach-composer/mach-composer-cli/internal/state"
-	"github.com/stretchr/testify/require"
 	"path"
 	"regexp"
 	"strings"
-	"testing"
 )
 
 var varComponentRegex = regexp.MustCompile(`\${(component(?:\.[^}]+)+)}`)
@@ -135,8 +133,10 @@ func RemoteStateTransformFunc(repository *state.Repository, siteIdentifier strin
 	}
 }
 
-func MustCreateNewScalarVariable(t *testing.T, value any) *ScalarVariable {
+func MustCreateNewScalarVariable(value any) *ScalarVariable {
 	v, err := NewScalarVariable(value)
-	require.NoError(t, err)
+	if err != nil {
+		panic(err)
+	}
 	return v
 }
