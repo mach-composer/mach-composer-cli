@@ -1,12 +1,12 @@
 package cloudcmd
 
 import (
-	"os"
-	"path/filepath"
-
-	"github.com/elliotchance/pie/v2"
+	"fmt"
+	"github.com/mach-composer/mach-composer-cli/internal/gitutils"
 	"github.com/mach-composer/mcc-sdk-go/mccsdk"
+	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
+	"os"
 
 	"github.com/mach-composer/mach-composer-cli/internal/cloud"
 )
@@ -34,7 +34,7 @@ var componentCreateCmd = &cobra.Command{
 		if err != nil {
 			return err
 		}
-		cmd.Printf("Created new component: %s\n", resource.GetKey())
+		log.Info().Msgf("Created new component: %s\n", resource.GetKey())
 		return nil
 	},
 }
@@ -51,11 +51,11 @@ var componentListCmd = &cobra.Command{
 		if err != nil {
 			return err
 		}
-		paginator, _, err := (client.
+		paginator, _, err := client.
 			ComponentsApi.
 			ComponentQuery(ctx, organization, project).
 			Limit(250).
-			Execute())
+			Execute()
 
 		if err != nil {
 			return err
@@ -102,54 +102,27 @@ var componentRegisterVersionCmd = &cobra.Command{
 			return err
 		}
 
+		dryRun, err := cmd.Flags().GetBool("dry-run")
+		if err != nil {
+			return err
+		}
+
+		createComponent, err := cmd.Flags().GetBool("create-component")
+		if err != nil {
+			return err
+		}
+
 		client, err := cloud.NewClient(ctx)
 		if err != nil {
 			return err
 		}
 
-		if !auto {
-			if len(args) < 2 {
-				cmd.Printf("Missing version argument")
-				os.Exit(1)
-			}
-			version := args[1]
-			resource, _, err := client.
-				ComponentsApi.
-				ComponentVersionCreate(ctx, organization, project, componentKey).
-				ComponentVersionDraft(mccsdk.ComponentVersionDraft{
-					Version: version,
-					Branch:  branch,
-				}).
-				Execute()
-			if err != nil {
-				return err
-			}
-			cmd.Printf("Created new version for component %s: %s\n",
-				resource.GetComponent(), resource.GetVersion())
-
-		} else {
-			dryRun, err := cmd.Flags().GetBool("dry-run")
-			if err != nil {
-				return err
-			}
-
-			cwd, err := os.Getwd()
-			if err != nil {
-				return err
-			}
-			gitFilterPaths = pie.Map(gitFilterPaths, func(path string) string {
-				if filepath.IsAbs(path) {
-					return path
-				}
-
-				return filepath.Join(cwd, path)
-			})
-			_, err = cloud.AutoRegisterVersion(ctx, client, organization, project, componentKey, dryRun, gitFilterPaths)
-			if err != nil {
-				return err
-			}
+		if len(args) < 2 {
+			return fmt.Errorf("missing version argument")
 		}
-		return nil
+		version := args[1]
+
+		return cloud.RegisterComponentVersion(ctx, cloud.NewClientWrapper(client), gitutils.NewGitRepositoryWrapper(), organization, project, componentKey, branch, version, dryRun, auto, createComponent, gitFilterPaths)
 	},
 }
 
@@ -167,7 +140,7 @@ var componentUpdateCmd = &cobra.Command{
 		if err != nil {
 			return err
 		}
-		patches := []mccsdk.PatchRequestInner{}
+		var patches []mccsdk.PatchRequestInner
 
 		if newKey != "" {
 			patches = append(patches, mccsdk.PatchRequestInner{
@@ -196,7 +169,7 @@ var componentUpdateCmd = &cobra.Command{
 			return err
 		}
 
-		cmd.Printf("Updated component: %s\n", resource.GetKey())
+		log.Info().Msgf("Updated component: %s\n", resource.GetKey())
 		return nil
 	},
 }
@@ -298,10 +271,11 @@ func init() {
 
 	CloudCmd.AddCommand(componentRegisterVersionCmd)
 	registerContextFlags(componentRegisterVersionCmd)
-	componentRegisterVersionCmd.Flags().Bool("auto", false, "Automate")
+	componentRegisterVersionCmd.Flags().Bool("auto", false, "Add the version commits automatically based on the current branch")
 	componentRegisterVersionCmd.Flags().Bool("dry-run", false, "Dry run")
 	componentRegisterVersionCmd.Flags().StringArray("git-filter-path", nil, "Filter commits based on given paths")
 	componentRegisterVersionCmd.Flags().String("branch", "", "The branch to use for the version. Defaults to the backend default if not set")
+	componentRegisterVersionCmd.Flags().Bool("create-component", false, "Will create the component if it does not already exist")
 
 	CloudCmd.AddCommand(componentListVersionCmd)
 	registerContextFlags(componentListVersionCmd)
