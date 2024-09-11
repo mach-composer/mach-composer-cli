@@ -27,7 +27,7 @@ locals {
 
 # Component: component
 module "component" {
-  source = "/home/thomas/Projects/mach-composer/mach-composer-cli/internal/cmd/testdata/modules/application"
+  source = "{{ .PWD }}/testdata/modules/application"
   variables = {
     component_variable = "component_variable_value"
     global_variable    = "global_variable_value"
