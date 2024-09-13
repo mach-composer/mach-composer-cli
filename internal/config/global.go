@@ -3,6 +3,7 @@ package config
 import (
 	"fmt"
 	"github.com/mach-composer/mach-composer-cli/internal/cli"
+	"github.com/mach-composer/mach-composer-cli/internal/config/variable"
 	"github.com/mach-composer/mach-composer-cli/internal/utils"
 	"gopkg.in/yaml.v3"
 )
@@ -12,6 +13,9 @@ type GlobalConfig struct {
 	Cloud                  string           `yaml:"cloud"`
 	TerraformStateProvider string           `yaml:"-"`
 	TerraformConfig        *TerraformConfig `yaml:"terraform_config"`
+
+	Variables variable.VariablesMap `yaml:"variables"`
+	Secrets   variable.VariablesMap `yaml:"secrets"`
 }
 
 type TerraformConfig struct {

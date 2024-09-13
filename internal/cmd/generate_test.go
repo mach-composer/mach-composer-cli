@@ -154,3 +154,18 @@ func (s *GenerateTestSuite) TestGenerateWithAlias() {
 	assert.NoError(s.T(), err)
 	assert.NoError(s.T(), CompareDirectories(path.Join(workdir, "deployments"), path.Join(workdir, "expected")))
 }
+
+func (s *GenerateTestSuite) TestGenerateWithVariables() {
+	pwd, _ := os.Getwd()
+	workdir := path.Join(pwd, "testdata/cases/generate/with-variables")
+
+	cmd := RootCmd
+	cmd.SetArgs([]string{
+		"generate",
+		"--output-path", path.Join(workdir, "deployments"),
+		"--file", path.Join(workdir, "main.yaml"),
+	})
+	err := cmd.Execute()
+	assert.NoError(s.T(), err)
+	assert.NoError(s.T(), CompareDirectories(path.Join(workdir, "deployments"), path.Join(workdir, "expected")))
+}
