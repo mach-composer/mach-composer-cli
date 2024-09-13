@@ -28,5 +28,6 @@ MACH composer is a framework that you use to orchestrate and extend modern digit
 * [mach-composer sites](mach-composer_sites.md)	 - List all sites.
 * [mach-composer terraform](mach-composer_terraform.md)	 - Execute terraform commands directly
 * [mach-composer update](mach-composer_update.md)	 - Update all (or a given) component.
+* [mach-composer validate](mach-composer_validate.md)	 - Validate the generated terraform configuration.
 * [mach-composer version](mach-composer_version.md)	 - Return version information of the mach-composer cli
 
