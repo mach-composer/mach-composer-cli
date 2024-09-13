@@ -1,5 +1,5 @@
 data "aws_iam_policy_document" "terraform_state" {
-    
+
   statement {
     actions = [
       "s3:ListBucket"

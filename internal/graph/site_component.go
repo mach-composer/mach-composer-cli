@@ -1,49 +1,36 @@
 package graph
 
 import (
-	"errors"
 	"github.com/dominikbraun/graph"
 	"github.com/mach-composer/mach-composer-cli/internal/config"
-	"github.com/mach-composer/mach-composer-cli/internal/utils"
-	"github.com/rs/zerolog/log"
+	"sort"
 )
 
 type SiteComponent struct {
 	baseNode
+	ProjectConfig       config.MachConfig
 	SiteConfig          config.SiteConfig
 	SiteComponentConfig config.SiteComponentConfig
 }
 
-func NewSiteComponent(g graph.Graph[string, Node], path, identifier string, deploymentType config.DeploymentType,
-	ancestor Node, siteConfig config.SiteConfig, siteComponentConfig config.SiteComponentConfig) *SiteComponent {
+func NewSiteComponent(
+	g graph.Graph[string, Node], path, identifier string, deploymentType config.DeploymentType,
+	ancestor Node, projectConfig config.MachConfig, siteConfig config.SiteConfig, siteComponentConfig config.SiteComponentConfig,
+) *SiteComponent {
 	return &SiteComponent{
-		baseNode:   newBaseNode(g, path, identifier, SiteComponentType, ancestor, deploymentType),
-		SiteConfig: siteConfig, SiteComponentConfig: siteComponentConfig,
+		baseNode:            newBaseNode(g, path, identifier, SiteComponentType, ancestor, deploymentType),
+		ProjectConfig:       projectConfig,
+		SiteConfig:          siteConfig,
+		SiteComponentConfig: siteComponentConfig,
 	}
 }
 
 func (sc *SiteComponent) Hash() (string, error) {
-	return hashSiteComponentConfig(sc.SiteComponentConfig)
+	return HashSiteComponent(sc)
 }
 
-func (sc *SiteComponent) HasChanges() (bool, error) {
-	hash, err := sc.Hash()
-	if err != nil {
-		return true, err
-	}
-
-	tfHash, err := utils.ParseHashOutput(sc.outputs)
-	if err != nil {
-		var serr *utils.MissingHashError
-		if errors.As(err, &serr) {
-			log.Warn().Msgf("Could not parse hash output: %s. This is "+
-				"generally caused by incorrect output state, but will be updated "+
-				"at the next succesful update, so can be ignored", serr)
-			return true, nil
-		}
-
-		return false, err
-	}
-
-	return hash != tfHash, nil
+func SortSiteComponentNodes(nodes []*SiteComponent) {
+	sort.Slice(nodes, func(i, j int) bool {
+		return nodes[i].SiteComponentConfig.Name < nodes[j].SiteComponentConfig.Name
+	})
 }

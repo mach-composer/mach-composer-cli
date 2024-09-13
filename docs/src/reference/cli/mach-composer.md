@@ -9,9 +9,9 @@ MACH composer is a framework that you use to orchestrate and extend modern digit
 ### Options
 
 ```
-  -h, --help            help for mach-composer
-      --output string   The output type. One of: console, json (default "console")
-      --verbose         Verbose output.
+  -h, --help      help for mach-composer
+  -q, --quiet     Quiet output. This is equal to setting log levels to error and higher
+  -v, --verbose   Verbose output. This is equal to setting log levels to debug and higher
 ```
 
 ### SEE ALSO

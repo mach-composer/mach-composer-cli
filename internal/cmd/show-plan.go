@@ -1,16 +1,18 @@
 package cmd
 
 import (
+	"github.com/mach-composer/mach-composer-cli/internal/batcher"
 	"github.com/mach-composer/mach-composer-cli/internal/graph"
+	"github.com/mach-composer/mach-composer-cli/internal/hash"
 	"github.com/spf13/cobra"
 
 	"github.com/mach-composer/mach-composer-cli/internal/runner"
 )
 
 var showPlanFlags struct {
-	reuse   bool
-	noColor bool
-	force   bool
+	forceInit             bool
+	noColor               bool
+	ignoreChangeDetection bool
 }
 
 var showPlanCmd = &cobra.Command{
@@ -27,10 +29,10 @@ var showPlanCmd = &cobra.Command{
 
 func init() {
 	registerCommonFlags(showPlanCmd)
+	showPlanCmd.Flags().BoolVarP(&showPlanFlags.forceInit, "force-init", "", false, "Force terraform initialization. By default mach-composer will reuse existing terraform resources")
 	showPlanCmd.Flags().BoolVarP(&showPlanFlags.noColor, "no-color", "", false, "Disable color output")
-	showPlanCmd.Flags().BoolVarP(&showPlanFlags.reuse, "reuse", "", false,
-		"Suppress a terraform init for improved speed (not recommended for production usage)")
-	showPlanCmd.Flags().BoolVarP(&showPlanFlags.force, "force", "", false, "Force the show plan to run even if the components are considered up to date")
+	showPlanCmd.Flags().BoolVarP(&showPlanFlags.ignoreChangeDetection, "ignore-change-detection", "", false,
+		"Ignore change detection to run even if the components are considered up to date")
 }
 
 func showPlanFunc(cmd *cobra.Command, _ []string) error {
@@ -43,14 +45,15 @@ func showPlanFunc(cmd *cobra.Command, _ []string) error {
 		return err
 	}
 
-	b := runner.NewGraphRunner(commonFlags.workers)
+	r := runner.NewGraphRunner(
+		batcher.NaiveBatchFunc(),
+		hash.Factory(cfg),
+		commonFlags.workers,
+	)
 
-	if err = checkReuse(ctx, dg, b, applyFlags.reuse); err != nil {
-		return err
-	}
-
-	return b.TerraformShow(ctx, dg, &runner.ShowPlanOptions{
-		NoColor: showPlanFlags.noColor,
-		Force:   showPlanFlags.force,
+	return r.TerraformShow(ctx, dg, &runner.ShowPlanOptions{
+		ForceInit:             showPlanFlags.forceInit,
+		NoColor:               showPlanFlags.noColor,
+		IgnoreChangeDetection: showPlanFlags.ignoreChangeDetection,
 	})
 }

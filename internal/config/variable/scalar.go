@@ -3,10 +3,9 @@ package variable
 import (
 	"fmt"
 	"github.com/mach-composer/mach-composer-cli/internal/state"
-	"github.com/stretchr/testify/require"
+	"path"
 	"regexp"
 	"strings"
-	"testing"
 )
 
 var varComponentRegex = regexp.MustCompile(`\${(component(?:\.[^}]+)+)}`)
@@ -105,7 +104,7 @@ func ModuleTransformFunc() TransformValueFunc {
 	}
 }
 
-func RemoteStateTransformFunc(repository *state.Repository) TransformValueFunc {
+func RemoteStateTransformFunc(repository *state.Repository, siteIdentifier string) TransformValueFunc {
 	return func(value any) (any, error) {
 		val, ok := value.(string)
 		if !ok {
@@ -122,7 +121,7 @@ func RemoteStateTransformFunc(repository *state.Repository) TransformValueFunc {
 		}
 
 		for _, part := range parts {
-			stateKey, exists := repository.Key(part[1])
+			stateKey, exists := repository.StateKey(path.Join(siteIdentifier, part[1]))
 			if !exists {
 				return nil, fmt.Errorf("state key '%s' not found", part[1])
 			}
@@ -134,8 +133,10 @@ func RemoteStateTransformFunc(repository *state.Repository) TransformValueFunc {
 	}
 }
 
-func MustCreateNewScalarVariable(t *testing.T, value any) *ScalarVariable {
+func MustCreateNewScalarVariable(value any) *ScalarVariable {
 	v, err := NewScalarVariable(value)
-	require.NoError(t, err)
+	if err != nil {
+		panic(err)
+	}
 	return v
 }

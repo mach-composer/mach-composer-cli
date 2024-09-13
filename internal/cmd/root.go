@@ -27,9 +27,16 @@ var (
 				cli.PrintExitError(err.Error())
 			}
 
+			quiet, err := cmd.Flags().GetBool("quiet")
+			if err != nil {
+				panic(err)
+			}
+
 			logger := log.Logger
 			if verbose {
 				logger = logger.Level(zerolog.TraceLevel)
+			} else if quiet {
+				logger = logger.Level(zerolog.ErrorLevel)
 			} else {
 				logger = logger.Level(zerolog.InfoLevel)
 			}
@@ -79,7 +86,8 @@ var (
 )
 
 func init() {
-	RootCmd.PersistentFlags().BoolP("verbose", "", false, "Verbose output.")
+	RootCmd.PersistentFlags().BoolP("verbose", "v", false, "Verbose output. This is equal to setting log levels to debug and higher")
+	RootCmd.PersistentFlags().BoolP("quiet", "q", false, "Quiet output. This is equal to setting log levels to error and higher")
 	RootCmd.PersistentFlags().String("output", "console", "The output type. One of: console, json")
 	RootCmd.AddCommand(applyCmd)
 	RootCmd.AddCommand(cloudcmd.CloudCmd)

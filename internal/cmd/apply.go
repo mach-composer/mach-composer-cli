@@ -1,7 +1,9 @@
 package cmd
 
 import (
+	"github.com/mach-composer/mach-composer-cli/internal/batcher"
 	"github.com/mach-composer/mach-composer-cli/internal/graph"
+	"github.com/mach-composer/mach-composer-cli/internal/hash"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 
@@ -10,12 +12,12 @@ import (
 )
 
 var applyFlags struct {
-	reuse       bool
-	autoApprove bool
-	destroy     bool
-	components  []string
-	numWorkers  int
-	force       bool
+	forceInit             bool
+	autoApprove           bool
+	destroy               bool
+	components            []string
+	numWorkers            int
+	ignoreChangeDetection bool
 }
 
 var applyCmd = &cobra.Command{
@@ -32,11 +34,11 @@ var applyCmd = &cobra.Command{
 
 func init() {
 	registerCommonFlags(applyCmd)
-	applyCmd.Flags().BoolVarP(&applyFlags.reuse, "reuse", "", false, "Suppress a terraform init for improved speed (not recommended for production usage)")
+	applyCmd.Flags().BoolVarP(&applyFlags.forceInit, "force-init", "", false, "Force terraform initialization. By default mach-composer will reuse existing terraform resources")
 	applyCmd.Flags().BoolVarP(&applyFlags.autoApprove, "auto-approve", "", false, "Suppress a terraform init for improved speed (not recommended for production usage)")
 	applyCmd.Flags().BoolVarP(&applyFlags.destroy, "destroy", "", false, "Destroy option is a convenient way to destroy all remote objects managed by this mach config")
 	applyCmd.Flags().StringArrayVarP(&applyFlags.components, "component", "c", nil, "")
-	applyCmd.Flags().BoolVarP(&applyFlags.force, "force", "", false, "Force the apply to run even if the components are considered up to date")
+	applyCmd.Flags().BoolVarP(&applyFlags.ignoreChangeDetection, "ignore-change-detection", "", false, "Ignore change detection to run even if the components are considered up to date")
 }
 
 func applyFunc(cmd *cobra.Command, _ []string) error {
@@ -61,15 +63,16 @@ func applyFunc(cmd *cobra.Command, _ []string) error {
 		return err
 	}
 
-	b := runner.NewGraphRunner(commonFlags.workers)
+	r := runner.NewGraphRunner(
+		batcher.NaiveBatchFunc(),
+		hash.Factory(cfg),
+		commonFlags.workers,
+	)
 
-	if err = checkReuse(ctx, dg, b, applyFlags.reuse); err != nil {
-		return err
-	}
-
-	return b.TerraformApply(ctx, dg, &runner.ApplyOptions{
-		Destroy:     applyFlags.destroy,
-		AutoApprove: applyFlags.autoApprove,
-		Force:       applyFlags.force,
+	return r.TerraformApply(ctx, dg, &runner.ApplyOptions{
+		ForceInit:             applyFlags.forceInit,
+		Destroy:               applyFlags.destroy,
+		AutoApprove:           applyFlags.autoApprove,
+		IgnoreChangeDetection: applyFlags.ignoreChangeDetection,
 	})
 }

@@ -93,8 +93,8 @@ func initConfig() {
 	configPath := path.Join(xdg.ConfigHome, "mach-composer")
 	if _, err := os.Stat(configPath); os.IsNotExist(err) {
 		if err := os.MkdirAll(configPath, os.ModePerm); err != nil {
-			fmt.Printf("Error encountered while creating configuration file: %s", err)
-			os.Exit(1)
+			os.Stderr.WriteString(fmt.Sprintf("Warning: encountered while creating configuration file: %s", err))
+			return
 		}
 	}
 
@@ -108,8 +108,8 @@ func initConfig() {
 	err := viper.SafeWriteConfig()
 	if err != nil {
 		if _, ok := err.(viper.ConfigFileAlreadyExistsError); !ok {
-			fmt.Printf("Error encountered while writing configuration file: %s", err)
-			os.Exit(1)
+			os.Stderr.WriteString(fmt.Sprintf("Warning: encountered while writing configuration file: %s", err))
+			return
 		}
 	}
 
@@ -117,8 +117,8 @@ func initConfig() {
 	viper.SetDefault("auth-url", "https://auth.mach.cloud")
 
 	if err := viper.ReadInConfig(); err != nil {
-		fmt.Printf("Invalid config file found at: %s\n", viper.GetViper().ConfigFileUsed())
-		os.Exit(1)
+		os.Stderr.WriteString(fmt.Sprintf("Warning: invalid config file found at: %s\n", viper.GetViper().ConfigFileUsed()))
+		return
 	}
 
 	// Copy the values from Viper to the matching flag values.

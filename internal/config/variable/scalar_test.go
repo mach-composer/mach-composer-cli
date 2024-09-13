@@ -79,15 +79,17 @@ func TestRemoteStateTransformFunc(t *testing.T) {
 	}
 
 	r := state.NewRepository()
-	err := r.Add("my_state", nil)
-	r.Alias("my_state", "foo")
+	rr, _ := state.NewRenderer(state.DefaultType, "my_state", nil)
+
+	err := r.Add(rr)
+	r.Alias("my_state", "test-1/foo")
 	assert.NoError(t, err)
 
 	for _, tc := range tests {
 		value, err := NewScalarVariable(tc.input)
 		assert.NoError(t, err)
 
-		res, err := value.TransformValue(RemoteStateTransformFunc(r))
+		res, err := value.TransformValue(RemoteStateTransformFunc(r, "test-1"))
 		assert.NoError(t, err)
 
 		assert.Equal(t, tc.output, res)
@@ -104,7 +106,7 @@ func TestInterpolateComponentVarsSuccess(t *testing.T) {
 		{
 			Description: "Simple test case",
 			Input: &VariablesMap{
-				"key": MustCreateNewScalarVariable(t, "${component.foobar.var}"),
+				"key": MustCreateNewScalarVariable("${component.foobar.var}"),
 			},
 			Expected: map[string]any{"key": "${module.foobar.var}"},
 			Refs:     []string{"foobar"},
@@ -112,7 +114,7 @@ func TestInterpolateComponentVarsSuccess(t *testing.T) {
 		{
 			Description: "Scalar test case",
 			Input: &VariablesMap{
-				"key": MustCreateNewScalarVariable(t, "-> ${component.foobar.var} <-"),
+				"key": MustCreateNewScalarVariable("-> ${component.foobar.var} <-"),
 			},
 			Expected: map[string]any{"key": "-> ${module.foobar.var} <-"},
 			Refs:     []string{"foobar"},
@@ -120,21 +122,21 @@ func TestInterpolateComponentVarsSuccess(t *testing.T) {
 		{
 			Description: "Integer test case",
 			Input: &VariablesMap{
-				"key": MustCreateNewScalarVariable(t, 123),
+				"key": MustCreateNewScalarVariable(123),
 			},
 			Expected: map[string]any{"key": 123},
 		},
 		{
 			Description: "Boolean test case",
 			Input: &VariablesMap{
-				"key": MustCreateNewScalarVariable(t, true),
+				"key": MustCreateNewScalarVariable(true),
 			},
 			Expected: map[string]any{"key": true},
 		},
 		{
 			Description: "Float test case",
 			Input: &VariablesMap{
-				"key": MustCreateNewScalarVariable(t, 1.1),
+				"key": MustCreateNewScalarVariable(1.1),
 			},
 			Expected: map[string]any{"key": 1.1},
 		},
@@ -143,8 +145,8 @@ func TestInterpolateComponentVarsSuccess(t *testing.T) {
 			Input: &VariablesMap{
 				"key": &MapVariable{
 					Elements: map[string]Variable{
-						"key-1": MustCreateNewScalarVariable(t, "${component.foobar.var}"),
-						"key-2": MustCreateNewScalarVariable(t, "-> ${component.foobar.var} - ${component.foobar.bar}<-"),
+						"key-1": MustCreateNewScalarVariable("${component.foobar.var}"),
+						"key-2": MustCreateNewScalarVariable("-> ${component.foobar.var} - ${component.foobar.bar}<-"),
 					},
 				},
 			},
@@ -161,8 +163,8 @@ func TestInterpolateComponentVarsSuccess(t *testing.T) {
 			Input: &VariablesMap{
 				"key": &SliceVariable{
 					Elements: []Variable{
-						MustCreateNewScalarVariable(t, `${component.site-topgeschenken.service_link_map["topbloemen-nl"]}`),
-						MustCreateNewScalarVariable(t, `${component.site-topgeschenken.service_link_map["topbloemen-be"]}`),
+						MustCreateNewScalarVariable(`${component.site-topgeschenken.service_link_map["topbloemen-nl"]}`),
+						MustCreateNewScalarVariable(`${component.site-topgeschenken.service_link_map["topbloemen-be"]}`),
 					},
 				},
 			},
@@ -180,12 +182,12 @@ func TestInterpolateComponentVarsSuccess(t *testing.T) {
 					Elements: []Variable{
 						&MapVariable{
 							Elements: map[string]Variable{
-								"key": MustCreateNewScalarVariable(t, `${component.site-topgeschenken.service_link_map["topbloemen-nl"]}`),
+								"key": MustCreateNewScalarVariable(`${component.site-topgeschenken.service_link_map["topbloemen-nl"]}`),
 							},
 						},
 						&MapVariable{
 							Elements: map[string]Variable{
-								"key": MustCreateNewScalarVariable(t, `${component.site-topgeschenken.service_link_map["topbloemen-be"]}`),
+								"key": MustCreateNewScalarVariable(`${component.site-topgeschenken.service_link_map["topbloemen-be"]}`),
 							},
 						},
 					},

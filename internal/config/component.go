@@ -7,23 +7,16 @@ import (
 	"github.com/mach-composer/mach-composer-plugin-sdk/v2/schema"
 	"github.com/rs/zerolog/log"
 	"gopkg.in/yaml.v3"
-	"path/filepath"
-	"strings"
 )
 
 type ComponentConfig struct {
 	Name         string            `yaml:"name"`
-	Source       string            `yaml:"source"`
+	Source       Source            `yaml:"source"`
 	Paths        []string          `yaml:"paths"`
 	Version      string            `yaml:"version"`
 	Branch       string            `yaml:"branch"`
 	Integrations []string          `yaml:"integrations"`
 	Endpoints    map[string]string `yaml:"endpoints"`
-}
-
-// IsGitSource indicates if the source definition refers to Git.
-func (c *ComponentConfig) IsGitSource() bool {
-	return strings.HasPrefix(c.Source, "git")
 }
 
 func parseComponentsNode(cfg *MachConfig, node *yaml.Node) error {
@@ -38,7 +31,7 @@ func parseComponentsNode(cfg *MachConfig, node *yaml.Node) error {
 	for _, component := range node.Content {
 		for _, plugin := range cfg.Plugins.All() {
 			data := map[string]any{}
-			nodes := mapYamlNodes(component.Content)
+			nodes := MapYamlNodes(component.Content)
 			componentName := nodes["name"].Value
 			version := nodes["version"].Value
 
@@ -115,16 +108,6 @@ func verifyComponents(cfg *MachConfig) error {
 		// specified then set it to the cloud integration
 		if cfg.Global.Cloud != "" && len(c.Integrations) < 1 {
 			c.Integrations = append(c.Integrations, cfg.Global.Cloud)
-		}
-
-		// If the source is a relative locale path then transform it to an
-		// absolute path (required for Terraform)
-		if strings.HasPrefix(c.Source, ".") {
-			if val, err := filepath.Abs(c.Source); err == nil {
-				c.Source = val
-			} else {
-				return err
-			}
 		}
 
 		seen = append(seen, c.Name)

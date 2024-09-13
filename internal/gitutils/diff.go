@@ -97,7 +97,7 @@ func commitsBetween(ctx context.Context, repository *git.Repository, first, last
 		return nil, err
 	}
 	if !found {
-		log.Ctx(ctx).Warn().Msgf("found commit %s in %s but failed to find changes in paths %s", first, last, paths)
+		log.Ctx(ctx).Info().Msgf("found commit %s in %s but failed to find changes in paths %s", first, last, paths)
 	}
 
 	return result, nil

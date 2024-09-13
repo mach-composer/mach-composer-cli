@@ -16,6 +16,20 @@ const (
 
 type VariablesMap map[string]Variable
 
+// MergeVariablesMaps merges multiple VariablesMap into a single VariablesMap. The last map will override the previous
+// ones. Only the keys on the first level are merged.
+func MergeVariablesMaps(maps ...VariablesMap) VariablesMap {
+	var result = make(VariablesMap)
+
+	for _, m := range maps {
+		for key, val := range m {
+			result[key] = val
+		}
+	}
+
+	return result
+}
+
 type TransformValueFunc func(value any) (any, error)
 
 type Variable interface {

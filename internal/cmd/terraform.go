@@ -1,15 +1,17 @@
 package cmd
 
 import (
+	"github.com/mach-composer/mach-composer-cli/internal/batcher"
 	"github.com/mach-composer/mach-composer-cli/internal/graph"
+	"github.com/mach-composer/mach-composer-cli/internal/hash"
 	"github.com/spf13/cobra"
 
 	"github.com/mach-composer/mach-composer-cli/internal/runner"
 )
 
 var terraformFlags struct {
-	reuse bool
-	force bool
+	reuse                 bool
+	ignoreChangeDetection bool
 }
 
 var terraformCmd = &cobra.Command{
@@ -25,9 +27,8 @@ var terraformCmd = &cobra.Command{
 
 func init() {
 	registerCommonFlags(terraformCmd)
-	terraformCmd.Flags().BoolVarP(&terraformFlags.reuse, "reuse", "", false,
-		"Suppress a terraform init for improved speed (not recommended for production usage)")
-	terraformCmd.Flags().BoolVarP(&terraformFlags.force, "force", "", false, "Force the terraform command to run even if the components are considered up to date")
+	terraformCmd.Flags().BoolVarP(&terraformFlags.ignoreChangeDetection, "ignore-change-detection", "", true,
+		"Ignore change detection to run even if the components are considered up to date. Per default the proxy will ignore change detection")
 }
 
 func terraformFunc(cmd *cobra.Command, args []string) error {
@@ -40,14 +41,14 @@ func terraformFunc(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	b := runner.NewGraphRunner(commonFlags.workers)
+	r := runner.NewGraphRunner(
+		batcher.NaiveBatchFunc(),
+		hash.Factory(cfg),
+		commonFlags.workers,
+	)
 
-	if err = checkReuse(ctx, dg, b, terraformFlags.reuse); err != nil {
-		return err
-	}
-
-	return b.TerraformProxy(cmd.Context(), dg, &runner.ProxyOptions{
-		Command: args,
-		Force:   terraformFlags.force,
+	return r.TerraformProxy(ctx, dg, &runner.ProxyOptions{
+		Command:               args,
+		IgnoreChangeDetection: terraformFlags.ignoreChangeDetection,
 	})
 }

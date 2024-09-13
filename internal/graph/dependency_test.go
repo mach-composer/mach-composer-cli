@@ -170,7 +170,7 @@ func TestToDependencyGraphInferred(t *testing.T) {
 							Type: config.DeploymentSiteComponent,
 						},
 						Variables: variable.VariablesMap{
-							"value-1": variable.MustCreateNewScalarVariable(t, "${component.site-component-1.value-1}"),
+							"value-1": variable.MustCreateNewScalarVariable("${component.site-component-1.value-1}"),
 						},
 					},
 				},

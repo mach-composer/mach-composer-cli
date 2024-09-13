@@ -9,24 +9,24 @@ mach-composer plan [flags]
 ### Options
 
 ```
-  -c, --component stringArray   
-  -f, --file string             YAML file to parse. (default "main.yml")
-      --force                   Force the plan to run even if the components are considered up to date
-  -h, --help                    help for plan
-      --ignore-version          Skip MACH composer version check
-      --lock                    Acquire a lock on the state file before running terraform plan (default true)
-      --output-path string      Outputs path to store the generated files. (default "deployments")
-      --reuse                   Suppress a terraform init for improved speed (not recommended for production usage)
-  -s, --site string             Site to parse. If not set parse all sites.
-      --var-file string         Use a variable file to parse the configuration with.
-  -w, --workers int             The number of workers to use (default 1)
+  -c, --component stringArray     
+  -f, --file string               YAML file to parse. (default "main.yml")
+      --force-init                Force terraform initialization. By default mach-composer will reuse existing terraform resources
+  -h, --help                      help for plan
+      --ignore-change-detection   Ignore change detection to run even if the components are considered up to date
+      --ignore-version            Skip MACH composer version check
+      --lock                      Acquire a lock on the state file before running terraform plan (default true)
+      --output-path string        Outputs path to store the generated files. (default "deployments")
+  -s, --site string               Site to parse. If not set parse all sites.
+      --var-file string           Use a variable file to parse the configuration with.
+  -w, --workers int               The number of workers to use (default 1)
 ```
 
 ### Options inherited from parent commands
 
 ```
-      --output string   The output type. One of: console, json (default "console")
-      --verbose         Verbose output.
+  -q, --quiet     Quiet output. This is equal to setting log levels to error and higher
+  -v, --verbose   Verbose output. This is equal to setting log levels to debug and higher
 ```
 
 ### SEE ALSO

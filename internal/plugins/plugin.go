@@ -10,8 +10,6 @@ import (
 	schemav2 "github.com/mach-composer/mach-composer-plugin-sdk/v2/schema"
 	"github.com/rs/zerolog/log"
 	"hash/crc32"
-	"os"
-	"strings"
 )
 
 type PluginHandler struct {
@@ -40,9 +38,9 @@ func (p *PluginHandler) Start(ctx context.Context) error {
 	}
 
 	// Safety check to not run external handlers during test for now
-	if strings.HasSuffix(os.Args[0], ".test") {
-		panic(fmt.Sprintf("Not loading %s: invalid command: %s", p.Name, os.Args[0]))
-	}
+	//if strings.HasSuffix(os.Args[0], ".test") {
+	//	panic(fmt.Sprintf("Not loading %s: invalid command: %s", p.Name, os.Args[0]))
+	//}
 
 	logger := NewHCLogAdapter(log.Logger)
 

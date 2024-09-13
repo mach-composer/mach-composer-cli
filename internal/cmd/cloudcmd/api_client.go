@@ -49,7 +49,7 @@ var listApiClientCmd = &cobra.Command{
 		}
 
 		writeTable(os.Stdout,
-			[]string{"Created At", "Client ID", "Client Secret", "Last Used", "Description", "Scopes"},
+			[]string{"Created At", "ClientWrapper ID", "ClientWrapper Secret", "Last Used", "Description", "Scopes"},
 			data,
 		)
 		return nil
@@ -80,8 +80,8 @@ var createApiClientCmd = &cobra.Command{
 			return err
 		}
 
-		cmd.Printf("Client ID: %s\n", resource.ClientId)
-		cmd.Printf("Client Secret: %s\n", resource.ClientSecret)
+		cmd.Printf("ClientWrapper ID: %s\n", resource.ClientId)
+		cmd.Printf("ClientWrapper Secret: %s\n", resource.ClientSecret)
 		cmd.Printf("Scopes: %s\n", strings.Join(resource.Scope, " "))
 		return nil
 	},

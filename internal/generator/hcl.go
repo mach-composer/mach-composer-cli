@@ -16,7 +16,7 @@ import (
 var regexVars = regexp.MustCompilePOSIX(`"\$\$\{([^}]+)}"`)
 
 func serializeToHCL(attributeName string, data variable.VariablesMap, deploymentType config.DeploymentType,
-	repository *state.Repository) (string, error) {
+	repository *state.Repository, siteIdentifier string) (string, error) {
 	var transformFunc variable.TransformValueFunc
 	switch deploymentType {
 	case config.DeploymentSite:
@@ -24,7 +24,7 @@ func serializeToHCL(attributeName string, data variable.VariablesMap, deployment
 		break
 	case config.DeploymentSiteComponent:
 
-		transformFunc = variable.RemoteStateTransformFunc(repository)
+		transformFunc = variable.RemoteStateTransformFunc(repository, siteIdentifier)
 		break
 	default:
 		return "", fmt.Errorf("invalid deployment type: %s", deploymentType)

@@ -3,7 +3,6 @@
   "description": "Azure storage account state backend configuration.",
   "additionalProperties": false,
   "required": [
-    "resource_group",
     "storage_account",
     "container_name"
   ],
@@ -11,16 +10,108 @@
     "plugin": {
       "type": "string"
     },
-    "resource_group": {
-      "type": "string"
-    },
     "storage_account": {
+      "description": "The Name of the Storage Account.",
       "type": "string"
     },
     "container_name": {
+      "description": "The Name of the Storage Container within the Storage Account.",
+      "type": "string"
+    },
+    "environment": {
+      "description": "The Azure Environment which should be used.",
+      "enum": [
+        "public",
+        "china",
+        "german",
+        "stack",
+        "usgovernment"
+      ],
+      "default": "public"
+    },
+    "endpoint": {
+      "description": "The Custom Endpoint for Azure Resource Manager.",
+      "type": "string"
+    },
+    "metadata_host": {
+      "description": "The Hostname of the Azure Metadata Service (for example management.azure.com), used to obtain the Cloud Environment when using a Custom Azure Environment.",
+      "type": "string"
+    },
+    "snapshot": {
+      "description": "Should the Blob used to store the Terraform Statefile be snapshotted before use?",
+      "type": "boolean",
+      "default": false
+    },
+    "resource_group": {
+      "description": "The Name of the Resource Group in which the Storage Account exists.",
+      "type": "string"
+    },
+    "msi_endpoint": {
+      "description": "The path to a custom Managed Service Identity endpoint which is automatically determined if not specified.",
+      "type": "string"
+    },
+    "subscription_id": {
+      "description": "The Subscription ID in which the Storage Account exists.",
+      "type": "string"
+    },
+    "tenant_id": {
+      "description": "The Tenant ID in which the Subscription exists.",
+      "type": "string"
+    },
+    "use_msi": {
+      "description": "Should Managed Service Identity authentication be used?",
+      "type": "boolean"
+    },
+    "oidc_request_url": {
+      "description": "The URL for the OIDC provider from which to request an ID token.",
+      "type": "string"
+    },
+    "oidc_request_token": {
+      "description": "The bearer token for the request to the OIDC provider.",
+      "type": "string"
+    },
+    "oidc_token": {
+      "description": "The ID token when authenticating using OpenID Connect (OIDC).",
+      "type": "string"
+    },
+    "oidc_token_file_path": {
+      "description": "The path to a file containing the ID token when authenticating using OpenID Connect (OIDC).",
+      "type": "string"
+    },
+    "use_oidc": {
+      "description": "Should OIDC authentication be used?",
+      "type": "boolean"
+    },
+    "sas_token": {
+      "description": "The SAS Token used to access the Blob Storage Account.",
+      "type": "string"
+    },
+    "access_key": {
+      "description": "The Access Key used to access the Blob Storage Account.",
+      "type": "string"
+    },
+    "use_azuread_auth": {
+      "description": "Whether Azure Active Directory Authentication should be used to access the Blob Storage Account",
+      "type": "boolean"
+    },
+    "client_id": {
+      "description": "The Client ID of the Service Principal.",
+      "type": "string"
+    },
+    "client_secret": {
+      "description": "The Client Secret of the Service Principal.",
+      "type": "string"
+    },
+    "client_certificate_password": {
+      "description": "The password associated with the Client Certificate specified in client_certificate_path.",
+      "type": "string"
+    },
+    "client_certificate_path": {
+      "description": "The path to the PFX file used as the Client Certificate when authenticating as a Service Principal",
       "type": "string"
     },
     "state_folder": {
+      "description": "The folder in which the Terraform state file should be stored.",
       "type": "string",
       "default": ""
     }

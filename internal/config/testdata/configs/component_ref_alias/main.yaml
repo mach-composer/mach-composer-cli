@@ -1,0 +1,13 @@
+mach_composer:
+  version: "1.0.0"
+plugins: { }
+global:
+  environment: test
+sites:
+  - identifier: my-site
+    components:
+      - name: your-component
+      - name: your-component-aliased
+
+components:
+  $ref: "components.yaml"

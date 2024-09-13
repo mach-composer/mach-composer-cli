@@ -6,24 +6,27 @@ import (
 )
 
 type ApplyOptions struct {
-	Force       bool
-	Destroy     bool
-	AutoApprove bool
+	ForceInit             bool
+	IgnoreChangeDetection bool
+	Destroy               bool
+	AutoApprove           bool
 }
 
 type PlanOptions struct {
-	Force bool
-	Lock  bool
+	ForceInit             bool
+	IgnoreChangeDetection bool
+	Lock                  bool
 }
 
 type ProxyOptions struct {
-	Force   bool
-	Command []string
+	IgnoreChangeDetection bool
+	Command               []string
 }
 
 type ShowPlanOptions struct {
-	Force   bool
-	NoColor bool
+	ForceInit             bool
+	IgnoreChangeDetection bool
+	NoColor               bool
 }
 
 type Runner interface {

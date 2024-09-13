@@ -1,7 +1,9 @@
 package cmd
 
 import (
+	"github.com/mach-composer/mach-composer-cli/internal/batcher"
 	"github.com/mach-composer/mach-composer-cli/internal/graph"
+	"github.com/mach-composer/mach-composer-cli/internal/hash"
 	"github.com/spf13/cobra"
 
 	"github.com/mach-composer/mach-composer-cli/internal/cli"
@@ -43,7 +45,11 @@ func initFunc(cmd *cobra.Command, _ []string) error {
 		return err
 	}
 
-	b := runner.NewGraphRunner(commonFlags.workers)
+	r := runner.NewGraphRunner(
+		batcher.NaiveBatchFunc(),
+		hash.Factory(cfg),
+		commonFlags.workers,
+	)
 
-	return b.TerraformInit(ctx, dg)
+	return r.TerraformInit(ctx, dg)
 }

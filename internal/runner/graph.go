@@ -74,7 +74,7 @@ func NewGraphRunner(workers int) *GraphRunner {
 
 var logLock sync.Mutex
 
-func (gr *GraphRunner) run(ctx context.Context, g *graph.Graph, f executorFunc, name string, force bool) error {
+func (gr *GraphRunner) run(ctx context.Context, g *graph.Graph, f executorFunc, force bool) error {
 	if err := gr.taint(ctx, g); err != nil {
 		return err
 	}
@@ -144,8 +144,27 @@ func (gr *GraphRunner) run(ctx context.Context, g *graph.Graph, f executorFunc, 
 
 func (gr *GraphRunner) TerraformApply(ctx context.Context, dg *graph.Graph, opts *ApplyOptions) error {
 	if err := gr.run(ctx, dg, func(ctx context.Context, n graph.Node) (string, error) {
-		return terraform.Apply(ctx, n.Path(), opts.Destroy, opts.AutoApprove)
-	}, "apply", opts.Force); err != nil {
+		if !terraformIsInitialized(n.Path()) || opts.ForceInit {
+			log.Info().Msgf("Running terraform init for %s", n.Path())
+			if out, err := terraform.Init(ctx, n.Path()); err != nil {
+				return out, err
+			}
+		} else {
+			log.Info().Msgf("Skipping terraform init for %s", n.Path())
+		}
+
+		out, err := terraform.Apply(ctx, n.Path(), opts.Destroy, opts.AutoApprove)
+		if err != nil {
+			return out, err
+		}
+
+		log.Info().Msgf("Storing new hash for %s", n.Path())
+		if err = gr.hash.Store(ctx, n); err != nil {
+			log.Warn().Err(err).Msgf("Failed to store hash for %s", n.Identifier())
+		}
+		return out, nil
+
+	}, opts.IgnoreChangeDetection); err != nil {
 		return err
 	}
 
@@ -154,18 +173,27 @@ func (gr *GraphRunner) TerraformApply(ctx context.Context, dg *graph.Graph, opts
 
 func (gr *GraphRunner) TerraformPlan(ctx context.Context, dg *graph.Graph, opts *PlanOptions) error {
 	if err := gr.run(ctx, dg, func(ctx context.Context, n graph.Node) (string, error) {
-		missing, err := graph.HasMissingParentOutputs(n)
+		if !terraformIsInitialized(n.Path()) || opts.ForceInit {
+			log.Info().Msgf("Running terraform init for %s", n.Path())
+			if out, err := terraform.Init(ctx, n.Path()); err != nil {
+				return out, err
+			}
+		} else {
+			log.Info().Msgf("Skipping terraform init for %s", n.Path())
+		}
+
+		canPlan, err := terraformCanPlan(ctx, n)
 		if err != nil {
 			return "", err
 		}
 
-		if missing {
+		if !canPlan {
 			log.Info().Msgf("Skipping planning %s because it has missing outputs", n.Path())
 			return "", nil
 		}
 
 		return terraform.Plan(ctx, n.Path(), opts.Lock)
-	}, "plan", opts.Force); err != nil {
+	}, opts.IgnoreChangeDetection); err != nil {
 		return err
 	}
 
@@ -174,8 +202,12 @@ func (gr *GraphRunner) TerraformPlan(ctx context.Context, dg *graph.Graph, opts 
 
 func (gr *GraphRunner) TerraformProxy(ctx context.Context, dg *graph.Graph, opts *ProxyOptions) error {
 	if err := gr.run(ctx, dg, func(ctx context.Context, n graph.Node) (string, error) {
+		if !terraformIsInitialized(n.Path()) {
+			return "", fmt.Errorf("terraform is not initialized for %s. Please run init beforehand", n.Path())
+		}
+
 		return utils.RunTerraform(ctx, n.Path(), false, opts.Command...)
-	}, "proxy", opts.Force); err != nil {
+	}, opts.IgnoreChangeDetection); err != nil {
 		return err
 	}
 
@@ -184,8 +216,17 @@ func (gr *GraphRunner) TerraformProxy(ctx context.Context, dg *graph.Graph, opts
 
 func (gr *GraphRunner) TerraformShow(ctx context.Context, dg *graph.Graph, opts *ShowPlanOptions) error {
 	if err := gr.run(ctx, dg, func(ctx context.Context, n graph.Node) (string, error) {
+		if !terraformIsInitialized(n.Path()) || opts.ForceInit {
+			log.Info().Msgf("Running terraform init for %s", n.Path())
+			if out, err := terraform.Init(ctx, n.Path()); err != nil {
+				return out, err
+			}
+		} else {
+			log.Info().Msgf("Skipping terraform init for %s", n.Path())
+		}
+
 		return terraform.Show(ctx, n.Path(), opts.NoColor)
-	}, "show", opts.Force); err != nil {
+	}, opts.IgnoreChangeDetection); err != nil {
 		return err
 	}
 
@@ -193,56 +234,10 @@ func (gr *GraphRunner) TerraformShow(ctx context.Context, dg *graph.Graph, opts 
 }
 
 func (gr *GraphRunner) TerraformInit(ctx context.Context, dg *graph.Graph) error {
-	var errChan = make(chan error, len(dg.Vertices()))
-	var wg = &sync.WaitGroup{}
-
-	for _, n := range dg.Vertices() {
-		//We don't need to initialize the project type
-		if n.Type() == graph.ProjectType {
-			continue
-		}
-
-		wg.Add(1)
-		go func(n graph.Node) {
-			defer wg.Done()
-			//Projects are not initialized
-			if n.Type() == graph.ProjectType {
-				return
-			}
-
-			out, err := terraform.Init(ctx, n.Path())
-			if err != nil {
-				errChan <- err
-				return
-			}
-
-			if out == "" {
-				log.Info().Msgf("Initialization skipped on path %s", n.Path())
-				return
-			}
-
-			//We use this logger with hook to parse terraform output
-			var jLogger = log.Logger.
-				Hook(cli.NewGitHubHook(fmt.Sprintf("%s-init", n.Identifier()))).
-				With().Ctx(ctx).Logger()
-
-			logLock.Lock()
-			jLogger.Info().Msgf(out)
-			logLock.Unlock()
-		}(n)
-	}
-	wg.Wait()
-	close(errChan)
-
-	if len(errChan) > 0 {
-		var errors []error
-		for err := range errChan {
-			errors = append(errors, err)
-		}
-
-		return cli.NewGroupedError(
-			fmt.Sprintf("failed initializing terraform projects (%d errors)", len(errors)), errors,
-		)
+	if err := gr.run(ctx, dg, func(ctx context.Context, n graph.Node) (string, error) {
+		return terraform.Init(ctx, n.Path())
+	}, true); err != nil {
+		return err
 	}
 
 	return nil

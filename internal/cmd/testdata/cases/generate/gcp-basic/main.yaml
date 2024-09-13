@@ -1,0 +1,31 @@
+mach_composer:
+  version: 1
+  deployment:
+    type: "site-component"
+  plugins:
+    gcp:
+      source: mach-composer/gcp
+      version: 0.1.0
+
+global:
+  cloud: "gcp"
+  environment: test
+  terraform_config:
+    remote_state:
+      plugin: gcp
+      bucket: state-bucket
+      prefix: mach-composer
+
+sites:
+  - identifier: test-1
+    components:
+      - name: component-1
+
+components:
+  - name: component-1
+    source: ./testdata/modules/application
+    version: "test"
+    branch: main
+    integrations:
+      - gcp
+

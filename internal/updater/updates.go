@@ -3,10 +3,10 @@ package updater
 import (
 	"context"
 	"fmt"
+	"github.com/mach-composer/mach-composer-cli/internal/cloud"
 	"github.com/rs/zerolog/log"
 	"math"
 	"runtime"
-	"strings"
 	"sync"
 
 	"github.com/mach-composer/mach-composer-cli/internal/config"
@@ -156,14 +156,14 @@ func getLastVersion(ctx context.Context, cfg *PartialConfig, c *config.Component
 		return getLastVersionCloud(ctx, cfg, c, origin)
 	}
 
-	if strings.HasPrefix(c.Source, "git:") {
+	if c.Source.IsType(config.SourceTypeGit) {
 		return getLastVersionGit(ctx, c, origin)
 	}
 
 	err := &UpdateError{
 		msg:       fmt.Sprintf("unrecognized component source for %s: %s", c.Name, c.Source),
 		component: c.Name,
-		source:    c.Source,
+		source:    string(c.Source),
 	}
 	return nil, err
 }
@@ -172,14 +172,27 @@ func getLastVersionCloud(ctx context.Context, cfg *PartialConfig, c *config.Comp
 	organization := cfg.MachComposer.Cloud.Organization
 	project := cfg.MachComposer.Cloud.Project
 
+	if c.Version == cloud.LatestVersion {
+		log.Ctx(ctx).Warn().
+			Str("msg", "When using $LATEST the difference between latest available and currently configured cannot be determined.").
+			Msgf("Version set to %s for %s", cloud.LatestVersion, c.Name)
+		return nil, nil
+	}
+
+	if c.Version == cloud.VersionNotApplicable {
+		log.Ctx(ctx).Debug().Msgf("Version set to %s for %s. Ignoring", cloud.VersionNotApplicable, c.Name)
+		return nil, nil
+	}
+
 	version, _, err := cfg.client.
-		ComponentsApi.ComponentLatestVersion(ctx, organization, project, c.Name).
+		ComponentsApi.
+		ComponentLatestVersion(ctx, organization, project, c.Name).
 		Branch(c.Branch).
 		Execute()
 
 	if err != nil {
-		if strings.HasPrefix(c.Source, "git:") {
-			log.Ctx(ctx).Warn().Msgf("Error checking for %s in MACH Composer Cloud, falling back to Git", c.Name)
+		if c.Source.IsType(config.SourceTypeGit) {
+			log.Ctx(ctx).Err(err).Msgf("Error checking for %s in MACH Composer Cloud, falling back to Git", c.Name)
 			return getLastVersionGit(ctx, c, origin)
 		}
 		log.Ctx(ctx).Error().Err(err).Msgf("Error checking for latest version of %s", c.Name)
@@ -187,7 +200,7 @@ func getLastVersionCloud(ctx context.Context, cfg *PartialConfig, c *config.Comp
 	}
 
 	if version == nil {
-		if strings.HasPrefix(c.Source, "git:") {
+		if c.Source.IsType(config.SourceTypeGit) {
 			log.Ctx(ctx).Warn().Msgf("No version found for %s in MACH Composer Cloud, falling back to Git", c.Name)
 			return getLastVersionGit(ctx, c, origin)
 		}
@@ -204,7 +217,9 @@ func getLastVersionCloud(ctx context.Context, cfg *PartialConfig, c *config.Comp
 	if c.Version != version.Version {
 		paginator, _, err := cfg.client.
 			ComponentsApi.
-			ComponentVersionQueryCommits(ctx, organization, project, c.Name, version.Version).
+			ComponentCommitQuery(ctx, organization, project, c.Name).
+			From(c.Version).
+			To(version.Version).
 			Offset(0).
 			Limit(200).
 			Execute()

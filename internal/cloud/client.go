@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"net/http/httptest"
 	"net/url"
 	"os"
 
@@ -21,6 +22,19 @@ const cliClientID = "b0b9ccbd-0613-4ccf-86a1-dab07b8b5619"
 type ClientConfig struct {
 	URL        string
 	HTTPClient *http.Client
+}
+
+func NewTestClient(server *httptest.Server) *mccsdk.APIClient {
+	cfg := &mccsdk.Configuration{
+		HTTPClient: server.Client(),
+		Servers: mccsdk.ServerConfigurations{
+			{
+				URL:         server.URL,
+				Description: "Mach Composer Cloud Test Server",
+			},
+		},
+	}
+	return mccsdk.NewAPIClient(cfg)
 }
 
 func NewClient(ctx context.Context) (*mccsdk.APIClient, error) {
@@ -129,11 +143,11 @@ func getAuthEndpoint() oauth2.Endpoint {
 	result := oauth2.Endpoint{}
 	baseURL := viper.GetString("auth-url")
 
-	if url, err := url.JoinPath(baseURL, "/authorize"); err == nil {
-		result.AuthURL = url
+	if u, err := url.JoinPath(baseURL, "/authorize"); err == nil {
+		result.AuthURL = u
 	}
-	if url, err := url.JoinPath(baseURL, "/oauth/token"); err == nil {
-		result.TokenURL = url
+	if u, err := url.JoinPath(baseURL, "/oauth/token"); err == nil {
+		result.TokenURL = u
 	}
 	return result
 }

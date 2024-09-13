@@ -5,16 +5,15 @@ import (
 	"embed"
 	"errors"
 	"fmt"
+	"github.com/hashicorp/hcl/v2/hclparse"
+	"github.com/hashicorp/hcl/v2/hclwrite"
 	"github.com/mach-composer/mach-composer-cli/internal/graph"
 	"github.com/mach-composer/mach-composer-cli/internal/state"
+	"github.com/rs/zerolog/log"
 	"io"
 	"os"
 	"path/filepath"
 	"regexp"
-
-	"github.com/hashicorp/hcl/v2/hclparse"
-	"github.com/hashicorp/hcl/v2/hclwrite"
-	"github.com/rs/zerolog/log"
 
 	"github.com/mach-composer/mach-composer-cli/internal/config"
 )
@@ -36,14 +35,14 @@ func Write(ctx context.Context, cfg *config.MachConfig, g *graph.Graph, _ *Gener
 		if err != nil {
 			return err
 		}
-		err = cfg.StateRepository.Add(sr.Key(), sr)
+		err = cfg.StateRepository.Add(sr)
 		if err != nil {
 			return err
 		}
 
 		if site, ok := n.(*graph.Site); ok {
-			for _, c := range site.NestedSiteComponentConfigs {
-				cfg.StateRepository.Alias(n.Identifier(), c.Name)
+			for _, c := range site.NestedNodes {
+				cfg.StateRepository.Alias(n.Identifier(), c.Identifier())
 			}
 		}
 	}
@@ -57,16 +56,12 @@ func Write(ctx context.Context, cfg *config.MachConfig, g *graph.Graph, _ *Gener
 			if err := copySecrets(cfg, n.Identifier(), n.Path()); err != nil {
 				return err
 			}
-			body, err := renderSite(ctx, cfg, n)
+			body, err := renderSite(ctx, cfg, n.(*graph.Site))
 			if err != nil {
 				return err
 			}
 
-			hash, err := n.Hash()
-			if err != nil {
-				return err
-			}
-			if err = writeContent(hash, n.Path(), body); err != nil {
+			if err = writeContent(n.Path(), body); err != nil {
 				return err
 			}
 			break
@@ -75,16 +70,12 @@ func Write(ctx context.Context, cfg *config.MachConfig, g *graph.Graph, _ *Gener
 				return err
 			}
 
-			body, err := renderSiteComponent(ctx, cfg, n)
+			body, err := renderSiteComponent(ctx, cfg, n.(*graph.SiteComponent))
 			if err != nil {
 				return err
 			}
 
-			hash, err := n.Hash()
-			if err != nil {
-				return err
-			}
-			if err = writeContent(hash, n.Path(), body); err != nil {
+			if err = writeContent(n.Path(), body); err != nil {
 				return err
 			}
 			break
@@ -97,7 +88,7 @@ func Write(ctx context.Context, cfg *config.MachConfig, g *graph.Graph, _ *Gener
 	return nil
 }
 
-func writeContent(hash, path, content string) error {
+func writeContent(path, content string) error {
 	filename := filepath.Join(path, "main.tf")
 
 	log.Info().Msgf("Writing %s", filename)

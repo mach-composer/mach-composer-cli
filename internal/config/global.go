@@ -3,6 +3,7 @@ package config
 import (
 	"fmt"
 	"github.com/mach-composer/mach-composer-cli/internal/cli"
+	"github.com/mach-composer/mach-composer-cli/internal/config/variable"
 	"github.com/mach-composer/mach-composer-cli/internal/utils"
 	"gopkg.in/yaml.v3"
 )
@@ -12,6 +13,9 @@ type GlobalConfig struct {
 	Cloud                  string           `yaml:"cloud"`
 	TerraformStateProvider string           `yaml:"-"`
 	TerraformConfig        *TerraformConfig `yaml:"terraform_config"`
+
+	Variables variable.VariablesMap `yaml:"variables"`
+	Secrets   variable.VariablesMap `yaml:"secrets"`
 }
 
 type TerraformConfig struct {
@@ -31,7 +35,7 @@ func parseGlobalNode(cfg *MachConfig, globalNode *yaml.Node) error {
 		}
 	}
 
-	nodes := mapYamlNodes(globalNode.Content)
+	nodes := MapYamlNodes(globalNode.Content)
 
 	for _, plugin := range cfg.Plugins.All() {
 		data := map[string]any{}
@@ -53,7 +57,7 @@ func parseGlobalNode(cfg *MachConfig, globalNode *yaml.Node) error {
 	}
 
 	if node, ok := nodes["terraform_config"]; ok {
-		children := mapYamlNodes(node.Content)
+		children := MapYamlNodes(node.Content)
 
 		// Backwards compat
 		if child, ok := children["aws_remote_state"]; ok {

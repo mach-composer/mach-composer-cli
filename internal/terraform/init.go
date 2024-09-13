@@ -6,8 +6,7 @@ import (
 )
 
 func Init(ctx context.Context, path string) (string, error) {
-	if !terraformIsInitialized(path) {
-		return utils.RunTerraform(ctx, path, true, "init")
-	}
-	return "", nil
+	args := []string{"init"}
+
+	return utils.RunTerraform(ctx, path, false, args...)
 }

@@ -1,5 +1,5 @@
 locals {
-  role_arn = "arn:aws:iam::${var.aws_account_id}:role/admin"
+  role_arn            = "arn:aws:iam::${var.aws_account_id}:role/admin"
   tfstate_bucket_name = "${var.name}-tfstate"
 }
 

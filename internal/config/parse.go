@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"path"
 	"path/filepath"
+	"strings"
 
 	"github.com/mach-composer/mach-composer-cli/internal/state"
 
@@ -106,12 +107,6 @@ func loadConfig(ctx context.Context, filename, cwd string, pr *plugins.PluginRep
 		return nil, err
 	}
 
-	componentNode, _, err := LoadRefData(ctx, &raw.Components, cwd)
-	if err != nil {
-		return nil, err
-	}
-	raw.Components = *componentNode
-
 	// Load the plugins
 	raw.plugins = pr
 	if err := loadPlugins(ctx, raw); err != nil {
@@ -169,8 +164,7 @@ func loadPlugins(ctx context.Context, raw *rawConfig) error {
 	return nil
 }
 
-// parseConfig is responsible for parsing a mach composer yaml config file and
-// creating the resulting MachConfig struct.
+// resolveConfig is responsible for parsing a mach composer yaml config file and creating the resulting MachConfig struct.
 func resolveConfig(_ context.Context, intermediate *rawConfig) (*MachConfig, error) {
 	if err := intermediate.validate(); err != nil {
 		return nil, err
@@ -224,7 +218,7 @@ func resolveVariables(ctx context.Context, rawConfig *rawConfig, cwd string) err
 	// TransformValue the variables per-site to keep track of which site uses which
 	// variable.
 	for _, node := range rawConfig.Sites.Content {
-		mapping := mapYamlNodes(node.Content)
+		mapping := MapYamlNodes(node.Content)
 		if idNode, ok := mapping["identifier"]; ok {
 			siteId := idNode.Value
 			if err := vars.InterpolateSiteNode(siteId, node); err != nil {
@@ -248,5 +242,53 @@ func loadYamlFile(filename string) (*yaml.Node, error) {
 	if err := yaml.Unmarshal(body, document); err != nil {
 		return nil, err
 	}
+
+	// Resolve $ref and ${include()} references
+	if err := resolveReferences(document, filepath.Dir(filename)); err != nil {
+		return nil, err
+	}
+
 	return document, nil
+}
+
+func resolveReferences(node *yaml.Node, baseDir string) error {
+	if node.Kind == yaml.DocumentNode {
+		for _, contentNode := range node.Content {
+			if err := resolveReferences(contentNode, baseDir); err != nil {
+				return err
+			}
+		}
+	} else if node.Kind == yaml.MappingNode {
+		for i := 0; i < len(node.Content); i += 2 {
+			keyNode := node.Content[i]
+			valueNode := node.Content[i+1]
+			if keyNode.Value == "$ref" && valueNode.Kind == yaml.ScalarNode {
+				refFilename := filepath.Join(baseDir, valueNode.Value)
+				refNode, err := loadYamlFile(refFilename)
+				if err != nil {
+					return err
+				}
+				contentNode := refNode.Content[0]
+				*node = *contentNode
+				return nil
+			}
+			if err := resolveReferences(valueNode, baseDir); err != nil {
+				return err
+			}
+		}
+	} else if node.Kind == yaml.SequenceNode {
+		for _, contentNode := range node.Content {
+			if err := resolveReferences(contentNode, baseDir); err != nil {
+				return err
+			}
+		}
+	} else if node.Kind == yaml.ScalarNode && strings.Contains(node.Value, "include") {
+		refNode, _, err := LoadIncludeDocument(node, baseDir)
+		if err != nil {
+			return err
+		}
+		*node = *refNode
+		return nil
+	}
+	return nil
 }
