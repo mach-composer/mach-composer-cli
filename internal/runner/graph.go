@@ -101,7 +101,7 @@ func (gr *GraphRunner) TerraformApply(ctx context.Context, dg *graph.Graph, opts
 	if err := gr.run(ctx, dg, func(ctx context.Context, n graph.Node) (string, error) {
 		if !terraformIsInitialized(n.Path()) || opts.ForceInit {
 			log.Info().Msgf("Running terraform init for %s", n.Path())
-			if out, err := terraform.Init(ctx, n.Path()); err != nil {
+			if out, err := terraform.Init(ctx, n.Path(), true); err != nil {
 				return out, err
 			}
 		} else {
@@ -126,11 +126,23 @@ func (gr *GraphRunner) TerraformApply(ctx context.Context, dg *graph.Graph, opts
 	return nil
 }
 
+func (gr *GraphRunner) TerraformValidate(ctx context.Context, dg *graph.Graph) error {
+	return gr.run(ctx, dg, func(ctx context.Context, n graph.Node) (string, error) {
+		log.Info().Msgf("Running terraform init without backend for %s", n.Path())
+		if out, err := terraform.Init(ctx, n.Path(), false); err != nil {
+			return out, err
+		}
+
+		log.Info().Msgf("Running terraform validate for %s", n.Path())
+		return terraform.Validate(ctx, n.Path())
+	}, true)
+}
+
 func (gr *GraphRunner) TerraformPlan(ctx context.Context, dg *graph.Graph, opts *PlanOptions) error {
 	if err := gr.run(ctx, dg, func(ctx context.Context, n graph.Node) (string, error) {
 		if !terraformIsInitialized(n.Path()) || opts.ForceInit {
 			log.Info().Msgf("Running terraform init for %s", n.Path())
-			if out, err := terraform.Init(ctx, n.Path()); err != nil {
+			if out, err := terraform.Init(ctx, n.Path(), true); err != nil {
 				return out, err
 			}
 		} else {
@@ -173,7 +185,7 @@ func (gr *GraphRunner) TerraformShow(ctx context.Context, dg *graph.Graph, opts 
 	if err := gr.run(ctx, dg, func(ctx context.Context, n graph.Node) (string, error) {
 		if !terraformIsInitialized(n.Path()) || opts.ForceInit {
 			log.Info().Msgf("Running terraform init for %s", n.Path())
-			if out, err := terraform.Init(ctx, n.Path()); err != nil {
+			if out, err := terraform.Init(ctx, n.Path(), true); err != nil {
 				return out, err
 			}
 		} else {
@@ -190,7 +202,7 @@ func (gr *GraphRunner) TerraformShow(ctx context.Context, dg *graph.Graph, opts 
 
 func (gr *GraphRunner) TerraformInit(ctx context.Context, dg *graph.Graph) error {
 	if err := gr.run(ctx, dg, func(ctx context.Context, n graph.Node) (string, error) {
-		return terraform.Init(ctx, n.Path())
+		return terraform.Init(ctx, n.Path(), true)
 	}, true); err != nil {
 		return err
 	}
