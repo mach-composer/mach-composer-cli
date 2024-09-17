@@ -4,9 +4,10 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/rs/zerolog/log"
 	"os"
 	"strings"
+
+	"github.com/rs/zerolog/log"
 
 	"github.com/spf13/cobra"
 
@@ -22,6 +23,7 @@ var updateFlags struct {
 	commit        bool
 	commitMessage string
 	cloud         bool
+	gitFallback   bool
 }
 
 var updateCmd = &cobra.Command{
@@ -50,6 +52,7 @@ func init() {
 	updateCmd.Flags().BoolVarP(&updateFlags.commit, "commit", "c", false, "Automatically commits the change.")
 	updateCmd.Flags().StringVarP(&updateFlags.commitMessage, "commit-message", "m", "", "Use a custom message for the commit.")
 	updateCmd.Flags().BoolVar(&updateFlags.cloud, "cloud", false, "Use MACH composer cloud to check for updates.")
+	updateCmd.Flags().BoolVar(&updateFlags.gitFallback, "git-fallback", false, "Fallback to git if composer cloud check fails.")
 	updateCmd.Flags().StringArrayVarP(&updateFlags.components, "component", "", nil, "")
 
 	handleError(updateCmd.MarkFlagFilename("file", "yml", "yaml"))
@@ -72,7 +75,7 @@ func updateFunc(ctx context.Context, args []string) error {
 
 	writeChanges := !updateFlags.check
 
-	u, err := updater.NewUpdater(ctx, updateFlags.configFile, updateFlags.cloud)
+	u, err := updater.NewUpdater(ctx, updateFlags.configFile, updateFlags.cloud, updateFlags.gitFallback)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Failed to update %s: %v\n", updateFlags.configFile, err.Error())
 		os.Exit(1)
