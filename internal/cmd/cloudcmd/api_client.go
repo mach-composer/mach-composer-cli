@@ -22,10 +22,10 @@ var listApiClientCmd = &cobra.Command{
 		if err != nil {
 			return err
 		}
-		paginator, _, err := (client.
+		paginator, _, err := client.
 			APIClientsApi.
 			ApiClientQuery(ctx, organization, project).
-			Execute())
+			Execute()
 
 		if err != nil {
 			return err
@@ -34,7 +34,7 @@ var listApiClientCmd = &cobra.Command{
 		data := make([][]string, len(paginator.Results))
 		for i, record := range paginator.Results {
 			lastUsed := "never"
-			if record.LastUsedAt != nil {
+			if record.LastUsedAt.IsSet() {
 				lastUsed = record.GetLastUsedAt().Format("2006-01-02 15:04:05")
 			}
 
@@ -68,13 +68,13 @@ var createApiClientCmd = &cobra.Command{
 		if err != nil {
 			return err
 		}
-		resource, _, err := (client.
+		resource, _, err := client.
 			APIClientsApi.
 			ApiClientCreate(ctx, organization, project).
 			ApiClientDraft(mccsdk.ApiClientDraft{
 				Scope: []string{"project:manage"},
 			}).
-			Execute())
+			Execute()
 
 		if err != nil {
 			return err

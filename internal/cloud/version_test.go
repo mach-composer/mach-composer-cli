@@ -3,7 +3,6 @@ package cloud
 import (
 	"context"
 	"github.com/mach-composer/mach-composer-cli/internal/gitutils"
-	"github.com/mach-composer/mach-composer-cli/internal/utils"
 	"github.com/mach-composer/mcc-sdk-go/mccsdk"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -55,7 +54,7 @@ func TestRegisterComponentVersionComponentNotFoundWithCreateComponent(t *testing
 	client := &ClientWrapperMock{}
 	client.On("ListComponents", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(&mccsdk.ComponentPaginator{}, nil)
 	client.On("CreateComponent", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(&mccsdk.Component{
-		Key: utils.Ref("test-component"),
+		Key: "test-component",
 	}, nil)
 	client.On("CreateComponentVersion", mock.Anything, mock.Anything, mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(&mccsdk.ComponentVersion{
 		Version: "test-component-version"}, nil)
@@ -79,7 +78,7 @@ func TestRegisterComponentVersionComponentFound(t *testing.T) {
 	client.On("ListComponents", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(&mccsdk.ComponentPaginator{
 		Results: []mccsdk.Component{
 			{
-				Key: utils.Ref("test-component"),
+				Key: "test-component",
 			},
 		},
 	}, nil)
@@ -106,7 +105,7 @@ func TestRegisterComponentVersionComponentFoundAutoGitRevisionNotFound(t *testin
 	client.On("ListComponents", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(&mccsdk.ComponentPaginator{
 		Results: []mccsdk.Component{
 			{
-				Key: utils.Ref("test-component"),
+				Key: "test-component",
 			},
 		},
 	}, nil)
@@ -139,7 +138,7 @@ func TestRegisterComponentVersionComponentFoundAutoNoCommits(t *testing.T) {
 	client.On("ListComponents", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(&mccsdk.ComponentPaginator{
 		Results: []mccsdk.Component{
 			{
-				Key: utils.Ref("test-component"),
+				Key: "test-component",
 			},
 		},
 	}, nil)
@@ -172,7 +171,7 @@ func TestRegisterComponentVersionComponentFoundAutoOK(t *testing.T) {
 	client.On("ListComponents", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(&mccsdk.ComponentPaginator{
 		Results: []mccsdk.Component{
 			{
-				Key: utils.Ref("test-component"),
+				Key: "test-component",
 			},
 		},
 	}, nil)
@@ -180,7 +179,7 @@ func TestRegisterComponentVersionComponentFoundAutoOK(t *testing.T) {
 		Version: "previous-test-component-version"}, nil)
 	client.On("CreateComponentVersion", mock.Anything, mock.Anything, mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(&mccsdk.ComponentVersion{
 		Version: "test-component-version"}, nil)
-	client.On("PushComponentVersionCommits", mock.Anything, mock.Anything, mock.Anything, mock.Anything, mock.Anything, mock.MatchedBy(func(s []mccsdk.CommitData) bool {
+	client.On("PushComponentVersionCommits", mock.Anything, mock.Anything, mock.Anything, mock.Anything, mock.Anything, mock.MatchedBy(func(s []mccsdk.CommitDraft) bool {
 		assert.Len(t, s, 1)
 		assert.Equal(t, "test-commit", s[0].Commit)
 		assert.Equal(t, "test-subject", s[0].Subject)
@@ -232,7 +231,7 @@ func TestRegisterComponentVersionComponentFoundAutoDryRun(t *testing.T) {
 	client.On("ListComponents", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(&mccsdk.ComponentPaginator{
 		Results: []mccsdk.Component{
 			{
-				Key: utils.Ref("test-component"),
+				Key: "test-component",
 			},
 		},
 	}, nil)

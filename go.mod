@@ -19,12 +19,11 @@ require (
 	github.com/hashicorp/hcl/v2 v2.22.0
 	github.com/lithammer/dedent v1.1.0
 	github.com/mach-composer/mach-composer-plugin-sdk v1.0.0
-	github.com/mach-composer/mcc-sdk-go v0.1.0
+	github.com/mach-composer/mcc-sdk-go v0.1.1-0.20240927102148-addd64120f02
 	github.com/mattn/go-isatty v0.0.20
 	github.com/mitchellh/mapstructure v1.5.0
 	github.com/olekukonko/tablewriter v0.0.5
 	github.com/rs/zerolog v1.33.0
-	github.com/santhosh-tekuri/jsonschema/v6 v6.0.1
 	github.com/skratchdot/open-golang v0.0.0-20200116055534-eef842397966
 	github.com/spf13/afero v1.11.0
 	github.com/spf13/cobra v1.8.1
