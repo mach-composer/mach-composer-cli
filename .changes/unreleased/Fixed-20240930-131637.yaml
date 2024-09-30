@@ -1,0 +1,4 @@
+kind: Fixed
+body: Continue with update proces even when commits / changelogs cannot be fetched
+  between old and new version
+time: 2024-09-30T13:16:37.40107+02:00
