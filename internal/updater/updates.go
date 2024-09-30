@@ -224,26 +224,27 @@ func getLastVersionCloud(ctx context.Context, cfg *PartialConfig, c *config.Comp
 			Limit(200).
 			Execute()
 		if err != nil {
-			return nil, err
-		}
+			log.Ctx(ctx).Warn().Msgf("Could not fetch related commits between %s versions %s and %s: %s", c.Name, c.Version, version.Version, err)
+		} else {
 
-		for _, record := range paginator.Results {
-			change := CommitData{
-				Commit:  record.Commit,
-				Parents: record.Parents,
-				Message: record.Subject,
-				Author: CommitAuthor{
-					Email: record.Author.Email,
-					Name:  record.Author.Name,
-					Date:  record.Author.Date,
-				},
-				Committer: CommitAuthor{
-					Email: record.Committer.Email,
-					Name:  record.Committer.Name,
-					Date:  record.Committer.Date,
-				},
+			for _, record := range paginator.Results {
+				change := CommitData{
+					Commit:  record.Commit,
+					Parents: record.Parents,
+					Message: record.Subject,
+					Author: CommitAuthor{
+						Email: record.Author.Email,
+						Name:  record.Author.Name,
+						Date:  record.Author.Date,
+					},
+					Committer: CommitAuthor{
+						Email: record.Committer.Email,
+						Name:  record.Committer.Name,
+						Date:  record.Committer.Date,
+					},
+				}
+				cs.Changes = append(cs.Changes, change)
 			}
-			cs.Changes = append(cs.Changes, change)
 		}
 	}
 
