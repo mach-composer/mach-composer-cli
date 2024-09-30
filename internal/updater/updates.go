@@ -3,11 +3,12 @@ package updater
 import (
 	"context"
 	"fmt"
-	"github.com/mach-composer/mach-composer-cli/internal/cloud"
-	"github.com/rs/zerolog/log"
 	"math"
 	"runtime"
 	"sync"
+
+	"github.com/mach-composer/mach-composer-cli/internal/cloud"
+	"github.com/rs/zerolog/log"
 
 	"github.com/mach-composer/mach-composer-cli/internal/config"
 
@@ -191,7 +192,7 @@ func getLastVersionCloud(ctx context.Context, cfg *PartialConfig, c *config.Comp
 		Execute()
 
 	if err != nil {
-		if c.Source.IsType(config.SourceTypeGit) {
+		if cfg.gitFallback && c.Source.IsType(config.SourceTypeGit) {
 			log.Ctx(ctx).Err(err).Msgf("Error checking for %s in MACH Composer Cloud, falling back to Git", c.Name)
 			return getLastVersionGit(ctx, c, origin)
 		}
@@ -200,7 +201,7 @@ func getLastVersionCloud(ctx context.Context, cfg *PartialConfig, c *config.Comp
 	}
 
 	if version == nil {
-		if c.Source.IsType(config.SourceTypeGit) {
+		if cfg.gitFallback && c.Source.IsType(config.SourceTypeGit) {
 			log.Ctx(ctx).Warn().Msgf("No version found for %s in MACH Composer Cloud, falling back to Git", c.Name)
 			return getLastVersionGit(ctx, c, origin)
 		}

@@ -1,0 +1,3 @@
+kind: Added
+body: Added git-fallback option to cloud update command. Usage; `mach-composer update --cloud --git-fallback`
+time: 2024-09-17T11:56:20.992197+02:00
