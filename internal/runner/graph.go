@@ -15,6 +15,7 @@ import (
 	"golang.org/x/sync/semaphore"
 	"sort"
 	"sync"
+	"time"
 )
 
 type (
@@ -51,8 +52,24 @@ func (gr *GraphRunner) run(ctx context.Context, g *graph.Graph, f executorFunc, 
 		log.Info().Msgf("Running batch %d with %d nodes", i, len(batches[k]))
 
 		errChan := make(chan error, len(batches[k]))
+		var outputs []*cli.BufferedWriter
+
 		wg := &sync.WaitGroup{}
 		sem := semaphore.NewWeighted(int64(gr.workers))
+
+		// Start a ticker to show we are still running
+		ticker := make(chan struct{})
+		go func() {
+			for {
+				select {
+				case <-ticker:
+					return
+				default:
+					log.Info().Msgf("Waiting for batch %d to complete", i)
+					time.Sleep(1 * time.Second)
+				}
+			}
+		}()
 
 		for _, n := range batches[k] {
 			if n.Tainted() == false && ignoreChangeDetection == false {
@@ -74,9 +91,7 @@ func (gr *GraphRunner) run(ctx context.Context, g *graph.Graph, f executorFunc, 
 				l := log.Output(bw).With().Str("identifier", n.Identifier()).Logger()
 				ctx = l.WithContext(ctx)
 
-				defer func() error {
-					return bw.Flush()
-				}()
+				outputs = append(outputs, bw)
 
 				defer func() {
 					if cli.GithubCIFromContext(ctx) {
@@ -100,7 +115,14 @@ func (gr *GraphRunner) run(ctx context.Context, g *graph.Graph, f executorFunc, 
 			}(ctx, n)
 		}
 		wg.Wait()
+		close(ticker)
 		close(errChan)
+
+		for _, output := range outputs {
+			if err := output.Flush(); err != nil {
+				return err
+			}
+		}
 
 		if len(errChan) > 0 {
 			var errors []error
