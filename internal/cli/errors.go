@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"strings"
@@ -55,7 +56,8 @@ func PrintExitError(summary string, detail ...string) {
 
 func HandleErr(err error) {
 	log.Error().Msgf("Error: %v\n", err)
-	if openApiErr, ok := err.(*mccsdk.GenericOpenAPIError); ok {
+	var openApiErr *mccsdk.GenericOpenAPIError
+	if errors.As(err, &openApiErr) {
 		remoteErr := openApiErr.Model()
 
 		switch svcErr := remoteErr.(type) {
@@ -78,7 +80,8 @@ func HandleErr(err error) {
 		return
 	}
 
-	if groupedErr, ok := err.(*GroupedError); ok {
+	var groupedErr *GroupedError
+	if errors.As(err, &groupedErr) {
 		var details []string
 		for _, e := range groupedErr.Errors {
 			details = append(details, e.Error())

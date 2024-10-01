@@ -450,8 +450,8 @@ github.com/mach-composer/mach-composer-plugin-sdk v1.0.0 h1:JC2CexXB03VxxyfNUdlB
 github.com/mach-composer/mach-composer-plugin-sdk v1.0.0/go.mod h1:qfmnfIOp8k4RYlOEbV0UVOQZ8g3mJPKsUopZCOW2qDU=
 github.com/mach-composer/mach-composer-plugin-sdk/v2 v2.0.1 h1:UcA2ZvtD+4nEDaG0a91yZKLZxZ5LMeNYh2vljrtTngs=
 github.com/mach-composer/mach-composer-plugin-sdk/v2 v2.0.1/go.mod h1:J5rRF9zUUZIx8vs2lUn3TH8tAHfmb0D3IBC6rKaboVA=
-github.com/mach-composer/mcc-sdk-go v0.1.0 h1:yxacUjllDa8lBW9uw8gvOhPOcyeT45+rqL1koSlEJtg=
-github.com/mach-composer/mcc-sdk-go v0.1.0/go.mod h1:yGj8wVh9P/HCNhjM4uVhguiROZaehFT7AJEDcMToopM=
+github.com/mach-composer/mcc-sdk-go v0.2.0 h1:PxGA1QsX5fFhMRJBB/E85rGTQ9mY60h3ruVxrqNBiOM=
+github.com/mach-composer/mcc-sdk-go v0.2.0/go.mod h1:xpvf4p/wmktgqLsjh3648ylQg8O0jQjqPVdPugEc3ok=
 github.com/magiconair/properties v1.8.7 h1:IeQXZAiQcpL9mgcAe1Nu6cX9LLw6ExEHKjN0VQdvPDY=
 github.com/magiconair/properties v1.8.7/go.mod h1:Dhd985XPs7jluiymwWYZ0G4Z61jb3vdS329zhj2hYo0=
 github.com/mattn/go-colorable v0.0.9/go.mod h1:9vuHe8Xs5qXnSaW/c/ABM9alt+Vo+STaOChaDxuIBZU=

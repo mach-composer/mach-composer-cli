@@ -32,7 +32,7 @@ func (c *ClientWrapperMock) GetLatestComponentVersion(ctx context.Context, organ
 	return args.Get(0).(*mccsdk.ComponentVersion), args.Error(1)
 }
 
-func (c *ClientWrapperMock) PushComponentVersionCommits(ctx context.Context, organization, project, componentKey, versionIdentifier string, commits []mccsdk.CommitData) error {
+func (c *ClientWrapperMock) PushComponentVersionCommits(ctx context.Context, organization, project, componentKey, versionIdentifier string, commits []mccsdk.CommitDraft) error {
 	args := c.Called(ctx, organization, project, componentKey, versionIdentifier, commits)
 	return args.Error(0)
 }

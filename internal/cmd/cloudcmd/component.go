@@ -65,7 +65,7 @@ var componentListCmd = &cobra.Command{
 		for i, record := range paginator.Results {
 			data[i] = []string{
 				record.CreatedAt.Local().Format("2006-01-02 15:04:05"),
-				*record.Key,
+				record.Key,
 			}
 		}
 
@@ -135,25 +135,14 @@ var componentUpdateCmd = &cobra.Command{
 		organization := MustGetString(cmd, "organization")
 		project := MustGetString(cmd, "project")
 		componentKey := args[0]
+		var patchedDraft = mccsdk.PatchedComponentDraft{}
 
 		newKey, err := cmd.Flags().GetString("key")
 		if err != nil {
 			return err
 		}
-		var patches []mccsdk.PatchRequestInner
-
 		if newKey != "" {
-			patches = append(patches, mccsdk.PatchRequestInner{
-				JSONPatchRequestAddReplaceTest: &mccsdk.JSONPatchRequestAddReplaceTest{
-					Path:  "/key",
-					Op:    "replace",
-					Value: newKey,
-				},
-			})
-		}
-
-		if len(patches) == 0 {
-			return nil
+			patchedDraft.Key = &newKey
 		}
 
 		client, err := cloud.NewClient(ctx)
@@ -163,7 +152,7 @@ var componentUpdateCmd = &cobra.Command{
 		resource, _, err := client.
 			ComponentsApi.
 			ComponentPatch(ctx, organization, project, componentKey).
-			PatchRequestInner(patches).
+			PatchedComponentDraft(patchedDraft).
 			Execute()
 		if err != nil {
 			return err

@@ -6,6 +6,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/mach-composer/mach-composer-cli/internal/cloud"
 	"github.com/mach-composer/mach-composer-cli/internal/config"
+	"github.com/mach-composer/mach-composer-cli/internal/utils"
 	"github.com/mach-composer/mcc-sdk-go/mccsdk"
 	"github.com/stretchr/testify/assert"
 	"net/http"
@@ -98,18 +99,19 @@ func TestGetLastVersionCloudOK(t *testing.T) {
 		}
 
 		if r.URL.Path == "/organizations/acme/projects/ecommerce/components//commits" {
-			b, _ := json.Marshal(mccsdk.CommitDataWithVersionPaginator{
-				Count: 1,
-				Total: 1,
-				Results: []mccsdk.CommitDataWithVersion{
+			b, _ := json.Marshal(mccsdk.CommitDataPaginator{
+				Count: utils.Ref(int32(1)),
+				Total: utils.Ref(int64(1)),
+				Results: []mccsdk.CommitData{
 					{
 						Commit:    "test",
 						Parents:   nil,
 						Subject:   "test",
 						Author:    mccsdk.CommitDataAuthor{},
 						Committer: mccsdk.CommitDataAuthor{},
-						Version:   &newVersion,
-						Branch:    &branch,
+						//TODO: should these fields be available?
+						//Version:   &newVersion,
+						//Branch:    &branch,
 					},
 				},
 			})

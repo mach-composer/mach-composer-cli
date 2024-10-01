@@ -125,19 +125,19 @@ func autoRegisterVersion(ctx context.Context, client ClientWrapper, repository g
 	}
 
 	// Push commits
-	newCommits := make([]mccsdk.CommitData, len(commits))
+	newCommits := make([]mccsdk.CommitDraft, len(commits))
 	for i := range pie.Reverse(commits) {
 		c := commits[i]
-		newCommits[i] = mccsdk.CommitData{
+		newCommits[i] = mccsdk.CommitDraft{
 			Commit:  c.Commit,
 			Subject: c.Message,
 			Parents: c.Parents,
-			Author: mccsdk.CommitDataAuthor{
+			Author: mccsdk.CommitAuthorDraft{
 				Name:  c.Author.Name,
 				Email: c.Author.Email,
 				Date:  c.Author.Date,
 			},
-			Committer: mccsdk.CommitDataAuthor{
+			Committer: mccsdk.CommitAuthorDraft{
 				Name:  c.Committer.Name,
 				Email: c.Committer.Email,
 				Date:  c.Committer.Date,

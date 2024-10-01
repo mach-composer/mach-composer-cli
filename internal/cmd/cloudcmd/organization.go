@@ -1,11 +1,9 @@
 package cloudcmd
 
 import (
-	"os"
-	"strings"
-
 	"github.com/mach-composer/mcc-sdk-go/mccsdk"
 	"github.com/spf13/cobra"
+	"os"
 
 	"github.com/mach-composer/mach-composer-cli/internal/cloud"
 )
@@ -21,10 +19,10 @@ var listOrganizationCmd = &cobra.Command{
 			return err
 		}
 
-		paginator, _, err := (client.
+		paginator, _, err := client.
 			OrganizationManagementApi.
 			OrganizationQuery(ctx).
-			Execute())
+			Execute()
 		if err != nil {
 			return err
 		}
@@ -57,11 +55,11 @@ var createOrganizationCmd = &cobra.Command{
 			return err
 		}
 
-		resource, _, err := (client.
+		resource, _, err := client.
 			OrganizationManagementApi.
 			OrganizationCreate(ctx).
 			OrganizationDraft(organizationDraft).
-			Execute())
+			Execute()
 		if err != nil {
 			return err
 		}
@@ -83,29 +81,30 @@ var listOrganizationUsersCmd = &cobra.Command{
 			return err
 		}
 
-		paginator, _, err := (client.
+		paginator, _, err := client.
 			OrganizationManagementApi.
 			OrganizationUserQuery(ctx, organization).
-			Execute())
+			Execute()
 		if err != nil {
 			return err
 		}
 
 		for i, record := range paginator.Results {
 			if i == 0 {
-				cmd.Printf("The following users are member of %s\n\n", *record.OrganizationName)
+				cmd.Printf("The following users are member of %s\n\n", record.Name)
 			}
-			cmd.Println("  - Name:", *record.Name)
+			cmd.Println("  - Name:", record.Name)
 			cmd.Println("    Email:", record.Email)
-			cmd.Println("    Scope:", strings.Join(record.OrganizationScopes, " "))
-			for j, project := range record.Projects {
-				if j == 0 {
-					cmd.Println("     Projects:")
-				}
-				cmd.Println("      - Name:", project.Name)
-				cmd.Println("        Key:", project.Key)
-				cmd.Println("        Scope:", strings.Join(project.Scopes, " "))
-			}
+			//TODO: re-add scopes and project lists on users
+			//cmd.Println("    Scope:", strings.Join(record.OrganizationScopes, " "))
+			//for j, project := range record.Projects {
+			//	if j == 0 {
+			//		cmd.Println("     Projects:")
+			//	}
+			//	cmd.Println("      - Name:", project.Name)
+			//	cmd.Println("        Key:", project.Key)
+			//	cmd.Println("        Scope:", strings.Join(project.Scopes, " "))
+			//}
 			cmd.Println()
 		}
 		return nil
@@ -126,13 +125,13 @@ var addOrganizationUsersCmd = &cobra.Command{
 			return err
 		}
 
-		_, _, err = (client.
+		_, _, err = client.
 			OrganizationManagementApi.
 			OrganizationUserInvite(ctx, organization).
-			OrganizationUserInviteDraft(mccsdk.OrganizationUserInviteDraft{
+			UserInviteDraft(mccsdk.UserInviteDraft{
 				Email: email,
 			}).
-			Execute())
+			Execute()
 		if err != nil {
 			return err
 		}

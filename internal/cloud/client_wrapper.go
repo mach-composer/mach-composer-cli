@@ -13,7 +13,7 @@ type ClientWrapper interface {
 	CreateComponent(ctx context.Context, organization, project, key string) (*mccsdk.Component, error)
 	CreateComponentVersion(ctx context.Context, organization, project, key, version, branch string) (*mccsdk.ComponentVersion, error)
 	GetLatestComponentVersion(ctx context.Context, organization, project, key, branch string) (*mccsdk.ComponentVersion, error)
-	PushComponentVersionCommits(ctx context.Context, organization, project, componentKey, versionIdentifier string, commits []mccsdk.CommitData) error
+	PushComponentVersionCommits(ctx context.Context, organization, project, componentKey, versionIdentifier string, commits []mccsdk.CommitDraft) error
 }
 
 func NewClientWrapper(client *mccsdk.APIClient) *MccSdkClientWrapper {
@@ -24,11 +24,11 @@ type MccSdkClientWrapper struct {
 	client *mccsdk.APIClient
 }
 
-func (m *MccSdkClientWrapper) PushComponentVersionCommits(ctx context.Context, organization, project, componentKey, versionIdentifier string, commits []mccsdk.CommitData) error {
-	_, err := m.client.
+func (m *MccSdkClientWrapper) PushComponentVersionCommits(ctx context.Context, organization, project, componentKey, versionIdentifier string, commits []mccsdk.CommitDraft) error {
+	_, _, err := m.client.
 		ComponentsApi.
 		ComponentVersionPushCommits(ctx, organization, project, componentKey, versionIdentifier).
-		ComponentVersionCommits(mccsdk.ComponentVersionCommits{
+		ComponentCommitCreateDraft(mccsdk.ComponentCommitCreateDraft{
 			Commits: commits,
 		}).
 		Execute()
@@ -52,7 +52,7 @@ func (m *MccSdkClientWrapper) CreateComponentVersion(ctx context.Context, organi
 		ComponentVersionCreate(ctx, organization, project, componentKey).
 		ComponentVersionDraft(mccsdk.ComponentVersionDraft{
 			Version: version,
-			Branch:  branch,
+			Branch:  &branch,
 		}).
 		Execute()
 	return r, err
