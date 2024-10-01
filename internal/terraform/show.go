@@ -6,7 +6,21 @@ import (
 	"github.com/mach-composer/mach-composer-cli/internal/utils"
 )
 
-func Show(ctx context.Context, path string, noColor bool) (string, error) {
+type ShowOption func([]string) []string
+
+func ShowWithNoColor() ShowOption {
+	return func(args []string) []string {
+		return append(args, "-no-color")
+	}
+}
+
+func ShowWithJson() ShowOption {
+	return func(args []string) []string {
+		return append(args, "-json")
+	}
+}
+
+func Show(ctx context.Context, path string, opts ...ShowOption) (string, error) {
 	filename, err := hasTerraformPlan(path)
 	if err != nil {
 		return "", err
@@ -15,9 +29,11 @@ func Show(ctx context.Context, path string, noColor bool) (string, error) {
 		return "", fmt.Errorf("no plan found for path %s. Did you run `mach-composer plan`", path)
 	}
 
-	cmd := []string{"show", filename}
-	if noColor {
-		cmd = append(cmd, "-no-color")
+	args := []string{"show", filename}
+
+	for _, opt := range opts {
+		args = opt(args)
 	}
-	return utils.RunTerraform(ctx, path, false, cmd...)
+
+	return utils.RunTerraform(ctx, path, args...)
 }

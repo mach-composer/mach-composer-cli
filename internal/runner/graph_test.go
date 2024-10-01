@@ -67,9 +67,9 @@ func TestGraphRunnerMultipleLevels(t *testing.T) {
 
 	var called []string
 
-	err := runner.run(context.Background(), graph, func(ctx context.Context, node internalgraph.Node) (string, error) {
+	err := runner.run(context.Background(), graph, func(ctx context.Context, node internalgraph.Node) error {
 		called = append(called, node.Identifier())
-		return "", nil
+		return nil
 	}, false)
 
 	assert.NoError(t, err)
@@ -127,11 +127,11 @@ func TestGraphRunnerError(t *testing.T) {
 	runner.hash = hash.NewMemoryMapHandler()
 	runner.batch = batcher.NaiveBatchFunc()
 
-	err := runner.run(context.Background(), graph, func(ctx context.Context, node internalgraph.Node) (string, error) {
+	err := runner.run(context.Background(), graph, func(ctx context.Context, node internalgraph.Node) error {
 		if node.Identifier() == "component-2" {
-			return "", assert.AnError
+			return assert.AnError
 		}
-		return "", nil
+		return nil
 	}, false)
 
 	cliErr := &cli.GroupedError{}

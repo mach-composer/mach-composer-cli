@@ -6,13 +6,28 @@ import (
 	"github.com/mach-composer/mach-composer-cli/internal/utils"
 )
 
-func Plan(ctx context.Context, path string, lock bool) (string, error) {
-	cmd := []string{"plan"}
+type PlanOption func([]string) []string
 
-	if lock == false {
-		cmd = append(cmd, "-lock=false")
+func PlanWithNoLock() PlanOption {
+	return func(args []string) []string {
+		return append(args, "-lock=false")
+	}
+}
+
+func PlanWithJson() PlanOption {
+	return func(args []string) []string {
+		return append(args, "-json")
+	}
+}
+
+func Plan(ctx context.Context, path string, opts ...PlanOption) (string, error) {
+	args := []string{"plan"}
+
+	for _, opt := range opts {
+		args = opt(args)
 	}
 
-	cmd = append(cmd, fmt.Sprintf("-out=%s", PlanFile))
-	return utils.RunTerraform(ctx, path, false, cmd...)
+	args = append(args, fmt.Sprintf("-out=%s", PlanFile))
+
+	return utils.RunTerraform(ctx, path, args...)
 }
