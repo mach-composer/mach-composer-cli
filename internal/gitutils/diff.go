@@ -1,6 +1,7 @@
 package gitutils
 
 import (
+	"context"
 	"fmt"
 	"strings"
 
@@ -28,8 +29,8 @@ func pathFilter(paths []string) func(path string) bool {
 
 // commitsBetween returns the commits between revisions first and last. It should equal the functionality of
 // `git log base..head`. See https://github.com/go-git/go-git/issues/69
-func commitsBetween(repository *git.Repository, first, last *plumbing.Revision, paths []string) ([]*object.Commit, error) {
-	log.Debug().Msgf("Getting commits between %s and %s (paths = %s)", first, last, paths)
+func commitsBetween(ctx context.Context, repository *git.Repository, first, last *plumbing.Revision, paths []string) ([]*object.Commit, error) {
+	log.Ctx(ctx).Debug().Msgf("Getting commits between %s and %s (paths = %s)", first, last, paths)
 	if first != nil {
 		_, err := repository.ResolveRevision(*first)
 		if err != nil {
@@ -43,7 +44,7 @@ func commitsBetween(repository *git.Repository, first, last *plumbing.Revision, 
 	var firstCommit *object.Commit
 	if first != nil {
 		if val, err := repository.ResolveRevision(*first); err != nil {
-			log.Warn().Err(err).Msgf("failed to resolve %s in repository", first.String())
+			log.Ctx(ctx).Warn().Err(err).Msgf("failed to resolve %s in repository", first.String())
 			return []*object.Commit{}, nil
 		} else {
 			firstHash = val
@@ -85,7 +86,7 @@ func commitsBetween(repository *git.Repository, first, last *plumbing.Revision, 
 		}
 		if firstCommit != nil && firstCommit.Committer.When.After(c.Committer.When) {
 			found = false
-			log.Info().Msgf("Did not find commit %s in path but next older commit %s in paths %s", first, c.Hash, paths)
+			log.Ctx(ctx).Info().Msgf("Did not find commit %s in path but next older commit %s in paths %s", first, c.Hash, paths)
 			return storer.ErrStop
 		}
 
@@ -96,7 +97,7 @@ func commitsBetween(repository *git.Repository, first, last *plumbing.Revision, 
 		return nil, err
 	}
 	if !found {
-		log.Info().Msgf("found commit %s in %s but failed to find changes in paths %s", first, last, paths)
+		log.Ctx(ctx).Info().Msgf("found commit %s in %s but failed to find changes in paths %s", first, last, paths)
 	}
 
 	return result, nil
