@@ -201,10 +201,10 @@ func commitExists(ctx context.Context, gitPath, baseRevision, targetRevision str
 	return nil
 }
 
-func determineRevision(ctx context.Context, repository *git.Repository, revision string) *plumbing.Revision {
+func determineRevision(repository *git.Repository, revision string) *plumbing.Revision {
 	tagRef, err := repository.Tag(revision)
 	if err == nil {
-		log.Ctx(ctx).Debug().Msgf("Found tag %s. Using revision %s to determine updates", tagRef.Name().Short(),
+		log.Debug().Msgf("Found tag %s. Using revision %s to determine updates", tagRef.Name().Short(),
 			tagRef.Hash().String())
 		return asRevision(tagRef.Hash().String())
 	}
@@ -225,14 +225,14 @@ func GetRecentCommits(ctx context.Context, basePath string, baseRevision, target
 		return nil, fmt.Errorf("failed to open repository: %w", err)
 	}
 
-	baseRev := determineRevision(ctx, repository, baseRevision)
+	baseRev := determineRevision(repository, baseRevision)
 	targetRev := asRevision(targetRevision)
 
 	if err = commitExists(ctx, gitPath, baseRevision, targetRevision); err != nil {
 		return nil, err
 	}
 
-	commits, err := commitsBetween(ctx, repository, baseRev, targetRev, filterPaths)
+	commits, err := commitsBetween(repository, baseRev, targetRev, filterPaths)
 	if err != nil {
 		return nil, err
 	}
@@ -333,11 +333,11 @@ func fetchGitRepository(ctx context.Context, source *GitSource, dest string) {
 	_, err := os.Stat(dest)
 	if os.IsNotExist(err) {
 		output, _ := runGit(ctx, ".", "clone", "--bare", source.Repository, dest)
-		log.Ctx(ctx).Debug().
+		log.Debug().
 			Msgf("downloaded new repository %s at destination %s: %s", source.Name, dest, string(output))
 	} else {
 		output, _ := runGit(ctx, dest, "fetch", "-f", "origin", "*:*")
-		log.Ctx(ctx).Debug().
+		log.Debug().
 			Msgf("updated existing repository %s at destination %s: %s", source.Name, dest, string(output))
 	}
 }

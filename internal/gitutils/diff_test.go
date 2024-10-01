@@ -1,7 +1,6 @@
 package gitutils
 
 import (
-	"context"
 	"github.com/go-git/go-git/v5/plumbing"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -28,13 +27,12 @@ func TestCommitsBetweenResolveFirstError(t *testing.T) {
 	secondHash, err := tr.commit("Second commit")
 	require.NoError(t, err)
 
-	ctx := context.Background()
 	targetRev := plumbing.Revision(secondHash.String())
 
 	badRev := plumbing.Revision("test")
 
 	// Check results
-	_, err = commitsBetween(ctx, tr.repository(), &badRev, &targetRev, []string{})
+	_, err = commitsBetween(tr.repository(), &badRev, &targetRev, []string{})
 	require.Error(t, err)
 }
 
@@ -55,16 +53,14 @@ func TestCommitsBetween(t *testing.T) {
 	secondHash, err := tr.commit("Second commit")
 	require.NoError(t, err)
 
-	ctx := context.Background()
-
 	targetRev := plumbing.Revision(secondHash.String())
 	baseRev := plumbing.Revision(firstHash.String())
 
-	commits, err := commitsBetween(ctx, tr.repository(), nil, &targetRev, []string{})
+	commits, err := commitsBetween(tr.repository(), nil, &targetRev, []string{})
 	require.NoError(t, err)
 	assert.Equal(t, 2, len(commits))
 
-	commits, err = commitsBetween(ctx, tr.repository(), &baseRev, &targetRev, []string{})
+	commits, err = commitsBetween(tr.repository(), &baseRev, &targetRev, []string{})
 	require.NoError(t, err)
 	assert.Equal(t, 1, len(commits))
 }
@@ -100,15 +96,14 @@ func TestCommitsBetweenFilterPath(t *testing.T) {
 	thirdHash, err := tr.commit("third commit")
 	require.NoError(t, err)
 
-	ctx := context.Background()
 	targetRev := plumbing.Revision(thirdHash.String())
 
 	// Check results
-	commits, err := commitsBetween(ctx, tr.repository(), nil, &targetRev, []string{})
+	commits, err := commitsBetween(tr.repository(), nil, &targetRev, []string{})
 	require.NoError(t, err)
 	assert.Equal(t, 3, len(commits))
 
-	commits, err = commitsBetween(ctx, tr.repository(), nil, &targetRev, []string{"wanted/"})
+	commits, err = commitsBetween(tr.repository(), nil, &targetRev, []string{"wanted/"})
 	require.NoError(t, err)
 	assert.Equal(t, 1, len(commits))
 }

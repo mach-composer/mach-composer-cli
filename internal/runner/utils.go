@@ -9,13 +9,13 @@ import (
 	"path/filepath"
 )
 
-func terraformIsInitialized(path string) bool {
+func terraformIsInitialized(ctx context.Context, path string) bool {
 	tfLockFile := filepath.Join(path, ".terraform.lock.hcl")
 	if _, err := os.Stat(tfLockFile); err != nil {
 		if os.IsNotExist(err) {
 			return false
 		}
-		log.Fatal().Err(err)
+		log.Ctx(ctx).Fatal().Err(err)
 	}
 	return true
 }

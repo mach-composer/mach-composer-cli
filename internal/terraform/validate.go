@@ -5,8 +5,20 @@ import (
 	"github.com/mach-composer/mach-composer-cli/internal/utils"
 )
 
-func Validate(ctx context.Context, path string) (string, error) {
-	cmd := []string{"validate"}
+type ValidateOption func([]string) []string
 
-	return utils.RunTerraform(ctx, path, false, cmd...)
+func ValidateWithJson() ValidateOption {
+	return func(args []string) []string {
+		return append(args, "-json")
+	}
+}
+
+func Validate(ctx context.Context, path string, opts ...ValidateOption) (string, error) {
+	args := []string{"validate"}
+
+	for _, opt := range opts {
+		args = opt(args)
+	}
+
+	return utils.RunTerraform(ctx, path, args...)
 }

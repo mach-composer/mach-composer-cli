@@ -3,10 +3,13 @@ package runner
 import (
 	"context"
 	"fmt"
+	"github.com/mach-composer/mach-composer-cli/internal/batcher"
 	"github.com/mach-composer/mach-composer-cli/internal/cli"
 	"github.com/mach-composer/mach-composer-cli/internal/graph"
+	"github.com/mach-composer/mach-composer-cli/internal/hash"
 	"github.com/mach-composer/mach-composer-cli/internal/terraform"
 	"github.com/mach-composer/mach-composer-cli/internal/utils"
+	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"golang.org/x/exp/maps"
 	"golang.org/x/sync/semaphore"
@@ -16,66 +19,27 @@ import (
 
 type (
 	//executorFunc is a function that executes an arbitrary command on a node
-	executorFunc func(ctx context.Context, node graph.Node) (string, error)
-
-	//batchFunc is a function that batches nodes in groups that can run in parallel by some criteria
-	batchFunc func(g *graph.Graph) map[int][]graph.Node
-
-	//taintFunc is a function that marks nodes as tainted if they have changes that need to be applied
-	taintFunc func(ctx context.Context, g *graph.Graph) error
+	executorFunc func(ctx context.Context, node graph.Node) error
 )
 
 // GraphRunner will run a set of commands on a graph of nodes. Untainted nodes (no changes) will be skipped.
 // The nodes are batched based on a batching function, and all nodes in the same batch will be run in parallel.
 type GraphRunner struct {
 	workers int
-	batch   batchFunc
-	taint   taintFunc
+	batch   batcher.BatchFunc
+	hash    hash.Handler
 }
 
-// batchNodes will batch nodes based on the length of the longest route from the node to the root.
-// This is a naive implementation that might break down for very complex graphs
-func batchNodes(g *graph.Graph) map[int][]graph.Node {
-	batches := map[int][]graph.Node{}
-
-	var sets = map[string][]graph.Path{}
-
-	for _, n := range g.Vertices() {
-		var route, _ = g.Routes(n.Path(), g.StartNode.Path())
-		sets[n.Path()] = route
-	}
-
-	for k, routes := range sets {
-		var mx int
-		for _, route := range routes {
-			if len(route) > mx {
-				mx = len(route)
-			}
-		}
-		n, _ := g.Vertex(k)
-		batches[mx] = append(batches[mx], n)
-	}
-
-	return batches
-}
-
-func NewGraphRunner(workers int) *GraphRunner {
+func NewGraphRunner(batcher batcher.BatchFunc, hashHandler hash.Handler, workers int) *GraphRunner {
 	return &GraphRunner{
 		workers: workers,
-		batch:   batchNodes,
-		taint: func(ctx context.Context, g *graph.Graph) error {
-			if err := graph.LoadOutputs(ctx, g, utils.GetTerraformOutputs); err != nil {
-				return err
-			}
-
-			return graph.TaintNodes(g)
-		}}
+		batch:   batcher,
+		hash:    hashHandler,
+	}
 }
 
-var logLock sync.Mutex
-
-func (gr *GraphRunner) run(ctx context.Context, g *graph.Graph, f executorFunc, force bool) error {
-	if err := gr.taint(ctx, g); err != nil {
+func (gr *GraphRunner) run(ctx context.Context, g *graph.Graph, f executorFunc, ignoreChangeDetection bool) error {
+	if err := taintGraph(ctx, g, gr.hash); err != nil {
 		return err
 	}
 
@@ -91,7 +55,7 @@ func (gr *GraphRunner) run(ctx context.Context, g *graph.Graph, f executorFunc, 
 		sem := semaphore.NewWeighted(int64(gr.workers))
 
 		for _, n := range batches[k] {
-			if n.Tainted() == false && force == false {
+			if n.Tainted() == false && ignoreChangeDetection == false {
 				log.Info().Msgf("Skipping %s because it has no changes", n.Identifier())
 				continue
 			}
@@ -100,26 +64,39 @@ func (gr *GraphRunner) run(ctx context.Context, g *graph.Graph, f executorFunc, 
 				return err
 			}
 			wg.Add(1)
+
 			go func(ctx context.Context, n graph.Node) {
 				defer wg.Done()
 				defer sem.Release(1)
 
-				out, err := f(ctx, n)
+				w := cli.LogWriterFromContext(ctx)
+				bw := cli.NewBufferedWriter(w)
+				l := log.Output(bw).With().Str("identifier", n.Identifier()).Logger()
+				ctx = l.WithContext(ctx)
+
+				defer func() error {
+					return bw.Flush()
+				}()
+
+				defer func() {
+					if cli.GithubCIFromContext(ctx) {
+						log.Ctx(ctx).Info().Msg("::endgroup::")
+					}
+				}()
+
+				if cli.GithubCIFromContext(ctx) {
+					log.Ctx(ctx).Info().Msgf("::group::{%s}", n.Identifier())
+				}
+
+				err := f(ctx, n)
 				if err != nil {
 					errChan <- err
 					return
 				}
 
-				//We use this logger with hook to parse terraform output
-				var jLogger = log.Logger.
-					Hook(cli.NewGitHubHook(fmt.Sprintf("%s-%s", n.Identifier(), name))).
-					Hook(cli.NewTerraformHook(n.Identifier())).
-					With().Ctx(ctx).Logger()
-
-				logLock.Lock()
-				jLogger.Info().Msg(out)
-				logLock.Unlock()
-
+				if err != nil {
+					errChan <- err
+				}
 			}(ctx, n)
 		}
 		wg.Wait()
@@ -143,26 +120,56 @@ func (gr *GraphRunner) run(ctx context.Context, g *graph.Graph, f executorFunc, 
 }
 
 func (gr *GraphRunner) TerraformApply(ctx context.Context, dg *graph.Graph, opts *ApplyOptions) error {
-	if err := gr.run(ctx, dg, func(ctx context.Context, n graph.Node) (string, error) {
-		if !terraformIsInitialized(n.Path()) || opts.ForceInit {
-			log.Info().Msgf("Running terraform init for %s", n.Path())
-			if out, err := terraform.Init(ctx, n.Path(), true); err != nil {
-				return out, err
+	if err := gr.run(ctx, dg, func(ctx context.Context, n graph.Node) error {
+		if !terraformIsInitialized(ctx, n.Path()) || opts.ForceInit {
+			log.Ctx(ctx).Info().Msgf("Running terraform init for %s", n.Path())
+			out, err := terraform.Init(ctx, n.Path())
+			if err != nil {
+				return err
+			}
+			log.Ctx(ctx).Info().Msg(out)
+		} else {
+			log.Ctx(ctx).Info().Msgf("Skipping terraform init for %s", n.Path())
+		}
+
+		var aOpts []terraform.ApplyOption
+		if opts.Destroy {
+			aOpts = append(aOpts, terraform.ApplyWithDestroy())
+		}
+		if opts.AutoApprove {
+			aOpts = append(aOpts, terraform.ApplyWithAutoApprove())
+		}
+		if cli.OutputFromContext(ctx) == cli.OutputTypeJSON {
+			aOpts = append(aOpts, terraform.ApplyWithJson())
+		}
+
+		out, err := terraform.Apply(ctx, n.Path(), aOpts...)
+		if err != nil {
+			return err
+		}
+
+		if cli.OutputFromContext(ctx) == cli.OutputTypeJSON {
+			logLines, err := cli.ParseTerraformJsonOutput(out)
+			if err != nil {
+				return err
+			}
+			for _, logLine := range logLines {
+				level, err := zerolog.ParseLevel(logLine.Level)
+				if err != nil {
+					level = zerolog.InfoLevel
+				}
+				log.Ctx(ctx).WithLevel(level).Fields(logLine.Remainder).Msg(logLine.Message)
 			}
 		} else {
-			log.Info().Msgf("Skipping terraform init for %s", n.Path())
+			log.Ctx(ctx).Info().Msg(out)
 		}
 
-		out, err := terraform.Apply(ctx, n.Path(), opts.Destroy, opts.AutoApprove)
-		if err != nil {
-			return out, err
+		log.Ctx(ctx).Info().Msgf("Storing new hash for %s", n.Path())
+		if err := gr.hash.Store(ctx, n); err != nil {
+			log.Ctx(ctx).Warn().Err(err).Msgf("Failed to store hash for %s", n.Identifier())
 		}
 
-		log.Info().Msgf("Storing new hash for %s", n.Path())
-		if err = gr.hash.Store(ctx, n); err != nil {
-			log.Warn().Err(err).Msgf("Failed to store hash for %s", n.Identifier())
-		}
-		return out, nil
+		return nil
 
 	}, opts.IgnoreChangeDetection); err != nil {
 		return err
@@ -172,39 +179,81 @@ func (gr *GraphRunner) TerraformApply(ctx context.Context, dg *graph.Graph, opts
 }
 
 func (gr *GraphRunner) TerraformValidate(ctx context.Context, dg *graph.Graph) error {
-	return gr.run(ctx, dg, func(ctx context.Context, n graph.Node) (string, error) {
-		log.Info().Msgf("Running terraform init without backend for %s", n.Path())
-		if out, err := terraform.Init(ctx, n.Path(), false); err != nil {
-			return out, err
+	return gr.run(ctx, dg, func(ctx context.Context, n graph.Node) error {
+		log.Ctx(ctx).Info().Msgf("Running terraform init without backend for %s", n.Path())
+		out, err := terraform.Init(ctx, n.Path(), terraform.InitWithDisableBackend())
+		if err != nil {
+			return err
 		}
+		log.Ctx(ctx).Info().Msg(out)
 
-		log.Info().Msgf("Running terraform validate for %s", n.Path())
-		return terraform.Validate(ctx, n.Path())
+		log.Ctx(ctx).Info().Msgf("Running terraform validate for %s", n.Path())
+
+		var vOpts []terraform.ValidateOption
+
+		out, err = terraform.Validate(ctx, n.Path(), vOpts...)
+		if err != nil {
+			return err
+		}
+		log.Ctx(ctx).Info().Msg(out)
+
+		return nil
 	}, true)
 }
 
 func (gr *GraphRunner) TerraformPlan(ctx context.Context, dg *graph.Graph, opts *PlanOptions) error {
-	if err := gr.run(ctx, dg, func(ctx context.Context, n graph.Node) (string, error) {
-		if !terraformIsInitialized(n.Path()) || opts.ForceInit {
-			log.Info().Msgf("Running terraform init for %s", n.Path())
-			if out, err := terraform.Init(ctx, n.Path(), true); err != nil {
-				return out, err
+	if err := gr.run(ctx, dg, func(ctx context.Context, n graph.Node) error {
+		if !terraformIsInitialized(ctx, n.Path()) || opts.ForceInit {
+			log.Ctx(ctx).Info().Msgf("Running terraform init for %s", n.Path())
+			out, err := terraform.Init(ctx, n.Path())
+			if err != nil {
+				return err
 			}
+			log.Ctx(ctx).Info().Msg(out)
 		} else {
-			log.Info().Msgf("Skipping terraform init for %s", n.Path())
+			log.Ctx(ctx).Info().Msgf("Skipping terraform init for %s", n.Path())
 		}
 
 		canPlan, err := terraformCanPlan(ctx, n)
 		if err != nil {
-			return "", err
+			return err
 		}
 
 		if !canPlan {
-			log.Info().Msgf("Skipping planning %s because it has missing outputs", n.Path())
-			return "", nil
+			log.Ctx(ctx).Info().Msgf("Skipping planning %s because it has missing outputs", n.Path())
+			return err
 		}
 
-		return terraform.Plan(ctx, n.Path(), opts.Lock)
+		var pOpts []terraform.PlanOption
+		if !opts.Lock {
+			pOpts = append(pOpts, terraform.PlanWithNoLock())
+		}
+		if cli.OutputFromContext(ctx) == cli.OutputTypeJSON {
+			pOpts = append(pOpts, terraform.PlanWithJson())
+		}
+
+		out, err := terraform.Plan(ctx, n.Path(), pOpts...)
+		if err != nil {
+			return err
+		}
+
+		if cli.OutputFromContext(ctx) == cli.OutputTypeJSON {
+			logLines, err := cli.ParseTerraformJsonOutput(out)
+			if err != nil {
+				return err
+			}
+			for _, logLine := range logLines {
+				level, err := zerolog.ParseLevel(logLine.Level)
+				if err != nil {
+					level = zerolog.InfoLevel
+				}
+				log.Ctx(ctx).WithLevel(level).Fields(logLine.Remainder).Msg(logLine.Message)
+			}
+		} else {
+			log.Ctx(ctx).Info().Msg(out)
+		}
+
+		return nil
 	}, opts.IgnoreChangeDetection); err != nil {
 		return err
 	}
@@ -213,12 +262,17 @@ func (gr *GraphRunner) TerraformPlan(ctx context.Context, dg *graph.Graph, opts 
 }
 
 func (gr *GraphRunner) TerraformProxy(ctx context.Context, dg *graph.Graph, opts *ProxyOptions) error {
-	if err := gr.run(ctx, dg, func(ctx context.Context, n graph.Node) (string, error) {
-		if !terraformIsInitialized(n.Path()) {
-			return "", fmt.Errorf("terraform is not initialized for %s. Please run init beforehand", n.Path())
+	if err := gr.run(ctx, dg, func(ctx context.Context, n graph.Node) error {
+		if !terraformIsInitialized(ctx, n.Path()) {
+			return fmt.Errorf("terraform is not initialized for %s. Please run init beforehand", n.Path())
 		}
 
-		return utils.RunTerraform(ctx, n.Path(), false, opts.Command...)
+		out, err := utils.RunTerraform(ctx, n.Path(), opts.Command...)
+		if err != nil {
+			return err
+		}
+		log.Ctx(ctx).Info().Msg(out)
+		return nil
 	}, opts.IgnoreChangeDetection); err != nil {
 		return err
 	}
@@ -227,17 +281,47 @@ func (gr *GraphRunner) TerraformProxy(ctx context.Context, dg *graph.Graph, opts
 }
 
 func (gr *GraphRunner) TerraformShow(ctx context.Context, dg *graph.Graph, opts *ShowPlanOptions) error {
-	if err := gr.run(ctx, dg, func(ctx context.Context, n graph.Node) (string, error) {
-		if !terraformIsInitialized(n.Path()) || opts.ForceInit {
-			log.Info().Msgf("Running terraform init for %s", n.Path())
-			if out, err := terraform.Init(ctx, n.Path(), true); err != nil {
-				return out, err
+	if err := gr.run(ctx, dg, func(ctx context.Context, n graph.Node) error {
+		if !terraformIsInitialized(ctx, n.Path()) || opts.ForceInit {
+			log.Ctx(ctx).Info().Msgf("Running terraform init for %s", n.Path())
+			out, err := terraform.Init(ctx, n.Path())
+			if err != nil {
+				return err
 			}
+			log.Ctx(ctx).Info().Msg(out)
 		} else {
-			log.Info().Msgf("Skipping terraform init for %s", n.Path())
+			log.Ctx(ctx).Info().Msgf("Skipping terraform init for %s", n.Path())
 		}
 
-		return terraform.Show(ctx, n.Path(), opts.NoColor)
+		var sOpts []terraform.ShowOption
+		if opts.NoColor {
+			sOpts = append(sOpts, terraform.ShowWithNoColor())
+		}
+		if cli.OutputFromContext(ctx) == cli.OutputTypeJSON {
+			sOpts = append(sOpts, terraform.ShowWithJson())
+		}
+
+		out, err := terraform.Show(ctx, n.Path(), sOpts...)
+		if err != nil {
+			return err
+		}
+
+		if cli.OutputFromContext(ctx) == cli.OutputTypeJSON {
+			logLines, err := cli.ParseTerraformJsonOutput(out)
+			if err != nil {
+				return err
+			}
+			for _, logLine := range logLines {
+				level, err := zerolog.ParseLevel(logLine.Level)
+				if err != nil {
+					level = zerolog.InfoLevel
+				}
+				log.Ctx(ctx).WithLevel(level).Fields(logLine.Remainder).Msg(logLine.Message)
+			}
+		} else {
+			log.Ctx(ctx).Info().Msg(out)
+		}
+		return nil
 	}, opts.IgnoreChangeDetection); err != nil {
 		return err
 	}
@@ -246,8 +330,13 @@ func (gr *GraphRunner) TerraformShow(ctx context.Context, dg *graph.Graph, opts 
 }
 
 func (gr *GraphRunner) TerraformInit(ctx context.Context, dg *graph.Graph) error {
-	if err := gr.run(ctx, dg, func(ctx context.Context, n graph.Node) (string, error) {
-		return terraform.Init(ctx, n.Path(), true)
+	if err := gr.run(ctx, dg, func(ctx context.Context, n graph.Node) error {
+		out, err := terraform.Init(ctx, n.Path())
+		if err != nil {
+			return err
+		}
+		log.Ctx(ctx).Info().Msg(out)
+		return nil
 	}, true); err != nil {
 		return err
 	}

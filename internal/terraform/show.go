@@ -3,11 +3,24 @@ package terraform
 import (
 	"context"
 	"fmt"
-	"github.com/mach-composer/mach-composer-cli/internal/cli"
 	"github.com/mach-composer/mach-composer-cli/internal/utils"
 )
 
-func Show(ctx context.Context, path string, noColor bool) (string, error) {
+type ShowOption func([]string) []string
+
+func ShowWithNoColor() ShowOption {
+	return func(args []string) []string {
+		return append(args, "-no-color")
+	}
+}
+
+func ShowWithJson() ShowOption {
+	return func(args []string) []string {
+		return append(args, "-json")
+	}
+}
+
+func Show(ctx context.Context, path string, opts ...ShowOption) (string, error) {
 	filename, err := hasTerraformPlan(path)
 	if err != nil {
 		return "", err
@@ -18,13 +31,9 @@ func Show(ctx context.Context, path string, noColor bool) (string, error) {
 
 	args := []string{"show", filename}
 
-	if noColor {
-		args = append(args, "-no-color")
+	for _, opt := range opts {
+		args = opt(args)
 	}
 
-	if ctx.Value(cli.OutputKey) == cli.OutputTypeJSON {
-		args = append(args, "-json")
-	}
-
-	return utils.RunTerraform(ctx, path, true, args...)
+	return utils.RunTerraform(ctx, path, args...)
 }
