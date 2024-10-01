@@ -19,7 +19,7 @@ require (
 	github.com/hashicorp/hcl/v2 v2.22.0
 	github.com/lithammer/dedent v1.1.0
 	github.com/mach-composer/mach-composer-plugin-sdk v1.0.0
-	github.com/mach-composer/mcc-sdk-go v0.1.1-0.20240927102148-addd64120f02
+	github.com/mach-composer/mcc-sdk-go v0.2.0
 	github.com/mattn/go-isatty v0.0.20
 	github.com/mitchellh/mapstructure v1.5.0
 	github.com/olekukonko/tablewriter v0.0.5
