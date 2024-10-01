@@ -6,15 +6,31 @@ import (
 	"strings"
 )
 
-func Apply(ctx context.Context, path string, destroy, autoApprove bool) (string, error) {
-	cmd := []string{"apply"}
+type ApplyOption func([]string) []string
 
-	if destroy {
-		cmd = append(cmd, "-destroy")
+func ApplyWithDestroy() ApplyOption {
+	return func(args []string) []string {
+		return append(args, "-destroy")
 	}
+}
 
-	if autoApprove {
-		cmd = append(cmd, "-auto-approve")
+func ApplyWithAutoApprove() ApplyOption {
+	return func(args []string) []string {
+		return append(args, "-auto-approve")
+	}
+}
+
+func ApplyWithJson() ApplyOption {
+	return func(args []string) []string {
+		return append(args, "-json")
+	}
+}
+
+func Apply(ctx context.Context, path string, opts ...ApplyOption) (string, error) {
+	args := []string{"apply"}
+
+	for _, opt := range opts {
+		args = opt(args)
 	}
 
 	// If there is a plan then we should use it.
@@ -23,8 +39,8 @@ func Apply(ctx context.Context, path string, destroy, autoApprove bool) (string,
 		return "", err
 	}
 	if planFilename != "" {
-		cmd = append(cmd, strings.TrimPrefix(planFilename, path+"/"))
+		args = append(args, strings.TrimPrefix(planFilename, path+"/"))
 	}
 
-	return utils.RunTerraform(ctx, path, false, cmd...)
+	return utils.RunTerraform(ctx, path, args...)
 }

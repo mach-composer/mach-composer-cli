@@ -12,8 +12,8 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-func RunInteractive(ctx context.Context, catchOutputs bool, command string, cwd string, args ...string) (string, error) {
-	logger := log.Ctx(ctx).With().
+func RunInteractive(ctx context.Context, command string, cwd string, args ...string) (string, error) {
+	logger := log.With().
 		Str("command", command).
 		Strs("args", args).
 		Str("cwd", cwd).Logger()
@@ -24,14 +24,12 @@ func RunInteractive(ctx context.Context, catchOutputs bool, command string, cwd 
 	cmd.Dir = cwd
 	cmd.Env = os.Environ()
 
+	//Currently keep the buffer in memory. We might want to change this to a file if the output is too large
+	stdOut := new(bytes.Buffer)
+
 	cmd.Stdin = os.Stdin
 	cmd.Stderr = os.Stderr
-	cmd.Stdout = os.Stdout
-
-	stdOut := new(bytes.Buffer)
-	if catchOutputs {
-		cmd.Stdout = stdOut
-	}
+	cmd.Stdout = stdOut
 
 	err := cmd.Start()
 	if err != nil {
@@ -50,6 +48,7 @@ func RunInteractive(ctx context.Context, catchOutputs bool, command string, cwd 
 
 	case err := <-done:
 		if err != nil {
+			//TODO: should we return the buffer here also?
 			return "", fmt.Errorf("command (%s) failed: %w (args: %s , cwd: %s)", command, err, strings.Join(args, " "), cwd)
 		}
 	}

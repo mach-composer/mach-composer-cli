@@ -35,7 +35,6 @@ A tool like graphviz can be used to make this transformation:
 
 func init() {
 	registerCommonFlags(graphCmd)
-	graphCmd.Flags().StringVarP(&graphFlags.output, "output", "", "./graph.png", "output file for the deployment image")
 	graphCmd.Flags().BoolVarP(&graphFlags.deployment, "deployment", "d", false,
 		"print the deployment graph instead of the dependency graph")
 }
