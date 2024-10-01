@@ -3,10 +3,11 @@ package updater
 import (
 	"context"
 	"fmt"
-	"github.com/rs/zerolog/log"
 	"path"
 	"path/filepath"
 	"strings"
+
+	"github.com/rs/zerolog/log"
 
 	"github.com/mach-composer/mcc-sdk-go/mccsdk"
 	"gopkg.in/yaml.v3"
@@ -25,6 +26,7 @@ type PartialConfig struct {
 	isEncrypted bool
 	filename    string `yaml:"-"`
 	client      *mccsdk.APIClient
+	gitFallback bool
 }
 
 type PartialRawConfig struct {
@@ -65,7 +67,7 @@ type Updater struct {
 
 // NewUpdater creates an update to update the component versions in a config
 // file.
-func NewUpdater(ctx context.Context, filename string, useCloud bool) (*Updater, error) {
+func NewUpdater(ctx context.Context, filename string, useCloud bool, gitFallback bool) (*Updater, error) {
 	//TODO: Switch to using config.loadConfig to load the config file so we have a consistent way of loading the config
 	body, err := utils.AFS.ReadFile(filename)
 	if err != nil {
@@ -98,6 +100,7 @@ func NewUpdater(ctx context.Context, filename string, useCloud bool) (*Updater, 
 		ComponentsNode: &raw.Components,
 		Sops:           raw.Sops,
 		filename:       filepath.Base(filename),
+		gitFallback:    gitFallback,
 	}
 
 	// If we have a Sops node which is a mapping then we can assume that this
