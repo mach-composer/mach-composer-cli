@@ -20,10 +20,9 @@ a PR which allows additional rules (e.g. approval flows).
 
 ### Log outputs
 
-Mach Composer will automatically recognize it is running in a CI/CD environment
-and will group log outputs for subroutines in a more Github-friendly way. This
-is based on the presence of
-the `GITHUB_ACTIONS` [environment variable](https://docs.github.com/en/actions/learn-github-actions/variables#default-environment-variables).
+Mach Composer can be configured to output logs in a more Github-friendly way. This can be done by adding the `--github` 
+flag to the `mach-composer plan` and `mach-composer apply` commands. Terraform outputs will then be grouped in 
+accordions in the Github Actions logs. 
 
 ### Authenticating with your cloud provider
 
