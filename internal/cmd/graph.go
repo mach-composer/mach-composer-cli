@@ -49,7 +49,12 @@ func graphFunc(cmd *cobra.Command, _ []string) error {
 	}
 
 	if graphFlags.deployment {
-		dg, err := graph.ToDeploymentGraph(cfg, commonFlags.outputPath)
+		var opts []graph.Option
+		if commonFlags.site != "" {
+			opts = append(opts, graph.WithSite(commonFlags.site))
+		}
+
+		dg, err := graph.ToDeploymentGraph(g, opts...)
 		if err != nil {
 			return err
 		}
