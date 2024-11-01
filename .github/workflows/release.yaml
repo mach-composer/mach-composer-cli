@@ -42,7 +42,7 @@ jobs:
           CHOCOLATEY_VERSION: 1.2.1
 
       - name: Set up nix
-        uses: cachix/install-nix-action@v29
+        uses: cachix/install-nix-action@v30
 
       - name: Get the latest version
         id: latest
