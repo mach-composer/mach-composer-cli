@@ -69,7 +69,7 @@ func validateFunc(cmd *cobra.Command, _ []string) error {
 
 	r := runner.NewGraphRunner(
 		batcher.NaiveBatchFunc(),
-		hash.Factory(cfg),
+		hash.NewMemoryMapHandler(),
 		commonFlags.workers,
 	)
 

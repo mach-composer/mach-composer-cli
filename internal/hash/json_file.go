@@ -21,10 +21,16 @@ type JsonFileHandler struct {
 }
 
 func NewJsonFileHandler(file string) Handler {
-	if _, err := os.Stat(path.Dir(file)); os.IsNotExist(err) {
+	if _, err := os.Stat(file); os.IsNotExist(err) {
+		log.Info().Msgf("Creating new hash file %s", file)
 		err = os.MkdirAll(path.Dir(file), 0777)
 		if err != nil {
 			log.Panic().Err(err).Msgf("Failed to create directory %s", path.Dir(file))
+		}
+
+		err = os.WriteFile(file, []byte("{}"), 0777)
+		if err != nil {
+			log.Panic().Err(err).Msgf("Failed to create file %s", file)
 		}
 	}
 
