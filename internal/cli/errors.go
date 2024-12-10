@@ -55,7 +55,6 @@ func PrintExitError(summary string, detail ...string) {
 }
 
 func HandleErr(err error) {
-	log.Error().Msgf("Error: %v\n", err)
 	var openApiErr *mccsdk.GenericOpenAPIError
 	if errors.As(err, &openApiErr) {
 		remoteErr := openApiErr.Model()
