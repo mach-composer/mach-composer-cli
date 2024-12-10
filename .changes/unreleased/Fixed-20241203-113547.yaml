@@ -1,4 +1,0 @@
-kind: Fixed
-body: When no hash json file exits a new one will be created with an empty object
-  as content
-time: 2024-12-03T11:35:47.941585665+01:00
