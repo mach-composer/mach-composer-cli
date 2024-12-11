@@ -108,10 +108,6 @@ func (gr *GraphRunner) run(ctx context.Context, g *graph.Graph, f executorFunc, 
 					errChan <- err
 					return
 				}
-
-				if err != nil {
-					errChan <- err
-				}
 			}(ctx, n)
 		}
 		wg.Wait()
@@ -167,7 +163,7 @@ func (gr *GraphRunner) TerraformApply(ctx context.Context, dg *graph.Graph, opts
 
 		out, err := terraform.Apply(ctx, n.Path(), aOpts...)
 		if err != nil {
-			return err
+			err = fmt.Errorf("failed to apply %s: %w", n.Identifier(), err)
 		}
 
 		if cli.OutputFromContext(ctx) == cli.OutputTypeJSON {
@@ -186,12 +182,12 @@ func (gr *GraphRunner) TerraformApply(ctx context.Context, dg *graph.Graph, opts
 			log.Ctx(ctx).Info().Msg(out)
 		}
 
-		log.Ctx(ctx).Info().Msgf("Storing new hash for %s", n.Path())
+		log.Ctx(ctx).Debug().Msgf("Storing new hash for %s", n.Path())
 		if err := gr.hash.Store(ctx, n); err != nil {
 			log.Ctx(ctx).Warn().Err(err).Msgf("Failed to store hash for %s", n.Identifier())
 		}
 
-		return nil
+		return err
 
 	}, opts.IgnoreChangeDetection); err != nil {
 		return err
@@ -215,11 +211,11 @@ func (gr *GraphRunner) TerraformValidate(ctx context.Context, dg *graph.Graph) e
 
 		out, err = terraform.Validate(ctx, n.Path(), vOpts...)
 		if err != nil {
-			return err
+			err = fmt.Errorf("failed to validate %s: %w", n.Identifier(), err)
 		}
 		log.Ctx(ctx).Info().Msg(out)
 
-		return nil
+		return err
 	}, true)
 }
 
@@ -256,7 +252,7 @@ func (gr *GraphRunner) TerraformPlan(ctx context.Context, dg *graph.Graph, opts 
 
 		out, err := terraform.Plan(ctx, n.Path(), pOpts...)
 		if err != nil {
-			return err
+			err = fmt.Errorf("failed to plan %s: %w", n.Identifier(), err)
 		}
 
 		if cli.OutputFromContext(ctx) == cli.OutputTypeJSON {
@@ -275,7 +271,7 @@ func (gr *GraphRunner) TerraformPlan(ctx context.Context, dg *graph.Graph, opts 
 			log.Ctx(ctx).Info().Msg(out)
 		}
 
-		return nil
+		return err
 	}, opts.IgnoreChangeDetection); err != nil {
 		return err
 	}
@@ -291,10 +287,10 @@ func (gr *GraphRunner) TerraformProxy(ctx context.Context, dg *graph.Graph, opts
 
 		out, err := utils.RunTerraform(ctx, n.Path(), opts.Command...)
 		if err != nil {
-			return err
+			err = fmt.Errorf("failed to proxy %s: %w", n.Identifier(), err)
 		}
 		log.Ctx(ctx).Info().Msg(out)
-		return nil
+		return err
 	}, opts.IgnoreChangeDetection); err != nil {
 		return err
 	}
@@ -325,7 +321,7 @@ func (gr *GraphRunner) TerraformShow(ctx context.Context, dg *graph.Graph, opts 
 
 		out, err := terraform.Show(ctx, n.Path(), sOpts...)
 		if err != nil {
-			return err
+			err = fmt.Errorf("failed to show %s: %w", n.Identifier(), err)
 		}
 
 		if cli.OutputFromContext(ctx) == cli.OutputTypeJSON {
@@ -343,7 +339,7 @@ func (gr *GraphRunner) TerraformShow(ctx context.Context, dg *graph.Graph, opts 
 		} else {
 			log.Ctx(ctx).Info().Msg(out)
 		}
-		return nil
+		return err
 	}, opts.IgnoreChangeDetection); err != nil {
 		return err
 	}
@@ -355,10 +351,10 @@ func (gr *GraphRunner) TerraformInit(ctx context.Context, dg *graph.Graph) error
 	if err := gr.run(ctx, dg, func(ctx context.Context, n graph.Node) error {
 		out, err := terraform.Init(ctx, n.Path())
 		if err != nil {
-			return err
+			err = fmt.Errorf("failed to init %s: %w", n.Identifier(), err)
 		}
 		log.Ctx(ctx).Info().Msg(out)
-		return nil
+		return err
 	}, true); err != nil {
 		return err
 	}

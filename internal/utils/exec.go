@@ -28,7 +28,7 @@ func RunInteractive(ctx context.Context, command string, cwd string, args ...str
 	stdOut := new(bytes.Buffer)
 
 	cmd.Stdin = os.Stdin
-	cmd.Stderr = os.Stderr
+	cmd.Stderr = stdOut
 	cmd.Stdout = stdOut
 
 	err := cmd.Start()
@@ -48,8 +48,7 @@ func RunInteractive(ctx context.Context, command string, cwd string, args ...str
 
 	case err := <-done:
 		if err != nil {
-			//TODO: should we return the buffer here also?
-			return "", fmt.Errorf("command (%s) failed: %w (args: %s , cwd: %s)", command, err, strings.Join(args, " "), cwd)
+			return stdOut.String(), fmt.Errorf("command (%s) failed: %w (args: %s , cwd: %s)", command, err, strings.Join(args, " "), cwd)
 		}
 	}
 
