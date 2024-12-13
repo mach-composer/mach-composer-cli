@@ -142,10 +142,10 @@ func (gr *GraphRunner) TerraformApply(ctx context.Context, dg *graph.Graph, opts
 		if !terraformIsInitialized(ctx, n.Path()) || opts.ForceInit {
 			log.Ctx(ctx).Info().Msgf("Running terraform init for %s", n.Path())
 			out, err := terraform.Init(ctx, n.Path())
+			log.Ctx(ctx).Info().Msg(out)
 			if err != nil {
 				return err
 			}
-			log.Ctx(ctx).Info().Msg(out)
 		} else {
 			log.Ctx(ctx).Info().Msgf("Skipping terraform init for %s", n.Path())
 		}
@@ -200,10 +200,10 @@ func (gr *GraphRunner) TerraformValidate(ctx context.Context, dg *graph.Graph) e
 	return gr.run(ctx, dg, func(ctx context.Context, n graph.Node) error {
 		log.Ctx(ctx).Info().Msgf("Running terraform init without backend for %s", n.Path())
 		out, err := terraform.Init(ctx, n.Path(), terraform.InitWithDisableBackend())
+		log.Ctx(ctx).Info().Msg(out)
 		if err != nil {
 			return err
 		}
-		log.Ctx(ctx).Info().Msg(out)
 
 		log.Ctx(ctx).Info().Msgf("Running terraform validate for %s", n.Path())
 
@@ -224,10 +224,10 @@ func (gr *GraphRunner) TerraformPlan(ctx context.Context, dg *graph.Graph, opts 
 		if !terraformIsInitialized(ctx, n.Path()) || opts.ForceInit {
 			log.Ctx(ctx).Info().Msgf("Running terraform init for %s", n.Path())
 			out, err := terraform.Init(ctx, n.Path())
+			log.Ctx(ctx).Info().Msg(out)
 			if err != nil {
 				return err
 			}
-			log.Ctx(ctx).Info().Msg(out)
 		} else {
 			log.Ctx(ctx).Info().Msgf("Skipping terraform init for %s", n.Path())
 		}
@@ -286,10 +286,10 @@ func (gr *GraphRunner) TerraformProxy(ctx context.Context, dg *graph.Graph, opts
 		}
 
 		out, err := utils.RunTerraform(ctx, n.Path(), opts.Command...)
+		log.Ctx(ctx).Info().Msg(out)
 		if err != nil {
 			err = fmt.Errorf("failed to proxy %s: %w", n.Identifier(), err)
 		}
-		log.Ctx(ctx).Info().Msg(out)
 		return err
 	}, opts.IgnoreChangeDetection); err != nil {
 		return err
@@ -303,10 +303,10 @@ func (gr *GraphRunner) TerraformShow(ctx context.Context, dg *graph.Graph, opts 
 		if !terraformIsInitialized(ctx, n.Path()) || opts.ForceInit {
 			log.Ctx(ctx).Info().Msgf("Running terraform init for %s", n.Path())
 			out, err := terraform.Init(ctx, n.Path())
+			log.Ctx(ctx).Info().Msg(out)
 			if err != nil {
 				return err
 			}
-			log.Ctx(ctx).Info().Msg(out)
 		} else {
 			log.Ctx(ctx).Info().Msgf("Skipping terraform init for %s", n.Path())
 		}
@@ -350,10 +350,10 @@ func (gr *GraphRunner) TerraformShow(ctx context.Context, dg *graph.Graph, opts 
 func (gr *GraphRunner) TerraformInit(ctx context.Context, dg *graph.Graph) error {
 	if err := gr.run(ctx, dg, func(ctx context.Context, n graph.Node) error {
 		out, err := terraform.Init(ctx, n.Path())
+		log.Ctx(ctx).Info().Msg(out)
 		if err != nil {
 			err = fmt.Errorf("failed to init %s: %w", n.Identifier(), err)
 		}
-		log.Ctx(ctx).Info().Msg(out)
 		return err
 	}, true); err != nil {
 		return err
