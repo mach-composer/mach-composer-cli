@@ -97,6 +97,7 @@ nav:
           - sites: reference/cli/mach-composer_sites.md
           - terraform: reference/cli/mach-composer_terraform.md
           - version: reference/cli/mach-composer_version.md
+          - validate: reference/cli/mach-composer_validate.md
           - cloud:
               - overview: reference/cli/mach-composer_cloud.md
               - add-organization-user: reference/cli/mach-composer_cloud_add-organization-user.md

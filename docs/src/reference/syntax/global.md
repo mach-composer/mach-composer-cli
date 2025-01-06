@@ -6,14 +6,18 @@ All 'shared' configuration that applies to all sites.
 
 ### Required
 
-- `environment` (String) Identifier for the
-  environment. For example `development`, `test` or `production`. Is used to set
-  the `environment` variable for terraform components
-- `cloud` (String) Either `azure`, `aws` or `gcp`. Defines the cloud provider to
-  use. This will be used to load the correct cloud specific configuration.
-- `terraform_config` (Block) This configuration will determine what type of
-  backend terraform will use to store its state.
-  See [below for nested schema](#nested-schema-for-terraform_config)
+- `environment` (String) Identifier for the environment. For example `development`, `test` or `production`. Is used to
+  set the `environment` variable for terraform components
+- `cloud` (String) Either `azure`, `aws` or `gcp`. Defines the cloud provider to use. This will be used to load the
+  correct cloud specific configuration.
+- `terraform_config` (Block) This configuration will determine what type of backend terraform will use to store its
+  state. See [below for nested schema](#nested-schema-for-terraform_config)
+
+### Optional
+- `variables` (Map of String) Variables for this configuration. Note that variables with the same name set in the site
+  configuration or site component configuration will override these values
+- `secrets` (Map of String) Variables for this configuration that should be stored in an encrypted key-value store . Note that
+  variables with the same name set in the site configuration or site component configuration will override these values
 
 ### Dynamic
 
@@ -71,8 +75,8 @@ remote_state:
 ```
 
 !!! tip ""
-    A good convention is to give the state_folder the same name
-    as the environment
+A good convention is to give the state_folder the same name
+as the environment
 
 ## Required
 

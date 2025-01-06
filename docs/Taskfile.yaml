@@ -6,7 +6,9 @@ tasks:
 
   generate:
     dir: ../
-    cmd: go generate ./...
+    cmds:
+      - go generate ./...
+      - cp internal/config/schemas/schema-1.yaml docs/src/reference/syntax/schema.yaml
 
   preview:
     deps:

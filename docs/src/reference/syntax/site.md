@@ -15,9 +15,12 @@ what configurations they have.
 ## Optional
 
 - `deployment` (Block) [Deployment configuration](#nested-schema-for-deployment)
-- `endpoints` (Map of String, _deprecated_)
-  [Endpoint definitions](#nested-schema-for-endpoints) to be used in the
-  API Gateway or Frontdoor routing
+- `endpoints` (Map of String, _deprecated_) [Endpoint definitions](#nested-schema-for-endpoints) to be used in the API
+  Gateway or Frontdoor routing
+- `variables` (Map of String) Variables for this configuration. Note that variables with the same name set in the site
+  component configuration will override these values
+- `secrets` (Map of String) Variables for this configuration that should be stored in an encrypted key-value store.
+  Note that variables with the same name set in the site component configuration will override these values
 
 ### Dynamic
 
@@ -58,9 +61,6 @@ components:
 
 ### Optional
 
-- `variables` (Block) Variables for this component
-- `secrets` (Block) Variables for this component that should be stored
-  in an encrypted key-value store
 - `deployment` (Block) [Deployment configuration](#nested-schema-for-deployment)
 - `depends_on` (List of String) allows for the explicit setting of dependencies
   between components. This is useful when a component depends on another
@@ -69,6 +69,8 @@ components:
   deployed to the same cloud provider. The value of `depends_on` is the name of
   the component it depends on. This will overload any inferred relations.
   See [deployment](../../concepts/deployment/index.md) for more information.
+- `variables` (Map of String) Variables for this configuration.
+- `secrets` (Map of String) Variables for this configuration that should be stored in an encrypted key-value store.
 
 ### Dynamic
 

@@ -83,7 +83,7 @@ $ mach-composer plan
     You can invoke MACH by running the Docker image:<br>
     `$ docker run --rm --volume $(pwd):/code docker.pkg.github.com/mach-composer/mach-composer-cli/mach apply`
 
-    You do need to provide the docker container with the necessary environment variables to be able to authenticate with the cloud provider. More info on that in the [deployment section](../../topics/deployment/config/index.md#providing-credentials)
+    You do need to provide the docker container with the necessary environment variables to be able to authenticate with the cloud provider. More info on that in the [deployment section](../../concepts/deployment/index.md)
 
 
 ## Example files

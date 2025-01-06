@@ -76,10 +76,6 @@ The routing in Frontdoor that will be created:
     in Terraform is managed as a single resource, including all the routing to
     the components.
 
-    This means the components can't create the routing themselves (as with AWS)
-    but need to instruct MACH composer how to set up routing. This can be done by
-    defining routing options in [output values](../../reference/components/azure.md#defining-outputs).
-
 ## App service plans
 
 What kind and how many service plans it will create depends on what service

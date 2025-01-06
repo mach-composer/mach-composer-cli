@@ -86,7 +86,7 @@ based on incoming requests or other information available.
     component itself to parse this data structure correctly, and apply the right
     configuration in the right context.
 
-    Read the [parse store variables and secrets](../../howto/commercetools/store-vars.md)
+    Read the [parse store variables and secrets](../howto/commercetools/store-vars.md)
     how-to for more information.
 
 ### Outside MACH composer configuration

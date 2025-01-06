@@ -8,29 +8,36 @@ usually share the same general configurations.
 
 ## Schema
 
-### Examples
+The root schema is show below.
 
-For examples see the [examples](../../tutorial/examples/index.md) directory in
-the tutorial section.
+```yaml
+{% include "./schema.yaml" %}
+```
+
+This can however be extended through the use of plugins, which declare their own bits of configuration. For development
+purposes it is possible to generate a JSON schema for the required configuration. This can be used to
+configure autocompletion and syntax checking support in your favorite IDE.
+
+To generate the schema, run the following command:
+
+```bash
+mach-composer schema
+```
+
+See the [CLI documentation](../cli/mach-composer_schema.md) for more information.
 
 ### Required
 
 - `mach_composer` (Block) will determine the overall behaviour of
-  the application. See [the mach_composer documentation](./mach_composer.md) 
+  the application. See [the mach_composer documentation](./mach_composer.md)
   for more information
 - `global` (Block) will determine the global configuration for all sites. See [the
   global documentation](./global.md) for more information
-- `sites` (List of Block) will determine the configuration for 
+- `sites` (List of Block) will determine the configuration for
   each site. See [the site documentation](./site.md) for more information
 - `components` (List of Block) will determine the configuration for each
-  component. See [the component documentation](./component.md) for more 
+  component. See [the component documentation](./component.md) for more
   information
-
-!!! tip "JSON schema"
-    A JSON schema for the syntax
-    is [can be generated through the CLI](../cli/mach-composer_schema.md).
-    This can be used to configure autocompletion and syntax checking
-    support in your favorite IDE.
 
 ## General syntax
 
@@ -52,10 +59,10 @@ to add where.
 
 ### Including YAML files
 
-Using the `$ref` syntax it is possible to load in other yaml files as part of 
+Using the `$ref` syntax it is possible to load in other yaml files as part of
 your configuration.
 
-This can be used for example to manage your component definitions elsewhere 
+This can be used for example to manage your component definitions elsewhere
 within the same directory like so;
 
 ```yaml
@@ -69,8 +76,8 @@ components:
 
 ## Variables
 
-MACH composer support the usage of variables in a configuration file. This 
-is a good way to keep your configuration DRY and to keep sensitive 
+MACH composer support the usage of variables in a configuration file. This
+is a good way to keep your configuration DRY and to keep sensitive
 information separate.
 
 The following types are supported;
@@ -109,9 +116,11 @@ sites:
 - `${env.MACH_ENVIRONMENT}` reads the `MACH_ENVIRONMENT` environment variable
 
 ### `component`
+
 **Usage** `${component.<component-name>.<output-value>}`
 
-You can use this to refer to any [Terraform output](https://www.terraform.io/docs/language/values/outputs.html) that another component has defined.
+You can use this to refer to any [Terraform output](https://www.terraform.io/docs/language/values/outputs.html) that
+another component has defined.
 
 So for example if a component called "email" has the following outputs:
 
@@ -119,10 +128,10 @@ So for example if a component called "email" has the following outputs:
 # outputs.tf
 
 output "sqs_queue" {
-    value = {
-      id = aws_sqs_queue.email_queue.id
-      arn = aws_sqs_queue.email_queue.arn
-    }
+  value = {
+    id  = aws_sqs_queue.email_queue.id
+    arn = aws_sqs_queue.email_queue.arn
+  }
 }
 ```
 
@@ -136,15 +145,18 @@ components:
 ```
 
 ### `var`
+
 **Usage** `${var.<variable-key>}`
 
-This can be used for using values from a *variables file*. This variable file must be set by using the [`--var-file` CLI option](../cli/mach-composer_apply.md#options):
+This can be used for using values from a *variables file*. This variable file must be set by using the [
+`--var-file` CLI option](../cli/mach-composer_apply.md#options):
 
 ```bash
 mach-composer apply -f main.yml --var-file variables.yml
 ```
 
 From the [example](#example) above, the following configuration line:
+
 ```yaml
 stripe_secret_key: ${var.stripe_secret}
 ```
@@ -152,9 +164,9 @@ stripe_secret_key: ${var.stripe_secret}
 will use the `stripe_secret` value from the given variables file.
 
 !!! info ""
-    These values can be nested, so it's possible to define a
-    `${var.site1.stripe.secret_key}` with your `variables.yml` looking like:
-    
+These values can be nested, so it's possible to define a
+`${var.site1.stripe.secret_key}` with your `variables.yml` looking like:
+
         ```yaml
         ---
         site1:
@@ -174,6 +186,7 @@ will use the `stripe_secret` value from the given variables file.
     refer you the SOPS encrypted variables within the Terraform file.
 
 ### `env`
+
 **Usage** `${env.<variable-name>}`
 
 Use environment variables in your MACH configuration:
@@ -185,5 +198,7 @@ mach-composer apply
 
 Will replace `${env.MACH_ENVIRONMENT}` in our [example](#example) with `test`.
 
+### Examples
 
-
+For examples see the [examples](../../tutorial/examples/index.md) directory in
+the tutorial section.

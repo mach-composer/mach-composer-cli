@@ -13,12 +13,6 @@ If you don't have an account yet, you can [sign up for a free trial](https://ok.
 !!! note "commercetools regions"
     By default MACH composer uses the `europe-west1` region of commercetools.
 
-    There are [more regions available](https://docs.commercetools.com/api/general-concepts#hosts)
-    that can be used.
-    If any other then the default is used, make sure you change the
-    [necessary commercetools settings](../reference/syntax/sites.md#commercetools)
-    in your MACH composer configuration later on.
-
 ## Create a new project
 
 Create a new project in the commercetools Merchant Center

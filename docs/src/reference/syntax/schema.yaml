@@ -1,0 +1,308 @@
+$schema: "http://json-schema.org/draft-07/schema#"
+description: Main MACH configuration object.
+additionalProperties: false
+type: object
+properties:
+  mach_composer:
+    $ref: "#/definitions/MachComposerConfig"
+  global:
+    $ref: "#/definitions/GlobalConfig"
+  sites:
+    type: array
+    items:
+      $ref: "#/definitions/SiteConfig"
+  components:
+    oneOf:
+      - type: string
+      - type: object
+        properties:
+          '$ref':
+            type: string
+      - type: array
+        items:
+          $ref: "#/definitions/ComponentConfig"
+
+definitions:
+  MachComposerConfig:
+    type: object
+    required:
+      - version
+    additionalProperties: false
+    properties:
+      version:
+        type:
+          - string
+          - number
+      variables_file:
+        type: string
+      cloud:
+        $ref: "#/definitions/MachComposerCloud"
+      deployment:
+        $ref: "#/definitions/MachComposerDeployment"
+      plugins:
+        type: object
+        additionalProperties: false
+        patternProperties:
+          "^[a-zA-Z-]+$":
+            type: object
+            additionalProperties: false
+            properties:
+              source:
+                type: string
+              version:
+                type: string
+              replace:
+                description: |
+                  If set, the plugin will be replaced with the one from the
+                  local filesystem. This is useful for development purposes.
+                type: string
+
+  MachComposerCloud:
+    type: object
+    required:
+      - organization
+      - project
+    properties:
+      organization:
+        type: string
+      project:
+        type: string
+
+  GlobalConfig:
+    type: object
+    description: Config that is shared across sites.
+    additionalProperties: true
+    required:
+      - environment
+      - terraform_config
+      - cloud
+    properties:
+      environment:
+        type: string
+      terraform_config:
+        $ref: "#/definitions/TerraformConfig"
+      cloud:
+        type: string
+      variables:
+        $ref: "#/definitions/MachComposerVariables"
+        description: Global variables. These will be merged with the site specific variables, where the site variables will take precedence
+      secrets:
+        $ref: "#/definitions/MachComposerSecrets"
+        description: Global secrets. These will be merged with the site specific secrets, where the site secrets will take precedence
+
+  TerraformConfig:
+    type: object
+    description: Terraform configuration.
+    additionalProperties: true
+    properties:
+      providers:
+        type: object
+        additionalProperties: false
+        patternProperties:
+          "^[a-zA-Z-]+$":
+            type: string
+      remote_state:
+        allOf:
+          - type: object
+            additionalProperties: true
+            required:
+              - plugin
+            properties:
+              plugin:
+                type: string
+                enum:
+                  - aws
+                  - gcp
+                  - azure
+                  - terraform_cloud
+                  - local
+          - $ref: "#/definitions/RemoteState"
+
+  RemoteState:
+    type: object
+    properties: { }
+
+  SiteConfig:
+    type: object
+    description: Site definition.
+    additionalProperties: true
+    required:
+      - identifier
+    properties:
+      identifier:
+        type: string
+      endpoints:
+        type: object
+        deprecationMessage: |
+          The `endpoints` configuration is deprecated. Please refer to the docs
+          on how to change implementation
+        patternProperties:
+          "^[A-Za-z0-9+-]+$":
+            oneOf:
+              - type: string
+              - $ref: "#/definitions/SiteEndpointConfig"
+      deployment:
+        $ref: "#/definitions/MachComposerDeployment"
+      variables:
+        $ref: "#/definitions/MachComposerVariables"
+        description: Site specific variables. These will be merged with the component variables, where the component variables will take precedence
+      secrets:
+        $ref: "#/definitions/MachComposerSecrets"
+        description: Site specific secrets. These will be merged with the component secrets, where the component secrets will take precedence
+      components:
+        type: array
+        items:
+          $ref: "#/definitions/SiteComponentConfig"
+
+  SiteEndpointConfig:
+    type: object
+    additionalProperties: true
+    properties:
+      url:
+        type: string
+      key:
+        type: string
+      zone:
+        type: string
+
+  SiteComponentConfig:
+    type: object
+    description: Component configuration.
+    additionalProperties: true
+    required:
+      - name
+    properties:
+      name:
+        type: string
+      variables:
+        $ref: "#/definitions/MachComposerVariables"
+      secrets:
+        $ref: "#/definitions/MachComposerSecrets"
+      store_variables:
+        description: Commercetools store specific variables
+        deprecationMessage: The `store_variables` configuration is deprecated
+        type: object
+      store_secrets:
+        description: Commercetools store specific variables
+        deprecationMessage: The `store_secrets` configuration is deprecated
+        type: object
+      health_check_path:
+        type: string
+        deprecationMessage: The `health_check_path` configuration is deprecated
+      deployment:
+        $ref: "#/definitions/MachComposerDeployment"
+      depends_on:
+        description: |
+          List of components that this component depends on. This will override 
+          any implicit links based on variables
+        type: array
+        items:
+          type: string
+
+  ComponentConfig:
+    type: object
+    additionalProperties: true
+    required:
+      - name
+      - source
+      - version
+    properties:
+      name:
+        type: string
+      source:
+        type: string
+      paths:
+        type: array
+        items:
+          type: string
+      version:
+        type: string
+      integrations:
+        type: array
+        items:
+          type: string
+      endpoints:
+        $ref: "#/definitions/ComponentEndpointConfig"
+      health_check_path:
+        type: string
+      branch:
+        type: string
+    description: Component definition.
+
+  ComponentEndpointConfig:
+    type: object
+    deprecationMessage: |
+      The `endpoints` configuration is deprecated. Please refer to the 
+      docs on how to change implementation
+    additionalProperties: false
+    patternProperties:
+      "[a-zA-Z0-9]+":
+        type: string
+
+  MachComposerVariables:
+    description: |
+      Variables are used to configure the components. They are passed to the terraform module as a terraform 
+      variable with the name `variables` containing an object with the same fields:
+      
+      ```yaml
+      components:
+      - name: my-component
+        variables:
+          my_string_field: "my string value"
+          my_number_field: 42
+      ```
+      
+      ```
+      variable "variables" {
+        type = object({
+          my_string_field = string
+          my_number_field = number
+        })
+      }
+      ```
+    type: object
+
+  MachComposerSecrets:
+    description: |
+      Secrets are used to configure the components. They are passed to the terraform module as a terraform 
+      variable with the name `secrets` containing an object with the same fields:
+      
+      ```yaml
+      components:
+      - name: my-component
+        secrets:
+          my_string_field: "my string value"
+          my_number_field: 42
+      ```
+      
+      ```
+      variable "secrets" {
+        type = object({
+          my_string_field = string
+          my_number_field = number
+        })
+      }
+      ```
+    type: object
+
+  MachComposerDeployment:
+    type: object
+    description: |
+      The deployment configuration determines the way a component is deployed. The following forms are supported:
+      - site: deploy site-based; this means all components will be deployed as part of a single terraform file
+      - site-component: deploy site-component based; this means each site component will be deployed as a separate terraform 
+      file
+      
+      These configurations can be set both at the root level and per site component. The combination of root site with 
+      specific site components is also supported (this will deploy all site components as part of a single terraform file,
+      excepting the ones that have a specific deployment configuration). The other way around is not supported.
+      
+      The default is site.
+    properties:
+      type:
+        type: string
+        enum:
+          - site
+          - site-component
+        description: "Determines how the state will be split. Defaults to site"
+        default: "site"
