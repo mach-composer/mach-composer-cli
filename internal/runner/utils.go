@@ -2,6 +2,7 @@ package runner
 
 import (
 	"context"
+	"fmt"
 	"github.com/mach-composer/mach-composer-cli/internal/graph"
 	"github.com/mach-composer/mach-composer-cli/internal/utils"
 	"github.com/rs/zerolog/log"
@@ -32,6 +33,18 @@ func terraformCanPlan(ctx context.Context, n graph.Node) (bool, error) {
 	}
 
 	for _, parent := range parents {
+		if parent.Type() == graph.SiteType {
+			sp, ok := parent.(*graph.Site)
+			if !ok {
+				return false, fmt.Errorf("failed to cast parent to site")
+			}
+
+			if len(sp.NestedNodes) == 0 {
+				log.Debug().Msgf("site node does not contain components, so no output is available")
+				continue
+			}
+		}
+
 		v, err := utils.GetTerraformOutputs(ctx, parent.Path())
 		if err != nil {
 			return false, nil
