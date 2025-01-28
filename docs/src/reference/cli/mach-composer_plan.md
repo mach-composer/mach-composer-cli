@@ -16,7 +16,7 @@ mach-composer plan [flags]
       --ignore-change-detection   Ignore change detection to run even if the components are considered up to date
       --ignore-version            Skip MACH composer version check
       --lock                      Acquire a lock on the state file before running terraform plan (default true)
-      --output-path string        Outputs path to store the generated files. (default "deployments")
+  -o, --output-path string        Outputs path to store the generated files. (default "deployments")
   -s, --site string               Site to parse. If not set parse all sites.
       --var-file string           Use a variable file to parse the configuration with.
   -w, --workers int               The number of workers to use (default 1)
