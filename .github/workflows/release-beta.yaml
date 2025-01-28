@@ -14,7 +14,8 @@ on:
 
 jobs:
   goreleaser:
-    runs-on: ubuntu-latest
+    # We don't want ubuntu-24-4 yet, because it is missing some packages
+    runs-on: ubuntu-22.04
     steps:
       - name: Check out code
         uses: actions/checkout@v4
