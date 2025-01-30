@@ -55,6 +55,7 @@ func TestGetVersionSource(t *testing.T) {
 		{source: Source("./local/file"), expected: mustAbs("./local/file")},
 		{source: Source("../local/file"), expected: mustAbs("../local/file")},
 		{source: Source("git::https://example.com/vpc.git"), expected: "git::https://example.com/vpc.git?ref=v1.0.0"},
+		{source: Source("git::https://example.com/vpc.git?depth=1"), expected: "git::https://example.com/vpc.git?depth=1&ref=v1.0.0"},
 		{source: Source("s3::https://github.com/my/project"), expected: "s3::https://github.com/my/project/v1.0.0.zip"},
 		{source: Source("gcs::https://github.com/my/project"), expected: "gcs::https://github.com/my/project/v1.0.0.zip"},
 

@@ -87,6 +87,9 @@ func (s *Source) GetVersionSource(version string) (string, error) {
 		// When using Git, we will automatically add a reference to the string
 		// so that the given version is used when fetching the module itself
 		// from Git as well
+		if strings.Contains(string(*s), "?") {
+			return fmt.Sprintf("%s&ref=%s", string(*s), version), nil
+		}
 		return fmt.Sprintf("%s?ref=%s", string(*s), version), nil
 	case SourceTypeS3:
 		fallthrough
