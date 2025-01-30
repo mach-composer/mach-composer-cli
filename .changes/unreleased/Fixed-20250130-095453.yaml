@@ -1,0 +1,3 @@
+kind: Fixed
+body: Added smarter interpolation of git-based sources
+time: 2025-01-30T09:54:53.685202639+01:00
