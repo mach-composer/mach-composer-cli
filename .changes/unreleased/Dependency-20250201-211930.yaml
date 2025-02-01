@@ -1,0 +1,3 @@
+kind: Dependency
+body: 'chore(deps): bump docker/bake-action from 5 to 6 in the github-actions group'
+time: 2025-02-01T21:19:30.808222259Z
