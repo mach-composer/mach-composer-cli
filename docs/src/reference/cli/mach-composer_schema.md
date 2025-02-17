@@ -16,7 +16,6 @@ mach-composer schema [flags]
 ### Options inherited from parent commands
 
 ```
-  -g, --github          Whether logs should be decorated with github-specific formatting
       --output string   The output type. One of: console, json (default "console")
   -q, --quiet           Quiet output. This is equal to setting log levels to error and higher
   -v, --verbose         Verbose output. This is equal to setting log levels to debug and higher

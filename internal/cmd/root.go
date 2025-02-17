@@ -42,14 +42,18 @@ var (
 			case string(cli.OutputTypeJSON):
 				w = os.Stdout
 			case string(cli.OutputTypeConsole):
-				w = cli.NewConsoleWriter()
+				w = zerolog.ConsoleWriter{
+					Out:           os.Stdout,
+					FieldsExclude: []string{"args", "command", "identifier", "cwd"},
+					PartsOrder:    []string{zerolog.LevelFieldName, "identifier", zerolog.MessageFieldName},
+				}
 			default:
 				cli.PrintExitError("unknown output type: %s", output)
 			}
 			ctx = cli.ContextWithOutput(ctx, cli.OutputType(output))
 			ctx = cli.ContextWithLogWriter(ctx, w)
 
-			var logger = zerolog.New(w).With().Timestamp().Logger()
+			var logger = zerolog.New(w).With().Str("identifier", "main").Timestamp().Logger()
 
 			if verbose {
 				logger = logger.Level(zerolog.TraceLevel)
@@ -57,14 +61,6 @@ var (
 				logger = logger.Level(zerolog.ErrorLevel)
 			} else {
 				logger = logger.Level(zerolog.InfoLevel)
-			}
-
-			github, err := cmd.Flags().GetBool("github")
-			if err != nil {
-				panic(err)
-			}
-			if github {
-				ctx = cli.ContextWithGithubCI(ctx)
 			}
 
 			//Load logger into context and global logger
@@ -94,7 +90,6 @@ func init() {
 	RootCmd.PersistentFlags().BoolP("verbose", "v", false, "Verbose output. This is equal to setting log levels to debug and higher")
 	RootCmd.PersistentFlags().BoolP("quiet", "q", false, "Quiet output. This is equal to setting log levels to error and higher")
 	RootCmd.PersistentFlags().String("output", "console", "The output type. One of: console, json")
-	RootCmd.PersistentFlags().BoolP("github", "g", false, "Whether logs should be decorated with github-specific formatting")
 	RootCmd.AddCommand(applyCmd)
 	RootCmd.AddCommand(cloudcmd.CloudCmd)
 	RootCmd.AddCommand(componentsCmd)
