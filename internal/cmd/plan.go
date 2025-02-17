@@ -16,6 +16,8 @@ var planFlags struct {
 	components            []string
 	lock                  bool
 	ignoreChangeDetection bool
+	github                bool
+	bufferLogs            bool
 }
 
 var planCmd = &cobra.Command{
@@ -36,11 +38,17 @@ func init() {
 	planCmd.Flags().StringArrayVarP(&planFlags.components, "component", "c", nil, "")
 	planCmd.Flags().BoolVarP(&planFlags.lock, "lock", "", true, "Acquire a lock on the state file before running terraform plan")
 	planCmd.Flags().BoolVarP(&planFlags.ignoreChangeDetection, "ignore-change-detection", "", false, "Ignore change detection to run even if the components are considered up to date")
+	planCmd.Flags().BoolVarP(&planFlags.github, "github", "g", false, "Whether logs should be decorated with github-specific formatting")
+	planCmd.Flags().BoolVarP(&planFlags.bufferLogs, "buffer", "b", false, "Whether logs should be buffered and printed at the end of the run")
 }
 
 func planFunc(cmd *cobra.Command, _ []string) error {
 	if len(planFlags.components) > 0 {
 		log.Warn().Msgf("Components option not implemented")
+	}
+
+	if planFlags.github && !planFlags.bufferLogs {
+		log.Warn().Msg("Github flag is only supported with buffer flag")
 	}
 
 	cfg := loadConfig(cmd, true)
@@ -67,5 +75,7 @@ func planFunc(cmd *cobra.Command, _ []string) error {
 		ForceInit:             planFlags.forceInit,
 		Lock:                  planFlags.lock,
 		IgnoreChangeDetection: planFlags.ignoreChangeDetection,
+		BufferLogs:            planFlags.bufferLogs,
+		Github:                planFlags.github,
 	})
 }

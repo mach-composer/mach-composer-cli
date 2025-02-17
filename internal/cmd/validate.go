@@ -5,6 +5,7 @@ import (
 	"github.com/mach-composer/mach-composer-cli/internal/cli"
 	"github.com/mach-composer/mach-composer-cli/internal/graph"
 	"github.com/mach-composer/mach-composer-cli/internal/hash"
+	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 	"os"
 	"path"
@@ -16,6 +17,8 @@ import (
 
 var validateFlags struct {
 	validationPath string
+	github         bool
+	bufferLogs     bool
 }
 
 var validateCmd = &cobra.Command{
@@ -41,6 +44,8 @@ func init() {
 	registerCommonFlags(validateCmd)
 	validateCmd.Flags().StringVarP(&validateFlags.validationPath, "validation-path", "", "validations",
 		"Directory path to store files required for configuration validation.")
+	validateCmd.Flags().BoolVarP(&validateFlags.github, "github", "g", false, "Whether logs should be decorated with github-specific formatting")
+	validateCmd.Flags().BoolVarP(&validateFlags.bufferLogs, "buffer", "b", false, "Whether logs should be buffered and printed at the end of the run")
 
 	if path.IsAbs(validateFlags.validationPath) == false {
 		var err error
@@ -53,6 +58,9 @@ func init() {
 }
 
 func validateFunc(cmd *cobra.Command, _ []string) error {
+	if validateFlags.github && !validateFlags.bufferLogs {
+		log.Warn().Msg("Github flag is only supported with buffer flag")
+	}
 	cfg := loadConfig(cmd, true)
 	defer cfg.Close()
 	ctx := cmd.Context()
@@ -73,5 +81,8 @@ func validateFunc(cmd *cobra.Command, _ []string) error {
 		commonFlags.workers,
 	)
 
-	return r.TerraformValidate(ctx, dg)
+	return r.TerraformValidate(ctx, dg, &runner.ValidateOptions{
+		BufferLogs: validateFlags.bufferLogs,
+		Github:     validateFlags.github,
+	})
 }

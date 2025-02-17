@@ -28,8 +28,8 @@ func RunInteractive(ctx context.Context, command string, cwd string, args ...str
 	stdOut := new(bytes.Buffer)
 
 	cmd.Stdin = os.Stdin
-	cmd.Stderr = stdOut
-	cmd.Stdout = stdOut
+	cmd.Stderr = logger.Hook(StdHook{Logger: logger})
+	cmd.Stdout = logger.Hook(StdHook{Logger: logger})
 
 	err := cmd.Start()
 	if err != nil {

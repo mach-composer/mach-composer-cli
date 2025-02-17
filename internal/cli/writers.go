@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"fmt"
 	"io"
 )
 
@@ -8,11 +9,13 @@ import (
 // don't want the logs to be mixed up between routines
 type BufferedWriter struct {
 	io.Writer
-	buffer []string
+	buffer     []string
+	github     bool
+	identifier string
 }
 
-func NewBufferedWriter(w io.Writer) *BufferedWriter {
-	return &BufferedWriter{Writer: w}
+func NewBufferedWriter(w io.Writer, github bool, identifier string) *BufferedWriter {
+	return &BufferedWriter{Writer: w, github: github, identifier: identifier}
 }
 
 func (b *BufferedWriter) Write(p []byte) (n int, err error) {
@@ -22,10 +25,15 @@ func (b *BufferedWriter) Write(p []byte) (n int, err error) {
 
 // Flush writes all buffered data to the inner writer
 func (b *BufferedWriter) Flush() error {
+	if b.github {
+		fmt.Println(fmt.Sprintf("::group::{%s}", b.identifier))
+		defer fmt.Println(fmt.Sprintf("::endgroup::"))
+	}
 	for _, p := range b.buffer {
 		if _, err := b.Writer.Write([]byte(p)); err != nil {
 			return err
 		}
 	}
+
 	return nil
 }
