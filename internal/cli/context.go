@@ -21,21 +21,6 @@ func LogWriterFromContext(ctx context.Context) io.Writer {
 	return os.Stdout
 }
 
-const GithubCIKey = "github-ci"
-
-func ContextWithGithubCI(ctx context.Context) context.Context {
-	return context.WithValue(ctx, GithubCIKey, true)
-}
-
-// GithubCIFromContext returns whether the context is running in a GitHub CI
-func GithubCIFromContext(ctx context.Context) bool {
-	if v := ctx.Value(GithubCIKey); v != nil {
-		return v.(bool)
-	}
-
-	return false
-}
-
 const OutputKey = "output"
 
 type OutputType string

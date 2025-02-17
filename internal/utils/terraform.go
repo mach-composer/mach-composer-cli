@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"github.com/rs/zerolog/log"
@@ -23,17 +24,42 @@ func RunTerraform(ctx context.Context, cwd string, args ...string) (string, erro
 		return "", err
 	}
 
-	return RunInteractive(ctx, execPath, cwd, args...)
+	logger := log.Ctx(ctx).With().
+		Str(CommandFieldName, execPath).
+		Strs(ArgsFieldName, args).
+		Str(CwdFieldName, cwd).
+		Logger()
+
+	logger.Debug().Msgf("Running: %s", cwd)
+	defer logger.Debug().Msgf("Finished running: %s", cwd)
+
+	w := logger.Hook(StdHook{Logger: logger})
+
+	return RunInteractive(ctx, execPath, cwd, w, args...)
 }
 
 func GetTerraformOutputs(ctx context.Context, path string) (cty.Value, error) {
 	var data json.SimpleJSONValue
 
-	output, err := RunTerraform(ctx, path, "output", "-json")
+	if _, err := os.Stat(path); err != nil {
+		if os.IsNotExist(err) {
+			return cty.NilVal, fmt.Errorf("the generated files are not found: %w", err)
+		}
+	}
+
+	execPath, err := exec.LookPath("terraform")
+	if err != nil {
+		return cty.NilVal, err
+	}
+
+	w := new(bytes.Buffer)
+
+	_, err = RunInteractive(ctx, execPath, path, w, "output", "-json")
 	if err != nil {
 		log.Error().Err(err).Msgf("failed to get terraform output: %s", err.Error())
 		return cty.NilVal, err
 	}
+	output := w.String()
 
 	log.Debug().Str("output", output).Msgf("Fetched terraform output")
 

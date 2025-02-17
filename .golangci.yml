@@ -8,7 +8,7 @@ linters:
   - exhaustive
   - copyloopvar
   - forcetypeassert
-  - goimports
+  - gofmt
   - gosimple
   - govet
   - ineffassign
