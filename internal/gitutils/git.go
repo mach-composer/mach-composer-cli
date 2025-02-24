@@ -258,11 +258,11 @@ func GetRecentCommits(ctx context.Context, basePath string, baseRevision, target
 		subject := strings.TrimSpace(fields[0])
 		parents := make([]string, len(c.ParentHashes))
 		for i, parent := range c.ParentHashes {
-			parents[i] = parent.String()[:7]
+			parents[i] = parent.String()
 		}
 
 		result[i] = GitCommit{
-			Commit:  c.Hash.String()[:7],
+			Commit:  c.Hash.String(),
 			Parents: parents,
 			Author: GitCommitAuthor{
 				Name:  c.Author.Name,
