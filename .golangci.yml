@@ -6,7 +6,7 @@ linters:
   - contextcheck
   - errcheck
   - exhaustive
-  - exportloopref
+  - copyloopvar
   - forcetypeassert
   - goimports
   - gosimple
@@ -14,6 +14,6 @@ linters:
   - ineffassign
   - predeclared
   - staticcheck
-  - tenv
+  - usetesting
   - typecheck
   - unused
