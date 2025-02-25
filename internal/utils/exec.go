@@ -1,9 +1,9 @@
 package utils
 
 import (
-	"bytes"
 	"context"
 	"fmt"
+	"io"
 	"os"
 	"os/exec"
 	"strings"
@@ -12,24 +12,14 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-func RunInteractive(ctx context.Context, command string, cwd string, args ...string) (string, error) {
-	logger := log.With().
-		Str("command", command).
-		Strs("args", args).
-		Str("cwd", cwd).Logger()
-
-	logger.Debug().Msgf("Running: %s", command)
-
+func RunInteractive(ctx context.Context, command string, cwd string, w io.Writer, args ...string) (string, error) {
 	cmd := exec.CommandContext(ctx, command, args...)
 	cmd.Dir = cwd
 	cmd.Env = os.Environ()
 
-	//Currently keep the buffer in memory. We might want to change this to a file if the output is too large
-	stdOut := new(bytes.Buffer)
-
 	cmd.Stdin = os.Stdin
-	cmd.Stderr = stdOut
-	cmd.Stdout = stdOut
+	cmd.Stderr = w
+	cmd.Stdout = w
 
 	err := cmd.Start()
 	if err != nil {
@@ -48,13 +38,11 @@ func RunInteractive(ctx context.Context, command string, cwd string, args ...str
 
 	case err := <-done:
 		if err != nil {
-			return stdOut.String(), fmt.Errorf("command (%s) failed: %w (args: %s , cwd: %s)", command, err, strings.Join(args, " "), cwd)
+			return "", fmt.Errorf("command (%s) failed: %w (args: %s , cwd: %s)", command, err, strings.Join(args, " "), cwd)
 		}
 	}
 
-	logger.Debug().Msgf("Finished running: %s", command)
-
-	return stdOut.String(), nil
+	return "", nil
 }
 
 func StopProcess(cmd *exec.Cmd) error {

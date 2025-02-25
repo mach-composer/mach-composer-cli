@@ -70,7 +70,7 @@ func TestGraphRunnerMultipleLevels(t *testing.T) {
 	err := runner.run(context.Background(), graph, func(ctx context.Context, node internalgraph.Node) error {
 		called = append(called, node.Identifier())
 		return nil
-	}, false)
+	}, false, false, false)
 
 	assert.NoError(t, err)
 	assert.Equal(t, []string{"component-2", "component-3"}, called)
@@ -132,7 +132,7 @@ func TestGraphRunnerError(t *testing.T) {
 			return assert.AnError
 		}
 		return nil
-	}, false)
+	}, false, false, false)
 
 	cliErr := &cli.GroupedError{}
 

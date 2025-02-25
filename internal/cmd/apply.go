@@ -15,6 +15,8 @@ var applyFlags struct {
 	forceInit             bool
 	autoApprove           bool
 	destroy               bool
+	github                bool
+	bufferLogs            bool
 	components            []string
 	numWorkers            int
 	ignoreChangeDetection bool
@@ -39,11 +41,17 @@ func init() {
 	applyCmd.Flags().BoolVarP(&applyFlags.destroy, "destroy", "", false, "Destroy option is a convenient way to destroy all remote objects managed by this mach config")
 	applyCmd.Flags().StringArrayVarP(&applyFlags.components, "component", "c", nil, "")
 	applyCmd.Flags().BoolVarP(&applyFlags.ignoreChangeDetection, "ignore-change-detection", "", false, "Ignore change detection to run even if the components are considered up to date")
+	applyCmd.Flags().BoolVarP(&applyFlags.github, "github", "g", false, "Whether logs should be decorated with github-specific formatting")
+	applyCmd.Flags().BoolVarP(&applyFlags.bufferLogs, "buffer", "b", false, "Whether logs should be buffered and printed at the end of the run")
 }
 
 func applyFunc(cmd *cobra.Command, _ []string) error {
 	if len(applyFlags.components) > 0 {
 		log.Warn().Msgf("Components option not implemented")
+	}
+
+	if applyFlags.github && !applyFlags.bufferLogs {
+		log.Warn().Msg("Github flag is only supported with buffer flag")
 	}
 
 	cfg := loadConfig(cmd, true)
@@ -74,5 +82,7 @@ func applyFunc(cmd *cobra.Command, _ []string) error {
 		Destroy:               applyFlags.destroy,
 		AutoApprove:           applyFlags.autoApprove,
 		IgnoreChangeDetection: applyFlags.ignoreChangeDetection,
+		BufferLogs:            applyFlags.bufferLogs,
+		Github:                applyFlags.github,
 	})
 }

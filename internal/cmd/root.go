@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/mach-composer/mach-composer-cli/internal/cli"
 	"github.com/mach-composer/mach-composer-cli/internal/cmd/cloudcmd"
+	"github.com/mach-composer/mach-composer-cli/internal/utils"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
@@ -32,24 +33,50 @@ var (
 
 			quiet, err := cmd.Flags().GetBool("quiet")
 			if err != nil {
-				panic(err)
+				cli.PrintExitError(err.Error())
 			}
 
-			//Configure logger
 			output, err := cmd.Flags().GetString("output")
+			if err != nil {
+				cli.PrintExitError(err.Error())
+			}
+
+			stripLogs, err := cmd.Flags().GetBool("strip-logs")
+			if err != nil {
+				cli.PrintExitError(err.Error())
+			}
+
 			var w io.Writer
 			switch output {
 			case string(cli.OutputTypeJSON):
 				w = os.Stdout
 			case string(cli.OutputTypeConsole):
-				w = cli.NewConsoleWriter()
+				var partsExclude []string
+				if stripLogs {
+					partsExclude = []string{zerolog.LevelFieldName, utils.IdentifierFieldName}
+				}
+
+				var fieldsExclude []string
+				if !verbose {
+					fieldsExclude = []string{
+						utils.ArgsFieldName, utils.CommandFieldName, utils.CwdFieldName, utils.IdentifierFieldName,
+						utils.NameName, utils.ModuleName, utils.TimestampMain,
+					}
+				}
+
+				w = zerolog.ConsoleWriter{
+					Out:           os.Stdout,
+					PartsOrder:    []string{zerolog.LevelFieldName, utils.IdentifierFieldName, zerolog.MessageFieldName},
+					FieldsExclude: fieldsExclude,
+					PartsExclude:  partsExclude,
+				}
 			default:
 				cli.PrintExitError("unknown output type: %s", output)
 			}
 			ctx = cli.ContextWithOutput(ctx, cli.OutputType(output))
 			ctx = cli.ContextWithLogWriter(ctx, w)
 
-			var logger = zerolog.New(w).With().Timestamp().Logger()
+			var logger = zerolog.New(w).With().Str(utils.IdentifierFieldName, utils.FormatIdentifier("main")).Timestamp().Logger()
 
 			if verbose {
 				logger = logger.Level(zerolog.TraceLevel)
@@ -57,14 +84,6 @@ var (
 				logger = logger.Level(zerolog.ErrorLevel)
 			} else {
 				logger = logger.Level(zerolog.InfoLevel)
-			}
-
-			github, err := cmd.Flags().GetBool("github")
-			if err != nil {
-				panic(err)
-			}
-			if github {
-				ctx = cli.ContextWithGithubCI(ctx)
 			}
 
 			//Load logger into context and global logger
@@ -94,7 +113,7 @@ func init() {
 	RootCmd.PersistentFlags().BoolP("verbose", "v", false, "Verbose output. This is equal to setting log levels to debug and higher")
 	RootCmd.PersistentFlags().BoolP("quiet", "q", false, "Quiet output. This is equal to setting log levels to error and higher")
 	RootCmd.PersistentFlags().String("output", "console", "The output type. One of: console, json")
-	RootCmd.PersistentFlags().BoolP("github", "g", false, "Whether logs should be decorated with github-specific formatting")
+	RootCmd.PersistentFlags().Bool("strip-logs", false, "Strip all context from the logs")
 	RootCmd.AddCommand(applyCmd)
 	RootCmd.AddCommand(cloudcmd.CloudCmd)
 	RootCmd.AddCommand(componentsCmd)

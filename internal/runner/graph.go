@@ -39,7 +39,86 @@ func NewGraphRunner(batcher batcher.BatchFunc, hashHandler hash.Handler, workers
 	}
 }
 
-func (gr *GraphRunner) run(ctx context.Context, g *graph.Graph, f executorFunc, ignoreChangeDetection bool) error {
+func startTicker() chan struct{} {
+	ticker := make(chan struct{})
+	go func() {
+		for {
+			select {
+			case <-ticker:
+				return
+			default:
+				log.Info().Msg("Waiting for batch to complete")
+				time.Sleep(1 * time.Second)
+			}
+		}
+	}()
+	return ticker
+}
+
+func (gr *GraphRunner) runBatch(ctx context.Context, f executorFunc, i int, batch []graph.Node, ignoreChangeDetection, bufferLogs, githubLogs bool) error {
+	errChan := make(chan error, len(batch))
+	var outputs []*cli.BufferedWriter
+
+	wg := &sync.WaitGroup{}
+	sem := semaphore.NewWeighted(int64(gr.workers))
+
+	// Start a ticker to show we are still running
+	if bufferLogs {
+		ticker := startTicker()
+		defer close(ticker)
+	}
+
+	for _, n := range batch {
+		if n.Tainted() == false && ignoreChangeDetection == false {
+			log.Ctx(ctx).Info().Msgf("Skipping %s because it has no changes", n.Identifier())
+			continue
+		}
+
+		if err := sem.Acquire(ctx, 1); err != nil {
+			return err
+		}
+		wg.Add(1)
+
+		go func(ctx context.Context, n graph.Node) {
+			defer wg.Done()
+			defer sem.Release(1)
+
+			ctx = log.Ctx(ctx).With().Str(utils.IdentifierFieldName, utils.FormatIdentifier(n.Identifier())).Logger().WithContext(ctx)
+			if bufferLogs {
+				w := cli.LogWriterFromContext(ctx)
+				bw := cli.NewBufferedWriter(w, githubLogs, n.Identifier())
+				ctx = log.Ctx(ctx).Output(bw).WithContext(ctx)
+				outputs = append(outputs, bw)
+			}
+			err := f(ctx, n)
+			if err != nil {
+				errChan <- err
+				return
+			}
+		}(ctx, n)
+	}
+	wg.Wait()
+	close(errChan)
+
+	for _, output := range outputs {
+		if err := output.Flush(); err != nil {
+			return err
+		}
+	}
+
+	if len(errChan) > 0 {
+		var errors []error
+		for err := range errChan {
+			errors = append(errors, err)
+		}
+
+		return cli.NewGroupedError(fmt.Sprintf("batch run %d failed (%d errors)", i, len(errors)), errors)
+	}
+
+	return nil
+}
+
+func (gr *GraphRunner) run(ctx context.Context, g *graph.Graph, f executorFunc, ignoreChangeDetection, bufferLogs, githubLogs bool) error {
 	if err := taintGraph(ctx, g, gr.hash); err != nil {
 		return err
 	}
@@ -50,85 +129,9 @@ func (gr *GraphRunner) run(ctx context.Context, g *graph.Graph, f executorFunc, 
 	sort.Ints(keys)
 	for i, k := range keys[1:] {
 		log.Info().Msgf("Running batch %d with %d nodes", i, len(batches[k]))
-
-		errChan := make(chan error, len(batches[k]))
-		var outputs []*cli.BufferedWriter
-
-		wg := &sync.WaitGroup{}
-		sem := semaphore.NewWeighted(int64(gr.workers))
-
-		// Start a ticker to show we are still running
-		ticker := make(chan struct{})
-		go func() {
-			for {
-				select {
-				case <-ticker:
-					return
-				default:
-					log.Info().Msgf("Waiting for batch %d to complete", i)
-					time.Sleep(1 * time.Second)
-				}
-			}
-		}()
-
-		for _, n := range batches[k] {
-			if n.Tainted() == false && ignoreChangeDetection == false {
-				log.Info().Msgf("Skipping %s because it has no changes", n.Identifier())
-				continue
-			}
-
-			if err := sem.Acquire(ctx, 1); err != nil {
-				return err
-			}
-			wg.Add(1)
-
-			go func(ctx context.Context, n graph.Node) {
-				defer wg.Done()
-				defer sem.Release(1)
-
-				w := cli.LogWriterFromContext(ctx)
-				bw := cli.NewBufferedWriter(w)
-				l := log.Output(bw).With().Str("identifier", n.Identifier()).Logger()
-				ctx = l.WithContext(ctx)
-
-				outputs = append(outputs, bw)
-
-				defer func() {
-					if cli.GithubCIFromContext(ctx) {
-						log.Ctx(ctx).Info().Msg("::endgroup::")
-					}
-				}()
-
-				if cli.GithubCIFromContext(ctx) {
-					log.Ctx(ctx).Info().Msgf("::group::{%s}", n.Identifier())
-				}
-
-				err := f(ctx, n)
-				if err != nil {
-					errChan <- err
-					return
-				}
-			}(ctx, n)
+		if err := gr.runBatch(ctx, f, i, batches[k], ignoreChangeDetection, bufferLogs, githubLogs); err != nil {
+			return err
 		}
-		wg.Wait()
-		close(ticker)
-		close(errChan)
-
-		for _, output := range outputs {
-			if err := output.Flush(); err != nil {
-				return err
-			}
-		}
-
-		if len(errChan) > 0 {
-			var errors []error
-			for err := range errChan {
-				errors = append(errors, err)
-			}
-
-			return cli.NewGroupedError(fmt.Sprintf("batch run %d failed (%d errors)", i, len(errors)), errors)
-		}
-
 		log.Info().Msgf("Finished batch %d", i)
 	}
 
@@ -189,14 +192,14 @@ func (gr *GraphRunner) TerraformApply(ctx context.Context, dg *graph.Graph, opts
 
 		return err
 
-	}, opts.IgnoreChangeDetection); err != nil {
+	}, opts.IgnoreChangeDetection, opts.BufferLogs, opts.Github); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func (gr *GraphRunner) TerraformValidate(ctx context.Context, dg *graph.Graph) error {
+func (gr *GraphRunner) TerraformValidate(ctx context.Context, dg *graph.Graph, opts *ValidateOptions) error {
 	return gr.run(ctx, dg, func(ctx context.Context, n graph.Node) error {
 		log.Ctx(ctx).Info().Msgf("Running terraform init without backend for %s", n.Path())
 		out, err := terraform.Init(ctx, n.Path(), terraform.InitWithDisableBackend())
@@ -216,7 +219,7 @@ func (gr *GraphRunner) TerraformValidate(ctx context.Context, dg *graph.Graph) e
 		log.Ctx(ctx).Info().Msg(out)
 
 		return err
-	}, true)
+	}, true, opts.BufferLogs, opts.Github)
 }
 
 func (gr *GraphRunner) TerraformPlan(ctx context.Context, dg *graph.Graph, opts *PlanOptions) error {
@@ -272,7 +275,7 @@ func (gr *GraphRunner) TerraformPlan(ctx context.Context, dg *graph.Graph, opts 
 		}
 
 		return err
-	}, opts.IgnoreChangeDetection); err != nil {
+	}, opts.IgnoreChangeDetection, opts.BufferLogs, opts.Github); err != nil {
 		return err
 	}
 
@@ -291,7 +294,7 @@ func (gr *GraphRunner) TerraformProxy(ctx context.Context, dg *graph.Graph, opts
 			err = fmt.Errorf("failed to proxy %s: %w", n.Identifier(), err)
 		}
 		return err
-	}, opts.IgnoreChangeDetection); err != nil {
+	}, opts.IgnoreChangeDetection, opts.BufferLogs, opts.Github); err != nil {
 		return err
 	}
 
@@ -340,14 +343,14 @@ func (gr *GraphRunner) TerraformShow(ctx context.Context, dg *graph.Graph, opts 
 			log.Ctx(ctx).Info().Msg(out)
 		}
 		return err
-	}, opts.IgnoreChangeDetection); err != nil {
+	}, opts.IgnoreChangeDetection, opts.BufferLogs, opts.Github); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func (gr *GraphRunner) TerraformInit(ctx context.Context, dg *graph.Graph) error {
+func (gr *GraphRunner) TerraformInit(ctx context.Context, dg *graph.Graph, opts *InitOptions) error {
 	if err := gr.run(ctx, dg, func(ctx context.Context, n graph.Node) error {
 		out, err := terraform.Init(ctx, n.Path())
 		log.Ctx(ctx).Info().Msg(out)
@@ -355,7 +358,7 @@ func (gr *GraphRunner) TerraformInit(ctx context.Context, dg *graph.Graph) error
 			err = fmt.Errorf("failed to init %s: %w", n.Identifier(), err)
 		}
 		return err
-	}, true); err != nil {
+	}, true, opts.BufferLogs, opts.Github); err != nil {
 		return err
 	}
 

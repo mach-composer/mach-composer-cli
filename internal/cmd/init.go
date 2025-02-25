@@ -4,12 +4,18 @@ import (
 	"github.com/mach-composer/mach-composer-cli/internal/batcher"
 	"github.com/mach-composer/mach-composer-cli/internal/graph"
 	"github.com/mach-composer/mach-composer-cli/internal/hash"
+	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 
 	"github.com/mach-composer/mach-composer-cli/internal/cli"
 	"github.com/mach-composer/mach-composer-cli/internal/generator"
 	"github.com/mach-composer/mach-composer-cli/internal/runner"
 )
+
+var initFlags struct {
+	github     bool
+	bufferLogs bool
+}
 
 var initCmd = &cobra.Command{
 	Use:   "init",
@@ -28,9 +34,15 @@ var initCmd = &cobra.Command{
 
 func init() {
 	registerCommonFlags(initCmd)
+	initCmd.Flags().BoolVarP(&initFlags.github, "github", "g", false, "Whether logs should be decorated with github-specific formatting")
+	initCmd.Flags().BoolVarP(&initFlags.bufferLogs, "buffer", "b", false, "Whether logs should be buffered and printed at the end of the run")
 }
 
 func initFunc(cmd *cobra.Command, _ []string) error {
+	if initFlags.github && !initFlags.bufferLogs {
+		log.Warn().Msg("Github flag is only supported with buffer flag")
+	}
+
 	cfg := loadConfig(cmd, true)
 	defer cfg.Close()
 	ctx := cmd.Context()
@@ -51,5 +63,8 @@ func initFunc(cmd *cobra.Command, _ []string) error {
 		commonFlags.workers,
 	)
 
-	return r.TerraformInit(ctx, dg)
+	return r.TerraformInit(ctx, dg, &runner.InitOptions{
+		BufferLogs: initFlags.bufferLogs,
+		Github:     initFlags.github,
+	})
 }

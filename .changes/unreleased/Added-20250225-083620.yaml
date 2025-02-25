@@ -1,0 +1,3 @@
+kind: Added
+body: Default to log streaming again, add flag to buffer results when necessary. Changed logger to default console logger with tweaks
+time: 2025-02-25T08:36:20.519852676+01:00
