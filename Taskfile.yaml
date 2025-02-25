@@ -22,6 +22,9 @@ tasks:
      - go fmt ./...
      - terraform fmt -recursive -write=true .
 
+  lint:
+    cmd: golangci-lint run --issues-exit-code=0 --timeout=5m --build-tags testing
+
   generate:
     cmd: go generate ./...
 
