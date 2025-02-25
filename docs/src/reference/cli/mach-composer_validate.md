@@ -17,7 +17,9 @@ mach-composer validate [flags]
 ### Options
 
 ```
+  -b, --buffer                   Whether logs should be buffered and printed at the end of the run
   -f, --file string              YAML file to parse. (default "main.yml")
+  -g, --github                   Whether logs should be decorated with github-specific formatting
   -h, --help                     help for validate
       --ignore-version           Skip MACH composer version check
       --output-path string       Outputs path to store the generated files. (default "deployments")
@@ -30,9 +32,9 @@ mach-composer validate [flags]
 ### Options inherited from parent commands
 
 ```
-  -g, --github          Whether logs should be decorated with github-specific formatting
       --output string   The output type. One of: console, json (default "console")
   -q, --quiet           Quiet output. This is equal to setting log levels to error and higher
+      --strip-logs      Strip all context from the logs
   -v, --verbose         Verbose output. This is equal to setting log levels to debug and higher
 ```
 

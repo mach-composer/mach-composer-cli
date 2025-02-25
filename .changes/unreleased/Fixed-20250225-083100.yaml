@@ -1,0 +1,3 @@
+kind: Fixed
+body: Instead of sending a short hash to mach composer cloud, use the fullh
+time: 2025-02-25T08:31:00.548152081+01:00
