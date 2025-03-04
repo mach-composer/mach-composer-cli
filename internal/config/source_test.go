@@ -23,6 +23,7 @@ func TestType(t *testing.T) {
 		{source: Source("https://example.com/vpc.zip"), expected: SourceTypeHttp},
 		{source: Source("s3::https://github.com/my/project"), expected: SourceTypeS3},
 		{source: Source("gcs::https://github.com/my/project"), expected: SourceTypeGCS},
+		{source: Source("module::some/module/path"), expected: SourceTypeModule},
 		{source: Source("bla::https://github.com/my/project"), error: true},
 	}
 	for _, tc := range tests {

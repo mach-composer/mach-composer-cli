@@ -17,6 +17,7 @@ const (
 	SourceTypeHttp      SourceType = "http"
 	SourceTypeS3        SourceType = "s3"
 	SourceTypeGCS       SourceType = "gcs"
+	SourceTypeModule    SourceType = "module"
 )
 
 type Source string
@@ -69,6 +70,10 @@ func (s *Source) Type() (SourceType, error) {
 		return SourceTypeGCS, nil
 	}
 
+	if strings.HasPrefix(string(*s), "module::") {
+		return SourceTypeModule, nil
+	}
+
 	return "", fmt.Errorf("unknown source type: %s", string(*s))
 }
 
@@ -96,6 +101,8 @@ func (s *Source) GetVersionSource(version string) (string, error) {
 	case SourceTypeGCS:
 		// For GCS and AWS we assume that the version is the name of the zip file
 		return fmt.Sprintf("%s/%s.zip", string(*s), version), nil
+	case SourceTypeModule:
+		return strings.Replace(s.String(), "module::", "", 1), nil
 	}
 
 	return "", fmt.Errorf("unsupported source type: %s", t)
