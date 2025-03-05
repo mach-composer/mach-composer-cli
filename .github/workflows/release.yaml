@@ -126,7 +126,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build
-        uses: docker/bake-action@v5
+        uses: docker/bake-action@v6
         with:
           files: |
             ./docker-bake.hcl
@@ -167,7 +167,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build
-        uses: docker/bake-action@v5
+        uses: docker/bake-action@v6
         with:
           files: |
             ./docker-bake.hcl
