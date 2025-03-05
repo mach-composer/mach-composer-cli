@@ -6,6 +6,9 @@ includes:
     dir: ./docs
 
 tasks:
+  default:
+    cmd: task --list-all
+
   build:
     env:
       GORELEASER_CURRENT_TAG: "v0.0.0"

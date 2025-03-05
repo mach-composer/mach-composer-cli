@@ -17,9 +17,9 @@ mach-composer cloud list-component-versions [name] [flags]
 ### Options inherited from parent commands
 
 ```
-  -g, --github          Whether logs should be decorated with github-specific formatting
       --output string   The output type. One of: console, json (default "console")
   -q, --quiet           Quiet output. This is equal to setting log levels to error and higher
+      --strip-logs      Strip all context from the logs
   -v, --verbose         Verbose output. This is equal to setting log levels to debug and higher
 ```
 
