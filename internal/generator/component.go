@@ -21,7 +21,9 @@ type componentContext struct {
 	ComponentSecrets    string
 	SiteName            string
 	Environment         string
+	SourceType          string
 	Source              string
+	Version             string
 	PluginResources     []string
 	PluginProviders     []string
 	PluginDependsOn     []string
@@ -145,11 +147,18 @@ func renderComponentModule(_ context.Context, cfg *config.MachConfig, n *graph.S
 		return "", err
 	}
 
+	sourceType, err := n.SiteComponentConfig.Definition.Source.Type()
+	if err != nil {
+		return "", err
+	}
+
 	tc := componentContext{
 		ComponentName:    n.SiteComponentConfig.Name,
 		ComponentVersion: n.SiteComponentConfig.Definition.Version,
 		SiteName:         n.SiteConfig.Identifier,
 		Environment:      cfg.Global.Environment,
+		Version:          n.SiteComponentConfig.Definition.Version,
+		SourceType:       string(sourceType),
 		PluginResources:  []string{},
 		PluginVariables:  []string{},
 		PluginDependsOn:  []string{},

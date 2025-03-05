@@ -34,7 +34,6 @@ func (m *mockRenderer) RemoteState() (string, error) {
 }
 
 func TestRenderRemoteSourcesCompactSources(t *testing.T) {
-
 	rr := new(mockRenderer)
 	rr.On("Identifier").Return("site/component").Times(2)
 	rr.On("StateKey").Return("component")
@@ -48,8 +47,8 @@ func TestRenderRemoteSourcesCompactSources(t *testing.T) {
 	rr.On("Backend").Return("backend-2", nil)
 
 	r := state.NewRepository()
-	r.Add(rr)
-	r.Add(rr2)
+	_ = r.Add(rr)
+	_ = r.Add(rr2)
 	dup, _ := variable.NewScalarVariable("${component.component.value}")
 	dup2, _ := variable.NewScalarVariable("${component.component-2.value}")
 

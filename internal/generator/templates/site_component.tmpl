@@ -6,6 +6,11 @@
 module "{{ .ComponentName }}" {
     source = "{{ .Source }}"
 
+{{ if eq .SourceType "module"  }}
+    version = "{{ .Version }}"
+{{ end }}
+
+
 {{ if .ComponentVariables }}
     {{ .ComponentVariables }}
 {{ end }}
