@@ -38,10 +38,23 @@ var listApiClientCmd = &cobra.Command{
 				lastUsed = record.GetLastUsedAt().Format("2006-01-02 15:04:05")
 			}
 
+			var clientId string
+			if record.ClientId != nil {
+				clientId = *record.ClientId
+			} else {
+				clientId = "N/A"
+			}
+			var clientSecret string
+			if record.ClientSecret != nil {
+				clientSecret = *record.ClientSecret
+			} else {
+				clientSecret = "N/A"
+			}
+
 			data[i] = []string{
 				record.CreatedAt.Local().Format("2006-01-02 15:04:05"),
-				record.ClientId,
-				record.ClientSecret,
+				clientId,
+				clientSecret,
 				lastUsed,
 				record.GetDescription(),
 				strings.Join(record.Scope, " "),
@@ -80,8 +93,8 @@ var createApiClientCmd = &cobra.Command{
 			return err
 		}
 
-		cmd.Printf("ClientWrapper ID: %s\n", resource.ClientId)
-		cmd.Printf("ClientWrapper Secret: %s\n", resource.ClientSecret)
+		cmd.Printf("ClientWrapper ID: %s\n", *resource.ClientId)
+		cmd.Printf("ClientWrapper Secret: %s\n", *resource.ClientSecret)
 		cmd.Printf("Scopes: %s\n", strings.Join(resource.Scope, " "))
 		return nil
 	},
