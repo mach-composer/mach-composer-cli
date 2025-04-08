@@ -408,7 +408,7 @@ func branchContainsCommit(ctx context.Context, gitPath, targetRev, baseRev strin
 	}
 	output, err := runGit(ctx, gitPath, args...)
 	if err != nil {
-		return false, fmt.Errorf(strings.TrimSpace(err.Error()))
+		return false, errors.New(strings.TrimSpace(err.Error()))
 	}
 
 	return len(output) > 0, nil
