@@ -2,6 +2,7 @@ package cloudcmd
 
 import (
 	"fmt"
+	"github.com/gosimple/slug"
 	"github.com/mach-composer/mach-composer-cli/internal/gitutils"
 	"github.com/mach-composer/mcc-sdk-go/mccsdk"
 	"github.com/rs/zerolog/log"
@@ -12,13 +13,20 @@ import (
 )
 
 var componentCreateCmd = &cobra.Command{
-	Use:   "create-component [name]",
-	Short: "Register a new component",
-	Args:  cobra.ExactArgs(1),
+	Use:   "create-component [name] [key]",
+	Short: "Register a new component. If key is not provided it will be generated from the name",
+	Args:  cobra.RangeArgs(1, 2),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		ctx := cmd.Context()
 		organization := MustGetString(cmd, "organization")
 		project := MustGetString(cmd, "project")
+
+		var key string
+		if len(args) == 1 {
+			key = slug.Make(args[0])
+		} else {
+			key = args[1]
+		}
 
 		client, err := cloud.NewClient(ctx)
 		if err != nil {
@@ -28,13 +36,14 @@ var componentCreateCmd = &cobra.Command{
 			ComponentsApi.
 			ComponentCreate(ctx, organization, project).
 			ComponentDraft(mccsdk.ComponentDraft{
-				Key: args[0],
+				Name: args[0],
+				Key:  key,
 			}).
 			Execute()
 		if err != nil {
 			return err
 		}
-		log.Info().Msgf("Created new component: %s\n", resource.GetKey())
+		log.Info().Msgf("Created new component: %s (key: %s)\n", resource.GetName(), resource.GetKey())
 		return nil
 	},
 }

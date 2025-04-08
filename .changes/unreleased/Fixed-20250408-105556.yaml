@@ -1,0 +1,3 @@
+kind: Fixed
+body: Fixed create-component command to add name and slugify key
+time: 2025-04-08T10:55:56.063197691+02:00
