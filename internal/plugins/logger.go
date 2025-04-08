@@ -25,29 +25,29 @@ func (l *LogAdapter) Log(level hclog.Level, msg string, args ...interface{}) {
 }
 
 func (l *LogAdapter) Trace(msg string, args ...interface{}) {
-	l.logger.Trace().Fields(args).Msgf(msg)
+	l.logger.Trace().Fields(args).Msg(msg)
 }
 
 // Emit a message and key/value pairs at the DEBUG level
 func (l *LogAdapter) Debug(msg string, args ...interface{}) {
-	l.logger.Debug().Fields(args).Msgf(msg)
+	l.logger.Debug().Fields(args).Msg(msg)
 }
 
 // Emit a message and key/value pairs at the INFO level
 func (l *LogAdapter) Info(msg string, args ...interface{}) {
 	// Intentional hack; we want to log go-plugin info() messages
 	// to debug
-	l.logger.Debug().Fields(args).Msgf(msg)
+	l.logger.Debug().Fields(args).Msg(msg)
 }
 
 // Emit a message and key/value pairs at the WARN level
 func (l *LogAdapter) Warn(msg string, args ...interface{}) {
-	l.logger.Warn().Fields(args).Msgf(msg)
+	l.logger.Warn().Fields(args).Msg(msg)
 }
 
 // Emit a message and key/value pairs at the ERROR level
 func (l *LogAdapter) Error(msg string, args ...interface{}) {
-	l.logger.Error().Fields(args).Msgf(msg)
+	l.logger.Error().Fields(args).Msg(msg)
 }
 
 // Indicate if TRACE logs would be emitted. This and the other Is* guards
