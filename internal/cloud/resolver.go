@@ -38,16 +38,17 @@ func resolveComponentVersion(ctx context.Context, cfg *config.MachConfig, c *con
 	organization := cfg.MachComposer.Cloud.Organization
 	project := cfg.MachComposer.Cloud.Project
 
-	version, _, err := client.
-		ComponentsApi.ComponentLatestVersion(ctx, organization, project, c.Name).
+	version, res, err := client.
+		ComponentsApi.
+		ComponentLatestVersion(ctx, organization, project, c.Name).
 		Branch(c.Branch).
 		Execute()
 	if err != nil {
-		return err
-	}
+		if res != nil && res.StatusCode == 404 {
+			return fmt.Errorf("component %s (branch %s) could not be found", c.Name, c.Branch)
+		}
 
-	if version == nil {
-		return fmt.Errorf("failed to resolve latest version for component %s (branch %s)", c.Name, c.Branch)
+		return fmt.Errorf("failed to resolve latest version for component %s (branch %s): %s", c.Name, c.Branch, err.Error())
 	}
 
 	c.Version = version.Version
