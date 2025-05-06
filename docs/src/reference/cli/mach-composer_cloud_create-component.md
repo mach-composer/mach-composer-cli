@@ -1,9 +1,9 @@
 ## mach-composer cloud create-component
 
-Register a new component
+Register a new component. If key is not provided it will be generated from the name
 
 ```
-mach-composer cloud create-component [name] [flags]
+mach-composer cloud create-component [name] [key] [flags]
 ```
 
 ### Options

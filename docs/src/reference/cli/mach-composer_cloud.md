@@ -27,7 +27,7 @@ mach-composer cloud [flags]
 * [mach-composer cloud add-organization-user](mach-composer_cloud_add-organization-user.md)	 - Invite a user to a specific organization
 * [mach-composer cloud config](mach-composer_cloud_config.md)	 - Configure mach composer cloud
 * [mach-composer cloud create-api-client](mach-composer_cloud_create-api-client.md)	 - Manage your components
-* [mach-composer cloud create-component](mach-composer_cloud_create-component.md)	 - Register a new component
+* [mach-composer cloud create-component](mach-composer_cloud_create-component.md)	 - Register a new component. If key is not provided it will be generated from the name
 * [mach-composer cloud create-organization](mach-composer_cloud_create-organization.md)	 - Create a new organization
 * [mach-composer cloud create-project](mach-composer_cloud_create-project.md)	 - Create a new Project
 * [mach-composer cloud describe-component-versions](mach-composer_cloud_describe-component-versions.md)	 - List all changes for a component version

@@ -40,7 +40,9 @@ func (hr *HttpRenderer) Backend() (string, error) {
 	tpl := `
 	backend "http" {
 		address               = "{{ .State.Address }}"
+		{{- if .State.UpdateMethod }}
 		update_method         = "{{ .State.UpdateMethod }}"
+		{{- end }}
 		{{- if .State.LockAddress }}
 		lock_address          = "{{ .State.LockAddress }}"
 		{{- end }}
@@ -59,7 +61,9 @@ func (hr *HttpRenderer) Backend() (string, error) {
 		{{- if .State.Password }}
 		password              = "{{ .State.Password }}"
 		{{- end }}
+		{{- if .State.SkipCertVerification }}
 		skip_cert_verification = {{ .State.SkipCertVerification }}
+		{{- end }}
 		{{- if gt .State.RetryMax 0 }}
 		retry_max             = {{ .State.RetryMax }}
 		{{- end }}
