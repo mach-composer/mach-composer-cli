@@ -27,6 +27,9 @@ func TestTerraformCloudRendererBackendFull(t *testing.T) {
 	  hostname = "hostname"
 	  
 	  
+	  token = "token"
+	  
+	  
 	  workspaces {
 		
 		
@@ -53,7 +56,7 @@ func TestTerraformCloudRendererRemoteStateFull(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, `
 	data "terraform_remote_state" "component-1" {
-	  backend = "aws"
+	  backend = "remote"
 	
 	  config = {
 	    organization = "organization"
