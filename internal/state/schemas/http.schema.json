@@ -1,0 +1,77 @@
+{
+  "type": "object",
+  "description": "HTTP backend state configuration.",
+  "additionalProperties": false,
+  "required": [
+    "address"
+  ],
+  "properties": {
+    "address": {
+      "type": "string",
+      "description": "The address of the REST endpoint."
+    },
+    "update_method": {
+      "type": "string",
+      "description": "HTTP method to use when updating state. Defaults to POST.",
+      "default": "POST"
+    },
+    "lock_address": {
+      "type": "string",
+      "description": "The address of the lock REST endpoint. Defaults to disabled."
+    },
+    "lock_method": {
+      "type": "string",
+      "description": "The HTTP method to use when locking. Defaults to LOCK.",
+      "default": "LOCK"
+    },
+    "unlock_address": {
+      "type": "string",
+      "description": "The address of the unlock REST endpoint. Defaults to disabled."
+    },
+    "unlock_method": {
+      "type": "string",
+      "description": "The HTTP method to use when unlocking. Defaults to UNLOCK.",
+      "default": "UNLOCK"
+    },
+    "username": {
+      "type": "string",
+      "description": "The username for HTTP basic authentication."
+    },
+    "password": {
+      "type": "string",
+      "description": "The password for HTTP basic authentication."
+    },
+    "skip_cert_verification": {
+      "type": "boolean",
+      "description": "Whether to skip TLS verification. Defaults to false.",
+      "default": false
+    },
+    "retry_max": {
+      "type": "integer",
+      "description": "The number of HTTP request retries. Defaults to 2.",
+      "default": 2
+    },
+    "retry_wait_min": {
+      "type": "integer",
+      "description": "The minimum time in seconds to wait between HTTP request attempts. Defaults to 1.",
+      "default": 1
+    },
+    "retry_wait_max": {
+      "type": "integer",
+      "description": "The maximum time in seconds to wait between HTTP request attempts. Defaults to 30.",
+      "default": 30
+    },
+    "client_certificate_pem": {
+      "type": "string",
+      "description": "A PEM-encoded certificate used by the server to verify the client during mutual TLS (mTLS) authentication."
+    },
+    "client_private_key_pem": {
+      "type": "string",
+      "description": "A PEM-encoded private key, required if client_certificate_pem is specified."
+    },
+    "client_ca_certificate_pem": {
+      "type": "string",
+      "description": "A PEM-encoded CA certificate chain used by the client to verify server certificates during TLS authentication."
+    }
+  }
+}

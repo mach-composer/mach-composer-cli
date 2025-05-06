@@ -15,14 +15,16 @@ func GetSchema(key Type) (*map[string]any, error) {
 	switch key {
 	case DefaultType:
 		fallthrough
-	case LocalType:
-		loadSchemaNode("schemas/local.schema.json", &s)
 	case AwsType:
 		loadSchemaNode("schemas/aws.schema.json", &s)
 	case AzureType:
 		loadSchemaNode("schemas/azure.schema.json", &s)
 	case GcpType:
 		loadSchemaNode("schemas/gcp.schema.json", &s)
+	case HttpType:
+		loadSchemaNode("schemas/http.schema.json", &s)
+	case LocalType:
+		loadSchemaNode("schemas/local.schema.json", &s)
 	case TerraformCloudType:
 		loadSchemaNode("schemas/terraform_cloud.schema.json", &s)
 	default:
