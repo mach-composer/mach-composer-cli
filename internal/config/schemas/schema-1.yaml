@@ -112,10 +112,11 @@ definitions:
                 type: string
                 enum:
                   - aws
-                  - gcp
                   - azure
-                  - terraform_cloud
+                  - gcp
+                  - http
                   - local
+                  - terraform_cloud
           - $ref: "#/definitions/RemoteState"
 
   RemoteState:

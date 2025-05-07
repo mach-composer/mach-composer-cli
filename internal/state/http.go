@@ -7,17 +7,17 @@ import (
 // HttpState HTTP backend configuration.
 type HttpState struct {
 	Address                string `mapstructure:"address"`
-	UpdateMethod           string `mapstructure:"update_method" default:"POST"`
+	UpdateMethod           string `mapstructure:"update_method"`
 	LockAddress            string `mapstructure:"lock_address"`
-	LockMethod             string `mapstructure:"lock_method" default:"LOCK"`
+	LockMethod             string `mapstructure:"lock_method"`
 	UnlockAddress          string `mapstructure:"unlock_address"`
-	UnlockMethod           string `mapstructure:"unlock_method" default:"UNLOCK"`
+	UnlockMethod           string `mapstructure:"unlock_method"`
 	Username               string `mapstructure:"username"`
 	Password               string `mapstructure:"password"`
 	SkipCertVerification   bool   `mapstructure:"skip_cert_verification" default:"false"`
-	RetryMax               int    `mapstructure:"retry_max" default:"2"`
-	RetryWaitMin           int    `mapstructure:"retry_wait_min" default:"1"`
-	RetryWaitMax           int    `mapstructure:"retry_wait_max" default:"30"`
+	RetryMax               int    `mapstructure:"retry_max"`
+	RetryWaitMin           int    `mapstructure:"retry_wait_min"`
+	RetryWaitMax           int    `mapstructure:"retry_wait_max"`
 	ClientCertificatePEM   string `mapstructure:"client_certificate_pem"`
 	ClientPrivateKeyPEM    string `mapstructure:"client_private_key_pem"`
 	ClientCACertificatePEM string `mapstructure:"client_ca_certificate_pem"`
@@ -110,22 +110,8 @@ func (hr *HttpRenderer) RemoteState() (string, error) {
 
 		config = {
 			address               = "{{ .State.Address }}"
+			{{- if .State.UpdateMethod }}
 			update_method         = "{{ .State.UpdateMethod }}"
-			{{- if .State.Username }}
-			username              = "{{ .State.Username }}"
-			{{- end }}
-			{{- if .State.Password }}
-			password              = "{{ .State.Password }}"
-			{{- end }}
-			skip_cert_verification = {{ .State.SkipCertVerification }}
-			{{- if gt .State.RetryMax 0 }}
-			retry_max             = {{ .State.RetryMax }}
-			{{- end }}
-			{{- if gt .State.RetryWaitMin 0 }}
-			retry_wait_min        = {{ .State.RetryWaitMin }}
-			{{- end }}
-			{{- if gt .State.RetryWaitMax 0 }}
-			retry_wait_max        = {{ .State.RetryWaitMax }}
 			{{- end }}
 		}
 	}

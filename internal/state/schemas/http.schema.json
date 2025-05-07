@@ -6,6 +6,9 @@
     "address"
   ],
   "properties": {
+    "plugin": {
+      "type": "string"
+    },
     "address": {
       "type": "string",
       "description": "The address of the REST endpoint."

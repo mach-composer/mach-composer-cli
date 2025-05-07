@@ -5,6 +5,25 @@ import (
 	"testing"
 )
 
+func TestHttpRendererBackendMinimal(t *testing.T) {
+	r := HttpRenderer{
+		state: &HttpState{
+			Address: "https://example.com/state",
+		},
+		BaseRenderer: BaseRenderer{
+			identifier: "test-1/component-1",
+		},
+	}
+
+	b, err := r.Backend()
+	assert.NoError(t, err)
+	assert.Equal(t, `
+	backend "http" {
+		address               = "https://example.com/state"
+	}
+	`, b)
+}
+
 func TestHttpRendererBackend(t *testing.T) {
 	r := HttpRenderer{
 		state: &HttpState{
@@ -61,11 +80,7 @@ EOT
 func TestHttpRendererRemoteState(t *testing.T) {
 	r := HttpRenderer{
 		state: &HttpState{
-			Address:              "https://example.com/state",
-			UpdateMethod:         "POST",
-			Username:             "user",
-			Password:             "pass",
-			SkipCertVerification: false,
+			Address: "https://example.com/state",
 		},
 		BaseRenderer: BaseRenderer{
 			identifier: "test-1/component-1",
@@ -81,10 +96,6 @@ func TestHttpRendererRemoteState(t *testing.T) {
 
 		config = {
 			address               = "https://example.com/state"
-			update_method         = "POST"
-			username              = "user"
-			password              = "pass"
-			skip_cert_verification = false
 		}
 	}
 	`, rs)
