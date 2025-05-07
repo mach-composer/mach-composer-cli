@@ -30,6 +30,9 @@ func (tcr *TerraformCloudRenderer) Backend() (string, error) {
 	  {{ if .State.Hostname }}
 	  hostname = "{{ .State.Hostname }}"
 	  {{ end }}
+	  {{ if .State.Token }}
+	  token = "{{ .State.Token }}"
+	  {{ end }}
 	  {{ if .State.Workspaces }}
 	  workspaces {
 		{{ if .State.Workspaces.Name }}
@@ -56,7 +59,7 @@ func (tcr *TerraformCloudRenderer) RemoteState() (string, error) {
 
 	template := `
 	data "terraform_remote_state" "{{ .Key }}" {
-	  backend = "aws"
+	  backend = "remote"
 	
 	  config = {
 	    organization = "{{ .State.Organization }}"

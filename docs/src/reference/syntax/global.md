@@ -42,7 +42,7 @@ and Terraform provider versions.
 
 ### Required
 
-- `plugin` (String) The plugin to use. One of `aws`, `gcp`, `azure` or `local`.
+- `plugin` (String) The plugin to use. One of `aws`, `azure`, `gcp`, `http`, `local` or `terraform_cloud`.
   This will determine what remote state backend configs will be available
 
 ### Dynamic
@@ -50,14 +50,46 @@ and Terraform provider versions.
 Depending on the `plugin` value, the following blocks will be merged into
 the `remote_state` block:
 
-- `azure` (Block) [Azure](#nested-schema-for-azure) state configuration for
-  Azure backend
 - `aws` (Block) [AWS](#nested-schema-for-aws) state configuration for AWS
   backend
+- `azure` (Block) [Azure](#nested-schema-for-azure) state configuration for
+  Azure backend
 - `gcp` (Block) [GCP](#nested-schema-for-gcp) state configuration for GCP
   backend
+- `http` (Block) [HTTP](#nested-schema-for-http) state configuration for
+  HTTP backend
 - `local` (Block) [Local](#nested-schema-for-local) state configuration for
   local backend
+- `terraform_cloud` (Block) [Terraform Cloud](#nested-schema-for-terraform_cloud)
+  state configuration for Terraform Cloud backend
+
+## Nested schema for `aws`
+
+An AWS S3 state backend can be configured with the following options
+
+### Example
+
+```yaml
+remote_state:
+  plugin: aws
+  bucket: <your bucket>
+  region: <your region>
+  key_prefix: <your key prefix>
+  role_arn: <your role arn>
+```
+
+### Required
+
+- `bucket` (String) S3 bucket name
+- `region` (String) AWS region
+- `key_prefix` (String) Key prefix for each individual Terraform state
+
+### Optional
+
+- `role_arn` - Role ARN to access S3 bucket with
+- `lock_table` - DynamoDB lock table
+- `encrypt` - Enable server side encryption of the state file. Defaults
+  to `True`
 
 ## Nested schema for `azure`
 
@@ -89,34 +121,6 @@ as the environment
 - `state_folder` (String) Folder name for each individual Terraform state.
   If left empty the site identifier will be used
 
-## Nested schema for `aws`
-
-An AWS S3 state backend can be configured with the following options
-
-### Example
-
-```yaml
-remote_state:
-  plugin: aws
-  bucket: <your bucket>
-  region: <your region>
-  key_prefix: <your key prefix>
-  role_arn: <your role arn>
-```
-
-### Required
-
-- `bucket` (String) S3 bucket name
-- `region` (String) AWS region
-- `key_prefix` (String) Key prefix for each individual Terraform state
-
-### Optional
-
-- `role_arn` - Role ARN to access S3 bucket with
-- `lock_table` - DynamoDB lock table
-- `encrypt` - Enable server side encryption of the state file. Defaults
-  to `True`
-
 ## Nested schema for `gcp`
 
 A GCP state backend can be configured with the following options
@@ -135,9 +139,42 @@ remote_state:
 - `bucket` (String) GCS bucket name
 - `prefix` (String) Prefix for each individual Terraform state
 
+## Nested schema for `http`
+
+An HTTP state backend can be configured with the following options.
+
+### Example
+
+```yaml
+remote_state:
+  plugin: http
+  address: https://example.com/state
+```
+
+### Required
+
+- `address` (String) The address of the REST endpoint.
+
+### Optional
+
+- `update_method` (String) HTTP method to use when updating state. Defaults to `POST`.
+- `lock_address` (String) The address of the lock REST endpoint. Defaults to disabled.
+- `lock_method` (String) The HTTP method to use when locking. Defaults to `LOCK`.
+- `unlock_address` (String) The address of the unlock REST endpoint. Defaults to disabled.
+- `unlock_method` (String) The HTTP method to use when unlocking. Defaults to `UNLOCK`.
+- `username` (String) The username for HTTP basic authentication.
+- `password` (String) The password for HTTP basic authentication.
+- `skip_cert_verification` (Boolean) Whether to skip TLS verification. Defaults to `false`.
+- `retry_max` (Integer) The number of HTTP request retries. Defaults to `2`.
+- `retry_wait_min` (Integer) The minimum time in seconds to wait between HTTP request attempts. Defaults to `1`.
+- `retry_wait_max` (Integer) The maximum time in seconds to wait between HTTP request attempts. Defaults to `30`.
+- `client_certificate_pem` (String) A PEM-encoded certificate used by the server to verify the client during mutual TLS (mTLS) authentication.
+- `client_private_key_pem` (String) A PEM-encoded private key, required if `client_certificate_pem` is specified.
+- `client_ca_certificate_pem` (String) A PEM-encoded CA certificate chain used by the client to verify server certificates during TLS authentication.
+
 ## Nested schema for `local`
 
-A GCP state backend can be configured with the following options
+A local state backend can be configured with the following options
 
 ### Example
 
@@ -151,3 +188,27 @@ remote_state:
 
 - `path` (String) Local path to store state files. Defaults to
   `./terraform.tfstate`
+
+## Nested schema for `terraform_cloud`
+
+A Terraform Cloud state backend can be configured with the following options.
+
+### Example
+
+```yaml
+remote_state:
+  plugin: terraform_cloud
+  organization: <your organization>
+```
+
+### Required
+
+- `organization` (String) The name of the Terraform Cloud organization.
+
+### Optional
+
+- `hostname` (String) The hostname of the Terraform Cloud instance. Defaults to `app.terraform.io`.
+- `token` (String) The token used to authenticate with the Terraform Cloud backend. It is recommended to omit this field and use `terraform login` or configure credentials in the CLI config file instead.
+- `workspaces` (Block) Configuration for workspaces:
+  - `name` (String) The name of the workspace.
+  - `prefix` (String) A prefix for dynamically created workspaces.

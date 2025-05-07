@@ -11,10 +11,11 @@ type Type string
 
 const (
 	DefaultType        Type = ""
-	LocalType          Type = "local"
 	AwsType            Type = "aws"
-	GcpType            Type = "gcp"
 	AzureType          Type = "azure"
+	GcpType            Type = "gcp"
+	HttpType           Type = "http"
+	LocalType          Type = "local"
 	TerraformCloudType Type = "terraform_cloud"
 )
 
@@ -54,21 +55,6 @@ func NewRenderer(typ Type, identifier string, data map[string]any) (Renderer, er
 	case DefaultType:
 		//Fallthrough to local
 		fallthrough
-	case LocalType:
-		state := &LocalState{}
-		if err := mapstructure.Decode(data, state); err != nil {
-			return nil, err
-		}
-		if err := defaults.Set(state); err != nil {
-			return nil, err
-		}
-		return &LocalRenderer{
-			BaseRenderer: BaseRenderer{
-				identifier: identifier,
-				stateKey:   key,
-			},
-			state: state,
-		}, nil
 	case AwsType:
 		state := &AwsState{}
 		if err := mapstructure.Decode(data, state); err != nil {
@@ -78,6 +64,36 @@ func NewRenderer(typ Type, identifier string, data map[string]any) (Renderer, er
 			return nil, err
 		}
 		return &AwsRenderer{
+			BaseRenderer: BaseRenderer{
+				identifier: identifier,
+				stateKey:   key,
+			},
+			state: state,
+		}, nil
+	case AzureType:
+		state := &AzureState{}
+		if err := mapstructure.Decode(data, state); err != nil {
+			return nil, err
+		}
+		if err := defaults.Set(state); err != nil {
+			return nil, err
+		}
+		return &AzureRenderer{
+			BaseRenderer: BaseRenderer{
+				identifier: identifier,
+				stateKey:   key,
+			},
+			state: state,
+		}, nil
+	case LocalType:
+		state := &LocalState{}
+		if err := mapstructure.Decode(data, state); err != nil {
+			return nil, err
+		}
+		if err := defaults.Set(state); err != nil {
+			return nil, err
+		}
+		return &LocalRenderer{
 			BaseRenderer: BaseRenderer{
 				identifier: identifier,
 				stateKey:   key,
@@ -99,15 +115,15 @@ func NewRenderer(typ Type, identifier string, data map[string]any) (Renderer, er
 			},
 			state: state,
 		}, nil
-	case AzureType:
-		state := &AzureState{}
+	case HttpType:
+		state := &HttpState{}
 		if err := mapstructure.Decode(data, state); err != nil {
 			return nil, err
 		}
 		if err := defaults.Set(state); err != nil {
 			return nil, err
 		}
-		return &AzureRenderer{
+		return &HttpRenderer{
 			BaseRenderer: BaseRenderer{
 				identifier: identifier,
 				stateKey:   key,
