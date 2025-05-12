@@ -130,7 +130,7 @@ jobs:
         with:
           files: |
             ./docker-bake.hcl
-            ${{ steps.meta.outputs.bake-file }}
+            cwd://${{ steps.meta.outputs.bake-file }}
           targets: default-${{ matrix.cloud }}
           set: |
             base.args.TERRAFORM_VERSION=${{ matrix.terraform }}
@@ -171,7 +171,7 @@ jobs:
         with:
           files: |
             ./docker-bake.hcl
-            ${{ steps.meta.outputs.bake-file }}
+            cwd://${{ steps.meta.outputs.bake-file }}
           targets: cli
           push: true
 
