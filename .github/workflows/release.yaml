@@ -80,7 +80,7 @@ jobs:
       DEFAULT_TERRAFORM: "1.3.10"
     strategy:
       matrix:
-        terraform: [ "0.14.11", "1.1.9", "1.2.9", "1.3.10", "1.4.7", "1.5.7" ]
+        terraform: [ "0.14.11", "1.1.9", "1.2.9", "1.3.10", "1.4.7", "1.5.7", "1.11.4" ]
         cloud: [ "gcp", "aws", "azure", "all" ]
 
     runs-on: ubuntu-latest
@@ -130,7 +130,7 @@ jobs:
         with:
           files: |
             ./docker-bake.hcl
-            ${{ steps.meta.outputs.bake-file }}
+            cwd://${{ steps.meta.outputs.bake-file }}
           targets: default-${{ matrix.cloud }}
           set: |
             base.args.TERRAFORM_VERSION=${{ matrix.terraform }}
@@ -171,7 +171,7 @@ jobs:
         with:
           files: |
             ./docker-bake.hcl
-            ${{ steps.meta.outputs.bake-file }}
+            cwd://${{ steps.meta.outputs.bake-file }}
           targets: cli
           push: true
 
