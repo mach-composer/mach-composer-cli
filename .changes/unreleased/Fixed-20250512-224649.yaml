@@ -1,3 +1,0 @@
-kind: Fixed
-body: Added `cwd://` prefix for bake-file reference in release github action
-time: 2025-05-12T22:46:49.914831+02:00
