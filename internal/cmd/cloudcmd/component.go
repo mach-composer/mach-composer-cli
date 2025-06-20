@@ -89,7 +89,7 @@ var componentListCmd = &cobra.Command{
 var componentRegisterVersionCmd = &cobra.Command{
 	Use:   "register-component-version [name] [version]",
 	Short: "Register a new version for an existing component",
-	Args:  cobra.MinimumNArgs(1),
+	Args:  cobra.RangeArgs(1, 2),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		ctx := cmd.Context()
 		componentKey := args[0]
@@ -126,10 +126,15 @@ var componentRegisterVersionCmd = &cobra.Command{
 			return err
 		}
 
-		if len(args) < 2 {
-			return fmt.Errorf("missing version argument")
+		var version string
+		if len(args) == 1 && !auto {
+			return fmt.Errorf("you must provide a version when not using the --auto flag")
+		} else if len(args) >= 2 {
+			if auto {
+				log.Warn().Msgf("ignoring --auto flag, version will be set to %s", args[1])
+			}
+			version = args[1]
 		}
-		version := args[1]
 
 		return cloud.RegisterComponentVersion(ctx, cloud.NewClientWrapper(client), gitutils.NewGitRepositoryWrapper(), organization, project, componentKey, branch, version, dryRun, auto, createComponent, gitFilterPaths)
 	},
