@@ -36,12 +36,19 @@ func (m *MccSdkClientWrapper) PushComponentVersionCommits(ctx context.Context, o
 	return err
 }
 
+// GetLatestComponentVersion retrieves the latest version of a component for a given branch. If no version is found,
+// it returns nil without an error.
 func (m *MccSdkClientWrapper) GetLatestComponentVersion(ctx context.Context, organization, project, componentKey, branch string) (*mccsdk.ComponentVersion, error) {
-	r, _, err := m.client.
+	r, res, err := m.client.
 		ComponentsApi.
 		ComponentLatestVersion(ctx, organization, project, componentKey).
 		Branch(branch).
 		Execute()
+
+	// Small hack because the mccsdk cannot deserialize an empty response body
+	if res != nil && res.StatusCode == 200 {
+		return nil, nil
+	}
 
 	return r, err
 }
