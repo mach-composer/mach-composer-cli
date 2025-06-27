@@ -31,7 +31,11 @@ locals {
 
 # Component: component-1
 module "component-1" {
-  source = "{{ .PWD }}/testdata/modules/application"
+  source            = "{{ .PWD }}/testdata/modules/application"
+  component_version = "test"
+  environment       = "test"
+  site              = "test-1"
+  tags              = { "Component" : "component-1", "Site" : "test-1", "Version" : "test" }
 }
 
 output "component-1" {
@@ -42,7 +46,11 @@ output "component-1" {
 
 # Component: component-2
 module "component-2" {
-  source = "{{ .PWD }}/testdata/modules/application"
+  source            = "{{ .PWD }}/testdata/modules/application"
+  component_version = "test"
+  environment       = "test"
+  site              = "test-1"
+  tags              = { "Component" : "component-2", "Site" : "test-1", "Version" : "test" }
 }
 
 output "component-2" {

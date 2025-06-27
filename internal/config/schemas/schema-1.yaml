@@ -75,7 +75,6 @@ definitions:
     required:
       - environment
       - terraform_config
-      - cloud
     properties:
       environment:
         type: string
@@ -101,6 +100,11 @@ definitions:
         patternProperties:
           "^[a-zA-Z-]+$":
             type: string
+      provider_configs:
+        description: "A list of provider configurations to generate."
+        type: array
+        items:
+          $ref: "#/definitions/ProviderConfig"
       remote_state:
         allOf:
           - type: object
@@ -118,6 +122,22 @@ definitions:
                   - local
                   - terraform_cloud
           - $ref: "#/definitions/RemoteState"
+
+  ProviderConfig:
+    type: object
+    description: Provider configuration.
+    required:
+      - name
+    properties:
+      name:
+        type: string
+      source:
+        type: string
+      version:
+        type: string
+      configuration:
+        type: object
+        additionalProperties: true
 
   RemoteState:
     type: object
