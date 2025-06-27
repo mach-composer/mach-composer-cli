@@ -1,0 +1,3 @@
+kind: Fixed
+body: Fixed incorrect register-component-version auto and version interpolation
+time: 2025-06-20T16:55:00.912500131+02:00

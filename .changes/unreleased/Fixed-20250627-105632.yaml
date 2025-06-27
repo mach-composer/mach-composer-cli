@@ -1,0 +1,3 @@
+kind: Fixed
+body: Ensured that GetLatestComponentVersion returns nil when response is 200 but deserialization failed
+time: 2025-06-27T10:56:32.590143085+02:00
