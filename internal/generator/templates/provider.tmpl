@@ -1,0 +1,5 @@
+provider "{{ .Name }}" {
+{{- range $key, $value := .Configuration }}
+    {{ $key }} = {{ tfValue $value }}
+{{- end }}
+}
