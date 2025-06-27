@@ -1,0 +1,9 @@
+{{ .Name }} = {
+{{- if .Source }}
+    source = "{{ .Source }}"
+{{- end }}
+
+{{- if .Version }}
+    version = "{{ .Version }}"
+{{- end }}
+}

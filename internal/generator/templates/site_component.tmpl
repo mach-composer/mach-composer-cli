@@ -10,7 +10,6 @@ module "{{ .ComponentName }}" {
     version = "{{ .Version }}"
 {{ end }}
 
-
 {{ if .ComponentVariables }}
     {{ .ComponentVariables }}
 {{ end }}
@@ -24,6 +23,11 @@ module "{{ .ComponentName }}" {
     environment             = "{{ .Environment }}"
     site                    = "{{ .SiteName }}"
     tags                    = local.tags
+{{ else }}
+    component_version       = "{{ .ComponentVersion }}"
+    environment             = "{{ .Environment }}"
+    site                    = "{{ .SiteName }}"
+    tags                    = {{ tfValue .ComponentTags }}
 {{ end }}
 
 {{ range $item := .PluginVariables }}

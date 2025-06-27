@@ -5,7 +5,9 @@ import (
 	"github.com/mach-composer/mach-composer-cli/internal/cli"
 	"github.com/mach-composer/mach-composer-cli/internal/config/variable"
 	"github.com/mach-composer/mach-composer-cli/internal/utils"
+	"github.com/rs/zerolog/log"
 	"gopkg.in/yaml.v3"
+	"slices"
 )
 
 type GlobalConfig struct {
@@ -19,8 +21,9 @@ type GlobalConfig struct {
 }
 
 type TerraformConfig struct {
-	Providers   map[string]string `yaml:"providers"`
-	RemoteState map[string]any    `yaml:"remote_state"`
+	Providers       map[string]string `yaml:"providers"`
+	ProviderConfigs ProviderConfigs   `yaml:"provider_configs"`
+	RemoteState     map[string]any    `yaml:"remote_state"`
 }
 
 func parseGlobalNode(cfg *MachConfig, globalNode *yaml.Node) error {
@@ -53,6 +56,20 @@ func parseGlobalNode(cfg *MachConfig, globalNode *yaml.Node) error {
 
 		if err := plugin.SetGlobalConfig(data); err != nil {
 			return fmt.Errorf("%s.SetGlobalConfig failed: %w", plugin.Name, err)
+		}
+	}
+
+	if cfg.Global.TerraformConfig != nil {
+		pluginNames := cfg.Plugins.AllNames()
+		providerNames, err := cfg.Global.TerraformConfig.ProviderConfigs.Names()
+		if err != nil {
+			return fmt.Errorf("failed to get provider names: %w", err)
+		}
+
+		for _, providerName := range providerNames {
+			if slices.Contains(pluginNames, providerName) {
+				log.Warn().Str("plugin", providerName).Str("name", providerName).Msgf("plugin exists with the same name as a provider: %s, this might cause duplicate providers in the generated Terraform code", providerName)
+			}
 		}
 	}
 

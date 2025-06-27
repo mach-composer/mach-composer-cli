@@ -15,7 +15,11 @@ terraform {
 # Resources
 # Component: component-1
 module "component-1" {
-  source = "{{ .PWD }}/testdata/modules/application"
+  source            = "{{ .PWD }}/testdata/modules/application"
+  component_version = "test"
+  environment       = "test"
+  site              = "test-2"
+  tags              = { "Component" : "component-1", "Site" : "test-2", "Version" : "test" }
 }
 
 output "component-1" {

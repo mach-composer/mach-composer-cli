@@ -1,0 +1,21 @@
+provider "{{ .Name }}" {
+{{- range $key, $value := .Configuration }}
+    {{ if isMap $value -}}
+        {{ $key }} {
+        {{- range $key2, $value2 := $value }}
+            {{ if isMap $value2 -}}
+                {{ $key2 }} {
+                {{- range $key3, $value3 := $value2 }}
+                    {{ $key3 }} = {{ tfValue $value3 }}
+                {{- end }}
+                }
+            {{- else }}
+                {{ $key2 }} = {{ tfValue $value2 }}
+            {{- end }}
+        {{- end }}
+        }
+    {{- else }}
+        {{ $key }} = {{ tfValue $value }}
+    {{- end }}
+{{- end }}
+}
