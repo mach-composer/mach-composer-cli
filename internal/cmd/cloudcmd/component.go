@@ -78,11 +78,10 @@ var componentListCmd = &cobra.Command{
 			}
 		}
 
-		writeTable(os.Stdout,
+		return writeTable(os.Stdout,
 			[]string{"Created At", "Key"},
 			data,
 		)
-		return nil
 	},
 }
 
@@ -209,12 +208,10 @@ var componentListVersionCmd = &cobra.Command{
 			}
 		}
 
-		writeTable(os.Stdout,
+		return writeTable(os.Stdout,
 			[]string{"Created At", "Key"},
 			data,
 		)
-
-		return nil
 	},
 }
 
@@ -252,12 +249,10 @@ var componentDescribeVersionCmd = &cobra.Command{
 			}
 		}
 
-		writeTable(os.Stdout,
+		return writeTable(os.Stdout,
 			[]string{"Date", "Commit", "Author", "Message"},
 			data,
 		)
-
-		return nil
 	},
 }
 

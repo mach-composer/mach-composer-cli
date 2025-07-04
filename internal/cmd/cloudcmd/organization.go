@@ -35,8 +35,7 @@ var listOrganizationCmd = &cobra.Command{
 				record.Key,
 			}
 		}
-		writeTable(os.Stdout, []string{"Created At", "Name", "Key"}, data)
-		return nil
+		return writeTable(os.Stdout, []string{"Created At", "Name", "Key"}, data)
 	},
 }
 
