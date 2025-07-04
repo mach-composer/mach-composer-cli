@@ -47,7 +47,7 @@ If you want to install a specific version, you can specify the `VERSION` environ
 
 ```
 $ export VERSION=v2.20.0
-$ curl -sfL https://raw.githubusercontent.com/mach-composer/mach-composer-cli/blob/main/scripts/install-mach-composer.sh | bash
+$ curl -sfL https://raw.githubusercontent.com/mach-composer/mach-composer-cli/refs/heads/main/scripts/install-mach-composer.sh | bash
 ```
 
 ### Brew
