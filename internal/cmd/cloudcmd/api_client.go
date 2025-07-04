@@ -61,11 +61,10 @@ var listApiClientCmd = &cobra.Command{
 			}
 		}
 
-		writeTable(os.Stdout,
+		return writeTable(os.Stdout,
 			[]string{"Created At", "ClientWrapper ID", "ClientWrapper Secret", "Last Used", "Description", "Scopes"},
 			data,
 		)
-		return nil
 	},
 }
 

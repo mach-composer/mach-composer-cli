@@ -1,12 +1,10 @@
 package cloudcmd
 
 import (
-	"fmt"
-	"io"
-	"os"
-
 	"github.com/olekukonko/tablewriter"
+	"github.com/olekukonko/tablewriter/tw"
 	"github.com/spf13/cobra"
+	"io"
 )
 
 func Must(err error) {
@@ -23,21 +21,17 @@ func MustGetString(cmd *cobra.Command, key string) string {
 	return value
 }
 
-func writeTable(writer io.Writer, header []string, data [][]string) {
-	table := tablewriter.NewWriter(os.Stdout)
-	table.SetAutoWrapText(false)
-	table.SetAutoFormatHeaders(true)
-	table.SetHeaderAlignment(tablewriter.ALIGN_LEFT)
-	table.SetAlignment(tablewriter.ALIGN_LEFT)
-	table.SetCenterSeparator("")
-	table.SetColumnSeparator("")
-	table.SetRowSeparator("-")
-	table.SetHeaderLine(true)
-	table.SetBorder(true)
-	table.SetTablePadding("\t") // pad with tabs
-	table.SetNoWhiteSpace(true)
-	table.SetHeader(header)
-	table.AppendBulk(data)
-	table.Render() // Send output
-	fmt.Println()
+func writeTable(writer io.Writer, header []string, data [][]string) error {
+	table := tablewriter.NewWriter(writer)
+	table.Configure(func(cfg *tablewriter.Config) {
+		cfg.Row.Formatting.AutoWrap = tw.WrapNone
+		cfg.Header.Formatting.AutoFormat = tw.On
+		cfg.Header.Alignment.Global = tw.AlignLeft
+		cfg.Row.Alignment.Global = tw.AlignLeft
+		cfg.Behavior.TrimSpace = tw.On
+	})
+	table.Header(header)
+	_ = table.Bulk(data)
+
+	return table.Render()
 }
