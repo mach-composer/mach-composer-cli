@@ -76,6 +76,12 @@ func renderSiteTerraformConfig(cfg *config.MachConfig, n *graph.Site) (string, e
 		}
 	}
 
+	requirements, err := renderRequirements(cfg)
+	if err != nil {
+		return "", fmt.Errorf("failed to render requirements: %w", err)
+	}
+	providers = append(providers, requirements...)
+
 	s, ok := cfg.StateRepository.Get(n.Identifier())
 	if !ok {
 		return "", fmt.Errorf("state repository does not have a backend for %s", n.Identifier())
@@ -115,6 +121,12 @@ func renderSiteResources(cfg *config.MachConfig, n *graph.Site) (string, error) 
 			resources = append(resources, content)
 		}
 	}
+
+	providers, err := renderProviders(cfg)
+	if err != nil {
+		return "", fmt.Errorf("failed to render providers: %w", err)
+	}
+	resources = append(resources, providers...)
 
 	return utils.RenderGoTemplate(string(tpl), resources)
 }
