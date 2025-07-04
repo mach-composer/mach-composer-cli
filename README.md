@@ -34,14 +34,30 @@ organisation.
 
 ## Installation
 
-### MacOS
+### Shell script
+
+Run the following command to install MACH composer on your system. The script will download the latest release of MACH composer and install it in your
+`$HOME/bin` directory. Make sure that this directory is in your `$PATH`.
+
+```
+$ curl -sfL https://raw.githubusercontent.com/mach-composer/mach-composer-cli/f08424b1bc38086696767a1ce05e1b0fbb199326/scripts/install-mach-composer.sh | bash
+```
+
+If you want to install a specific version, you can specify the `VERSION` environment variable:
+
+```
+$ export VERSION=v2.20.0
+$ curl -sfL https://raw.githubusercontent.com/mach-composer/mach-composer-cli/blob/main/scripts/install-mach-composer.sh | bash
+```
+
+### Brew
 
 ```bash
 brew tap mach-composer/mach-composer
 brew install mach-composer
 ```
 
-### Windows
+### Chocolatey (Windows)
 
 Windows installation through Chocolatery is currently unstable. We recommend to [download the latest release from GitHub
 Releases](https://github.com/mach-composer/mach-composer-cli/releases/latest). Also, it is recommended to run MACH composer through [WSL](https://learn.microsoft.com/en-us/windows/wsl/install).
