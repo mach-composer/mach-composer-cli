@@ -10,8 +10,6 @@ type Graph struct {
 	StartNode Node
 }
 
-type Vertices []Node
-
 // Vertices returns all the vertex that are contained in the graph
 func (g *Graph) Vertices() Vertices {
 	var vertices Vertices
@@ -46,4 +44,64 @@ func (g *Graph) Routes(source, target string) ([]Path, error) {
 	}
 
 	return routes, nil
+}
+
+func (g *Graph) ExtractSubGraph(root Node) (*Graph, error) {
+	// Create a new graph to hold the pruned subgraph
+	newGraph := &Graph{
+		Graph:     graph.New(func(n Node) string { return n.Path() }, graph.Directed(), graph.Tree(), graph.PreventCycles()),
+		StartNode: root,
+	}
+	if err := newGraph.AddVertex(root); err != nil {
+		return nil, err
+	}
+
+	var addNodeAndChildren func(parent Node) error
+	addNodeAndChildren = func(parent Node) error {
+		children, err := parent.Children()
+		if err != nil {
+			return err
+		}
+		for _, child := range children {
+			if err := newGraph.AddVertex(child); err != nil {
+				return err
+			}
+			if err := newGraph.AddEdge(parent.Path(), child.Path()); err != nil {
+				return err
+			}
+			if err := addNodeAndChildren(child); err != nil {
+				return err
+			}
+		}
+		return nil
+	}
+
+	if err := addNodeAndChildren(root); err != nil {
+		return nil, err
+	}
+
+	return newGraph, nil
+}
+
+type Vertices []Node
+
+func (v Vertices) Filter(t Type) Vertices {
+	var nv Vertices
+
+	for _, vx := range v {
+		if vx.Type() == t {
+			nv = append(nv, vx)
+		}
+	}
+	return nv
+}
+
+func (v Vertices) FilterByIdentifier(identifier string) Node {
+	for _, vx := range v {
+		if vx.Identifier() == identifier {
+			return vx
+		}
+	}
+
+	return nil
 }

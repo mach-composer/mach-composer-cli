@@ -123,7 +123,10 @@ func (gr *GraphRunner) run(ctx context.Context, g *graph.Graph, f executorFunc, 
 		return err
 	}
 
-	batches := gr.batch(g)
+	batches, err := gr.batch(g)
+	if err != nil {
+		return fmt.Errorf("failed to create batches: %w", err)
+	}
 
 	keys := maps.Keys(batches)
 	sort.Ints(keys)
