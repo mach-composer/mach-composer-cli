@@ -2,8 +2,9 @@ package batcher
 
 import "github.com/mach-composer/mach-composer-cli/internal/graph"
 
-func NaiveBatchFunc() BatchFunc {
-	return func(g *graph.Graph) map[int][]graph.Node {
+// simpleBatchFunc returns a BatchFunc that batches nodes based on their depth in the graph.
+func simpleBatchFunc() BatchFunc {
+	return func(g *graph.Graph) (map[int][]graph.Node, error) {
 		batches := map[int][]graph.Node{}
 
 		var sets = map[string][]graph.Path{}
@@ -24,6 +25,6 @@ func NaiveBatchFunc() BatchFunc {
 			batches[mx] = append(batches[mx], n)
 		}
 
-		return batches
+		return batches, nil
 	}
 }

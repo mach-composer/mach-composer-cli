@@ -31,6 +31,9 @@ type Node interface {
 	//Parents returns the direct parents of the node
 	Parents() ([]Node, error)
 
+	//Children returns the direct children of the node. This is used to determine the nodes that are dependent on this node.
+	Children() ([]Node, error)
+
 	//Independent returns true if the node can be deployed independently, false otherwise
 	Independent() bool
 
@@ -123,6 +126,26 @@ func (n *baseNode) Parents() ([]Node, error) {
 	}
 
 	return parents, nil
+}
+
+func (n *baseNode) Children() ([]Node, error) {
+	pm, err := n.graph.AdjacencyMap()
+	if err != nil {
+		return nil, err
+	}
+
+	eg := pm[n.Path()]
+
+	var children []Node
+	for _, pathElement := range eg {
+		p, err := n.graph.Vertex(pathElement.Target)
+		if err != nil {
+			return nil, err
+		}
+		children = append(children, p)
+	}
+
+	return children, nil
 }
 
 func (n *baseNode) Independent() bool {

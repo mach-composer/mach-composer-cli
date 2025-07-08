@@ -65,11 +65,14 @@ func planFunc(cmd *cobra.Command, _ []string) error {
 		return err
 	}
 
-	r := runner.NewGraphRunner(
-		batcher.NaiveBatchFunc(),
-		hash.Factory(cfg),
-		commonFlags.workers,
-	)
+	b, err := batcher.Factory(cfg)
+	if err != nil {
+		return err
+	}
+
+	h := hash.Factory(cfg)
+
+	r := runner.NewGraphRunner(b, h, commonFlags.workers)
 
 	return r.TerraformPlan(ctx, dg, &runner.PlanOptions{
 		ForceInit:             planFlags.forceInit,
