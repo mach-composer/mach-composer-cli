@@ -16,7 +16,7 @@ properties:
       - type: string
       - type: object
         properties:
-          '$ref':
+          "$ref":
             type: string
       - type: array
         items:
@@ -43,7 +43,7 @@ definitions:
         type: object
         additionalProperties: false
         patternProperties:
-          "^[a-zA-Z-]+$":
+          "^[a-zA-Z0-9-]+$":
             type: object
             additionalProperties: false
             properties:
@@ -121,7 +121,7 @@ definitions:
 
   RemoteState:
     type: object
-    properties: { }
+    properties: {}
 
   SiteConfig:
     type: object
@@ -244,7 +244,7 @@ definitions:
     description: |
       Variables are used to configure the components. They are passed to the terraform module as a terraform 
       variable with the name `variables` containing an object with the same fields:
-      
+
       ```yaml
       components:
       - name: my-component
@@ -252,7 +252,7 @@ definitions:
           my_string_field: "my string value"
           my_number_field: 42
       ```
-      
+
       ```
       variable "variables" {
         type = object({
@@ -267,7 +267,7 @@ definitions:
     description: |
       Secrets are used to configure the components. They are passed to the terraform module as a terraform 
       variable with the name `secrets` containing an object with the same fields:
-      
+
       ```yaml
       components:
       - name: my-component
@@ -275,7 +275,7 @@ definitions:
           my_string_field: "my string value"
           my_number_field: 42
       ```
-      
+
       ```
       variable "secrets" {
         type = object({
@@ -293,11 +293,11 @@ definitions:
       - site: deploy site-based; this means all components will be deployed as part of a single terraform file
       - site-component: deploy site-component based; this means each site component will be deployed as a separate terraform 
       file
-      
+
       These configurations can be set both at the root level and per site component. The combination of root site with 
       specific site components is also supported (this will deploy all site components as part of a single terraform file,
       excepting the ones that have a specific deployment configuration). The other way around is not supported.
-      
+
       The default is site.
     properties:
       type:
