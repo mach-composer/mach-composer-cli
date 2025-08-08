@@ -19,6 +19,7 @@ type componentContext struct {
 	ComponentHash       string
 	ComponentVariables  string
 	ComponentSecrets    string
+	ComponentTags       map[string]string
 	SiteName            string
 	Environment         string
 	SourceType          string
@@ -76,18 +77,22 @@ func renderSiteComponent(ctx context.Context, cfg *config.MachConfig, n *graph.S
 }
 
 // renderSiteComponentTerraformConfig uses templates/terraform.tmpl to generate a terraform snippet for each component
-func renderSiteComponentTerraformConfig(cfg *config.MachConfig, n graph.Node) (string, error) {
+func renderSiteComponentTerraformConfig(cfg *config.MachConfig, n *graph.SiteComponent) (string, error) {
 	tpl, err := templates.ReadFile("templates/terraform.tmpl")
 	if err != nil {
 		return "", err
 	}
 
-	site := n.(*graph.SiteComponent).SiteConfig
-	siteComponent := n.(*graph.SiteComponent).SiteComponentConfig
-
 	var providers []string
-	for _, plugin := range cfg.Plugins.Names(siteComponent.Definition.Integrations...) {
-		content, err := plugin.RenderTerraformProviders(site.Identifier)
+
+	genericProviderRequirements, err := renderRequirements(cfg)
+	if err != nil {
+		return "", fmt.Errorf("failed to render generic providers: %w", err)
+	}
+	providers = append(providers, genericProviderRequirements...)
+
+	for _, plugin := range cfg.Plugins.Names(n.SiteComponentConfig.Definition.Integrations...) {
+		content, err := plugin.RenderTerraformProviders(n.SiteConfig.Identifier)
 		if err != nil {
 			return "", fmt.Errorf("plugin %s failed to render providers: %w", plugin.Name, err)
 		}
@@ -98,7 +103,7 @@ func renderSiteComponentTerraformConfig(cfg *config.MachConfig, n graph.Node) (s
 
 	s, ok := cfg.StateRepository.Get(n.Identifier())
 	if !ok {
-		return "", fmt.Errorf("state repository does not have a backend for site %s", site.Identifier)
+		return "", fmt.Errorf("state repository does not have a backend for site %s", n.SiteConfig.Identifier)
 	}
 
 	bc, err := s.Backend()
@@ -113,7 +118,7 @@ func renderSiteComponentTerraformConfig(cfg *config.MachConfig, n graph.Node) (s
 	}{
 		Providers:     providers,
 		BackendConfig: bc,
-		IncludeSOPS:   cfg.Variables.HasEncrypted(site.Identifier),
+		IncludeSOPS:   cfg.Variables.HasEncrypted(n.SiteConfig.Identifier),
 	}
 	return utils.RenderGoTemplate(string(tpl), templateContext)
 }
@@ -125,7 +130,11 @@ func renderSiteComponentResources(cfg *config.MachConfig, n *graph.SiteComponent
 		return "", err
 	}
 
-	var resources []string
+	resources, err := renderProviders(cfg)
+	if err != nil {
+		return "", fmt.Errorf("failed to render generic providers: %w", err)
+	}
+
 	for _, plugin := range cfg.Plugins.Names(n.SiteComponentConfig.Definition.Integrations...) {
 		content, err := plugin.RenderTerraformResources(n.SiteConfig.Identifier)
 		if err != nil {
@@ -158,11 +167,17 @@ func renderComponentModule(_ context.Context, cfg *config.MachConfig, n *graph.S
 		SiteName:         n.SiteConfig.Identifier,
 		Environment:      cfg.Global.Environment,
 		Version:          n.SiteComponentConfig.Definition.Version,
-		SourceType:       string(sourceType),
-		PluginResources:  []string{},
-		PluginVariables:  []string{},
-		PluginDependsOn:  []string{},
-		PluginProviders:  []string{},
+		//TODO: allow setting additional tags via config
+		ComponentTags: map[string]string{
+			"Site":      n.SiteConfig.Identifier,
+			"Component": n.SiteComponentConfig.Name,
+			"Version":   n.SiteComponentConfig.Definition.Version,
+		},
+		SourceType:      string(sourceType),
+		PluginResources: []string{},
+		PluginVariables: []string{},
+		PluginDependsOn: []string{},
+		PluginProviders: []string{},
 	}
 
 	for _, plugin := range cfg.Plugins.Names(n.SiteComponentConfig.Definition.Integrations...) {

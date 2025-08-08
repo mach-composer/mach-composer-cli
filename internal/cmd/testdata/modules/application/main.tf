@@ -16,6 +16,22 @@ variable "variables" {
   })
 }
 
+variable "component_version" {
+  type = string
+}
+
+variable "environment" {
+  type = string
+}
+
+variable "site" {
+  type = string
+}
+
+variable "tags" {
+  type = map(string)
+}
+
 data "http" "example" {
   count = var.variables.fail == true ? 1 : 0
   url   = "fails"
