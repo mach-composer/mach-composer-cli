@@ -29,6 +29,7 @@ type componentContext struct {
 	PluginDependsOn     []string
 	PluginVariables     []string
 	HasCloudIntegration bool
+	ComponentDependsOn  []string
 }
 
 func renderSiteComponent(ctx context.Context, cfg *config.MachConfig, n *graph.SiteComponent) (string, error) {
@@ -153,16 +154,17 @@ func renderComponentModule(_ context.Context, cfg *config.MachConfig, n *graph.S
 	}
 
 	tc := componentContext{
-		ComponentName:    n.SiteComponentConfig.Name,
-		ComponentVersion: n.SiteComponentConfig.Definition.Version,
-		SiteName:         n.SiteConfig.Identifier,
-		Environment:      cfg.Global.Environment,
-		Version:          n.SiteComponentConfig.Definition.Version,
-		SourceType:       string(sourceType),
-		PluginResources:  []string{},
-		PluginVariables:  []string{},
-		PluginDependsOn:  []string{},
-		PluginProviders:  []string{},
+		ComponentName:      n.SiteComponentConfig.Name,
+		ComponentVersion:   n.SiteComponentConfig.Definition.Version,
+		SiteName:           n.SiteConfig.Identifier,
+		Environment:        cfg.Global.Environment,
+		Version:            n.SiteComponentConfig.Definition.Version,
+		SourceType:         string(sourceType),
+		PluginResources:    []string{},
+		PluginVariables:    []string{},
+		PluginDependsOn:    []string{},
+		PluginProviders:    []string{},
+		ComponentDependsOn: []string{},
 	}
 
 	for _, plugin := range cfg.Plugins.Names(n.SiteComponentConfig.Definition.Integrations...) {
@@ -220,6 +222,16 @@ func renderComponentModule(_ context.Context, cfg *config.MachConfig, n *graph.S
 		tc.Source = strings.Replace(vs, "\\", "\\\\", -1)
 	} else {
 		tc.Source = vs
+	}
+
+	// Add depends_on for dependent components
+	for _, dependency := range n.SiteComponentConfig.DependsOn {
+		// If the current node is a deployment site component, we skip it as it will have its dependencies treated by the graph
+		if n.SiteComponentConfig.Deployment.Type == config.DeploymentSiteComponent {
+			continue
+		}
+
+		tc.ComponentDependsOn = append(tc.ComponentDependsOn, dependency.Name)
 	}
 
 	val, err := utils.RenderGoTemplate(string(tpl), tc)

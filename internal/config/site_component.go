@@ -24,8 +24,19 @@ type SiteComponentConfig struct {
 	Variables  variable.VariablesMap `yaml:"variables"`
 	Secrets    variable.VariablesMap `yaml:"secrets"`
 	Deployment *Deployment           `yaml:"deployment"`
+	DependsOn  DependsOn             `yaml:"-"`
 
-	DependsOn []string `yaml:"depends_on"`
+	DependsOnKeys []string `yaml:"depends_on"`
+}
+
+type DependsOn []*SiteComponentConfig
+
+func (d *DependsOn) Keys() []string {
+	keys := make([]string, len(*d))
+	for i, dep := range *d {
+		keys[i] = dep.Name
+	}
+	return keys
 }
 
 func (sc *SiteComponentConfig) HasCloudIntegration(g *GlobalConfig) bool {

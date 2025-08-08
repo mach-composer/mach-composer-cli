@@ -58,7 +58,7 @@ func HashSiteComponent(sc *SiteComponent) (string, error) {
 		},
 		Variables:     sc.SiteComponentConfig.Variables,
 		Secrets:       sc.SiteComponentConfig.Secrets,
-		DependsOn:     sc.SiteComponentConfig.DependsOn,
+		DependsOn:     sc.SiteComponentConfig.DependsOnKeys,
 		Terraform:     tfHash,
 		VariablesFile: variablesHash,
 	})

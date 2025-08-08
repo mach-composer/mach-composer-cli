@@ -87,7 +87,7 @@ func ToDependencyGraph(cfg *config.MachConfig, outPath string) (*Graph, error) {
 			// First parse the explicit references. These always take precedence
 			if dp := componentConfig.DependsOn; len(dp) > 0 {
 				for _, dependency := range componentConfig.DependsOn {
-					edges.Add(component.Path(), path.Join(site.Path(), dependency))
+					edges.Add(component.Path(), path.Join(site.Path(), dependency.Name))
 				}
 				continue
 			}

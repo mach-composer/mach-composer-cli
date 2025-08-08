@@ -38,10 +38,13 @@ module "{{ .ComponentName }}" {
     }
 {{ end }}
 
-{{ if .PluginDependsOn }}
+{{ if or .PluginDependsOn .ComponentDependsOn }}
     depends_on = [
     {{ range $item := .PluginDependsOn }}
         {{ $item }},
+    {{ end }}
+    {{ range $item := .ComponentDependsOn }}
+        module.{{ $item }},
     {{ end }}
     ]
 {{ end }}

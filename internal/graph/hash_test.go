@@ -46,7 +46,7 @@ func TestHashSiteComponentConfigChanged(t *testing.T) {
 
 	h1, err := HashSiteComponent(n)
 
-	n.SiteComponentConfig.DependsOn = []string{"site-component-2"}
+	n.SiteComponentConfig.DependsOnKeys = []string{"site-component-2"}
 
 	h2, err := HashSiteComponent(n)
 

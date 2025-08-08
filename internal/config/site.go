@@ -256,6 +256,15 @@ func resolveSiteComponents(cfg *MachConfig) error {
 				return fmt.Errorf("component %s does not exist in global components", c.Name)
 			}
 			c.Definition = ref
+
+			c.DependsOn = make([]*SiteComponentConfig, 0, len(c.DependsOnKeys))
+			for _, depName := range c.DependsOnKeys {
+				dc, err := site.Components.Get(depName)
+				if err != nil {
+					return fmt.Errorf("component %s depends on %s, but it does not exist in site %s: %w", c.Name, depName, site.Identifier, err)
+				}
+				c.DependsOn = append(c.DependsOn, dc)
+			}
 		}
 	}
 	return nil

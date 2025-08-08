@@ -103,7 +103,7 @@ func TestToDependencyGraphExplicit(t *testing.T) {
 						Deployment: &config.Deployment{
 							Type: config.DeploymentSiteComponent,
 						},
-						DependsOn: []string{
+						DependsOnKeys: []string{
 							"site-component-1",
 						},
 					},
@@ -116,28 +116,40 @@ func TestToDependencyGraphExplicit(t *testing.T) {
 	assert.NoError(t, err)
 
 	am, _ := g.AdjacencyMap()
+
 	assert.Equal(t, map[string]map[string]graph.Edge[string]{
 		"main": {
 			"main/site-1": graph.Edge[string]{
-				Source:     "main",
-				Target:     "main/site-1",
-				Properties: graph.EdgeProperties{Attributes: map[string]string{}, Weight: 0, Data: interface{}(nil)},
+				Source: "main",
+				Target: "main/site-1",
+				Properties: graph.EdgeProperties{
+					Attributes: map[string]string{},
+					Weight:     0,
+					Data:       interface{}(nil),
+				},
 			},
 		},
 		"main/site-1": {
 			"main/site-1/site-component-1": graph.Edge[string]{
-				Source:     "main/site-1",
-				Target:     "main/site-1/site-component-1",
-				Properties: graph.EdgeProperties{Attributes: map[string]string{}, Weight: 0, Data: interface{}(nil)},
+				Source: "main/site-1",
+				Target: "main/site-1/site-component-1",
+				Properties: graph.EdgeProperties{
+					Attributes: map[string]string{},
+					Weight:     0,
+					Data:       interface{}(nil),
+				},
 			},
-		},
-		"main/site-1/site-component-1": {
 			"main/site-1/site-component-2": graph.Edge[string]{
-				Source:     "main/site-1/site-component-1",
-				Target:     "main/site-1/site-component-2",
-				Properties: graph.EdgeProperties{Attributes: map[string]string{}, Weight: 0, Data: interface{}(nil)},
+				Source: "main/site-1",
+				Target: "main/site-1/site-component-2",
+				Properties: graph.EdgeProperties{
+					Attributes: map[string]string{},
+					Weight:     0,
+					Data:       interface{}(nil),
+				},
 			},
 		},
+		"main/site-1/site-component-1": {},
 		"main/site-1/site-component-2": {},
 	}, am)
 }
@@ -209,6 +221,30 @@ func TestToDependencyGraphInferred(t *testing.T) {
 }
 
 func TestToDependencyGraphCycleErr(t *testing.T) {
+	c1 := &config.SiteComponentConfig{
+
+		Name: "site-component-1",
+		Deployment: &config.Deployment{
+			Type: config.DeploymentSiteComponent,
+		},
+		DependsOnKeys: []string{
+			"site-component-2",
+		},
+	}
+
+	c2 := &config.SiteComponentConfig{
+		Name: "site-component-2",
+		Deployment: &config.Deployment{
+			Type: config.DeploymentSiteComponent,
+		},
+		DependsOnKeys: []string{
+			"site-component-1",
+		},
+	}
+
+	c1.DependsOn = append(c1.DependsOn, c2)
+	c2.DependsOn = append(c2.DependsOn, c1)
+
 	cfg := &config.MachConfig{
 		Filename: "main",
 		MachComposer: config.MachComposer{
@@ -223,26 +259,7 @@ func TestToDependencyGraphCycleErr(t *testing.T) {
 				Deployment: &config.Deployment{
 					Type: config.DeploymentSiteComponent,
 				},
-				Components: []config.SiteComponentConfig{
-					{
-						Name: "site-component-1",
-						Deployment: &config.Deployment{
-							Type: config.DeploymentSiteComponent,
-						},
-						DependsOn: []string{
-							"site-component-2",
-						},
-					},
-					{
-						Name: "site-component-2",
-						Deployment: &config.Deployment{
-							Type: config.DeploymentSiteComponent,
-						},
-						DependsOn: []string{
-							"site-component-1",
-						},
-					},
-				},
+				Components: []config.SiteComponentConfig{*c1, *c2},
 			},
 		},
 	}
