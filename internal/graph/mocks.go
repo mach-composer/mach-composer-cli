@@ -70,6 +70,11 @@ func (n *NodeMock) Parents() ([]Node, error) {
 	return args.Get(0).([]Node), args.Error(1)
 }
 
+func (n *NodeMock) Children() ([]Node, error) {
+	args := n.Called()
+	return args.Get(0).([]Node), args.Error(1)
+}
+
 func (n *NodeMock) Independent() bool {
 	//TODO implement me
 	panic("implement me")

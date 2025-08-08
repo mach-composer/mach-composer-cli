@@ -7,7 +7,7 @@ import (
 	"testing"
 )
 
-func TestBatchNodesDepth1(t *testing.T) {
+func TestSimpleBatchNodesDepth1(t *testing.T) {
 	ig := graph.New(func(n internalgraph.Node) string { return n.Path() }, graph.Directed(), graph.Tree(), graph.PreventCycles())
 
 	start := new(internalgraph.NodeMock)
@@ -17,12 +17,13 @@ func TestBatchNodesDepth1(t *testing.T) {
 
 	g := &internalgraph.Graph{Graph: ig, StartNode: start}
 
-	batches := NaiveBatchFunc()(g)
+	batches, err := simpleBatchFunc()(g)
 
+	assert.NoError(t, err)
 	assert.Equal(t, 1, len(batches))
 }
 
-func TestBatchNodesDepth2(t *testing.T) {
+func TestSimpleBatchNodesDepth2(t *testing.T) {
 	ig := graph.New(func(n internalgraph.Node) string { return n.Path() }, graph.Directed(), graph.Tree(), graph.PreventCycles())
 
 	site := new(internalgraph.NodeMock)
@@ -43,8 +44,9 @@ func TestBatchNodesDepth2(t *testing.T) {
 
 	g := &internalgraph.Graph{Graph: ig, StartNode: site}
 
-	batches := NaiveBatchFunc()(g)
+	batches, err := simpleBatchFunc()(g)
 
+	assert.NoError(t, err)
 	assert.Equal(t, 2, len(batches))
 	assert.Equal(t, 1, len(batches[0]))
 	assert.Equal(t, "main/site-1", batches[0][0].Path())
@@ -53,7 +55,7 @@ func TestBatchNodesDepth2(t *testing.T) {
 	assert.Contains(t, batches[1][1].Path(), "component")
 }
 
-func TestBatchNodesDepth3(t *testing.T) {
+func TestSimpleBatchNodesDepth3(t *testing.T) {
 	ig := graph.New(func(n internalgraph.Node) string { return n.Path() }, graph.Directed(), graph.Tree(), graph.PreventCycles())
 
 	site := new(internalgraph.NodeMock)
@@ -74,8 +76,9 @@ func TestBatchNodesDepth3(t *testing.T) {
 
 	g := &internalgraph.Graph{Graph: ig, StartNode: site}
 
-	batches := NaiveBatchFunc()(g)
+	batches, err := simpleBatchFunc()(g)
 
+	assert.NoError(t, err)
 	assert.Equal(t, 3, len(batches))
 	assert.Equal(t, 1, len(batches[0]))
 	assert.Equal(t, "main/site-1", batches[0][0].Path())

@@ -42,6 +42,7 @@ type MachComposer struct {
 	Plugins       map[string]MachPluginConfig `yaml:"plugins"`
 	Cloud         MachComposerCloud           `yaml:"cloud"`
 	Deployment    Deployment                  `yaml:"deployment"`
+	Batcher       Batcher                     `yaml:"batcher"`
 }
 
 func (mc *MachComposer) CloudEnabled() bool {
@@ -69,4 +70,9 @@ type MachPluginConfig struct {
 	Source  string `yaml:"source"`
 	Version string `yaml:"version"`
 	Replace string `yaml:"replace"`
+}
+
+type Batcher struct {
+	Type      string   `yaml:"type"`
+	SiteOrder []string `yaml:"site_order,omitempty"`
 }

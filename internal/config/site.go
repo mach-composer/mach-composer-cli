@@ -14,6 +14,14 @@ import (
 
 type SiteConfigs []SiteConfig
 
+func (s *SiteConfigs) Identifiers() []string {
+	identifiers := make([]string, len(*s))
+	for i, site := range *s {
+		identifiers[i] = site.Identifier
+	}
+	return identifiers
+}
+
 func (s *SiteConfigs) Get(identifier string) (*SiteConfig, error) {
 	for _, site := range *s {
 		if site.Identifier == identifier {

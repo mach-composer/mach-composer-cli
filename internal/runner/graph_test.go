@@ -5,6 +5,7 @@ import (
 	"errors"
 	"github.com/mach-composer/mach-composer-cli/internal/batcher"
 	"github.com/mach-composer/mach-composer-cli/internal/cli"
+	"github.com/mach-composer/mach-composer-cli/internal/config"
 	internalgraph "github.com/mach-composer/mach-composer-cli/internal/graph"
 	"github.com/mach-composer/mach-composer-cli/internal/hash"
 	"github.com/stretchr/testify/assert"
@@ -63,7 +64,13 @@ func TestGraphRunnerMultipleLevels(t *testing.T) {
 		hash.Entry{Identifier: "site-1", Hash: "site-1"},
 		hash.Entry{Identifier: "component-1", Hash: "component-1"},
 	)
-	runner.batch = batcher.NaiveBatchFunc()
+	runner.batch, _ = batcher.Factory(&config.MachConfig{
+		MachComposer: config.MachComposer{
+			Batcher: config.Batcher{
+				Type: "simple",
+			},
+		},
+	})
 
 	var called []string
 
@@ -125,7 +132,13 @@ func TestGraphRunnerError(t *testing.T) {
 
 	runner := GraphRunner{workers: 1}
 	runner.hash = hash.NewMemoryMapHandler()
-	runner.batch = batcher.NaiveBatchFunc()
+	runner.batch, _ = batcher.Factory(&config.MachConfig{
+		MachComposer: config.MachComposer{
+			Batcher: config.Batcher{
+				Type: "simple",
+			},
+		},
+	})
 
 	err := runner.run(context.Background(), graph, func(ctx context.Context, node internalgraph.Node) error {
 		if node.Identifier() == "component-2" {
