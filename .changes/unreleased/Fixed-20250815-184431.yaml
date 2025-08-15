@@ -1,0 +1,3 @@
+kind: Fixed
+body: Improved check for LatestVersion when component has no previous versions
+time: 2025-08-15T18:44:31.55796646+02:00
