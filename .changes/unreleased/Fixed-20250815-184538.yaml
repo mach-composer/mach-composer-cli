@@ -1,0 +1,3 @@
+kind: Fixed
+body: Improve path filter when comparing paths with from different roots
+time: 2025-08-15T18:45:38.055338092+02:00

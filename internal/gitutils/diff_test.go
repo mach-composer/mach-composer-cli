@@ -11,6 +11,7 @@ import (
 func TestPathFilter(t *testing.T) {
 	assert.True(t, pathFilter([]string{})("test/test"))
 	assert.True(t, pathFilter([]string{"test"})("test/test"))
+	assert.True(t, pathFilter([]string{"foo/bar/baz/test"})("test/file.txt"))
 	assert.False(t, pathFilter([]string{"foo"})("test/test"))
 }
 
