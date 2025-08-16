@@ -37,6 +37,32 @@ definitions:
         type: string
       cloud:
         $ref: "#/definitions/MachComposerCloud"
+      batcher:
+        type: object
+        additionalProperties: true
+        properties:
+          type:
+            description: |
+              Sets the way the component runs are batched. 
+              
+              - The default is simple, which means all sites and components will be considered as a single workload. 
+              - The site batching will run sites sequentially, which means that all components of a site will be run 
+                as a separate workload before moving to the next site. The order of execution is determined by the 
+                order in which the sites are defined in the configuration.
+            type: string
+            enum:
+              - simple
+              - site
+            default: "simple"
+          site_order:
+            description: |
+              The order in which the sites are processed when using the site batching. This is useful for cases where 
+              you want to process sites in a specific order. If left empty, the sites will be processed in the order 
+              they are defined in the configuration.
+            type: array
+            items:
+              type: string
+
       deployment:
         $ref: "#/definitions/MachComposerDeployment"
       plugins:
@@ -75,7 +101,6 @@ definitions:
     required:
       - environment
       - terraform_config
-      - cloud
     properties:
       environment:
         type: string
@@ -101,6 +126,11 @@ definitions:
         patternProperties:
           "^[a-zA-Z-]+$":
             type: string
+      provider_configs:
+        description: "A list of provider configurations to generate."
+        type: array
+        items:
+          $ref: "#/definitions/ProviderConfig"
       remote_state:
         allOf:
           - type: object
@@ -118,6 +148,22 @@ definitions:
                   - local
                   - terraform_cloud
           - $ref: "#/definitions/RemoteState"
+
+  ProviderConfig:
+    type: object
+    description: Provider configuration.
+    required:
+      - name
+    properties:
+      name:
+        type: string
+      source:
+        type: string
+      version:
+        type: string
+      configuration:
+        type: object
+        additionalProperties: true
 
   RemoteState:
     type: object

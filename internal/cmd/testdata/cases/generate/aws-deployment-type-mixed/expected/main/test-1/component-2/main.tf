@@ -30,6 +30,10 @@ module "component-2" {
   variables = {
     parent_names = [data.terraform_remote_state.test-1.outputs.component-1.name]
   }
+  component_version = "test"
+  environment       = "test"
+  site              = "test-1"
+  tags              = { "Component" : "component-2", "Site" : "test-1", "Version" : "test" }
 }
 
 output "component-2" {

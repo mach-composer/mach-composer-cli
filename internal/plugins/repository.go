@@ -55,6 +55,14 @@ func (p *PluginRepository) All() []*PluginHandler {
 	return result
 }
 
+func (p *PluginRepository) AllNames() []string {
+	result := make([]string, len(p.handlers))
+	for i, key := range pie.Sort(pie.Keys(p.handlers)) {
+		result[i] = key
+	}
+	return result
+}
+
 func (p *PluginRepository) Names(names ...string) []PluginHandler {
 	var result []PluginHandler
 
