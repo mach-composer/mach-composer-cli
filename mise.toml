@@ -1,2 +1,3 @@
 [tools]
 changie = "latest"
+python = "3.11"
