@@ -3,6 +3,7 @@ package gitutils
 import (
 	"context"
 	"fmt"
+	"path/filepath"
 	"strings"
 
 	"github.com/go-git/go-git/v5"
@@ -19,7 +20,9 @@ func pathFilter(paths []string) func(path string) bool {
 		}
 
 		for _, p := range paths {
-			if strings.HasPrefix(path, p) {
+			dirPath := filepath.Dir(path)
+
+			if strings.Contains(p, dirPath) {
 				return true
 			}
 		}
@@ -66,6 +69,8 @@ func commitsBetween(ctx context.Context, repository *git.Repository, first, last
 	} else {
 		lastHash = val
 	}
+
+	log.Debug().Msgf("First hash: %s, Last hash: %s", firstHash, lastHash)
 
 	cIter, err := repository.Log(&git.LogOptions{
 		Order:      git.LogOrderCommitterTime,

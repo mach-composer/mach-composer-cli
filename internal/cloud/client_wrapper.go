@@ -3,6 +3,7 @@ package cloud
 import (
 	"context"
 	"github.com/mach-composer/mcc-sdk-go/mccsdk"
+	"io"
 )
 
 var _ ClientWrapper = (*MccSdkClientWrapper)(nil)
@@ -47,7 +48,15 @@ func (m *MccSdkClientWrapper) GetLatestComponentVersion(ctx context.Context, org
 
 	// Small hack because the mccsdk cannot deserialize an empty response body
 	if res != nil && res.StatusCode == 200 {
-		return nil, nil
+		b, err := io.ReadAll(res.Body)
+		if err != nil {
+			return nil, err
+		}
+
+		if string(b) == "{}" {
+			// No version found, return nil without an error
+			return nil, nil
+		}
 	}
 
 	return r, err
