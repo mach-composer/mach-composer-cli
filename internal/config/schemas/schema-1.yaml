@@ -175,6 +175,8 @@ definitions:
     properties:
       name:
         type: string
+      count:
+        type: string
       variables:
         $ref: "#/definitions/MachComposerVariables"
       secrets:

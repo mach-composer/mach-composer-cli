@@ -10,6 +10,10 @@ module "{{ .ComponentName }}" {
     version = "{{ .Version }}"
 {{ end }}
 
+{{ if .ComponentCount }}
+    count = {{ .ComponentCount }}
+{{ end }}
+
 
 {{ if .ComponentVariables }}
     {{ .ComponentVariables }}
@@ -50,5 +54,5 @@ module "{{ .ComponentName }}" {
 output "{{ .ComponentName }}" {
     description = "The module outputs for {{ .ComponentName }}"
     sensitive = true
-    value =  module.{{ .ComponentName }}
+    value =  module.{{ .ComponentName }}{{ if .ComponentCount }}[*]{{ end }}
 }
