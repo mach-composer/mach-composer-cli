@@ -24,6 +24,7 @@ type SiteComponentConfig struct {
 	Variables  variable.VariablesMap `yaml:"variables"`
 	Secrets    variable.VariablesMap `yaml:"secrets"`
 	Deployment *Deployment           `yaml:"deployment"`
+	Count      string                `yaml:"count"`
 
 	DependsOn []string `yaml:"depends_on"`
 }

@@ -19,6 +19,7 @@ type componentContext struct {
 	ComponentHash       string
 	ComponentVariables  string
 	ComponentSecrets    string
+	ComponentCount      string
 	SiteName            string
 	Environment         string
 	SourceType          string
@@ -155,6 +156,7 @@ func renderComponentModule(_ context.Context, cfg *config.MachConfig, n *graph.S
 	tc := componentContext{
 		ComponentName:    n.SiteComponentConfig.Name,
 		ComponentVersion: n.SiteComponentConfig.Definition.Version,
+		ComponentCount:   n.SiteComponentConfig.Count,
 		SiteName:         n.SiteConfig.Identifier,
 		Environment:      cfg.Global.Environment,
 		Version:          n.SiteComponentConfig.Definition.Version,
