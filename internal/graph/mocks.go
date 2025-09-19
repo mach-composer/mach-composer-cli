@@ -34,7 +34,16 @@ func CreateGraphMock(
 type NodeMock struct {
 	mock.Mock
 	tainted bool
+	active  bool
 	oldHash string
+}
+
+func (n *NodeMock) Active() bool {
+	return n.active
+}
+
+func (n *NodeMock) SetActive(active bool) {
+	n.active = active
 }
 
 func (n *NodeMock) SetOldHash(hash string) {

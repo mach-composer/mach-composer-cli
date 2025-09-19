@@ -1,6 +1,6 @@
 ## mach-composer validate
 
-Validate the generated terraform configuration.
+Validate the generated terraform configuration. See [the documentation](/howto/cli/filtering-commands) for filtering options.
 
 ### Synopsis
 
@@ -19,6 +19,7 @@ mach-composer validate [flags]
 ```
   -b, --buffer                   Whether logs should be buffered and printed at the end of the run
   -f, --file string              YAML file to parse. (default "main.yml")
+      --filter stringArray       Run only nodes matching the filter expression
   -g, --github                   Whether logs should be decorated with github-specific formatting
   -h, --help                     help for validate
       --ignore-version           Skip MACH composer version check

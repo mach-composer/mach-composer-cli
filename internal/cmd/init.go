@@ -15,11 +15,12 @@ import (
 var initFlags struct {
 	github     bool
 	bufferLogs bool
+	filters    []string
 }
 
 var initCmd = &cobra.Command{
 	Use:   "init",
-	Short: "Initialize site directories Terraform files.",
+	Short: "Initialize site directories Terraform files. See [the documentation](/howto/cli/filtering-commands) for filtering options.",
 	PreRun: func(cmd *cobra.Command, args []string) {
 		preprocessCommonFlags(cmd)
 	},
@@ -36,6 +37,7 @@ func init() {
 	registerCommonFlags(initCmd)
 	initCmd.Flags().BoolVarP(&initFlags.github, "github", "g", false, "Whether logs should be decorated with github-specific formatting")
 	initCmd.Flags().BoolVarP(&initFlags.bufferLogs, "buffer", "b", false, "Whether logs should be buffered and printed at the end of the run")
+	initCmd.Flags().StringArrayVarP(&initFlags.filters, "filter", "", nil, "Run only nodes matching the filter expression")
 }
 
 func initFunc(cmd *cobra.Command, _ []string) error {
@@ -66,5 +68,6 @@ func initFunc(cmd *cobra.Command, _ []string) error {
 	return r.TerraformInit(ctx, dg, &runner.InitOptions{
 		BufferLogs: initFlags.bufferLogs,
 		Github:     initFlags.github,
+		Filters:    initFlags.filters,
 	})
 }

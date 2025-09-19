@@ -3,12 +3,13 @@ package runner
 import (
 	"context"
 	"errors"
+	"testing"
+
 	"github.com/mach-composer/mach-composer-cli/internal/batcher"
 	"github.com/mach-composer/mach-composer-cli/internal/cli"
 	internalgraph "github.com/mach-composer/mach-composer-cli/internal/graph"
 	"github.com/mach-composer/mach-composer-cli/internal/hash"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func TestGraphRunnerMultipleLevels(t *testing.T) {
@@ -70,7 +71,7 @@ func TestGraphRunnerMultipleLevels(t *testing.T) {
 	err := runner.run(context.Background(), graph, func(ctx context.Context, node internalgraph.Node) error {
 		called = append(called, node.Identifier())
 		return nil
-	}, false, false, false)
+	}, false, false, false, nil)
 
 	assert.NoError(t, err)
 	assert.Equal(t, []string{"component-2", "component-3"}, called)
@@ -132,7 +133,7 @@ func TestGraphRunnerError(t *testing.T) {
 			return assert.AnError
 		}
 		return nil
-	}, false, false, false)
+	}, false, false, false, nil)
 
 	cliErr := &cli.GroupedError{}
 

@@ -34,8 +34,11 @@ type Node interface {
 	//Independent returns true if the node can be deployed independently, false otherwise
 	Independent() bool
 
-	//Tainted indicates if.
+	//Tainted indicates if a node is marked as tainted. This indicates the node has changes.
 	Tainted() bool
+
+	//Active indicates if a node is marked as active. Non-active nodes will not be run.
+	Active() bool
 
 	//Hash returns the hash of the node. The hash is based on the node's configuration as well as the configuration of any
 	//related components. This can be compared to other hashes to determine whether a node has changed
@@ -43,6 +46,9 @@ type Node interface {
 
 	//SetTainted sets the tainted status of the node
 	SetTainted(tainted bool)
+
+	//SetActive sets the active status of the node
+	SetActive(filtered bool)
 
 	//ResetGraph resets the graph of the node. If the graph the node belongs to the node graphs must also be reset,
 	//as these are used to determine the parents of the node
@@ -63,6 +69,7 @@ type baseNode struct {
 	ancestor       Node
 	deploymentType config.DeploymentType
 	tainted        bool
+	active         bool
 	oldHash        string
 }
 
@@ -74,6 +81,7 @@ func newBaseNode(graph graph.Graph[string, Node], path string, identifier string
 		ancestor:       ancestor,
 		deploymentType: deploymentType,
 		tainted:        false,
+		active:         false,
 	}
 }
 
@@ -87,6 +95,14 @@ func (n *baseNode) SetTainted(tainted bool) {
 
 func (n *baseNode) Tainted() bool {
 	return n.tainted
+}
+
+func (n *baseNode) SetActive(f bool) {
+	n.active = f
+}
+
+func (n *baseNode) Active() bool {
+	return n.active
 }
 
 func (n *baseNode) Path() string {

@@ -1,6 +1,6 @@
 ## mach-composer terraform
 
-Execute terraform commands directly
+Execute terraform commands directly. See [the documentation](/howto/cli/filtering-commands) for filtering options.
 
 ```
 mach-composer terraform [flags]
@@ -11,6 +11,7 @@ mach-composer terraform [flags]
 ```
   -b, --buffer                    Whether logs should be buffered and printed at the end of the run
   -f, --file string               YAML file to parse. (default "main.yml")
+      --filter stringArray        Run only nodes matching the filter expression
   -g, --github                    Whether logs should be decorated with github-specific formatting
   -h, --help                      help for terraform
       --ignore-change-detection   Ignore change detection to run even if the components are considered up to date. Per default the proxy will ignore change detection (default true)

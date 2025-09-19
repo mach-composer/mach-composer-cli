@@ -1,15 +1,16 @@
 package cmd
 
 import (
+	"os"
+	"path"
+	"path/filepath"
+
 	"github.com/mach-composer/mach-composer-cli/internal/batcher"
 	"github.com/mach-composer/mach-composer-cli/internal/cli"
 	"github.com/mach-composer/mach-composer-cli/internal/graph"
 	"github.com/mach-composer/mach-composer-cli/internal/hash"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
-	"os"
-	"path"
-	"path/filepath"
 
 	"github.com/mach-composer/mach-composer-cli/internal/generator"
 	"github.com/mach-composer/mach-composer-cli/internal/runner"
@@ -19,11 +20,12 @@ var validateFlags struct {
 	validationPath string
 	github         bool
 	bufferLogs     bool
+	filters        []string
 }
 
 var validateCmd = &cobra.Command{
 	Use:   "validate",
-	Short: "Validate the generated terraform configuration.",
+	Short: "Validate the generated terraform configuration. See [the documentation](/howto/cli/filtering-commands) for filtering options.",
 	Long: "This command validates the generated terraform configuration. It will check the provided configuration file " +
 		"for any errors, and will run `terraform validate` on the generated configuration. This will check for any " +
 		"syntax errors in the generated configuration without accessing the actual infrastructure.\n\n" +
@@ -46,6 +48,7 @@ func init() {
 		"Directory path to store files required for configuration validation.")
 	validateCmd.Flags().BoolVarP(&validateFlags.github, "github", "g", false, "Whether logs should be decorated with github-specific formatting")
 	validateCmd.Flags().BoolVarP(&validateFlags.bufferLogs, "buffer", "b", false, "Whether logs should be buffered and printed at the end of the run")
+	validateCmd.Flags().StringArrayVarP(&validateFlags.filters, "filter", "", nil, "Run only nodes matching the filter expression")
 
 	if path.IsAbs(validateFlags.validationPath) == false {
 		var err error
@@ -84,5 +87,6 @@ func validateFunc(cmd *cobra.Command, _ []string) error {
 	return r.TerraformValidate(ctx, dg, &runner.ValidateOptions{
 		BufferLogs: validateFlags.bufferLogs,
 		Github:     validateFlags.github,
+		Filters:    validateFlags.filters,
 	})
 }

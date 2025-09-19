@@ -16,11 +16,12 @@ var showPlanFlags struct {
 	ignoreChangeDetection bool
 	github                bool
 	bufferLogs            bool
+	filters               []string
 }
 
 var showPlanCmd = &cobra.Command{
 	Use:   "show-plan",
-	Short: "Show the planned configuration.",
+	Short: "Show the planned configuration. See [the documentation](/howto/cli/filtering-commands) for filtering options.",
 	PreRun: func(cmd *cobra.Command, args []string) {
 		preprocessCommonFlags(cmd)
 	},
@@ -38,6 +39,7 @@ func init() {
 		"Ignore change detection to run even if the components are considered up to date")
 	showPlanCmd.Flags().BoolVarP(&showPlanFlags.github, "github", "g", false, "Whether logs should be decorated with github-specific formatting")
 	showPlanCmd.Flags().BoolVarP(&showPlanFlags.bufferLogs, "buffer", "b", false, "Whether logs should be buffered and printed at the end of the run")
+	showPlanCmd.Flags().StringArrayVarP(&showPlanFlags.filters, "filter", "", nil, "Run only nodes matching the filter expression.")
 }
 
 func showPlanFunc(cmd *cobra.Command, _ []string) error {
@@ -66,5 +68,6 @@ func showPlanFunc(cmd *cobra.Command, _ []string) error {
 		IgnoreChangeDetection: showPlanFlags.ignoreChangeDetection,
 		Github:                showPlanFlags.github,
 		BufferLogs:            showPlanFlags.bufferLogs,
+		Filters:               showPlanFlags.filters,
 	})
 }

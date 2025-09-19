@@ -3,10 +3,11 @@ package cmd
 import (
 	"errors"
 	"fmt"
-	"github.com/mach-composer/mach-composer-cli/internal/cloud"
 	"os"
 	"path"
 	"path/filepath"
+
+	"github.com/mach-composer/mach-composer-cli/internal/cloud"
 
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
@@ -40,7 +41,7 @@ func registerCommonFlags(cmd *cobra.Command) {
 
 func preprocessCommonFlags(cmd *cobra.Command) {
 	if commonFlags.siteName != "" {
-		log.Warn().Msgf("Site option not implemented")
+		log.Warn().Msgf("Site option is deprecated. Please use `--filter your-site-name` instead.")
 	}
 
 	handleError(cmd.MarkFlagFilename("var-file", "yml", "yaml"))
