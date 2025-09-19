@@ -18,13 +18,14 @@ var applyFlags struct {
 	github                bool
 	bufferLogs            bool
 	components            []string
+	filters               []string
 	numWorkers            int
 	ignoreChangeDetection bool
 }
 
 var applyCmd = &cobra.Command{
 	Use:   "apply",
-	Short: "Apply the configuration.",
+	Short: "Apply the configuration. See [the documentation](/howto/cli/filtering-commands) for filtering options.",
 	PreRun: func(cmd *cobra.Command, args []string) {
 		preprocessCommonFlags(cmd)
 	},
@@ -39,6 +40,7 @@ func init() {
 	applyCmd.Flags().BoolVarP(&applyFlags.forceInit, "force-init", "", false, "Force terraform initialization. By default mach-composer will reuse existing terraform resources")
 	applyCmd.Flags().BoolVarP(&applyFlags.autoApprove, "auto-approve", "", false, "Suppress a terraform init for improved speed (not recommended for production usage)")
 	applyCmd.Flags().BoolVarP(&applyFlags.destroy, "destroy", "", false, "Destroy option is a convenient way to destroy all remote objects managed by this mach config")
+	applyCmd.Flags().StringArrayVarP(&applyFlags.filters, "filter", "", nil, "Run only nodes matching the filter expression")
 	applyCmd.Flags().StringArrayVarP(&applyFlags.components, "component", "c", nil, "")
 	applyCmd.Flags().BoolVarP(&applyFlags.ignoreChangeDetection, "ignore-change-detection", "", false, "Ignore change detection to run even if the components are considered up to date")
 	applyCmd.Flags().BoolVarP(&applyFlags.github, "github", "g", false, "Whether logs should be decorated with github-specific formatting")
@@ -47,7 +49,7 @@ func init() {
 
 func applyFunc(cmd *cobra.Command, _ []string) error {
 	if len(applyFlags.components) > 0 {
-		log.Warn().Msgf("Components option not implemented")
+		log.Warn().Msgf("Component option is deprecated. Please use `--filter your-component-name instead.")
 	}
 
 	if applyFlags.github && !applyFlags.bufferLogs {
@@ -84,5 +86,6 @@ func applyFunc(cmd *cobra.Command, _ []string) error {
 		IgnoreChangeDetection: applyFlags.ignoreChangeDetection,
 		BufferLogs:            applyFlags.bufferLogs,
 		Github:                applyFlags.github,
+		Filters:               applyFlags.filters,
 	})
 }

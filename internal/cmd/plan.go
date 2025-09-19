@@ -18,11 +18,12 @@ var planFlags struct {
 	ignoreChangeDetection bool
 	github                bool
 	bufferLogs            bool
+	filters               []string
 }
 
 var planCmd = &cobra.Command{
 	Use:   "plan",
-	Short: "Plan the configuration.",
+	Short: "Plan the configuration. See [the documentation](/howto/cli/filtering-commands) for filtering options.",
 	PreRun: func(cmd *cobra.Command, args []string) {
 		preprocessCommonFlags(cmd)
 	},
@@ -40,11 +41,12 @@ func init() {
 	planCmd.Flags().BoolVarP(&planFlags.ignoreChangeDetection, "ignore-change-detection", "", false, "Ignore change detection to run even if the components are considered up to date")
 	planCmd.Flags().BoolVarP(&planFlags.github, "github", "g", false, "Whether logs should be decorated with github-specific formatting")
 	planCmd.Flags().BoolVarP(&planFlags.bufferLogs, "buffer", "b", false, "Whether logs should be buffered and printed at the end of the run")
+	planCmd.Flags().StringArrayVarP(&planFlags.filters, "filter", "", nil, "Run only nodes matching the filter expression")
 }
 
 func planFunc(cmd *cobra.Command, _ []string) error {
 	if len(planFlags.components) > 0 {
-		log.Warn().Msgf("Components option not implemented")
+		log.Warn().Msgf("Component option is deprecated. Please use `--filter your-component-name instead.")
 	}
 
 	if planFlags.github && !planFlags.bufferLogs {
@@ -77,5 +79,6 @@ func planFunc(cmd *cobra.Command, _ []string) error {
 		IgnoreChangeDetection: planFlags.ignoreChangeDetection,
 		BufferLogs:            planFlags.bufferLogs,
 		Github:                planFlags.github,
+		Filters:               planFlags.filters,
 	})
 }

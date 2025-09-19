@@ -1,6 +1,6 @@
 ## mach-composer init
 
-Initialize site directories Terraform files.
+Initialize site directories Terraform files. See [the documentation](/howto/cli/filtering-commands) for filtering options.
 
 ```
 mach-composer init [flags]
@@ -11,6 +11,7 @@ mach-composer init [flags]
 ```
   -b, --buffer               Whether logs should be buffered and printed at the end of the run
   -f, --file string          YAML file to parse. (default "main.yml")
+      --filter stringArray   Run only nodes matching the filter expression
   -g, --github               Whether logs should be decorated with github-specific formatting
   -h, --help                 help for init
       --ignore-version       Skip MACH composer version check

@@ -12,6 +12,7 @@ type ApplyOptions struct {
 	Github                bool
 	Destroy               bool
 	AutoApprove           bool
+	Filters               []string
 }
 
 type PlanOptions struct {
@@ -20,6 +21,7 @@ type PlanOptions struct {
 	BufferLogs            bool
 	Github                bool
 	Lock                  bool
+	Filters               []string
 }
 
 type ProxyOptions struct {
@@ -27,6 +29,7 @@ type ProxyOptions struct {
 	BufferLogs            bool
 	Github                bool
 	Command               []string
+	Filters               []string
 }
 
 type ShowPlanOptions struct {
@@ -35,16 +38,19 @@ type ShowPlanOptions struct {
 	BufferLogs            bool
 	Github                bool
 	NoColor               bool
+	Filters               []string
 }
 
 type ValidateOptions struct {
 	BufferLogs bool
 	Github     bool
+	Filters    []string
 }
 
 type InitOptions struct {
 	BufferLogs bool
 	Github     bool
+	Filters    []string
 }
 
 type Runner interface {
