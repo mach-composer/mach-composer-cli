@@ -3,6 +3,10 @@ package runner
 import (
 	"context"
 	"fmt"
+	"sort"
+	"sync"
+	"time"
+
 	"github.com/mach-composer/mach-composer-cli/internal/batcher"
 	"github.com/mach-composer/mach-composer-cli/internal/cli"
 	"github.com/mach-composer/mach-composer-cli/internal/graph"
@@ -13,9 +17,6 @@ import (
 	"github.com/rs/zerolog/log"
 	"golang.org/x/exp/maps"
 	"golang.org/x/sync/semaphore"
-	"sort"
-	"sync"
-	"time"
 )
 
 type (
@@ -69,6 +70,11 @@ func (gr *GraphRunner) runBatch(ctx context.Context, f executorFunc, i int, batc
 	}
 
 	for _, n := range batch {
+		if n.Active() == false {
+			log.Ctx(ctx).Info().Msgf("Skipping %s because it is filtered out", n.Identifier())
+			continue
+		}
+
 		if n.Tainted() == false && ignoreChangeDetection == false {
 			log.Ctx(ctx).Info().Msgf("Skipping %s because it has no changes", n.Identifier())
 			continue
@@ -118,8 +124,12 @@ func (gr *GraphRunner) runBatch(ctx context.Context, f executorFunc, i int, batc
 	return nil
 }
 
-func (gr *GraphRunner) run(ctx context.Context, g *graph.Graph, f executorFunc, ignoreChangeDetection, bufferLogs, githubLogs bool) error {
+func (gr *GraphRunner) run(ctx context.Context, g *graph.Graph, f executorFunc, ignoreChangeDetection, bufferLogs, githubLogs bool, filters []Filter) error {
 	if err := taintGraph(ctx, g, gr.hash); err != nil {
+		return err
+	}
+
+	if err := filterGraph(ctx, g, gr.hash, filters); err != nil {
 		return err
 	}
 
@@ -192,7 +202,7 @@ func (gr *GraphRunner) TerraformApply(ctx context.Context, dg *graph.Graph, opts
 
 		return err
 
-	}, opts.IgnoreChangeDetection, opts.BufferLogs, opts.Github); err != nil {
+	}, opts.IgnoreChangeDetection, opts.BufferLogs, opts.Github, toFilters(opts.Filters)); err != nil {
 		return err
 	}
 
@@ -219,7 +229,7 @@ func (gr *GraphRunner) TerraformValidate(ctx context.Context, dg *graph.Graph, o
 		log.Ctx(ctx).Info().Msg(out)
 
 		return err
-	}, true, opts.BufferLogs, opts.Github)
+	}, true, opts.BufferLogs, opts.Github, toFilters(opts.Filters))
 }
 
 func (gr *GraphRunner) TerraformPlan(ctx context.Context, dg *graph.Graph, opts *PlanOptions) error {
@@ -275,7 +285,7 @@ func (gr *GraphRunner) TerraformPlan(ctx context.Context, dg *graph.Graph, opts 
 		}
 
 		return err
-	}, opts.IgnoreChangeDetection, opts.BufferLogs, opts.Github); err != nil {
+	}, opts.IgnoreChangeDetection, opts.BufferLogs, opts.Github, toFilters(opts.Filters)); err != nil {
 		return err
 	}
 
@@ -294,7 +304,7 @@ func (gr *GraphRunner) TerraformProxy(ctx context.Context, dg *graph.Graph, opts
 			err = fmt.Errorf("failed to proxy %s: %w", n.Identifier(), err)
 		}
 		return err
-	}, opts.IgnoreChangeDetection, opts.BufferLogs, opts.Github); err != nil {
+	}, opts.IgnoreChangeDetection, opts.BufferLogs, opts.Github, toFilters(opts.Filters)); err != nil {
 		return err
 	}
 
@@ -343,7 +353,7 @@ func (gr *GraphRunner) TerraformShow(ctx context.Context, dg *graph.Graph, opts 
 			log.Ctx(ctx).Info().Msg(out)
 		}
 		return err
-	}, opts.IgnoreChangeDetection, opts.BufferLogs, opts.Github); err != nil {
+	}, opts.IgnoreChangeDetection, opts.BufferLogs, opts.Github, toFilters(opts.Filters)); err != nil {
 		return err
 	}
 
@@ -358,7 +368,7 @@ func (gr *GraphRunner) TerraformInit(ctx context.Context, dg *graph.Graph, opts 
 			err = fmt.Errorf("failed to init %s: %w", n.Identifier(), err)
 		}
 		return err
-	}, true, opts.BufferLogs, opts.Github); err != nil {
+	}, true, opts.BufferLogs, opts.Github, toFilters(opts.Filters)); err != nil {
 		return err
 	}
 

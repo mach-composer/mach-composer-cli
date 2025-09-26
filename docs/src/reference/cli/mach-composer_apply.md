@@ -1,6 +1,6 @@
 ## mach-composer apply
 
-Apply the configuration.
+Apply the configuration. See [the documentation](/howto/cli/filtering-commands) for filtering options.
 
 ```
 mach-composer apply [flags]
@@ -14,6 +14,7 @@ mach-composer apply [flags]
   -c, --component stringArray     
       --destroy                   Destroy option is a convenient way to destroy all remote objects managed by this mach config
   -f, --file string               YAML file to parse. (default "main.yml")
+      --filter stringArray        Run only nodes matching the filter expression
       --force-init                Force terraform initialization. By default mach-composer will reuse existing terraform resources
   -g, --github                    Whether logs should be decorated with github-specific formatting
   -h, --help                      help for apply

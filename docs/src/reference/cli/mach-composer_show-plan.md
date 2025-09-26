@@ -1,6 +1,6 @@
 ## mach-composer show-plan
 
-Show the planned configuration.
+Show the planned configuration. See [the documentation](/howto/cli/filtering-commands) for filtering options.
 
 ```
 mach-composer show-plan [flags]
@@ -11,6 +11,7 @@ mach-composer show-plan [flags]
 ```
   -b, --buffer                    Whether logs should be buffered and printed at the end of the run
   -f, --file string               YAML file to parse. (default "main.yml")
+      --filter stringArray        Run only nodes matching the filter expression.
       --force-init                Force terraform initialization. By default mach-composer will reuse existing terraform resources
   -g, --github                    Whether logs should be decorated with github-specific formatting
   -h, --help                      help for show-plan
