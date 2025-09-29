@@ -13,6 +13,8 @@ jobs:
     steps:
       - name: Check out code
         uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
 
       - name: Get goreleaser app token
         id: get-app-token
@@ -85,6 +87,11 @@ jobs:
 
     runs-on: ubuntu-latest
     steps:
+      - name: Check out the repo
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
       - name: Set flavor
         id: flavor
         run: |
@@ -139,6 +146,11 @@ jobs:
 
     runs-on: ubuntu-latest
     steps:
+      - name: Check out the repo
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
       - name: Docker meta
         id: meta
         uses: docker/metadata-action@v5
