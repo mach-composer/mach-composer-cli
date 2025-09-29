@@ -62,6 +62,8 @@ jobs:
       - name: Create release
         uses: goreleaser/goreleaser-action@v6
         with:
+          # Should be same version as goreleaser in docker files
+          version: v2.12.3
           args: --clean --release-notes=${{ env.RELEASE_NOTES_PATH }} --skip=validate
         env:
           GORELEASER_CURRENT_TAG: ${{ env.GORELEASER_CURRENT_TAG }}
