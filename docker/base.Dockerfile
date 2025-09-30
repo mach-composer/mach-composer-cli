@@ -1,12 +1,5 @@
 #syntax=docker/dockerfile:1.4.0
 
-FROM goreleaser/goreleaser:v2.12.3 AS builder
-
-COPY . /code/
-WORKDIR /code/
-RUN goreleaser build --single-target --output /code/dist/mach-composer --skip=before --skip=validate
-
-
 FROM alpine:3.14 AS base
 
 ARG TERRAFORM_VERSION=1.3.5
@@ -80,7 +73,7 @@ RUN cd /tmp && \
     rm -rf /tmp/*
 
 
-COPY --from=builder /code/dist/mach-composer /usr/local/bin
-RUN ln -s /usr/local/bin/mach-composer /usr/local/bin/mach
+COPY . /mach-composer
+RUN ln -s /mach-composer/dist/mach-composer_linux_amd64_v1/bin/mach-composer /usr/local/bin/mach-composer
 
 ENTRYPOINT ["mach-composer"]

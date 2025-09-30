@@ -94,6 +94,12 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Download release
+        uses: actions/download-artifact@v4
+        with:
+          name: mach-composer
+          path: ./dist
+
       - name: Set flavor
         id: flavor
         run: |
@@ -152,6 +158,12 @@ jobs:
         uses: actions/checkout@v5
         with:
           fetch-depth: 0
+
+      - name: Download release
+        uses: actions/download-artifact@v4
+        with:
+          name: mach-composer
+          path: ./dist
 
       - name: Docker meta
         id: meta

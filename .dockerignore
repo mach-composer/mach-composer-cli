@@ -1,8 +1,2 @@
-__pycache__
-data
-docs
-dist
-Dockerfile
-.pytest_cache
-src/mach.egg-info
-deployments
+*
+!dist
