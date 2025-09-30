@@ -9,11 +9,11 @@ target "cli-arm64" {
   context    = "./"
   dockerfile = "docker/cli.Dockerfile"
   platforms = [
-    "linux/amd64",
+    "linux/arm64",
   ]
   args = {
     GOOS   = "linux"
-    GOARCH = "arm64"
+    GOARCH = "arm64_v8.0"
   }
 }
 target "cli-amd64" {
@@ -25,7 +25,7 @@ target "cli-amd64" {
   ]
   args = {
     GOOS   = "linux"
-    GOARCH = "amd64"
+    GOARCH = "amd64_v1"
   }
 }
 

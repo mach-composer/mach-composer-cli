@@ -1,3 +1,7 @@
 FROM scratch
-COPY ./dist/mach-composer_linux_amd64_v1/bin/mach-composer /mach-composer
+
+ARG GOOS=linux
+ARG GOARCH=amd64_v1
+
+COPY ./dist/mach-composer_${GOOS}_${GOARCH}/bin/mach-composer /mach-composer
 ENTRYPOINT ["/mach-composer"]
