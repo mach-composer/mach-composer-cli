@@ -25,7 +25,7 @@ jobs:
           installation-id: ${{ secrets.MCI_APP_INSTALLATION_ID }}
 
       - name: Set up Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v6
         with:
           go-version-file: go.mod
 
@@ -95,7 +95,7 @@ jobs:
           fetch-depth: 0
 
       - name: Download release
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           name: mach-composer
           path: ./dist
@@ -160,7 +160,7 @@ jobs:
           fetch-depth: 0
 
       - name: Download release
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           name: mach-composer
           path: ./dist
