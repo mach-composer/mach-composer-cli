@@ -96,7 +96,7 @@ jobs:
           SKIP_UPLOAD: true
 
       - name: Upload release
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: mach-composer
           path: dist/*
