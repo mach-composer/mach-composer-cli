@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - name: Check out code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
@@ -60,7 +60,7 @@ jobs:
           echo RELEASE_NOTES_PATH=.changes/${{ steps.latest.outputs.output }}.md >> $GITHUB_ENV
 
       - name: Create release
-        uses: goreleaser/goreleaser-action@v6
+        uses: goreleaser/goreleaser-action@v7
         with:
           # Should be same version as goreleaser in docker files
           version: v2.12.3
@@ -72,7 +72,7 @@ jobs:
           CHOCOLATEY_API_KEY: ${{ secrets.CHOCOLATEY_API_KEY }}
 
       - name: Upload release
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: mach-composer
           path: dist/*
@@ -90,12 +90,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out the repo
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
       - name: Download release
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v8
         with:
           name: mach-composer
           path: ./dist
@@ -155,12 +155,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out the repo
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
       - name: Download release
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v8
         with:
           name: mach-composer
           path: ./dist
