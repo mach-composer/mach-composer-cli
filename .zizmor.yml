@@ -1,0 +1,16 @@
+rules:
+  unpinned-uses:
+    ignore:
+      - dependabot-changie.yaml
+      - docs.yml
+      - release-beta.yaml
+      - release.yaml
+      - triage.yaml
+  cache-poisoning:
+    ignore:
+      - pull-request.yaml
+      - release-beta.yaml
+      - release.yaml
+  bot-conditions:
+    ignore:
+      - dependabot-changie.yaml

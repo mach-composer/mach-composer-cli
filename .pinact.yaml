@@ -1,0 +1,18 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/suzuki-shunsuke/pinact/refs/heads/main/json-schema/pinact.json
+# pinact - https://github.com/suzuki-shunsuke/pinact
+version: 3
+# files:
+#   - pattern: action.yaml
+#   - pattern: */action.yaml
+
+# separator: "  # "
+
+ignore_actions:
+  - name: labd/action-gh-app-token
+    ref: main
+  - name: stefanzweifel/git-auto-commit-action
+    ref: v7-next
+  - name: jakejarvis/s3-sync-action
+    ref: master
+  - name: chetan/invalidate-cloudfront-action
+    ref: master
