@@ -30,3 +30,4 @@ jobs:
           advanced-security: false
           annotations: true
           min-severity: high
+          config: .zizmor.yml
