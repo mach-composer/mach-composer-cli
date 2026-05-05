@@ -15,10 +15,11 @@ jobs:
         uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
         with:
           fetch-depth: 0
+          persist-credentials: false
 
       - name: Get goreleaser app token
         id: get-app-token
-        uses: labd/action-gh-app-token@main
+        uses: labd/action-gh-app-token@570381a08efe9c961806a3a3bc5882af5f50ef6a # v0.1.0
         with:
           app-id: ${{ secrets.MCI_APP_ID }}
           private-key: ${{ secrets.MCI_APP_PRIVATE_KEY }}
@@ -28,6 +29,7 @@ jobs:
         uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c # v6.4.0
         with:
           go-version-file: go.mod
+          cache: false
 
       - name: Set up Task
         uses: arduino/setup-task@b91d5d2c96a56797b48ac1e0e89220bf64044611 # v2.0.0
@@ -56,8 +58,10 @@ jobs:
 
       - name: Add env vars
         run: |
-          echo GORELEASER_CURRENT_TAG=${{ steps.latest.outputs.output }}>> $GITHUB_ENV
-          echo RELEASE_NOTES_PATH=.changes/${{ steps.latest.outputs.output }}.md >> $GITHUB_ENV
+          echo GORELEASER_CURRENT_TAG=${STEPS_LATEST_OUTPUTS_OUTPUT}>> $GITHUB_ENV
+          echo RELEASE_NOTES_PATH=.changes/${STEPS_LATEST_OUTPUTS_OUTPUT}.md >> $GITHUB_ENV
+        env:
+          STEPS_LATEST_OUTPUTS_OUTPUT: ${{ steps.latest.outputs.output }}
 
       - name: Create release
         uses: goreleaser/goreleaser-action@e435ccd777264be153ace6237001ef4d979d3a7a # v6.4.0
@@ -93,6 +97,7 @@ jobs:
         uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
         with:
           fetch-depth: 0
+          persist-credentials: false
 
       - name: Download release
         uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5.0.0
@@ -158,6 +163,7 @@ jobs:
         uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
         with:
           fetch-depth: 0
+          persist-credentials: false
 
       - name: Download release
         uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5.0.0

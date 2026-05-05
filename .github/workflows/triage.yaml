@@ -15,7 +15,7 @@ jobs:
     steps:
       - name: get app token
         id: get-app-token
-        uses: labd/action-gh-app-token@main
+        uses: labd/action-gh-app-token@570381a08efe9c961806a3a3bc5882af5f50ef6a # v0.1.0
         with:
           app-id: ${{ secrets.MCI_APP_ID }}
           private-key: ${{ secrets.MCI_APP_PRIVATE_KEY }}
