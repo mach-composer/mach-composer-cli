@@ -61,7 +61,7 @@ func (e *UpdateError) Error() string {
 }
 
 type Updater struct {
-	filename string // Should always point to the filename containg the components
+	Filename string // Should always point to the filename containg the components
 	config   *PartialConfig
 	updates  []ChangeSet
 }
@@ -113,12 +113,12 @@ func NewUpdater(ctx context.Context, filename string, useCloud bool, gitFallback
 	}
 
 	result := &Updater{
-		filename: filename,
+		Filename: filename,
 		config:   cfg,
 	}
 
 	if componentsFilename != "" {
-		result.filename = path.Join(path.Dir(filename), componentsFilename)
+		result.Filename = path.Join(path.Dir(filename), componentsFilename)
 	}
 
 	if useCloud {
@@ -138,7 +138,7 @@ func NewUpdater(ctx context.Context, filename string, useCloud bool, gitFallback
 
 // UpdateAllComponents updates all the components in the config file.
 func (u *Updater) UpdateAllComponents(ctx context.Context) error {
-	updateSet, err := findUpdates(ctx, u.config, u.filename)
+	updateSet, err := findUpdates(ctx, u.config, u.Filename)
 	if err != nil {
 		return err
 	}
@@ -168,7 +168,7 @@ func (u *Updater) UpdateComponent(ctx context.Context, name, version string) err
 		return nil
 	}
 
-	updateSet, err := findSpecificUpdate(ctx, u.config, u.filename, component)
+	updateSet, err := findSpecificUpdate(ctx, u.config, u.Filename, component)
 	if err != nil {
 		return err
 	}
@@ -183,13 +183,13 @@ func (u *Updater) UpdateComponent(ctx context.Context, name, version string) err
 
 func (u *Updater) GetUpdateSet() *UpdateSet {
 	return &UpdateSet{
-		filename: u.filename,
+		filename: u.Filename,
 		updates:  u.updates,
 	}
 }
 
 func (u *Updater) Write(ctx context.Context) bool {
-	if u.updates == nil || len(u.updates) < 1 {
+	if len(u.updates) < 1 {
 		return false
 	}
 

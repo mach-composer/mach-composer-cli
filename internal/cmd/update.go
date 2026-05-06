@@ -116,10 +116,10 @@ func updateFunc(ctx context.Context, args []string) error {
 
 		// Generate commit message if not passed
 		if updateFlags.commitMessage == "" {
-			commitMessage = generateCommitMessage(map[string]string{updateFlags.configFile: changes})
+			commitMessage = generateCommitMessage(map[string]string{u.Filename: changes})
 		}
 
-		err = gitutils.Commit(ctx, []string{updateFlags.configFile}, commitMessage)
+		err = gitutils.Commit(ctx, []string{u.Filename}, commitMessage)
 		if err != nil {
 			return err
 		}
