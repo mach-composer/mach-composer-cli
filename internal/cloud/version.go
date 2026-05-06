@@ -14,7 +14,7 @@ import (
 	"github.com/mach-composer/mach-composer-cli/internal/gitutils"
 )
 
-func RegisterComponentVersion(ctx context.Context, client ClientWrapper, repository gitutils.GitRepository, organization, project, componentKey, branch, version string, dryRun, auto, createComponent bool, gitFilterPaths []string) error {
+func RegisterComponentVersion(ctx context.Context, client ClientWrapper, repository gitutils.GitRepository, organization, project, componentKey, branch, version string, dryRun, auto, createComponent, shortHash bool, gitFilterPaths []string) error {
 	lc, err := client.ListComponents(ctx, organization, project, 250)
 	if err != nil {
 		return err
@@ -45,7 +45,7 @@ func RegisterComponentVersion(ctx context.Context, client ClientWrapper, reposit
 	}
 
 	if auto {
-		return autoRegisterVersion(ctx, client, repository, organization, project, componentKey, dryRun, gitFilterPaths)
+		return autoRegisterVersion(ctx, client, repository, organization, project, componentKey, dryRun, shortHash, gitFilterPaths)
 	} else {
 		if dryRun {
 			log.Info().Msgf("Would create new version: %s (branch=%s)", version, branch)
@@ -61,7 +61,7 @@ func RegisterComponentVersion(ctx context.Context, client ClientWrapper, reposit
 	}
 }
 
-func autoRegisterVersion(ctx context.Context, client ClientWrapper, repository gitutils.GitRepository, organization, project, componentKey string, dryRun bool, gitFilterPaths []string) error {
+func autoRegisterVersion(ctx context.Context, client ClientWrapper, repository gitutils.GitRepository, organization, project, componentKey string, dryRun, shortHash bool, gitFilterPaths []string) error {
 	cwd, err := os.Getwd()
 	if err != nil {
 		return err
@@ -98,6 +98,9 @@ func autoRegisterVersion(ctx context.Context, client ClientWrapper, repository g
 		return err
 	}
 	versionIdentifier := newVersion.Identifier()
+	if shortHash {
+		versionIdentifier = versionIdentifier[:7]
+	}
 
 	// Register new version
 	if dryRun {
@@ -128,10 +131,18 @@ func autoRegisterVersion(ctx context.Context, client ClientWrapper, repository g
 	newCommits := make([]mccsdk.CommitDraft, len(commits))
 	for i := range pie.Reverse(commits) {
 		c := commits[i]
+		commitHash := c.Commit
+		parents := c.Parents
+		if shortHash {
+			commitHash = commitHash[:7]
+			for j, p := range parents {
+				parents[j] = p[:7]
+			}
+		}
 		newCommits[i] = mccsdk.CommitDraft{
-			Commit:  c.Commit,
+			Commit:  commitHash,
 			Subject: c.Message,
-			Parents: c.Parents,
+			Parents: parents,
 			Author: mccsdk.CommitAuthorDraft{
 				Name:  c.Author.Name,
 				Email: c.Author.Email,

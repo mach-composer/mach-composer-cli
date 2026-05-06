@@ -53,7 +53,7 @@ type GitVersionInfo struct {
 }
 
 func (g *GitVersionInfo) Identifier() string {
-	return g.Hash.String()[0:7]
+	return g.Hash.String()
 }
 
 func OpenRepository(path string) (*git.Repository, error) {

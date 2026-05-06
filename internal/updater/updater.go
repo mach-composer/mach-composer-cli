@@ -27,6 +27,7 @@ type PartialConfig struct {
 	filename    string `yaml:"-"`
 	client      *mccsdk.APIClient
 	gitFallback bool
+	shortHash   bool
 }
 
 type PartialRawConfig struct {
@@ -67,7 +68,7 @@ type Updater struct {
 
 // NewUpdater creates an update to update the component versions in a config
 // file.
-func NewUpdater(ctx context.Context, filename string, useCloud bool, gitFallback bool) (*Updater, error) {
+func NewUpdater(ctx context.Context, filename string, useCloud bool, gitFallback bool, shortHash bool) (*Updater, error) {
 	//TODO: Switch to using config.loadConfig to load the config file so we have a consistent way of loading the config
 	body, err := utils.AFS.ReadFile(filename)
 	if err != nil {
@@ -101,6 +102,7 @@ func NewUpdater(ctx context.Context, filename string, useCloud bool, gitFallback
 		Sops:           raw.Sops,
 		filename:       filepath.Base(filename),
 		gitFallback:    gitFallback,
+		shortHash:      shortHash,
 	}
 
 	// If we have a Sops node which is a mapping then we can assume that this

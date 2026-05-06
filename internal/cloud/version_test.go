@@ -24,7 +24,7 @@ func TestRegisterComponentVersionComponentNotFoundWithoutCreateComponent(t *test
 	version := "1.0.0"
 	var gitFilterPaths []string
 
-	err := RegisterComponentVersion(ctx, client, gitRepo, organization, project, componentKey, branch, version, false, false, false, gitFilterPaths)
+	err := RegisterComponentVersion(ctx, client, gitRepo, organization, project, componentKey, branch, version, false, false, false, false, gitFilterPaths)
 	assert.ErrorContains(t, err, "component test-component does not exist")
 	assert.True(t, client.AssertNotCalled(t, "CreateComponent"))
 	assert.True(t, client.AssertNotCalled(t, "CreateComponentVersion"))
@@ -44,7 +44,7 @@ func TestRegisterComponentVersionComponentNotFoundWithCreateComponentDryRun(t *t
 	version := "1.0.0"
 	var gitFilterPaths []string
 
-	err := RegisterComponentVersion(ctx, client, gitRepo, organization, project, componentKey, branch, version, true, false, true, gitFilterPaths)
+	err := RegisterComponentVersion(ctx, client, gitRepo, organization, project, componentKey, branch, version, true, false, true, false, gitFilterPaths)
 	assert.NoError(t, err)
 	assert.True(t, client.AssertNotCalled(t, "CreateComponent"))
 	assert.True(t, client.AssertNotCalled(t, "CreateComponentVersion"))
@@ -69,7 +69,7 @@ func TestRegisterComponentVersionComponentNotFoundWithCreateComponent(t *testing
 	version := "1.0.0"
 	var gitFilterPaths []string
 
-	err := RegisterComponentVersion(ctx, client, gitRepo, organization, project, componentKey, branch, version, false, false, true, gitFilterPaths)
+	err := RegisterComponentVersion(ctx, client, gitRepo, organization, project, componentKey, branch, version, false, false, true, false, gitFilterPaths)
 	assert.NoError(t, err)
 }
 
@@ -95,7 +95,7 @@ func TestRegisterComponentVersionComponentFound(t *testing.T) {
 	version := "1.0.0"
 	var gitFilterPaths []string
 
-	err := RegisterComponentVersion(ctx, client, gitRepo, organization, project, componentKey, branch, version, false, false, true, gitFilterPaths)
+	err := RegisterComponentVersion(ctx, client, gitRepo, organization, project, componentKey, branch, version, false, false, true, false, gitFilterPaths)
 	assert.NoError(t, err)
 	assert.True(t, client.AssertNotCalled(t, "CreateComponent"))
 }
@@ -127,7 +127,7 @@ func TestRegisterComponentVersionComponentFoundAutoGitRevisionNotFound(t *testin
 	version := "1.0.0"
 	var gitFilterPaths []string
 
-	err := RegisterComponentVersion(ctx, client, gitRepo, organization, project, componentKey, branch, version, false, true, true, gitFilterPaths)
+	err := RegisterComponentVersion(ctx, client, gitRepo, organization, project, componentKey, branch, version, false, true, true, false, gitFilterPaths)
 	assert.NoError(t, err)
 	assert.True(t, client.AssertNotCalled(t, "CreateComponent"))
 	assert.True(t, client.AssertNotCalled(t, "PushComponentVersionCommits"))
@@ -160,7 +160,7 @@ func TestRegisterComponentVersionComponentFoundAutoNoCommits(t *testing.T) {
 	version := "1.0.0"
 	var gitFilterPaths []string
 
-	err := RegisterComponentVersion(ctx, client, gitRepo, organization, project, componentKey, branch, version, false, true, true, gitFilterPaths)
+	err := RegisterComponentVersion(ctx, client, gitRepo, organization, project, componentKey, branch, version, false, true, true, false, gitFilterPaths)
 	assert.NoError(t, err)
 	assert.True(t, client.AssertNotCalled(t, "CreateComponent"))
 	assert.True(t, client.AssertNotCalled(t, "PushComponentVersionCommits"))
@@ -221,7 +221,7 @@ func TestRegisterComponentVersionComponentFoundAutoOK(t *testing.T) {
 	version := "1.0.0"
 	var gitFilterPaths []string
 
-	err := RegisterComponentVersion(ctx, client, gitRepo, organization, project, componentKey, branch, version, false, true, true, gitFilterPaths)
+	err := RegisterComponentVersion(ctx, client, gitRepo, organization, project, componentKey, branch, version, false, true, true, false, gitFilterPaths)
 	assert.NoError(t, err)
 	assert.True(t, client.AssertNotCalled(t, "CreateComponent"))
 }
@@ -268,7 +268,7 @@ func TestRegisterComponentVersionComponentFoundAutoDryRun(t *testing.T) {
 	version := "1.0.0"
 	var gitFilterPaths []string
 
-	err := RegisterComponentVersion(ctx, client, gitRepo, organization, project, componentKey, branch, version, true, true, true, gitFilterPaths)
+	err := RegisterComponentVersion(ctx, client, gitRepo, organization, project, componentKey, branch, version, true, true, true, false, gitFilterPaths)
 	assert.NoError(t, err)
 	assert.True(t, client.AssertNotCalled(t, "CreateComponent"))
 	assert.True(t, client.AssertNotCalled(t, "CreateComponentVersion"))

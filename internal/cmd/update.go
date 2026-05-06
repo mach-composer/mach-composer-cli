@@ -24,6 +24,7 @@ var updateFlags struct {
 	commitMessage string
 	cloud         bool
 	gitFallback   bool
+	shortHash     bool
 }
 
 var updateCmd = &cobra.Command{
@@ -53,6 +54,7 @@ func init() {
 	updateCmd.Flags().StringVarP(&updateFlags.commitMessage, "commit-message", "m", "", "Use a custom message for the commit.")
 	updateCmd.Flags().BoolVar(&updateFlags.cloud, "cloud", false, "Use MACH composer cloud to check for updates.")
 	updateCmd.Flags().BoolVar(&updateFlags.gitFallback, "git-fallback", false, "Fallback to git if composer cloud check fails.")
+	updateCmd.Flags().BoolVar(&updateFlags.shortHash, "short-hash", false, "Use short (7 character) git hashes instead of full length hashes")
 	updateCmd.Flags().StringArrayVarP(&updateFlags.components, "component", "", nil, "")
 
 	handleError(updateCmd.MarkFlagFilename("file", "yml", "yaml"))
@@ -75,7 +77,7 @@ func updateFunc(ctx context.Context, args []string) error {
 
 	writeChanges := !updateFlags.check
 
-	u, err := updater.NewUpdater(ctx, updateFlags.configFile, updateFlags.cloud, updateFlags.gitFallback)
+	u, err := updater.NewUpdater(ctx, updateFlags.configFile, updateFlags.cloud, updateFlags.gitFallback, updateFlags.shortHash)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Failed to update %s: %v\n", updateFlags.configFile, err.Error())
 		os.Exit(1)
