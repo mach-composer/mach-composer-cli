@@ -120,11 +120,6 @@ var componentRegisterVersionCmd = &cobra.Command{
 			return err
 		}
 
-		shortHash, err := cmd.Flags().GetBool("short-hash")
-		if err != nil {
-			return err
-		}
-
 		client, err := cloud.NewClient(ctx)
 		if err != nil {
 			return err
@@ -140,7 +135,7 @@ var componentRegisterVersionCmd = &cobra.Command{
 			version = args[1]
 		}
 
-		return cloud.RegisterComponentVersion(ctx, cloud.NewClientWrapper(client), gitutils.NewGitRepositoryWrapper(), organization, project, componentKey, branch, version, dryRun, auto, createComponent, shortHash, gitFilterPaths)
+		return cloud.RegisterComponentVersion(ctx, cloud.NewClientWrapper(client), gitutils.NewGitRepositoryWrapper(), organization, project, componentKey, branch, version, dryRun, auto, createComponent, gitFilterPaths)
 	},
 }
 
@@ -279,7 +274,6 @@ func init() {
 	componentRegisterVersionCmd.Flags().StringArray("git-filter-path", nil, "Filter commits based on given paths")
 	componentRegisterVersionCmd.Flags().String("branch", "", "The branch to use for the version. Defaults to the backend default if not set")
 	componentRegisterVersionCmd.Flags().Bool("create-component", false, "Will create the component if it does not already exist")
-	componentRegisterVersionCmd.Flags().Bool("short-hash", false, "Use short (7 character) git hashes instead of full length hashes")
 
 	CloudCmd.AddCommand(componentListVersionCmd)
 	registerContextFlags(componentListVersionCmd)
