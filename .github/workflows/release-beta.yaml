@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - name: Check out code
-        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           fetch-depth: 0
           persist-credentials: false
@@ -48,7 +48,7 @@ jobs:
           CHOCOLATEY_VERSION: 1.2.1
 
       - name: Set up nix
-        uses: cachix/install-nix-action@ab739621df7a23f52766f9ccc97f38da6b7af14f # v31.10.5
+        uses: cachix/install-nix-action@8aa03977d8d733052d78f4e008a241fd1dbf36b3 # v31.10.6
 
       - name: Get goreleaser app token
         id: get-app-token
@@ -66,13 +66,13 @@ jobs:
 
       - name: Get the next potential version
         id: next-tag
-        uses: miniscruff/changie-action@6dcc2533cac0495148ed4046c438487e4dceaa23 # v2.0.0
+        uses: miniscruff/changie-action@11bcad388e7973948cbcecb10863baf024d5f607 # v3.0.0
         with:
           version: latest
           args: next -p beta-${{ env.HASH }} ${{ github.event.inputs.next }}
 
       - name: Output changes
-        uses: miniscruff/changie-action@6dcc2533cac0495148ed4046c438487e4dceaa23 # v2.0.0
+        uses: miniscruff/changie-action@11bcad388e7973948cbcecb10863baf024d5f607 # v3.0.0
         id: changelog
         with:
           version: latest
@@ -89,7 +89,7 @@ jobs:
           STEPS_CHANGELOG_OUTPUTS_OUTPUT: ${{ steps.changelog.outputs.output }}
 
       - name: GoReleaser
-        uses: goreleaser/goreleaser-action@e435ccd777264be153ace6237001ef4d979d3a7a # v6.4.0
+        uses: goreleaser/goreleaser-action@5daf1e915a5f0af01ddbcd89a43b8061ff4f1a89 # v7.2.2
         with:
           args: release --clean --skip=validate --release-notes ${{ steps.save_changes.outputs.changelog_file }}
         env:
@@ -100,7 +100,7 @@ jobs:
           SKIP_UPLOAD: true
 
       - name: Upload release
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: mach-composer
           path: dist/*
