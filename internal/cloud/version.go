@@ -14,7 +14,7 @@ import (
 	"github.com/mach-composer/mach-composer-cli/internal/gitutils"
 )
 
-func RegisterComponentVersion(ctx context.Context, client ClientWrapper, repository gitutils.GitRepository, organization, project, componentKey, branch, version string, dryRun, auto, createComponent bool, gitFilterPaths []string) error {
+func RegisterComponentVersion(ctx context.Context, client ClientWrapper, repository gitutils.GitRepository, organization, project, componentKey, branch, version string, dryRun, auto, createComponent, checkCommits bool, gitFilterPaths []string) error {
 	lc, err := client.ListComponents(ctx, organization, project, 250)
 	if err != nil {
 		return err
@@ -45,7 +45,7 @@ func RegisterComponentVersion(ctx context.Context, client ClientWrapper, reposit
 	}
 
 	if auto {
-		return autoRegisterVersion(ctx, client, repository, organization, project, componentKey, dryRun, gitFilterPaths)
+		return autoRegisterVersion(ctx, client, repository, organization, project, componentKey, dryRun, checkCommits, gitFilterPaths)
 	} else {
 		if dryRun {
 			log.Info().Msgf("Would create new version: %s (branch=%s)", version, branch)
@@ -61,7 +61,7 @@ func RegisterComponentVersion(ctx context.Context, client ClientWrapper, reposit
 	}
 }
 
-func autoRegisterVersion(ctx context.Context, client ClientWrapper, repository gitutils.GitRepository, organization, project, componentKey string, dryRun bool, gitFilterPaths []string) error {
+func autoRegisterVersion(ctx context.Context, client ClientWrapper, repository gitutils.GitRepository, organization, project, componentKey string, dryRun, checkCommits bool, gitFilterPaths []string) error {
 	cwd, err := os.Getwd()
 	if err != nil {
 		return err
@@ -81,7 +81,7 @@ func autoRegisterVersion(ctx context.Context, client ClientWrapper, repository g
 	}
 
 	var lastVersion *mccsdk.ComponentVersion
-	if !dryRun {
+	if !dryRun && checkCommits {
 		lastVersion, err = client.GetLatestComponentVersion(ctx, organization, project, componentKey, branch)
 		if err != nil {
 			return err
@@ -108,6 +108,11 @@ func autoRegisterVersion(ctx context.Context, client ClientWrapper, repository g
 			return err
 		}
 		log.Info().Msgf("Created new version: %s (branch=%s)", createdVersion.Version, branch)
+	}
+
+	if !checkCommits {
+		log.Info().Msgf("Skipping commit lookup for version: %s", versionIdentifier)
+		return nil
 	}
 
 	commits, err := repository.GetRecentCommits(ctx, cwd, baseRef, branch, gitFilterPaths)
