@@ -17,6 +17,7 @@ mach-composer update [flags]
   -f, --file string             YAML file to update. (default "main.yml")
       --git-fallback            Fallback to git if composer cloud check fails.
   -h, --help                    help for update
+      --short-hash              Use short (7 character) git hashes instead of full length hashes
 ```
 
 ### Options inherited from parent commands
