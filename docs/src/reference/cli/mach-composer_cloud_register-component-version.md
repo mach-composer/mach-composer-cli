@@ -9,15 +9,13 @@ mach-composer cloud register-component-version [name] [version] [flags]
 ### Options
 
 ```
-      --auto                          Add the version commits automatically based on the current branch
-      --branch string                 The branch to use for the version. Defaults to the backend default if not set
-      --check-commits                 Look up the commits since the last version and register them with the new version. Only used in combination with --auto (default true)
-      --create-component              Will create the component if it does not already exist
-      --dry-run                       Dry run
-      --git-filter-path stringArray   Filter commits based on given paths
-  -h, --help                          help for register-component-version
-      --organization string           Organization key
-      --project string                Project key
+      --auto                  Determine the version automatically from the current commit of the checked out branch
+      --branch string         The branch to use for the version. Defaults to the backend default if not set
+      --create-component      Will create the component if it does not already exist
+      --dry-run               Dry run
+  -h, --help                  help for register-component-version
+      --organization string   Organization key
+      --project string        Project key
 ```
 
 ### Options inherited from parent commands

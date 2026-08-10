@@ -2,19 +2,17 @@ package cloud
 
 import (
 	"context"
-	"errors"
 	"fmt"
-	"github.com/rs/zerolog/log"
 	"os"
-	"path/filepath"
 
-	"github.com/elliotchance/pie/v2"
+	"github.com/rs/zerolog/log"
+
 	"github.com/mach-composer/mcc-sdk-go/mccsdk"
 
 	"github.com/mach-composer/mach-composer-cli/internal/gitutils"
 )
 
-func RegisterComponentVersion(ctx context.Context, client ClientWrapper, repository gitutils.GitRepository, organization, project, componentKey, branch, version string, dryRun, auto, createComponent, checkCommits bool, gitFilterPaths []string) error {
+func RegisterComponentVersion(ctx context.Context, client ClientWrapper, repository gitutils.GitRepository, organization, project, componentKey, branch, version string, dryRun, auto, createComponent bool) error {
 	lc, err := client.ListComponents(ctx, organization, project, 250)
 	if err != nil {
 		return err
@@ -45,7 +43,7 @@ func RegisterComponentVersion(ctx context.Context, client ClientWrapper, reposit
 	}
 
 	if auto {
-		return autoRegisterVersion(ctx, client, repository, organization, project, componentKey, dryRun, checkCommits, gitFilterPaths)
+		return autoRegisterVersion(ctx, client, repository, organization, project, componentKey, dryRun)
 	} else {
 		if dryRun {
 			log.Info().Msgf("Would create new version: %s (branch=%s)", version, branch)
@@ -61,36 +59,17 @@ func RegisterComponentVersion(ctx context.Context, client ClientWrapper, reposit
 	}
 }
 
-func autoRegisterVersion(ctx context.Context, client ClientWrapper, repository gitutils.GitRepository, organization, project, componentKey string, dryRun, checkCommits bool, gitFilterPaths []string) error {
+// autoRegisterVersion registers the current commit of the checked out branch as
+// the new version of the component.
+func autoRegisterVersion(ctx context.Context, client ClientWrapper, repository gitutils.GitRepository, organization, project, componentKey string, dryRun bool) error {
 	cwd, err := os.Getwd()
 	if err != nil {
 		return err
 	}
 
-	gitFilterPaths = pie.Map(gitFilterPaths, func(path string) string {
-		if filepath.IsAbs(path) {
-			return path
-		}
-
-		return filepath.Join(cwd, path)
-	})
-
 	branch, err := repository.GetCurrentBranch(ctx, cwd)
 	if err != nil {
 		return err
-	}
-
-	var lastVersion *mccsdk.ComponentVersion
-	if !dryRun && checkCommits {
-		lastVersion, err = client.GetLatestComponentVersion(ctx, organization, project, componentKey, branch)
-		if err != nil {
-			return err
-		}
-	}
-
-	baseRef := ""
-	if lastVersion != nil {
-		baseRef = lastVersion.Version
 	}
 
 	newVersion, err := repository.GetVersionInfo(ctx, cwd, branch)
@@ -99,68 +78,16 @@ func autoRegisterVersion(ctx context.Context, client ClientWrapper, repository g
 	}
 	versionIdentifier := newVersion.Identifier()
 
-	// Register new version
 	if dryRun {
 		log.Info().Msgf("Would create new version: %s (branch=%s)", versionIdentifier, branch)
-	} else {
-		createdVersion, err := client.CreateComponentVersion(ctx, organization, project, componentKey, versionIdentifier, branch)
-		if err != nil {
-			return err
-		}
-		log.Info().Msgf("Created new version: %s (branch=%s)", createdVersion.Version, branch)
-	}
-
-	if !checkCommits {
-		log.Info().Msgf("Skipping commit lookup for version: %s", versionIdentifier)
 		return nil
 	}
 
-	commits, err := repository.GetRecentCommits(ctx, cwd, baseRef, branch, gitFilterPaths)
+	createdVersion, err := client.CreateComponentVersion(ctx, organization, project, componentKey, versionIdentifier, branch)
 	if err != nil {
-		if errors.Is(err, gitutils.ErrGitRevisionNotFound) {
-			log.Info().Msgf("Failed to calculate changes, last version (%s) not found in the repository", baseRef)
-			return nil
-		}
 		return err
 	}
+	log.Info().Msgf("Created new version: %s (branch=%s)", createdVersion.Version, branch)
 
-	if len(commits) == 0 {
-		log.Info().Msgf("No new commits found since last version (%s)", baseRef)
-		return nil
-	}
-
-	// Push commits
-	newCommits := make([]mccsdk.CommitDraft, len(commits))
-	for i := range pie.Reverse(commits) {
-		c := commits[i]
-		newCommits[i] = mccsdk.CommitDraft{
-			Commit:  c.Commit,
-			Subject: c.Message,
-			Parents: c.Parents,
-			Author: mccsdk.CommitAuthorDraft{
-				Name:  c.Author.Name,
-				Email: c.Author.Email,
-				Date:  c.Author.Date,
-			},
-			Committer: mccsdk.CommitAuthorDraft{
-				Name:  c.Committer.Name,
-				Email: c.Committer.Email,
-				Date:  c.Committer.Date,
-			},
-		}
-	}
-
-	if dryRun {
-		log.Info().Msgf("Would add %d commits for version: %s", len(newCommits), versionIdentifier)
-		for _, c := range newCommits {
-			log.Info().Msgf("%s %s", c.Commit, c.Subject)
-		}
-	} else {
-		err = client.PushComponentVersionCommits(ctx, organization, project, componentKey, versionIdentifier, newCommits)
-		if err != nil {
-			return err
-		}
-		log.Info().Msgf("Recorded %d commits for version: %s", len(newCommits), versionIdentifier)
-	}
 	return nil
 }

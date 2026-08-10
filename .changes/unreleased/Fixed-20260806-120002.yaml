@@ -1,0 +1,3 @@
+kind: Fixed
+body: 'Fixed `cloud register-component-version` ignoring an explicitly passed version when `--auto` was also set. It warned that `--auto` would be ignored, but still registered the current git commit instead of the given version'
+time: 2026-08-06T12:00:02.000000000Z

@@ -158,7 +158,7 @@ func getLastVersion(ctx context.Context, cfg *PartialConfig, c *config.Component
 	}
 
 	if c.Source.IsType(config.SourceTypeGit) {
-		return getLastVersionGit(ctx, cfg, c, origin)
+		return getLastVersionGit(ctx, c, origin)
 	}
 
 	err := &UpdateError{
@@ -194,7 +194,7 @@ func getLastVersionCloud(ctx context.Context, cfg *PartialConfig, c *config.Comp
 	if err != nil {
 		if cfg.gitFallback && c.Source.IsType(config.SourceTypeGit) {
 			log.Ctx(ctx).Err(err).Msgf("Error checking for %s in MACH Composer Cloud, falling back to Git", c.Name)
-			return getLastVersionGit(ctx, cfg, c, origin)
+			return getLastVersionGit(ctx, c, origin)
 		}
 		log.Ctx(ctx).Error().Err(err).Msgf("Error checking for latest version of %s", c.Name)
 		return nil, nil
@@ -203,7 +203,7 @@ func getLastVersionCloud(ctx context.Context, cfg *PartialConfig, c *config.Comp
 	if version == nil {
 		if cfg.gitFallback && c.Source.IsType(config.SourceTypeGit) {
 			log.Ctx(ctx).Warn().Msgf("No version found for %s in MACH Composer Cloud, falling back to Git", c.Name)
-			return getLastVersionGit(ctx, cfg, c, origin)
+			return getLastVersionGit(ctx, c, origin)
 		}
 		log.Ctx(ctx).Warn().Msgf("No version found for %s", c.Name)
 		return nil, nil
@@ -252,7 +252,7 @@ func getLastVersionCloud(ctx context.Context, cfg *PartialConfig, c *config.Comp
 	return cs, nil
 }
 
-func getLastVersionGit(ctx context.Context, cfg *PartialConfig, c *config.ComponentConfig, origin string) (*ChangeSet, error) {
+func getLastVersionGit(ctx context.Context, c *config.ComponentConfig, origin string) (*ChangeSet, error) {
 	commits, err := gitutils.GetLastVersionGit(ctx, c, origin)
 	if err != nil {
 		return nil, err
@@ -262,17 +262,8 @@ func getLastVersionGit(ctx context.Context, cfg *PartialConfig, c *config.Compon
 	for i := range commits {
 		c := commits[i]
 
-		commit := c.Commit
-		parents := c.Parents
-		if cfg.shortHash {
-			commit = truncateHash(commit)
-			for j, p := range parents {
-				parents[j] = truncateHash(p)
-			}
-		}
-
-		cd[i].Commit = commit
-		cd[i].Parents = parents
+		cd[i].Commit = c.Commit
+		cd[i].Parents = c.Parents
 		cd[i].Message = c.Message
 
 		cd[i].Author = CommitAuthor{
@@ -296,19 +287,8 @@ func getLastVersionGit(ctx context.Context, cfg *PartialConfig, c *config.Compon
 	if len(commits) < 1 {
 		cs.LastVersion = c.Version
 	} else {
-		lastVersion := commits[0].Commit
-		if cfg.shortHash {
-			lastVersion = truncateHash(lastVersion)
-		}
-		cs.LastVersion = lastVersion
+		cs.LastVersion = commits[0].Commit
 	}
 
 	return cs, nil
-}
-
-func truncateHash(hash string) string {
-	if len(hash) > 7 {
-		return hash[:7]
-	}
-	return hash
 }
