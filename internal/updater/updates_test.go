@@ -3,6 +3,7 @@ package updater
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"github.com/google/uuid"
 	"github.com/mach-composer/mach-composer-cli/internal/cloud"
 	"github.com/mach-composer/mach-composer-cli/internal/config"
@@ -10,6 +11,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
+	"path"
+	"strings"
 	"testing"
 	"time"
 )
@@ -159,4 +162,63 @@ func TestFindSpecificUpdateWithoutChangeSet(t *testing.T) {
 	assert.NotNil(t, updates)
 	assert.Empty(t, updates.updates)
 	assert.False(t, updates.HasChanges())
+}
+
+// The cloud lookup runs on the same worker pool as the git lookup. Run with
+// -race to cover the per-component logging context.
+func TestFindUpdatesCloudConcurrent(t *testing.T) {
+	branch := "main"
+	organization := "acme"
+	project := "ecommerce"
+
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if !strings.HasSuffix(r.URL.Path, "/latest") {
+			t.Errorf("unexpected request %s", r.URL.Path)
+			return
+		}
+
+		component := path.Base(path.Dir(r.URL.Path))
+		id, _ := uuid.NewUUID()
+		b, _ := json.Marshal(mccsdk.ComponentVersion{
+			Id:        id.String(),
+			CreatedAt: time.Now(),
+			Component: component,
+			Version:   component + "-new",
+			Branch:    &branch,
+		})
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		_, _ = w.Write(b)
+	}))
+	defer server.Close()
+
+	components := make([]config.ComponentConfig, 25)
+	for i := range components {
+		components[i] = config.ComponentConfig{
+			Name:    fmt.Sprintf("component-%d", i),
+			Version: fmt.Sprintf("component-%d-old", i),
+		}
+	}
+
+	cfg := &PartialConfig{
+		client:     cloud.NewTestClient(server),
+		filename:   "main.yml",
+		Components: components,
+		MachComposer: config.MachComposer{
+			Cloud: config.MachComposerCloud{
+				Organization: organization,
+				Project:      project,
+			},
+		},
+	}
+
+	updates, err := findUpdates(context.Background(), cfg, "main.yml")
+	assert.NoError(t, err)
+	assert.Len(t, updates.updates, len(components))
+
+	// Each worker writes the default branch back into its own component, so the
+	// defaults are visible in the shared config afterwards.
+	for i := range cfg.Components {
+		assert.Equal(t, branch, cfg.Components[i].Branch)
+	}
 }

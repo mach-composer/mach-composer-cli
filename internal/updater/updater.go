@@ -50,9 +50,7 @@ type WorkerJob struct {
 }
 
 type UpdateError struct {
-	msg       string
-	component string
-	source    string
+	msg string
 }
 
 func (e *UpdateError) Error() string {

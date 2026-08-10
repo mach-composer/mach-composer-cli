@@ -17,39 +17,6 @@ import (
 	"golang.org/x/sync/semaphore"
 )
 
-func findUpdates(ctx context.Context, cfg *PartialConfig, filename string) (*UpdateSet, error) {
-	log.Ctx(ctx).Info().Msgf("Checking if there are updates for %d components\n", len(cfg.Components))
-	if cfg.client == nil {
-		return findUpdatesParallel(ctx, cfg, filename)
-	}
-	return findUpdatesSerial(ctx, cfg, filename)
-}
-
-func findUpdatesSerial(ctx context.Context, cfg *PartialConfig, filename string) (*UpdateSet, error) {
-	updates := UpdateSet{
-		filename: filename,
-	}
-
-	for i := range cfg.Components {
-		cs, err := getLastVersion(ctx, cfg, &cfg.Components[i], cfg.filename)
-		if err != nil {
-			return nil, err
-		}
-
-		if cs == nil {
-			continue
-		}
-
-		output := OutputChanges(cs)
-		log.Ctx(ctx).Info().Msg(output)
-
-		if cs.HasChanges() {
-			updates.updates = append(updates.updates, *cs)
-		}
-	}
-	return &updates, nil
-}
-
 func determineNumWorkers() int {
 	var numWorkers = int(math.Ceil(float64(runtime.NumCPU() / 2)))
 
@@ -60,7 +27,12 @@ func determineNumWorkers() int {
 	return numWorkers
 }
 
-func findUpdatesParallel(ctx context.Context, cfg *PartialConfig, filename string) (*UpdateSet, error) {
+// findUpdates checks every component for a newer version. Both the MACH
+// composer Cloud and the git lookup are a single independent check per
+// component, so they share the same worker pool.
+func findUpdates(ctx context.Context, cfg *PartialConfig, filename string) (*UpdateSet, error) {
+	log.Ctx(ctx).Info().Msgf("Checking if there are updates for %d components\n", len(cfg.Components))
+
 	numUpdates := len(cfg.Components)
 	resChan := make(chan *ChangeSet, numUpdates)
 	errChan := make(chan error, numUpdates)
@@ -71,25 +43,28 @@ func findUpdatesParallel(ctx context.Context, cfg *PartialConfig, filename strin
 
 	log.Info().Msgf("Running on %d workers", numWorkers)
 
-	// Compute the output using up to maxWorkers goroutines at a time.
-	for _, c := range cfg.Components {
-		// When maxWorkers goroutines are in flight, Acquire blocks until one of the
+	// Compute the output using up to numWorkers goroutines at a time.
+	var acquireErr error
+	for i := range cfg.Components {
+		// When numWorkers goroutines are in flight, Acquire blocks until one of the
 		// workers finishes.
 		if err := sem.Acquire(ctx, 1); err != nil {
-			log.Printf("Failed to acquire semaphore: %v", err)
+			acquireErr = fmt.Errorf("failed to check all components for updates: %w", err)
 			break
 		}
 
 		wg.Add(1)
 
-		go func(c config.ComponentConfig) {
+		// Each goroutine gets its own component, so they never write to the same
+		// element of cfg.Components.
+		go func(c *config.ComponentConfig) {
 			defer sem.Release(1)
 			defer wg.Done()
 
 			logger := log.With().Str("component", c.Name).Logger()
-			ctx = logger.WithContext(ctx)
+			cctx := logger.WithContext(ctx)
 
-			cs, err := getLastVersion(ctx, cfg, &c, cfg.filename)
+			cs, err := getLastVersion(cctx, cfg, c, cfg.filename)
 			if err != nil {
 				logger.Error().Msg(err.Error())
 				errChan <- err
@@ -101,13 +76,19 @@ func findUpdatesParallel(ctx context.Context, cfg *PartialConfig, filename strin
 			}
 
 			resChan <- cs
-			return
-		}(c)
+		}(&cfg.Components[i])
 	}
 
 	wg.Wait()
 	close(errChan)
 	close(resChan)
+
+	// A failed Acquire means the context was cancelled, so the remaining
+	// components were never checked. Report that instead of returning a partial
+	// result that reads as complete.
+	if acquireErr != nil {
+		return nil, acquireErr
+	}
 
 	if n := len(errChan); n > 0 {
 		return nil, fmt.Errorf("failed to update %d components", n)
@@ -166,12 +147,9 @@ func getLastVersion(ctx context.Context, cfg *PartialConfig, c *config.Component
 		return getLastVersionGit(ctx, c, origin)
 	}
 
-	err := &UpdateError{
-		msg:       fmt.Sprintf("unrecognized component source for %s: %s", c.Name, c.Source),
-		component: c.Name,
-		source:    string(c.Source),
+	return nil, &UpdateError{
+		msg: fmt.Sprintf("unrecognized component source for %s: %s", c.Name, c.Source),
 	}
-	return nil, err
 }
 
 func getLastVersionCloud(ctx context.Context, cfg *PartialConfig, c *config.ComponentConfig, origin string) (*ChangeSet, error) {
@@ -214,16 +192,13 @@ func getLastVersionCloud(ctx context.Context, cfg *PartialConfig, c *config.Comp
 		return nil, nil
 	}
 
-	// The commits between the configured and the latest version are not listed.
-	// Commits are no longer registered with a version, so there is nothing to
-	// list. The update itself only depends on the latest version.
-	cs := &ChangeSet{
-		Changes:     []CommitData{},
+	// Changes is left empty: commits are no longer registered with a version, so
+	// there is nothing to list between the configured and the latest version. The
+	// update itself only depends on the latest version.
+	return &ChangeSet{
 		Component:   c,
 		LastVersion: version.Version,
-	}
-
-	return cs, nil
+	}, nil
 }
 
 func getLastVersionGit(ctx context.Context, c *config.ComponentConfig, origin string) (*ChangeSet, error) {
