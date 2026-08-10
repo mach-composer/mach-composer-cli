@@ -3,7 +3,6 @@ package cloud
 import (
 	"context"
 	"github.com/mach-composer/mcc-sdk-go/mccsdk"
-	"io"
 )
 
 var _ ClientWrapper = (*MccSdkClientWrapper)(nil)
@@ -13,8 +12,6 @@ type ClientWrapper interface {
 	ListComponents(ctx context.Context, organization, project string, limit int32) (*mccsdk.ComponentPaginator, error)
 	CreateComponent(ctx context.Context, organization, project, key string) (*mccsdk.Component, error)
 	CreateComponentVersion(ctx context.Context, organization, project, key, version, branch string) (*mccsdk.ComponentVersion, error)
-	GetLatestComponentVersion(ctx context.Context, organization, project, key, branch string) (*mccsdk.ComponentVersion, error)
-	PushComponentVersionCommits(ctx context.Context, organization, project, componentKey, versionIdentifier string, commits []mccsdk.CommitDraft) error
 }
 
 func NewClientWrapper(client *mccsdk.APIClient) *MccSdkClientWrapper {
@@ -23,43 +20,6 @@ func NewClientWrapper(client *mccsdk.APIClient) *MccSdkClientWrapper {
 
 type MccSdkClientWrapper struct {
 	client *mccsdk.APIClient
-}
-
-func (m *MccSdkClientWrapper) PushComponentVersionCommits(ctx context.Context, organization, project, componentKey, versionIdentifier string, commits []mccsdk.CommitDraft) error {
-	_, _, err := m.client.
-		ComponentsApi.
-		ComponentVersionPushCommits(ctx, organization, project, componentKey, versionIdentifier).
-		ComponentCommitCreateDraft(mccsdk.ComponentCommitCreateDraft{
-			Commits: commits,
-		}).
-		Execute()
-
-	return err
-}
-
-// GetLatestComponentVersion retrieves the latest version of a component for a given branch. If no version is found,
-// it returns nil without an error.
-func (m *MccSdkClientWrapper) GetLatestComponentVersion(ctx context.Context, organization, project, componentKey, branch string) (*mccsdk.ComponentVersion, error) {
-	r, res, err := m.client.
-		ComponentsApi.
-		ComponentLatestVersion(ctx, organization, project, componentKey).
-		Branch(branch).
-		Execute()
-
-	// Small hack because the mccsdk cannot deserialize an empty response body
-	if res != nil && res.StatusCode == 200 {
-		b, err := io.ReadAll(res.Body)
-		if err != nil {
-			return nil, err
-		}
-
-		if string(b) == "{}" {
-			// No version found, return nil without an error
-			return nil, nil
-		}
-	}
-
-	return r, err
 }
 
 func (m *MccSdkClientWrapper) CreateComponentVersion(ctx context.Context, organization, project, componentKey, version, branch string) (*mccsdk.ComponentVersion, error) {

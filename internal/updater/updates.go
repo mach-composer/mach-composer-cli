@@ -2,8 +2,8 @@ package updater
 
 import (
 	"context"
+	"errors"
 	"fmt"
-	"math"
 	"runtime"
 	"sync"
 
@@ -16,50 +16,16 @@ import (
 	"golang.org/x/sync/semaphore"
 )
 
-func findUpdates(ctx context.Context, cfg *PartialConfig, filename string) (*UpdateSet, error) {
-	log.Ctx(ctx).Info().Msgf("Checking if there are updates for %d components\n", len(cfg.Components))
-	if cfg.client == nil {
-		return findUpdatesParallel(ctx, cfg, filename)
-	}
-	return findUpdatesSerial(ctx, cfg, filename)
-}
-
-func findUpdatesSerial(ctx context.Context, cfg *PartialConfig, filename string) (*UpdateSet, error) {
-	updates := UpdateSet{
-		filename: filename,
-	}
-
-	for i := range cfg.Components {
-		cs, err := getLastVersion(ctx, cfg, &cfg.Components[i], cfg.filename)
-		if err != nil {
-			return nil, err
-		}
-
-		if cs == nil {
-			continue
-		}
-
-		output := OutputChanges(cs)
-		log.Ctx(ctx).Info().Msg(output)
-
-		if cs.HasChanges() {
-			updates.updates = append(updates.updates, *cs)
-		}
-	}
-	return &updates, nil
-}
-
 func determineNumWorkers() int {
-	var numWorkers = int(math.Ceil(float64(runtime.NumCPU() / 2)))
-
-	if numWorkers < 2 {
-		numWorkers = 2
-	}
-
-	return numWorkers
+	return max(2, runtime.NumCPU()/2)
 }
 
-func findUpdatesParallel(ctx context.Context, cfg *PartialConfig, filename string) (*UpdateSet, error) {
+// findUpdates checks every component for a newer version. Both the MACH
+// composer Cloud and the git lookup are a single independent check per
+// component, so they share the same worker pool.
+func findUpdates(ctx context.Context, cfg *PartialConfig) ([]ChangeSet, error) {
+	log.Ctx(ctx).Info().Msgf("Checking if there are updates for %d components\n", len(cfg.Components))
+
 	numUpdates := len(cfg.Components)
 	resChan := make(chan *ChangeSet, numUpdates)
 	errChan := make(chan error, numUpdates)
@@ -70,25 +36,28 @@ func findUpdatesParallel(ctx context.Context, cfg *PartialConfig, filename strin
 
 	log.Info().Msgf("Running on %d workers", numWorkers)
 
-	// Compute the output using up to maxWorkers goroutines at a time.
-	for _, c := range cfg.Components {
-		// When maxWorkers goroutines are in flight, Acquire blocks until one of the
+	// Compute the output using up to numWorkers goroutines at a time.
+	var acquireErr error
+	for i := range cfg.Components {
+		// When numWorkers goroutines are in flight, Acquire blocks until one of the
 		// workers finishes.
 		if err := sem.Acquire(ctx, 1); err != nil {
-			log.Printf("Failed to acquire semaphore: %v", err)
+			acquireErr = fmt.Errorf("failed to check all components for updates: %w", err)
 			break
 		}
 
 		wg.Add(1)
 
-		go func(c config.ComponentConfig) {
+		// Each goroutine gets its own component, so they never write to the same
+		// element of cfg.Components.
+		go func(c *config.ComponentConfig) {
 			defer sem.Release(1)
 			defer wg.Done()
 
 			logger := log.With().Str("component", c.Name).Logger()
-			ctx = logger.WithContext(ctx)
+			cctx := logger.WithContext(ctx)
 
-			cs, err := getLastVersion(ctx, cfg, &c, cfg.filename)
+			cs, err := getLastVersion(cctx, cfg, c)
 			if err != nil {
 				logger.Error().Msg(err.Error())
 				errChan <- err
@@ -100,22 +69,26 @@ func findUpdatesParallel(ctx context.Context, cfg *PartialConfig, filename strin
 			}
 
 			resChan <- cs
-			return
-		}(c)
+		}(&cfg.Components[i])
 	}
 
 	wg.Wait()
 	close(errChan)
 	close(resChan)
 
+	// A failed Acquire means the context was cancelled, so the remaining
+	// components were never checked. Report that instead of returning a partial
+	// result that reads as complete.
+	if acquireErr != nil {
+		return nil, acquireErr
+	}
+
 	if n := len(errChan); n > 0 {
 		return nil, fmt.Errorf("failed to update %d components", n)
 	}
 
 	// Process results as we receive them from the channel
-	updates := UpdateSet{
-		filename: filename,
-	}
+	var updates []ChangeSet
 	for changeSet := range resChan {
 		if changeSet == nil {
 			continue
@@ -125,51 +98,48 @@ func findUpdatesParallel(ctx context.Context, cfg *PartialConfig, filename strin
 		log.Ctx(ctx).Info().Msg(output)
 
 		if changeSet.HasChanges() {
-			updates.updates = append(updates.updates, *changeSet)
+			updates = append(updates, *changeSet)
 		}
 	}
 
-	return &updates, nil
+	return updates, nil
 }
 
-func findSpecificUpdate(ctx context.Context, cfg *PartialConfig, filename string, component *config.ComponentConfig) (*UpdateSet, error) {
-	changeSet, err := getLastVersion(ctx, cfg, component, filename)
+func findSpecificUpdate(ctx context.Context, cfg *PartialConfig, component *config.ComponentConfig) (*ChangeSet, error) {
+	changeSet, err := getLastVersion(ctx, cfg, component)
 	if err != nil {
 		return nil, err
+	}
+
+	if changeSet == nil {
+		return nil, nil
 	}
 
 	output := OutputChanges(changeSet)
 	log.Ctx(ctx).Info().Msg(output)
 
-	updates := UpdateSet{
-		filename: cfg.filename,
-		updates:  []ChangeSet{*changeSet},
-	}
-	return &updates, nil
+	return changeSet, nil
 }
 
-func getLastVersion(ctx context.Context, cfg *PartialConfig, c *config.ComponentConfig, origin string) (*ChangeSet, error) {
+func getLastVersion(ctx context.Context, cfg *PartialConfig, c *config.ComponentConfig) (*ChangeSet, error) {
 	if c.Branch == "" {
 		c.Branch = "main"
 	}
 
 	if cfg.client != nil {
-		return getLastVersionCloud(ctx, cfg, c, origin)
+		return getLastVersionCloud(ctx, cfg, c)
 	}
 
 	if c.Source.IsType(config.SourceTypeGit) {
-		return getLastVersionGit(ctx, cfg, c, origin)
+		return getLastVersionGit(ctx, c, cfg.filename)
 	}
 
-	err := &UpdateError{
-		msg:       fmt.Sprintf("unrecognized component source for %s: %s", c.Name, c.Source),
-		component: c.Name,
-		source:    string(c.Source),
+	return nil, &UpdateError{
+		msg: fmt.Sprintf("unrecognized component source for %s: %s", c.Name, c.Source),
 	}
-	return nil, err
 }
 
-func getLastVersionCloud(ctx context.Context, cfg *PartialConfig, c *config.ComponentConfig, origin string) (*ChangeSet, error) {
+func getLastVersionCloud(ctx context.Context, cfg *PartialConfig, c *config.ComponentConfig) (*ChangeSet, error) {
 	organization := cfg.MachComposer.Cloud.Organization
 	project := cfg.MachComposer.Cloud.Project
 
@@ -194,7 +164,7 @@ func getLastVersionCloud(ctx context.Context, cfg *PartialConfig, c *config.Comp
 	if err != nil {
 		if cfg.gitFallback && c.Source.IsType(config.SourceTypeGit) {
 			log.Ctx(ctx).Err(err).Msgf("Error checking for %s in MACH Composer Cloud, falling back to Git", c.Name)
-			return getLastVersionGit(ctx, cfg, c, origin)
+			return getLastVersionGit(ctx, c, cfg.filename)
 		}
 		log.Ctx(ctx).Error().Err(err).Msgf("Error checking for latest version of %s", c.Name)
 		return nil, nil
@@ -203,58 +173,32 @@ func getLastVersionCloud(ctx context.Context, cfg *PartialConfig, c *config.Comp
 	if version == nil {
 		if cfg.gitFallback && c.Source.IsType(config.SourceTypeGit) {
 			log.Ctx(ctx).Warn().Msgf("No version found for %s in MACH Composer Cloud, falling back to Git", c.Name)
-			return getLastVersionGit(ctx, cfg, c, origin)
+			return getLastVersionGit(ctx, c, cfg.filename)
 		}
 		log.Ctx(ctx).Warn().Msgf("No version found for %s", c.Name)
 		return nil, nil
 	}
 
-	cs := &ChangeSet{
-		Changes:     []CommitData{},
+	// Changes is left empty: commits are no longer registered with a version, so
+	// there is nothing to list between the configured and the latest version. The
+	// update itself only depends on the latest version.
+	return &ChangeSet{
 		Component:   c,
 		LastVersion: version.Version,
-	}
-
-	if c.Version != version.Version {
-		paginator, _, err := cfg.client.
-			ComponentsApi.
-			ComponentCommitQuery(ctx, organization, project, c.Name).
-			From(c.Version).
-			To(version.Version).
-			Offset(0).
-			Limit(200).
-			Execute()
-		if err != nil {
-			log.Ctx(ctx).Warn().Msgf("Could not fetch related commits between %s versions %s and %s: %s", c.Name, c.Version, version.Version, err)
-		} else {
-
-			for _, record := range paginator.Results {
-				change := CommitData{
-					Commit:  record.Commit,
-					Parents: record.Parents,
-					Message: record.Subject,
-					Author: CommitAuthor{
-						Email: record.Author.Email,
-						Name:  record.Author.Name,
-						Date:  record.Author.Date,
-					},
-					Committer: CommitAuthor{
-						Email: record.Committer.Email,
-						Name:  record.Committer.Name,
-						Date:  record.Committer.Date,
-					},
-				}
-				cs.Changes = append(cs.Changes, change)
-			}
-		}
-	}
-
-	return cs, nil
+	}, nil
 }
 
-func getLastVersionGit(ctx context.Context, cfg *PartialConfig, c *config.ComponentConfig, origin string) (*ChangeSet, error) {
+func getLastVersionGit(ctx context.Context, c *config.ComponentConfig, origin string) (*ChangeSet, error) {
 	commits, err := gitutils.GetLastVersionGit(ctx, c, origin)
 	if err != nil {
+		// The configured version is not in the repository (anymore), so the
+		// changes cannot be determined. Skip the component instead of failing
+		// the complete run.
+		if errors.Is(err, gitutils.ErrGitRevisionNotFound) {
+			log.Ctx(ctx).Warn().Msgf("Could not determine changes for %s, version %s not found in the repository",
+				c.Name, c.Version)
+			return nil, nil
+		}
 		return nil, err
 	}
 
@@ -262,28 +206,13 @@ func getLastVersionGit(ctx context.Context, cfg *PartialConfig, c *config.Compon
 	for i := range commits {
 		c := commits[i]
 
-		commit := c.Commit
-		parents := c.Parents
-		if cfg.shortHash {
-			commit = truncateHash(commit)
-			for j, p := range parents {
-				parents[j] = truncateHash(p)
-			}
-		}
-
-		cd[i].Commit = commit
-		cd[i].Parents = parents
+		cd[i].Commit = c.Commit
 		cd[i].Message = c.Message
 
 		cd[i].Author = CommitAuthor{
 			Email: c.Author.Email,
 			Name:  c.Author.Name,
 			Date:  c.Author.Date,
-		}
-		cd[i].Committer = CommitAuthor{
-			Email: c.Committer.Email,
-			Name:  c.Committer.Name,
-			Date:  c.Committer.Date,
 		}
 		cd[i].Tags = c.Tags
 	}
@@ -296,19 +225,8 @@ func getLastVersionGit(ctx context.Context, cfg *PartialConfig, c *config.Compon
 	if len(commits) < 1 {
 		cs.LastVersion = c.Version
 	} else {
-		lastVersion := commits[0].Commit
-		if cfg.shortHash {
-			lastVersion = truncateHash(lastVersion)
-		}
-		cs.LastVersion = lastVersion
+		cs.LastVersion = commits[0].Commit
 	}
 
 	return cs, nil
-}
-
-func truncateHash(hash string) string {
-	if len(hash) > 7 {
-		return hash[:7]
-	}
-	return hash
 }

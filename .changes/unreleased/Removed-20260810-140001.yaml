@@ -1,0 +1,3 @@
+kind: Removed
+body: 'Removed the `cloud describe-component-versions` command. It listed the commits registered with a component version, which are no longer registered, so the command had no data left to show. Use `cloud list-component-versions` to see the registered versions'
+time: 2026-08-10T14:00:01.000000000Z

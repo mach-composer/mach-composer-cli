@@ -1,0 +1,3 @@
+kind: Fixed
+body: 'Fixed a data race in `update` where every concurrent component check overwrote the shared logging context, so components could be logged under another component''s name'
+time: 2026-08-10T14:00:02.000000000Z

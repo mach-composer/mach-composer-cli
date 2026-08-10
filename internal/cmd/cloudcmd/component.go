@@ -95,10 +95,6 @@ var componentRegisterVersionCmd = &cobra.Command{
 
 		organization := MustGetString(cmd, "organization")
 		project := MustGetString(cmd, "project")
-		gitFilterPaths, err := cmd.Flags().GetStringArray("git-filter-path")
-		if err != nil {
-			return err
-		}
 
 		auto, err := cmd.Flags().GetBool("auto")
 		if err != nil {
@@ -120,11 +116,6 @@ var componentRegisterVersionCmd = &cobra.Command{
 			return err
 		}
 
-		checkCommits, err := cmd.Flags().GetBool("check-commits")
-		if err != nil {
-			return err
-		}
-
 		client, err := cloud.NewClient(ctx)
 		if err != nil {
 			return err
@@ -136,11 +127,18 @@ var componentRegisterVersionCmd = &cobra.Command{
 		} else if len(args) >= 2 {
 			if auto {
 				log.Warn().Msgf("ignoring --auto flag, version will be set to %s", args[1])
+				auto = false
 			}
 			version = args[1]
 		}
 
-		return cloud.RegisterComponentVersion(ctx, cloud.NewClientWrapper(client), gitutils.NewGitRepositoryWrapper(), organization, project, componentKey, branch, version, dryRun, auto, createComponent, checkCommits, gitFilterPaths)
+		// In auto mode the branch is read from the repository, so an explicitly
+		// passed branch is never used.
+		if auto && cmd.Flags().Changed("branch") {
+			log.Warn().Msgf("ignoring --branch flag, the branch is determined from the checked out branch when using --auto")
+		}
+
+		return cloud.RegisterComponentVersion(ctx, cloud.NewClientWrapper(client), gitutils.NewGitRepositoryWrapper(), organization, project, componentKey, branch, version, dryRun, auto, createComponent)
 	},
 }
 
@@ -214,48 +212,7 @@ var componentListVersionCmd = &cobra.Command{
 		}
 
 		return writeTable(os.Stdout,
-			[]string{"Created At", "Key"},
-			data,
-		)
-	},
-}
-
-var componentDescribeVersionCmd = &cobra.Command{
-	Use:   "describe-component-versions [name] [version]",
-	Short: "List all changes for a component version",
-	Args:  cobra.ExactArgs(2),
-	RunE: func(cmd *cobra.Command, args []string) error {
-		ctx := cmd.Context()
-		key := args[0]
-		version := args[1]
-
-		organization := MustGetString(cmd, "organization")
-		project := MustGetString(cmd, "project")
-
-		client, err := cloud.NewClient(ctx)
-		if err != nil {
-			return err
-		}
-		paginator, _, err := client.
-			ComponentsApi.
-			ComponentVersionQueryCommits(ctx, organization, project, key, version).
-			Execute()
-		if err != nil {
-			return err
-		}
-
-		data := make([][]string, len(paginator.Results))
-		for i, record := range paginator.Results {
-			data[i] = []string{
-				record.Author.Date.Local().Format("2006-01-02 15:04:05"),
-				record.Commit,
-				record.Author.Name,
-				record.Subject,
-			}
-		}
-
-		return writeTable(os.Stdout,
-			[]string{"Date", "Commit", "Author", "Message"},
+			[]string{"Created At", "Version"},
 			data,
 		)
 	},
@@ -274,16 +231,17 @@ func init() {
 
 	CloudCmd.AddCommand(componentRegisterVersionCmd)
 	registerContextFlags(componentRegisterVersionCmd)
-	componentRegisterVersionCmd.Flags().Bool("auto", false, "Add the version commits automatically based on the current branch")
+	componentRegisterVersionCmd.Flags().Bool("auto", false, "Determine the version automatically from the current commit of the checked out branch")
 	componentRegisterVersionCmd.Flags().Bool("dry-run", false, "Dry run")
-	componentRegisterVersionCmd.Flags().StringArray("git-filter-path", nil, "Filter commits based on given paths")
 	componentRegisterVersionCmd.Flags().String("branch", "", "The branch to use for the version. Defaults to the backend default if not set")
 	componentRegisterVersionCmd.Flags().Bool("create-component", false, "Will create the component if it does not already exist")
-	componentRegisterVersionCmd.Flags().Bool("check-commits", true, "Look up the commits since the last version and register them with the new version. Only used in combination with --auto")
+
+	// Deprecated: commits are no longer registered with a version, so there is
+	// nothing left to filter. Kept as a no-op so existing pipelines keep working.
+	componentRegisterVersionCmd.Flags().StringArray("git-filter-path", nil, "Filter commits based on given paths")
+	Must(componentRegisterVersionCmd.Flags().MarkDeprecated("git-filter-path",
+		"commits are no longer registered with a version, so this flag does nothing and will be removed in a future release"))
 
 	CloudCmd.AddCommand(componentListVersionCmd)
 	registerContextFlags(componentListVersionCmd)
-
-	CloudCmd.AddCommand(componentDescribeVersionCmd)
-	registerContextFlags(componentDescribeVersionCmd)
 }

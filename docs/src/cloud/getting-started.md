@@ -69,10 +69,9 @@ components with MACH composer ☁️.
     --organization my-org --project my-project --auto
     ``` 
 
-    Using `--auto` will detect the latest version from git and will also read
-    metadata (i.e. the commits that are part of the new version) and push that
-    to MACH composer ☁️. For more info about using the component registry, [take
-    a look at its documentation](component-registry.md).
+    Using `--auto` will register the current commit of the checked out branch as
+    the new version. For more info about using the component registry, [take a
+    look at its documentation](component-registry.md).
 
 3. **In CI/CD context you need to create API Client credentials**
     

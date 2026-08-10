@@ -1,0 +1,3 @@
+kind: Removed
+body: 'Removed the `--short-hash` flag from the `update` command. Git hashes are always written in full length'
+time: 2026-08-06T12:00:00.000000000Z

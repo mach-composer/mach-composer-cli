@@ -1,0 +1,3 @@
+kind: Fixed
+body: 'Cleanup of the update flow: removed dead code left over from the commit-history removal (unused worker struct, unused git version info fields, redundant parameters), removed the non-functional `--component` flag from `update`, fixed the version column header of `cloud list-component-versions` and clarified the error message shown when cloud details are missing'
+time: 2026-08-10T16:00:00.000000000Z

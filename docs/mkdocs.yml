@@ -106,7 +106,6 @@ nav:
               - create-component: reference/cli/mach-composer_cloud_create-component.md
               - create-organization: reference/cli/mach-composer_cloud_create-organization.md
               - create-project: reference/cli/mach-composer_cloud_create-project.md
-              - describe-component-versions: reference/cli/mach-composer_cloud_describe-component-versions.md
               - list-api-clients: reference/cli/mach-composer_cloud_list-api-clients.md
               - list-component-versions: reference/cli/mach-composer_cloud_list-component-versions.md
               - list-components: reference/cli/mach-composer_cloud_list-components.md
