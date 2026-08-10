@@ -214,44 +214,13 @@ func getLastVersionCloud(ctx context.Context, cfg *PartialConfig, c *config.Comp
 		return nil, nil
 	}
 
+	// The commits between the configured and the latest version are not listed.
+	// Commits are no longer registered with a version, so there is nothing to
+	// list. The update itself only depends on the latest version.
 	cs := &ChangeSet{
 		Changes:     []CommitData{},
 		Component:   c,
 		LastVersion: version.Version,
-	}
-
-	if c.Version != version.Version {
-		paginator, _, err := cfg.client.
-			ComponentsApi.
-			ComponentCommitQuery(ctx, organization, project, c.Name).
-			From(c.Version).
-			To(version.Version).
-			Offset(0).
-			Limit(200).
-			Execute()
-		if err != nil {
-			log.Ctx(ctx).Warn().Msgf("Could not fetch related commits between %s versions %s and %s: %s", c.Name, c.Version, version.Version, err)
-		} else {
-
-			for _, record := range paginator.Results {
-				change := CommitData{
-					Commit:  record.Commit,
-					Parents: record.Parents,
-					Message: record.Subject,
-					Author: CommitAuthor{
-						Email: record.Author.Email,
-						Name:  record.Author.Name,
-						Date:  record.Author.Date,
-					},
-					Committer: CommitAuthor{
-						Email: record.Committer.Email,
-						Name:  record.Committer.Name,
-						Date:  record.Committer.Date,
-					},
-				}
-				cs.Changes = append(cs.Changes, change)
-			}
-		}
 	}
 
 	return cs, nil
@@ -276,18 +245,12 @@ func getLastVersionGit(ctx context.Context, c *config.ComponentConfig, origin st
 		c := commits[i]
 
 		cd[i].Commit = c.Commit
-		cd[i].Parents = c.Parents
 		cd[i].Message = c.Message
 
 		cd[i].Author = CommitAuthor{
 			Email: c.Author.Email,
 			Name:  c.Author.Name,
 			Date:  c.Author.Date,
-		}
-		cd[i].Committer = CommitAuthor{
-			Email: c.Committer.Email,
-			Name:  c.Committer.Name,
-			Date:  c.Committer.Date,
 		}
 		cd[i].Tags = c.Tags
 	}

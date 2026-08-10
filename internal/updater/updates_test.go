@@ -6,7 +6,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/mach-composer/mach-composer-cli/internal/cloud"
 	"github.com/mach-composer/mach-composer-cli/internal/config"
-	"github.com/mach-composer/mach-composer-cli/internal/utils"
 	"github.com/mach-composer/mcc-sdk-go/mccsdk"
 	"github.com/stretchr/testify/assert"
 	"net/http"
@@ -98,29 +97,7 @@ func TestGetLastVersionCloudOK(t *testing.T) {
 			return
 		}
 
-		if r.URL.Path == "/organizations/acme/projects/ecommerce/components//commits" {
-			b, _ := json.Marshal(mccsdk.CommitDataPaginator{
-				Count: utils.Ref(int32(1)),
-				Total: utils.Ref(int64(1)),
-				Results: []mccsdk.CommitData{
-					{
-						Commit:    "test",
-						Parents:   nil,
-						Subject:   "test",
-						Author:    mccsdk.CommitDataAuthor{},
-						Committer: mccsdk.CommitDataAuthor{},
-						//TODO: should these fields be available?
-						//Version:   &newVersion,
-						//Branch:    &branch,
-					},
-				},
-			})
-			w.Header().Add("Content-Type", "application/json")
-			w.WriteHeader(http.StatusOK)
-			_, _ = w.Write(b)
-			return
-		}
-
+		// Any other request, the commit query in particular, is unexpected.
 		t.Errorf("unexpected request %s", r.URL.Path)
 	}))
 	defer server.Close()
@@ -144,7 +121,8 @@ func TestGetLastVersionCloudOK(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotNil(t, cs)
 	assert.Equal(t, newVersion, cs.LastVersion)
-	assert.Equal(t, 1, len(cs.Changes))
+	assert.True(t, cs.HasChanges())
+	assert.Empty(t, cs.Changes)
 }
 
 // A component without a version to compare against yields no change set. The

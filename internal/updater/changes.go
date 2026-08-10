@@ -21,12 +21,10 @@ type ChangeSet struct {
 }
 
 type CommitData struct {
-	Commit    string
-	Parents   []string
-	Author    CommitAuthor
-	Committer CommitAuthor
-	Message   string
-	Tags      []string
+	Commit  string
+	Author  CommitAuthor
+	Message string
+	Tags    []string
 }
 
 type CommitAuthor struct {

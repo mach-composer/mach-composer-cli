@@ -1,0 +1,3 @@
+kind: Removed
+body: 'Removed the commit lookup from `update --cloud`. Commits are no longer registered with a version, so the lookup always failed with a warning. The detected update and the written version are unchanged, only the listed commits are gone from the output and the generated commit message'
+time: 2026-08-10T14:00:00.000000000Z

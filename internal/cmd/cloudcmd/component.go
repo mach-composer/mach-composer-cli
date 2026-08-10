@@ -218,47 +218,6 @@ var componentListVersionCmd = &cobra.Command{
 	},
 }
 
-var componentDescribeVersionCmd = &cobra.Command{
-	Use:   "describe-component-versions [name] [version]",
-	Short: "List all changes for a component version",
-	Args:  cobra.ExactArgs(2),
-	RunE: func(cmd *cobra.Command, args []string) error {
-		ctx := cmd.Context()
-		key := args[0]
-		version := args[1]
-
-		organization := MustGetString(cmd, "organization")
-		project := MustGetString(cmd, "project")
-
-		client, err := cloud.NewClient(ctx)
-		if err != nil {
-			return err
-		}
-		paginator, _, err := client.
-			ComponentsApi.
-			ComponentVersionQueryCommits(ctx, organization, project, key, version).
-			Execute()
-		if err != nil {
-			return err
-		}
-
-		data := make([][]string, len(paginator.Results))
-		for i, record := range paginator.Results {
-			data[i] = []string{
-				record.Author.Date.Local().Format("2006-01-02 15:04:05"),
-				record.Commit,
-				record.Author.Name,
-				record.Subject,
-			}
-		}
-
-		return writeTable(os.Stdout,
-			[]string{"Date", "Commit", "Author", "Message"},
-			data,
-		)
-	},
-}
-
 func init() {
 	CloudCmd.AddCommand(componentCreateCmd)
 	registerContextFlags(componentCreateCmd)
@@ -285,7 +244,4 @@ func init() {
 
 	CloudCmd.AddCommand(componentListVersionCmd)
 	registerContextFlags(componentListVersionCmd)
-
-	CloudCmd.AddCommand(componentDescribeVersionCmd)
-	registerContextFlags(componentDescribeVersionCmd)
 }

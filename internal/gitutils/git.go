@@ -32,12 +32,10 @@ type GitSource struct {
 }
 
 type GitCommit struct {
-	Commit    string
-	Parents   []string
-	Author    GitCommitAuthor
-	Committer GitCommitAuthor
-	Message   string
-	Tags      []string
+	Commit  string
+	Author  GitCommitAuthor
+	Message string
+	Tags    []string
 }
 
 type GitCommitAuthor struct {
@@ -256,23 +254,13 @@ func GetRecentCommits(ctx context.Context, basePath string, baseRevision, target
 
 		fields := strings.Split(c.Message, "\n")
 		subject := strings.TrimSpace(fields[0])
-		parents := make([]string, len(c.ParentHashes))
-		for i, parent := range c.ParentHashes {
-			parents[i] = parent.String()
-		}
 
 		result[i] = GitCommit{
-			Commit:  c.Hash.String(),
-			Parents: parents,
+			Commit: c.Hash.String(),
 			Author: GitCommitAuthor{
 				Name:  c.Author.Name,
 				Email: c.Author.Email,
 				Date:  c.Author.When,
-			},
-			Committer: GitCommitAuthor{
-				Name:  c.Committer.Name,
-				Email: c.Committer.Email,
-				Date:  c.Committer.When,
 			},
 			Message: subject,
 			Tags:    tags,
