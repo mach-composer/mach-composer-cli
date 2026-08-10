@@ -2,6 +2,7 @@ package updater
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"math"
 	"runtime"
@@ -138,6 +139,10 @@ func findSpecificUpdate(ctx context.Context, cfg *PartialConfig, filename string
 		return nil, err
 	}
 
+	if changeSet == nil {
+		return &UpdateSet{filename: cfg.filename}, nil
+	}
+
 	output := OutputChanges(changeSet)
 	log.Ctx(ctx).Info().Msg(output)
 
@@ -255,6 +260,14 @@ func getLastVersionCloud(ctx context.Context, cfg *PartialConfig, c *config.Comp
 func getLastVersionGit(ctx context.Context, c *config.ComponentConfig, origin string) (*ChangeSet, error) {
 	commits, err := gitutils.GetLastVersionGit(ctx, c, origin)
 	if err != nil {
+		// The configured version is not in the repository (anymore), so the
+		// changes cannot be determined. Skip the component instead of failing
+		// the complete run.
+		if errors.Is(err, gitutils.ErrGitRevisionNotFound) {
+			log.Ctx(ctx).Warn().Msgf("Could not determine changes for %s, version %s not found in the repository",
+				c.Name, c.Version)
+			return nil, nil
+		}
 		return nil, err
 	}
 

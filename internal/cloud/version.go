@@ -34,8 +34,7 @@ func RegisterComponentVersion(ctx context.Context, client ClientWrapper, reposit
 		if dryRun {
 			log.Info().Msgf("Would create new component: %s", componentKey)
 		} else {
-			component, err = client.CreateComponent(ctx, organization, project, componentKey)
-			if err != nil {
+			if _, err := client.CreateComponent(ctx, organization, project, componentKey); err != nil {
 				return err
 			}
 			log.Info().Msgf("Created component %s", componentKey)

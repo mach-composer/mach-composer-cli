@@ -132,6 +132,12 @@ var componentRegisterVersionCmd = &cobra.Command{
 			version = args[1]
 		}
 
+		// In auto mode the branch is read from the repository, so an explicitly
+		// passed branch is never used.
+		if auto && cmd.Flags().Changed("branch") {
+			log.Warn().Msgf("ignoring --branch flag, the branch is determined from the checked out branch when using --auto")
+		}
+
 		return cloud.RegisterComponentVersion(ctx, cloud.NewClientWrapper(client), gitutils.NewGitRepositoryWrapper(), organization, project, componentKey, branch, version, dryRun, auto, createComponent)
 	},
 }

@@ -146,3 +146,39 @@ func TestGetLastVersionCloudOK(t *testing.T) {
 	assert.Equal(t, newVersion, cs.LastVersion)
 	assert.Equal(t, 1, len(cs.Changes))
 }
+
+// A component without a version to compare against yields no change set. The
+// update should be skipped instead of crashing.
+func TestFindSpecificUpdateWithoutChangeSet(t *testing.T) {
+	branch := "main"
+	organization := "acme"
+	project := "ecommerce"
+
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		t.Errorf("unexpected request %s", r.URL.Path)
+	}))
+	defer server.Close()
+
+	ctx := context.Background()
+	c := &config.ComponentConfig{
+		Name:    "my-component",
+		Version: cloud.LatestVersion,
+		Branch:  branch,
+	}
+	cfg := &PartialConfig{
+		client:   cloud.NewTestClient(server),
+		filename: "main.yml",
+		MachComposer: config.MachComposer{
+			Cloud: config.MachComposerCloud{
+				Organization: organization,
+				Project:      project,
+			},
+		},
+	}
+
+	updates, err := findSpecificUpdate(ctx, cfg, "main.yml", c)
+	assert.NoError(t, err)
+	assert.NotNil(t, updates)
+	assert.Empty(t, updates.updates)
+	assert.False(t, updates.HasChanges())
+}
