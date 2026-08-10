@@ -6,7 +6,7 @@ import (
 
 type GitRepository interface {
 	GetCurrentBranch(context.Context, string) (string, error)
-	GetVersionInfo(ctx context.Context, path string, branch string) (*GitVersionInfo, error)
+	GetLatestCommitHash(ctx context.Context, path string, branch string) (string, error)
 }
 
 type GitRepositoryWrapper struct {
@@ -20,6 +20,6 @@ func (g GitRepositoryWrapper) GetCurrentBranch(ctx context.Context, s string) (s
 	return GetCurrentBranch(ctx, s)
 }
 
-func (g GitRepositoryWrapper) GetVersionInfo(ctx context.Context, path string, branch string) (*GitVersionInfo, error) {
-	return GetVersionInfo(ctx, path, branch)
+func (g GitRepositoryWrapper) GetLatestCommitHash(ctx context.Context, path string, branch string) (string, error) {
+	return GetLatestCommitHash(ctx, path, branch)
 }

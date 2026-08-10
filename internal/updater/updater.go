@@ -44,11 +44,6 @@ func (c *PartialConfig) GetComponent(name string) *config.ComponentConfig {
 	return nil
 }
 
-type WorkerJob struct {
-	component *config.ComponentConfig
-	cfg       *PartialConfig
-}
-
 type UpdateError struct {
 	msg string
 }
@@ -119,7 +114,7 @@ func NewUpdater(ctx context.Context, filename string, useCloud bool, gitFallback
 
 	if useCloud {
 		if cfg.MachComposer.Cloud.Empty() {
-			return nil, fmt.Errorf("please defined cloud details")
+			return nil, fmt.Errorf("please define cloud details under mach_composer.cloud in the config file")
 		}
 
 		client, err := cloud.NewClient(ctx)
@@ -134,11 +129,11 @@ func NewUpdater(ctx context.Context, filename string, useCloud bool, gitFallback
 
 // UpdateAllComponents updates all the components in the config file.
 func (u *Updater) UpdateAllComponents(ctx context.Context) error {
-	updateSet, err := findUpdates(ctx, u.config, u.Filename)
+	updates, err := findUpdates(ctx, u.config)
 	if err != nil {
 		return err
 	}
-	u.updates = updateSet.updates
+	u.updates = updates
 	log.Info().Msgf("%d components have updates available\n", len(u.updates))
 	return nil
 }
@@ -164,13 +159,13 @@ func (u *Updater) UpdateComponent(ctx context.Context, name, version string) err
 		return nil
 	}
 
-	updateSet, err := findSpecificUpdate(ctx, u.config, u.Filename, component)
+	changeSet, err := findSpecificUpdate(ctx, u.config, component)
 	if err != nil {
 		return err
 	}
-	if updateSet.HasChanges() {
-		log.Info().Msgf("Updating component %s to version %s\n", component.Name, updateSet.updates[0].LastVersion)
-		u.updates = updateSet.updates
+	if changeSet != nil && changeSet.HasChanges() {
+		log.Info().Msgf("Updating component %s to version %s\n", component.Name, changeSet.LastVersion)
+		u.updates = []ChangeSet{*changeSet}
 	} else {
 		log.Info().Msgf("No updates for component %s\n", component.Name)
 	}

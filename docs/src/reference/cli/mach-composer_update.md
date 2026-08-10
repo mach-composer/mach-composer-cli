@@ -13,7 +13,6 @@ mach-composer update [flags]
       --cloud                   Use MACH composer cloud to check for updates.
   -c, --commit                  Automatically commits the change.
   -m, --commit-message string   Use a custom message for the commit.
-      --component stringArray   
   -f, --file string             YAML file to update. (default "main.yml")
       --git-fallback            Fallback to git if composer cloud check fails.
   -h, --help                    help for update

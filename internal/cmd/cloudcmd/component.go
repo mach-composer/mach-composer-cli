@@ -212,7 +212,7 @@ var componentListVersionCmd = &cobra.Command{
 		}
 
 		return writeTable(os.Stdout,
-			[]string{"Created At", "Key"},
+			[]string{"Created At", "Version"},
 			data,
 		)
 	},

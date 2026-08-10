@@ -111,7 +111,7 @@ func TestRegisterComponentVersionComponentFoundAutoOK(t *testing.T) {
 
 	gitRepo := &gitutils.GitRepositoryMock{}
 	gitRepo.On("GetCurrentBranch", mock.Anything, mock.Anything).Return("main", nil)
-	gitRepo.On("GetVersionInfo", mock.Anything, mock.Anything, mock.Anything).Return(&gitutils.GitVersionInfo{}, nil)
+	gitRepo.On("GetLatestCommitHash", mock.Anything, mock.Anything, mock.Anything).Return("aabbccddee", nil)
 
 	ctx := context.Background()
 	organization := "test-org"
@@ -139,7 +139,7 @@ func TestRegisterComponentVersionComponentFoundAutoDryRun(t *testing.T) {
 
 	gitRepo := &gitutils.GitRepositoryMock{}
 	gitRepo.On("GetCurrentBranch", mock.Anything, mock.Anything).Return("main", nil)
-	gitRepo.On("GetVersionInfo", mock.Anything, mock.Anything, mock.Anything).Return(&gitutils.GitVersionInfo{}, nil)
+	gitRepo.On("GetLatestCommitHash", mock.Anything, mock.Anything, mock.Anything).Return("aabbccddee", nil)
 
 	ctx := context.Background()
 	organization := "test-org"

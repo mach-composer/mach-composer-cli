@@ -44,16 +44,6 @@ type GitCommitAuthor struct {
 	Date  time.Time
 }
 
-type GitVersionInfo struct {
-	Hash     plumbing.Hash
-	Tag      string
-	Revision plumbing.Revision
-}
-
-func (g *GitVersionInfo) Identifier() string {
-	return g.Hash.String()
-}
-
 func OpenRepository(path string) (*git.Repository, error) {
 	repo, err := git.PlainOpen(path)
 	if errors.Is(err, git.ErrRepositoryNotExists) {
@@ -149,33 +139,29 @@ func GetCurrentBranch(_ context.Context, path string) (string, error) {
 	return branchRef.Name().Short(), nil
 }
 
-// GetVersionInfo returns the latest commit hash of a specific branch
-func GetVersionInfo(_ context.Context, path string, branch string) (*GitVersionInfo, error) {
+// GetLatestCommitHash returns the latest commit hash of a specific branch, or
+// of HEAD when no branch is given.
+func GetLatestCommitHash(_ context.Context, path string, branch string) (string, error) {
 	repository, err := OpenRepository(path)
 	if err != nil {
-		return nil, fmt.Errorf("failed to open repository: %w", err)
+		return "", fmt.Errorf("failed to open repository: %w", err)
 	}
 
 	// Resolve the last commit in the branch
-	info := &GitVersionInfo{}
 	if branch == "" {
 		branchRef, err := repository.Head()
 		if err != nil {
-			err = fmt.Errorf("failed to resolve HEAD in repository (%s): %w", path, err)
-			return nil, err
+			return "", fmt.Errorf("failed to resolve HEAD in repository (%s): %w", path, err)
 		}
-		info.Hash = branchRef.Hash()
-		info.Revision = "HEAD"
-	} else {
-		branchRef := plumbing.NewBranchReferenceName(branch)
-		branchRevision, err := repository.ResolveRevision(plumbing.Revision(branchRef))
-		if err != nil {
-			return nil, fmt.Errorf("failed to find branch %s in repository: %w", branch, err)
-		}
-		info.Hash = *branchRevision
-		info.Revision = plumbing.Revision(branchRef)
+		return branchRef.Hash().String(), nil
 	}
-	return info, nil
+
+	branchRef := plumbing.NewBranchReferenceName(branch)
+	branchRevision, err := repository.ResolveRevision(plumbing.Revision(branchRef))
+	if err != nil {
+		return "", fmt.Errorf("failed to find branch %s in repository: %w", branch, err)
+	}
+	return branchRevision.String(), nil
 }
 
 func commitExists(ctx context.Context, gitPath, baseRevision, targetRevision string) error {

@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"math"
 	"runtime"
 	"sync"
 
@@ -18,19 +17,13 @@ import (
 )
 
 func determineNumWorkers() int {
-	var numWorkers = int(math.Ceil(float64(runtime.NumCPU() / 2)))
-
-	if numWorkers < 2 {
-		numWorkers = 2
-	}
-
-	return numWorkers
+	return max(2, runtime.NumCPU()/2)
 }
 
 // findUpdates checks every component for a newer version. Both the MACH
 // composer Cloud and the git lookup are a single independent check per
 // component, so they share the same worker pool.
-func findUpdates(ctx context.Context, cfg *PartialConfig, filename string) (*UpdateSet, error) {
+func findUpdates(ctx context.Context, cfg *PartialConfig) ([]ChangeSet, error) {
 	log.Ctx(ctx).Info().Msgf("Checking if there are updates for %d components\n", len(cfg.Components))
 
 	numUpdates := len(cfg.Components)
@@ -64,7 +57,7 @@ func findUpdates(ctx context.Context, cfg *PartialConfig, filename string) (*Upd
 			logger := log.With().Str("component", c.Name).Logger()
 			cctx := logger.WithContext(ctx)
 
-			cs, err := getLastVersion(cctx, cfg, c, cfg.filename)
+			cs, err := getLastVersion(cctx, cfg, c)
 			if err != nil {
 				logger.Error().Msg(err.Error())
 				errChan <- err
@@ -95,9 +88,7 @@ func findUpdates(ctx context.Context, cfg *PartialConfig, filename string) (*Upd
 	}
 
 	// Process results as we receive them from the channel
-	updates := UpdateSet{
-		filename: filename,
-	}
+	var updates []ChangeSet
 	for changeSet := range resChan {
 		if changeSet == nil {
 			continue
@@ -107,44 +98,40 @@ func findUpdates(ctx context.Context, cfg *PartialConfig, filename string) (*Upd
 		log.Ctx(ctx).Info().Msg(output)
 
 		if changeSet.HasChanges() {
-			updates.updates = append(updates.updates, *changeSet)
+			updates = append(updates, *changeSet)
 		}
 	}
 
-	return &updates, nil
+	return updates, nil
 }
 
-func findSpecificUpdate(ctx context.Context, cfg *PartialConfig, filename string, component *config.ComponentConfig) (*UpdateSet, error) {
-	changeSet, err := getLastVersion(ctx, cfg, component, filename)
+func findSpecificUpdate(ctx context.Context, cfg *PartialConfig, component *config.ComponentConfig) (*ChangeSet, error) {
+	changeSet, err := getLastVersion(ctx, cfg, component)
 	if err != nil {
 		return nil, err
 	}
 
 	if changeSet == nil {
-		return &UpdateSet{filename: cfg.filename}, nil
+		return nil, nil
 	}
 
 	output := OutputChanges(changeSet)
 	log.Ctx(ctx).Info().Msg(output)
 
-	updates := UpdateSet{
-		filename: cfg.filename,
-		updates:  []ChangeSet{*changeSet},
-	}
-	return &updates, nil
+	return changeSet, nil
 }
 
-func getLastVersion(ctx context.Context, cfg *PartialConfig, c *config.ComponentConfig, origin string) (*ChangeSet, error) {
+func getLastVersion(ctx context.Context, cfg *PartialConfig, c *config.ComponentConfig) (*ChangeSet, error) {
 	if c.Branch == "" {
 		c.Branch = "main"
 	}
 
 	if cfg.client != nil {
-		return getLastVersionCloud(ctx, cfg, c, origin)
+		return getLastVersionCloud(ctx, cfg, c)
 	}
 
 	if c.Source.IsType(config.SourceTypeGit) {
-		return getLastVersionGit(ctx, c, origin)
+		return getLastVersionGit(ctx, c, cfg.filename)
 	}
 
 	return nil, &UpdateError{
@@ -152,7 +139,7 @@ func getLastVersion(ctx context.Context, cfg *PartialConfig, c *config.Component
 	}
 }
 
-func getLastVersionCloud(ctx context.Context, cfg *PartialConfig, c *config.ComponentConfig, origin string) (*ChangeSet, error) {
+func getLastVersionCloud(ctx context.Context, cfg *PartialConfig, c *config.ComponentConfig) (*ChangeSet, error) {
 	organization := cfg.MachComposer.Cloud.Organization
 	project := cfg.MachComposer.Cloud.Project
 
@@ -177,7 +164,7 @@ func getLastVersionCloud(ctx context.Context, cfg *PartialConfig, c *config.Comp
 	if err != nil {
 		if cfg.gitFallback && c.Source.IsType(config.SourceTypeGit) {
 			log.Ctx(ctx).Err(err).Msgf("Error checking for %s in MACH Composer Cloud, falling back to Git", c.Name)
-			return getLastVersionGit(ctx, c, origin)
+			return getLastVersionGit(ctx, c, cfg.filename)
 		}
 		log.Ctx(ctx).Error().Err(err).Msgf("Error checking for latest version of %s", c.Name)
 		return nil, nil
@@ -186,7 +173,7 @@ func getLastVersionCloud(ctx context.Context, cfg *PartialConfig, c *config.Comp
 	if version == nil {
 		if cfg.gitFallback && c.Source.IsType(config.SourceTypeGit) {
 			log.Ctx(ctx).Warn().Msgf("No version found for %s in MACH Composer Cloud, falling back to Git", c.Name)
-			return getLastVersionGit(ctx, c, origin)
+			return getLastVersionGit(ctx, c, cfg.filename)
 		}
 		log.Ctx(ctx).Warn().Msgf("No version found for %s", c.Name)
 		return nil, nil

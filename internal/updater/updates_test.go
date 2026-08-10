@@ -42,7 +42,7 @@ func TestGetLastVersionCloudLatestVersion(t *testing.T) {
 		},
 	}
 
-	cs, err := getLastVersionCloud(ctx, cfg, c, branch)
+	cs, err := getLastVersionCloud(ctx, cfg, c)
 	assert.NoError(t, err)
 	assert.Nil(t, cs)
 }
@@ -72,7 +72,7 @@ func TestGetLastVersionCloudVersionNotApplicable(t *testing.T) {
 		},
 	}
 
-	cs, err := getLastVersionCloud(ctx, cfg, c, branch)
+	cs, err := getLastVersionCloud(ctx, cfg, c)
 	assert.NoError(t, err)
 	assert.Nil(t, cs)
 }
@@ -120,7 +120,7 @@ func TestGetLastVersionCloudOK(t *testing.T) {
 		},
 	}
 
-	cs, err := getLastVersionCloud(ctx, cfg, c, branch)
+	cs, err := getLastVersionCloud(ctx, cfg, c)
 	assert.NoError(t, err)
 	assert.NotNil(t, cs)
 	assert.Equal(t, newVersion, cs.LastVersion)
@@ -157,11 +157,9 @@ func TestFindSpecificUpdateWithoutChangeSet(t *testing.T) {
 		},
 	}
 
-	updates, err := findSpecificUpdate(ctx, cfg, "main.yml", c)
+	changeSet, err := findSpecificUpdate(ctx, cfg, c)
 	assert.NoError(t, err)
-	assert.NotNil(t, updates)
-	assert.Empty(t, updates.updates)
-	assert.False(t, updates.HasChanges())
+	assert.Nil(t, changeSet)
 }
 
 // The cloud lookup runs on the same worker pool as the git lookup. Run with
@@ -212,9 +210,9 @@ func TestFindUpdatesCloudConcurrent(t *testing.T) {
 		},
 	}
 
-	updates, err := findUpdates(context.Background(), cfg, "main.yml")
+	updates, err := findUpdates(context.Background(), cfg)
 	assert.NoError(t, err)
-	assert.Len(t, updates.updates, len(components))
+	assert.Len(t, updates, len(components))
 
 	// Each worker writes the default branch back into its own component, so the
 	// defaults are visible in the shared config afterwards.

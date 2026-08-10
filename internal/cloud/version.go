@@ -71,11 +71,10 @@ func autoRegisterVersion(ctx context.Context, client ClientWrapper, repository g
 		return err
 	}
 
-	newVersion, err := repository.GetVersionInfo(ctx, cwd, branch)
+	versionIdentifier, err := repository.GetLatestCommitHash(ctx, cwd, branch)
 	if err != nil {
 		return err
 	}
-	versionIdentifier := newVersion.Identifier()
 
 	if dryRun {
 		log.Info().Msgf("Would create new version: %s (branch=%s)", versionIdentifier, branch)
