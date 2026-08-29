@@ -1,4 +1,5 @@
 site_name: MACH composer
+site_url: https://docs.machcomposer.io
 
 # Repository
 repo_name: mach-composer/mach-composer-cli
@@ -172,12 +173,16 @@ extra:
       icon: fontawesome/brands/github-alt
       link: 'https://labdigital.nl/'
 
+hooks:
+  - render_markdown.py
+  - render_llmstxt.py
+  - render_llmstxt_full.py
+
 plugins:
   - include-markdown
   - external-markdown
   - search:
       lang: en
-
 
 markdown_extensions:
   - attr_list
