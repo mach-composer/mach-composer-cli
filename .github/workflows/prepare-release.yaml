@@ -6,6 +6,9 @@ on:
 
 jobs:
   generate-pr:
+    outputs:
+      released: ${{ steps.changie.outputs.released }}
+      version: ${{ steps.changie.outputs.version }}
     runs-on: ubuntu-latest
     steps:
       - name: Check out code
@@ -15,7 +18,13 @@ jobs:
           persist-credentials: false
 
       - name: Prepare release
+        id: changie
         uses: labd/changie-release-action@059406879b04f6e073547b325fbbff9a573038e3 # v2.0.0
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          release-workflow: release.yaml
+
+  release:
+    needs: generate-pr
+    if: needs.generate-pr.outputs.released == 'true'
+    uses: ./.github/workflows/release.yaml
+    secrets: inherit
