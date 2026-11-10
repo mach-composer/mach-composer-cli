@@ -20,11 +20,15 @@ jobs:
 
       - name: Get goreleaser app token
         id: get-app-token
-        uses: labd/action-gh-app-token@570381a08efe9c961806a3a3bc5882af5f50ef6a # v0.1.0
+        uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3.3.0
         with:
-          app-id: ${{ vars.MCI_APP_ID }}
+          client-id: ${{ vars.MCI_APP_CLIENT_ID }}
           private-key: ${{ secrets.MCI_APP_PRIVATE_KEY }}
-          installation-id: ${{ secrets.MCI_APP_INSTALLATION_ID }}
+          owner: mach-composer
+          repositories: |
+            mach-composer-cli
+            homebrew-mach-composer
+            nix-mach-composer
 
       - name: Set up Go
         uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
@@ -72,7 +76,7 @@ jobs:
           args: --clean --release-notes=${{ env.RELEASE_NOTES_PATH }} --skip=validate
         env:
           GORELEASER_CURRENT_TAG: ${{ env.GORELEASER_CURRENT_TAG }}
-          GITHUB_TOKEN: ${{ steps.get-app-token.outputs.app-token }}
+          GITHUB_TOKEN: ${{ steps.get-app-token.outputs.token }}
           GOPATH: ${{ env.GOPATH }}
           CHOCOLATEY_API_KEY: ${{ secrets.CHOCOLATEY_API_KEY }}
 
