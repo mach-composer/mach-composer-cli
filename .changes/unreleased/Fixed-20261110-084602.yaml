@@ -1,0 +1,3 @@
+kind: Fixed
+body: Homebrew formula no longer depends on `terraform`, which was removed from homebrew-core; install terraform via `hashicorp/tap` or use OpenTofu
+time: 2026-11-10T08:46:02.56445+01:00
