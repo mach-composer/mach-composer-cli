@@ -1,6 +1,10 @@
 version: '3'
 
 tasks:
+  default:
+    silent: true
+    cmd: task --list-all
+
   install:
     cmd: pip install -r requirements.txt
 
