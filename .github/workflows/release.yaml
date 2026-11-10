@@ -150,6 +150,8 @@ jobs:
       - name: Build
         uses: docker/bake-action@59cb1203cd42bcefd40a1b6d73b589e48c86040e # v7.5.0
         with:
+          # build from the workspace, which contains the downloaded dist/ artifacts
+          source: .
           files: |
             ./docker-bake.hcl
             cwd://${{ steps.meta.outputs.bake-file }}
@@ -200,6 +202,8 @@ jobs:
       - name: Build
         uses: docker/bake-action@59cb1203cd42bcefd40a1b6d73b589e48c86040e # v7.5.0
         with:
+          # build from the workspace, which contains the downloaded dist/ artifacts
+          source: .
           files: |
             ./docker-bake.hcl
             cwd://${{ steps.meta.outputs.bake-file }}
