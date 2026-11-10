@@ -84,9 +84,15 @@ brews:
       technologies and cloud native services..
     license: "MIT"
     dependencies:
-      - name: terraform
       - name: git
         type: optional
+    # terraform is no longer available in homebrew-core (BUSL license), so it
+    # can't be a dependency. Install it via hashicorp/tap, tfenv or use OpenTofu.
+    caveats: |
+      mach-composer requires terraform (or OpenTofu) to be installed, e.g.:
+        brew install hashicorp/tap/terraform
+      or
+        brew install opentofu
 
 chocolateys:
   - title: MACH composer
