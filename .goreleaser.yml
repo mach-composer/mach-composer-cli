@@ -38,6 +38,10 @@ builds:
       - amd64
       - arm64
       - arm
+    ignore:
+      # Go 1.26 dropped support for windows/arm (32-bit)
+      - goos: windows
+        goarch: arm
     mod_timestamp: '{{ .CommitTimestamp }}'
 
 checksum:
